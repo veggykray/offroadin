@@ -4,6 +4,23 @@ import type { Vehicle } from './Vehicle';
 import type { VehicleConfig } from './VehicleConfig';
 
 /**
+ * Every .glb/.gltf in the top-level `models/` folder, discovered at build time.
+ * Drop `cindercrest.glb` in there and the Cindercrest uses it — no code changes,
+ * and no failed network requests for models that don't exist yet.
+ */
+const MODEL_FILES: Record<string, string> = Object.fromEntries(
+  Object.entries(import.meta.glob('../../models/*.{glb,gltf}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>).map(
+    ([path, url]) => [path.split('/').pop()!.toLowerCase(), url],
+  ),
+);
+
+/** Resolve a model file name (or explicit URL) to a fetchable URL, or null if absent. */
+function resolveModelUrl(ref: string): string | null {
+  if (ref.startsWith('/') || ref.startsWith('http')) return ref;
+  return MODEL_FILES[ref.toLowerCase()] ?? null;
+}
+
+/**
  * Visual representation of a vehicle — completely separate from the physics chassis.
  *
  *   root   : follows the (interpolated) physics transform
@@ -63,16 +80,18 @@ export class VehicleVisual {
     if (this.marker) this.root.add(this.marker);
   }
 
-  /** Try to load `cfg.model.url`; keep the placeholder if it doesn't exist. */
+  /** Try to load the configured model; keep the placeholder if it doesn't exist. */
   async loadModel(): Promise<boolean> {
     const mc = this.cfg.model;
     if (!mc) return false;
+    const url = resolveModelUrl(mc.url);
+    if (!url) return false;
     try {
-      const res = await fetch(mc.url);
+      const res = await fetch(url);
       const type = res.headers.get('content-type') ?? '';
       if (!res.ok || type.includes('text/html')) return false; // dev server SPA fallback = missing
       const buf = await res.arrayBuffer();
-      const gltf = await new GLTFLoader().parseAsync(buf, mc.url.replace(/[^/]*$/, ''));
+      const gltf = await new GLTFLoader().parseAsync(buf, url.replace(/[^/]*$/, ''));
       const model = gltf.scene;
       model.rotation.y = mc.rotationY ?? 0;
       model.updateMatrixWorld(true);

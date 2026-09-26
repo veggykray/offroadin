@@ -86,7 +86,7 @@ export interface VehicleConfig {
 }
 
 export interface VehicleModelConfig {
-  /** URL relative to the site root, e.g. `models/cindercrest.glb`. */
+  /** File name inside the top-level `models/` folder (e.g. `cindercrest.glb`), or an absolute URL. */
   url: string;
   /** Rotate the model about Y so its nose points along +Z (radians). */
   rotationY?: number;
@@ -149,7 +149,7 @@ export const BASE_VEHICLE: Omit<VehicleConfig, 'id' | 'displayName' | 'color' | 
 
 /**
  * The four Prehistoric World racers from the reference sheets.
- * Drop `public/models/<id>.glb` in place and it will be used automatically.
+ * Drop `models/<id>.glb` into the project and it will be used automatically.
  */
 export const VEHICLES: Record<string, VehicleConfig> = {
   cindercrest: {
@@ -158,7 +158,7 @@ export const VEHICLES: Record<string, VehicleConfig> = {
     displayName: 'Cindercrest',
     color: 0x3a2a22,
     accent: 0xff6a1a,
-    model: { url: 'models/cindercrest.glb', scale: 'fit' },
+    model: { url: 'cindercrest.glb', scale: 'fit' },
   },
   saberspring: {
     ...BASE_VEHICLE,
@@ -166,7 +166,7 @@ export const VEHICLES: Record<string, VehicleConfig> = {
     displayName: 'Saberspring',
     color: 0xb3352b,
     accent: 0xf1e6c8,
-    model: { url: 'models/saberspring.glb', scale: 'fit' },
+    model: { url: 'saberspring.glb', scale: 'fit' },
   },
   shellfort: {
     ...BASE_VEHICLE,
@@ -174,7 +174,7 @@ export const VEHICLES: Record<string, VehicleConfig> = {
     displayName: 'Shellfort',
     color: 0x7a6a4a,
     accent: 0xc0392b,
-    model: { url: 'models/shellfort.glb', scale: 'fit' },
+    model: { url: 'shellfort.glb', scale: 'fit' },
   },
   tuskroller: {
     ...BASE_VEHICLE,
@@ -182,6 +182,6 @@ export const VEHICLES: Record<string, VehicleConfig> = {
     displayName: 'Tuskroller',
     color: 0x6b4226,
     accent: 0xe8dcc0,
-    model: { url: 'models/tuskroller.glb', scale: 'fit' },
+    model: { url: 'tuskroller.glb', scale: 'fit' },
   },
 };
