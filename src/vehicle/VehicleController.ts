@@ -144,6 +144,15 @@ export function stepVehicle(v: Vehicle, input: DriveInput, dt: number = FIXED_DT
     const maxDv = cfg.maxLateralAccel * mods.grip * stagger * driveFactor * dt;
     const dv = clamp(-vR * cfg.lateralStiffness, -maxDv, maxDv);
     _imp.addScaledVector(_rightG, dv);
+    // Tyres "trip" when the car is shoved sideways very fast (big T-bones, sideways
+    // landings): grip acts below the centre of mass and can roll the car over.
+    // Normal drifting never gets near this threshold.
+    const tripSpeed = Math.abs(vR);
+    if (tripSpeed > cfg.tripSpeed) {
+      const k = Math.min(1, (tripSpeed - cfg.tripSpeed) / 6) * cfg.tripHeight;
+      const roll = -dv * cfg.mass * k; // τ = r × F with r pointing down from the COM
+      body.applyTorqueImpulse({ x: _fwdG.x * roll, y: _fwdG.y * roll, z: _fwdG.z * roll }, true);
+    }
 
     // ---- Downforce keeps the car planted over small bumps ----
     const v2 = v.vel.lengthSq();

@@ -50,12 +50,41 @@ export class RacingLine {
     this.x = new Float32Array(n);
     this.z = new Float32Array(n);
     this.speed = new Float32Array(n);
-    const margin = (i: number) => {
+    // Per-point lateral bounds: road edges minus a safety margin…
+    const lo = new Float32Array(n), hi = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
       const p = pts[i];
-      if (p.bridge) return Math.max(0, p.halfWidth - 1.8);
-      return Math.max(0, p.halfWidth - 3.0);
-    };
-    // Elastic-band smoothing → minimum-curvature line within the road edges.
+      const m = p.bridge ? Math.max(0, p.halfWidth - 1.8) : Math.max(0, p.halfWidth - 3.0);
+      lo[i] = -m;
+      hi[i] = m;
+    }
+    // …and solid obstacles (boulders): pass each one on the roomier side with the whole
+    // car clear, from a few metres before to a few metres after it.
+    const carHalf = 1.7;
+    for (const o of obstacles) {
+      let near = -1, bd = Infinity;
+      for (let i = 0; i < n; i++) {
+        const d = (pts[i].x - o.x) ** 2 + (pts[i].z - o.z) ** 2;
+        if (d < bd) {
+          bd = d;
+          near = i;
+        }
+      }
+      if (near < 0 || bd > (pts[near].halfWidth + o.r + 3) ** 2) continue;
+      const c = pts[near];
+      const oLat = (o.x - c.x) * c.lx + (o.z - c.z) * c.lz;
+      const passLeft = hi[near] - (oLat + o.r + carHalf) >= oLat - o.r - carHalf - lo[near];
+      const span = Math.ceil(o.r + 14);
+      for (let k = -span; k <= span; k++) {
+        const i = (near + k + n) % n;
+        // Fully clear alongside the rock, easing in over ~10 m before it so the car sets up early.
+        const fade = Math.max(0, 1 - Math.max(0, Math.abs(k) - o.r - 3) / 10);
+        if (passLeft) lo[i] = Math.min(hi[i], Math.max(lo[i], lo[i] + (oLat + o.r + carHalf - lo[i]) * fade));
+        else hi[i] = Math.max(lo[i], Math.min(hi[i], hi[i] + (oLat - o.r - carHalf - hi[i]) * fade));
+      }
+    }
+    const clampOff = (i: number, v: number) => Math.max(lo[i], Math.min(hi[i], v));
+    // Elastic-band smoothing → minimum-curvature line within the bounds.
     const off = this.offset;
     for (const k of [12, 8, 5, 3]) {
       for (let it = 0; it < 120; it++) {
@@ -65,8 +94,7 @@ export class RacingLine {
           const mx = (a.x + a.lx * oa + b.x + b.lx * ob) / 2;
           const mz = (a.z + a.lz * oa + b.z + b.lz * ob) / 2;
           const desired = (mx - c.x) * c.lx + (mz - c.z) * c.lz;
-          const m = margin(i);
-          off[i] = Math.max(-m, Math.min(m, off[i] + (desired - off[i]) * 0.5));
+          off[i] = clampOff(i, off[i] + (desired - off[i]) * 0.5);
         }
       }
     }
@@ -76,35 +104,7 @@ export class RacingLine {
       for (let tries = 0; tries < 8; tries++) {
         const x = p.x + p.lx * off[i], z = p.z + p.lz * off[i];
         if (!track.patchAt(x, z)) break;
-        const m = margin(i);
-        off[i] = Math.max(-m, Math.min(m, off[i] + (off[i] >= 0 ? -1.2 : 1.2)));
-      }
-    }
-    // Steer the line clear of solid obstacles (boulders on the road), then re-smooth locally.
-    const clearance = 2.6;
-    for (let pass = 0; pass < 3; pass++) {
-      for (let i = 0; i < n; i++) {
-        const p = pts[i];
-        const m = margin(i);
-        for (const o of obstacles) {
-          const x = p.x + p.lx * off[i], z = p.z + p.lz * off[i];
-          const d = Math.hypot(x - o.x, z - o.z);
-          if (d > o.r + clearance + 4) continue;
-          const oLat = (o.x - p.x) * p.lx + (o.z - p.z) * p.lz;
-          const oAlong = Math.abs((o.x - p.x) * p.tx + (o.z - p.z) * p.tz);
-          const need = o.r + clearance - oAlong * 0.25;
-          if (need <= 0 || Math.abs(off[i] - oLat) >= need) continue;
-          // Pass on whichever side has more room.
-          const leftRoom = m - oLat, rightRoom = oLat + m;
-          off[i] = leftRoom > rightRoom ? Math.min(m, oLat + need) : Math.max(-m, oLat - need);
-        }
-      }
-      for (let it = 0; it < 30; it++) {
-        for (let i = 0; i < n; i++) {
-          const a = off[(i - 2 + n) % n], b = off[(i + 2) % n];
-          const blocked = obstacles.some((o) => Math.hypot(pts[i].x - o.x, pts[i].z - o.z) < o.r + clearance + 8);
-          if (!blocked) off[i] += ((a + b) / 2 - off[i]) * 0.3;
-        }
+        off[i] = clampOff(i, off[i] + (off[i] >= 0 ? -1.2 : 1.2));
       }
     }
     for (let i = 0; i < n; i++) {

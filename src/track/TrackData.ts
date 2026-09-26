@@ -276,7 +276,7 @@ export const TRACK1: TrackDef = {
     { kind: 'arch', path: 'shortcut', at: 'scB', offset: -3, lateral: 0, scale: 1 },
     // Rough section rocks (solid, at the edges).
     { kind: 'boulder', path: 'main', at: 'roughStart', offset: 4, lateral: 7.5, scale: 1.4, solid: true },
-    { kind: 'boulder', path: 'main', at: 'roughMid', offset: -3, lateral: -8, scale: 1.6, solid: true },
+    { kind: 'boulder', path: 'main', at: 'roughMid', offset: -3, lateral: -9.2, scale: 1.6, solid: true },
     { kind: 'boulder', path: 'main', at: 'roughMid', offset: 9, lateral: 1.5, scale: 1.0, solid: true },
     { kind: 'boulder', path: 'main', at: 'roughEnd', offset: -2, lateral: 7, scale: 1.3, solid: true },
     // Corner markers (outside of the turns).

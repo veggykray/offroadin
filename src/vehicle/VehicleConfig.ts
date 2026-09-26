@@ -63,6 +63,10 @@ export interface VehicleConfig {
   /** Fraction of lateral velocity removed per step when within grip. */
   lateralStiffness: number;
   downforce: number; // extra down accel = downforce * v²
+  /** Sideways slide speed (m/s) above which tyres start to trip the car into a roll. */
+  tripSpeed: number;
+  /** Lever arm (m) of the tripping force below the centre of mass. Bigger = rolls over more easily. */
+  tripHeight: number;
 
   // ---- Air ----
   airSteer: number; // yaw rate available in air
@@ -128,6 +132,8 @@ export const BASE_VEHICLE: Omit<VehicleConfig, 'id' | 'displayName' | 'color' | 
   maxLateralAccel: 19,
   lateralStiffness: 0.35,
   downforce: 0.006,
+  tripSpeed: 9,
+  tripHeight: 1.8,
 
   airSteer: 0.9,
   airSelfRight: 2.2,
