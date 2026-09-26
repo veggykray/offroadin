@@ -45,6 +45,20 @@ if (scenario === 'basic') {
   await shot('bridge-1');
   await hold(['KeyW'], 1000);
   await shot('bridge-2');
+} else if (scenario === 'race') {
+  // Autopilot drives the player car; capture the race as it unfolds.
+  await page.keyboard.press('Backquote');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Digit7');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Backquote');
+  for (const [i, wait] of [[1, 12000], [2, 12000], [3, 12000], [4, 12000], [5, 12000]]) {
+    await page.waitForTimeout(wait);
+    await shot(`race-${i}`);
+  }
+  await page.keyboard.press('Backquote');
+  await page.waitForTimeout(500);
+  await shot('race-debug');
 } else if (scenario === 'overview') {
   await page.keyboard.press('KeyC');
   await page.waitForTimeout(8000);

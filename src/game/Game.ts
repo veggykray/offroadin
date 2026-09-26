@@ -150,6 +150,7 @@ export class Game {
     this.debug.onReset = () => this.resetPlayer();
     this.debug.onRestart = () => this.restart();
     this.debug.onFlag = (k) => {
+      if (k === 'autopilot') this.sim.autopilot = this.debug.flags.autopilot;
       if (k === 'freeCam') {
         this.orbit.enabled = this.debug.flags.freeCam;
         if (this.orbit.enabled) {
@@ -219,7 +220,6 @@ export class Game {
 
   private handleKeys(): void {
     const inp = this.input;
-    if (inp.consume('Backquote') || inp.consume('F3')) this.debug.setVisible(!this.debug.visible);
     if (inp.consume('KeyR') || inp.padButton(3)) this.resetPlayer();
     if (inp.consume('Enter') || inp.padButton(9)) this.restart();
     if (inp.consume('KeyC')) this.raceCam.toggleMode();
@@ -232,7 +232,10 @@ export class Game {
       if (inp.consume('Digit4')) this.debug.toggle('freeCam');
       if (inp.consume('Digit5')) this.resetPlayer();
       if (inp.consume('Digit6')) this.restart();
+      if (inp.consume('Digit7')) this.debug.toggle('autopilot');
     }
+    // Toggle the panel last so switches pressed in the same frame still register.
+    if (inp.consume('Backquote') || inp.consume('F3')) this.debug.setVisible(!this.debug.visible);
   }
 
   private fixedStep(): void {
@@ -364,12 +367,14 @@ export class Game {
 
     this.hud.update(dt);
     this.debug.update(dt, alpha);
+    const r0 = performance.now();
     if (this.debug.flags.freeCam) {
       this.orbit.update();
       this.renderer.render(this.scene, this.freeCam);
     } else {
       this.renderer.render(this.scene, this.raceCam.camera);
     }
+    this.debug.renderMs = performance.now() - r0;
   }
 
   /** Dust / splash / mud / nitro flame emitters. */

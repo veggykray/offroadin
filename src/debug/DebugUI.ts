@@ -7,6 +7,7 @@ export interface DebugFlags {
   aiLines: boolean;
   slowMo: boolean;
   freeCam: boolean;
+  autopilot: boolean;
 }
 
 /**
@@ -16,7 +17,9 @@ export interface DebugFlags {
  */
 export class DebugUI {
   visible = false;
-  readonly flags: DebugFlags = { colliders: false, aiLines: false, slowMo: false, freeCam: false };
+  readonly flags: DebugFlags = { colliders: false, aiLines: false, slowMo: false, freeCam: false, autopilot: false };
+  /** Render cost of the last frame (ms), set by Game. */
+  renderMs = 0;
   private panel: HTMLElement;
   private stats: HTMLElement;
   readonly group = new THREE.Group();
@@ -43,6 +46,7 @@ export class DebugUI {
         <button data-k="freeCam">4 Free cam</button>
         <button data-k="reset">5 Reset car</button>
         <button data-k="restart">6 Restart race</button>
+        <button data-k="autopilot">7 Autopilot</button>
       </div>`;
     document.body.appendChild(this.panel);
     this.stats = this.panel.querySelector('.dbg-stats')!;
@@ -175,7 +179,7 @@ export class DebugUI {
     const av = v.body.angvel();
     const f = (n: number, d = 1) => n.toFixed(d).padStart(6);
     this.stats.textContent = [
-      `FPS        ${this.fps.toFixed(0)}`,
+      `FPS        ${this.fps.toFixed(0)}   physics+AI ${sim.lastStepMs.toFixed(2)} ms/step   render ${this.renderMs.toFixed(1)} ms`,
       `speed      ${f(v.forwardSpeed * 3.6, 0)} km/h (${v.forwardSpeed.toFixed(1)} m/s)  slip ${v.slipSpeed.toFixed(1)}`,
       `grounded   ${v.groundedWheels}/4 wheels   air ${v.airTime.toFixed(2)}s`,
       `surface    ${SURFACES[v.surface].label}  [${v.wheels.map((w) => (w.hit ? w.surface[0] : '-')).join('')}]`,

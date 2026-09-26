@@ -13,6 +13,7 @@ export function buildTrackVisuals(built: BuiltTrack): THREE.Group {
   const group = new THREE.Group();
   group.name = 'track';
   group.add(terrainMesh(built));
+  group.add(outerSkirt(built));
   group.add(waterMeshes(built));
   group.add(bridgeMesh(built));
   group.add(finishLine(built));
@@ -105,6 +106,58 @@ function terrainMesh(built: BuiltTrack): THREE.Mesh {
   mesh.receiveShadow = true;
   mesh.name = 'terrain';
   return mesh;
+}
+
+/** Rolling ground beyond the playable heightfield so the world never visibly ends. */
+function outerSkirt(built: BuiltTrack): THREE.Mesh {
+  const t = built.terrain;
+  const x0 = t.minX, x1 = t.minX + t.width, z0 = t.minZ, z1 = t.minZ + t.depth;
+  const reach = 600, stepOut = 15, stepAlong = 6;
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  const c = new THREE.Color(), rock = new THREE.Color(0x8a7f70);
+  // Each strip: an edge of the heightfield, extended outward (corners overlap harmlessly).
+  const strips: Array<{ along: [number, number]; point: (a: number, o: number) => [number, number] }> = [
+    { along: [x0 - reach, x1 + reach], point: (a, o) => [a, z0 - o] },
+    { along: [x0 - reach, x1 + reach], point: (a, o) => [a, z1 + o] },
+    { along: [z0, z1], point: (a, o) => [x0 - o, a] },
+    { along: [z0, z1], point: (a, o) => [x1 + o, a] },
+  ];
+  for (const strip of strips) {
+    const base = positions.length / 3;
+    const na = Math.ceil((strip.along[1] - strip.along[0]) / stepAlong) + 1;
+    const no = Math.ceil(reach / stepOut) + 1;
+    for (let j = 0; j < no; j++) {
+      for (let i = 0; i < na; i++) {
+        const a = strip.along[0] + (i * (strip.along[1] - strip.along[0])) / (na - 1);
+        const o = j * stepOut;
+        const [x, z] = strip.point(a, o);
+        const edgeH = t.heightAt(Math.min(x1, Math.max(x0, x)), Math.min(z1, Math.max(z0, z)));
+        const hills = Math.sin(x * 0.021) * Math.cos(z * 0.017) * 9 + Math.sin(x * 0.05 + z * 0.04) * 3 + 14;
+        const k = Math.min(1, o / 90);
+        const y = edgeH - 0.3 + k * (hills - edgeH + 12);
+        positions.push(x, y, z);
+        c.setHex(0x6f8a3c).lerp(rock, Math.min(1, Math.max(0, (y - 16) / 14)));
+        colors.push(c.r, c.g, c.b);
+      }
+    }
+    for (let j = 0; j < no - 1; j++) {
+      for (let i = 0; i < na - 1; i++) {
+        const p = base + j * na + i;
+        indices.push(p, p + na, p + 1, p + 1, p + na, p + na + 1);
+      }
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  m.name = 'skirt';
+  m.receiveShadow = true;
+  return m;
 }
 
 // ---------------------------------------------------------------- water

@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "sim": "tsx tools/headlessRace.ts"
+    "sim": "tsx tools/headlessRace.ts",
+    "test": "tsc --noEmit && tsx tools/selfTest.ts",
+    "map": "tsx tools/mapPreview.ts"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

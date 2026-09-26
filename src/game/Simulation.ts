@@ -64,6 +64,10 @@ export class Simulation {
   playerIndex: number | null;
   playerInput: DriveInput = { ...NO_INPUT };
   catchUp: boolean;
+  /** Debug: let the AI drive the player's car. */
+  autopilot = false;
+  /** Wall-clock cost of the last step (ms), for the debug overlay. */
+  lastStepMs = 0;
   time = 0;
   private flipTime: number[] = [];
   private lostTime: number[] = [];
@@ -148,6 +152,13 @@ export class Simulation {
 
   /** Advance the world by one fixed step. */
   step(dt: number = FIXED_DT): SimEvent[] {
+    const t0 = performance.now();
+    const events = this.stepInner(dt);
+    this.lastStepMs = performance.now() - t0;
+    return events;
+  }
+
+  private stepInner(dt: number): SimEvent[] {
     const events: SimEvent[] = [];
     this.time += dt;
     const race = this.race;
@@ -164,7 +175,7 @@ export class Simulation {
       v.catchUp = this.catchUp ? 1 + 0.07 * clamp01((behind - 25) / 120) : 1;
       let input: DriveInput;
       const ai = this.ais[i];
-      if (i === this.playerIndex && !state.finished) input = this.playerInput;
+      if (i === this.playerIndex && !state.finished && !this.autopilot) input = this.playerInput;
       else {
         input = ai.update(dt, state, this.vehicles, behind);
         if (state.finished) input = { ...input, throttle: input.throttle * 0.5, nitro: false };
@@ -275,8 +286,8 @@ export class Simulation {
     this.lostTime[i] = tr.outside > 16 ? this.lostTime[i] + dt : 0;
     if (!reason && this.lostTime[i] > 4) reason = 'lost';
 
-    if (!reason && i !== this.playerIndex && this.ais[i].hopelessTime > 5) reason = 'stuck';
-    if (!reason && i === this.playerIndex && this.race.phase === 'racing') {
+    if (!reason && (i !== this.playerIndex || this.autopilot) && this.ais[i].hopelessTime > 5) reason = 'stuck';
+    if (!reason && i === this.playerIndex && !this.autopilot && this.race.phase === 'racing') {
       // Player wedged: holding throttle but not moving for a while.
       const inp = this.playerInput;
       this.ais[i].hopelessTime = (inp.throttle > 0 || inp.brake > 0) && v.speed < 1 ? this.ais[i].hopelessTime + dt : 0;
