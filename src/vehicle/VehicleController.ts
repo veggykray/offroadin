@@ -204,6 +204,9 @@ export function stepVehicle(v: Vehicle, input: DriveInput, dt: number = FIXED_DT
         },
         true,
       );
+      // Yaw jolt: nudges the heading so rough ground / loose planks need corrections.
+      const r3 = (v.random() * 2 - 1) * s * 0.9;
+      body.applyTorqueImpulse({ x: n.x * I.y * r3, y: n.y * I.y * r3, z: n.z * I.y * r3 }, true);
       const kick = (v.random() * 2 - 1) * s * 1.2 * m;
       body.applyImpulse({ x: _rightG.x * kick, y: _rightG.y * kick, z: _rightG.z * kick }, true);
       events.push({ type: 'bump', strength: s });

@@ -58,7 +58,9 @@ export class RacerTracker {
     const myNorm = Math.abs(this.lateral) / this.path.samples[this.index].halfWidth;
     const otherNorm = Math.abs(lat) / smp.halfWidth;
     const atShortcutEnd = this.path === sc && this.index >= sc.samples.length - 3;
-    if (atShortcutEnd || (outsideOther < -0.5 && otherNorm < myNorm - 0.35)) {
+    // Where the roads overlap (split / merge) stay put unless clearly on the other road.
+    const clearlyOther = outsideOther < -0.5 && otherNorm < myNorm - 0.35 && (this.outside > -1.5 || otherNorm < 0.45);
+    if (atShortcutEnd || clearlyOther) {
       // Leaving the shortcut only into main near the rejoin (or it was a real transfer).
       this.path = other;
       this.index = n.index;

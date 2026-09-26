@@ -83,8 +83,11 @@ export class Simulation {
     this.pickups = new PickupManager(this.track);
 
     const cfg0 = VEHICLES[this.roster[0].vehicle];
+    const obstacles = this.built.decor
+      .filter((d) => d.def.kind === 'boulder' && d.def.solid)
+      .map((d) => ({ x: d.position.x, z: d.position.z, r: 1.1 * d.scale }));
     for (const r of this.track.routes) {
-      this.lines.set(r.id, new RacingLine(r, this.track, cfg0.maxLateralAccel * 0.82, cfg0.topSpeed, cfg0.brakeDecel * 0.55));
+      this.lines.set(r.id, new RacingLine(r, this.track, cfg0.maxLateralAccel * 0.82, cfg0.topSpeed, cfg0.brakeDecel * 0.55, obstacles));
     }
 
     const slots = this.track.gridSlots();
@@ -109,6 +112,7 @@ export class Simulation {
     const names = this.vehicles.map((v) => v.cfg.displayName);
     this.race = new RaceManager(this.track, this.vehicles, names, this.playerIndex, this.opts.laps);
     for (const v of this.vehicles) v.frozen = true;
+    for (const ai of this.ais) ai.holdGridLane(4);
   }
 
   /** Put everyone back on the grid and restart the countdown. */
@@ -128,7 +132,6 @@ export class Simulation {
       this.flipTime[i] = 0;
       this.lostTime[i] = 0;
       this.pendingSpawn[i] = null;
-      this.ais[i].resync();
     });
     this.pickups.reset();
     this.time = 0;

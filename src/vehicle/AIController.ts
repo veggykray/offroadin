@@ -36,7 +36,14 @@ export class RacingLine {
   readonly speed: Float32Array;
   readonly n: number;
 
-  constructor(readonly route: Route, track: Track, maxLat: number, topSpeed: number, brakeDecel: number) {
+  constructor(
+    readonly route: Route,
+    track: Track,
+    maxLat: number,
+    topSpeed: number,
+    brakeDecel: number,
+    readonly obstacles: Array<{ x: number; z: number; r: number }> = [],
+  ) {
     const pts = route.points;
     const n = (this.n = pts.length);
     this.offset = new Float32Array(n);
@@ -71,6 +78,33 @@ export class RacingLine {
         if (!track.patchAt(x, z)) break;
         const m = margin(i);
         off[i] = Math.max(-m, Math.min(m, off[i] + (off[i] >= 0 ? -1.2 : 1.2)));
+      }
+    }
+    // Steer the line clear of solid obstacles (boulders on the road), then re-smooth locally.
+    const clearance = 2.6;
+    for (let pass = 0; pass < 3; pass++) {
+      for (let i = 0; i < n; i++) {
+        const p = pts[i];
+        const m = margin(i);
+        for (const o of obstacles) {
+          const x = p.x + p.lx * off[i], z = p.z + p.lz * off[i];
+          const d = Math.hypot(x - o.x, z - o.z);
+          if (d > o.r + clearance + 4) continue;
+          const oLat = (o.x - p.x) * p.lx + (o.z - p.z) * p.lz;
+          const oAlong = Math.abs((o.x - p.x) * p.tx + (o.z - p.z) * p.tz);
+          const need = o.r + clearance - oAlong * 0.25;
+          if (need <= 0 || Math.abs(off[i] - oLat) >= need) continue;
+          // Pass on whichever side has more room.
+          const leftRoom = m - oLat, rightRoom = oLat + m;
+          off[i] = leftRoom > rightRoom ? Math.min(m, oLat + need) : Math.max(-m, oLat - need);
+        }
+      }
+      for (let it = 0; it < 30; it++) {
+        for (let i = 0; i < n; i++) {
+          const a = off[(i - 2 + n) % n], b = off[(i + 2) % n];
+          const blocked = obstacles.some((o) => Math.hypot(pts[i].x - o.x, pts[i].z - o.z) < o.r + clearance + 8);
+          if (!blocked) off[i] += ((a + b) / 2 - off[i]) * 0.3;
+        }
       }
     }
     for (let i = 0; i < n; i++) {
@@ -173,7 +207,22 @@ export class AIController {
     this.stuckTime = 0;
     this.reverseTime = 0;
     this.hopelessTime = 0;
+    this.laneBias = 0;
   }
+
+  /** At the start, keep our own grid lane for a few seconds instead of all diving for one line. */
+  holdGridLane(seconds: number): void {
+    this.resync();
+    const pt = this.line.route.points[this.index];
+    const lat = (this.vehicle.pos.x - pt.x) * pt.lx + (this.vehicle.pos.z - pt.z) * pt.lz;
+    this.gridLane = lat - this.line.offset[this.index];
+    this.laneBias = this.gridLane;
+    this.laneHold = seconds;
+    this.laneHoldMax = seconds;
+  }
+  private gridLane = 0;
+  private laneHold = 0;
+  private laneHoldMax = 1;
 
   update(dt: number, me: RacerState, others: Vehicle[], leaderGap: number): DriveInput {
     const v = this.vehicle;
@@ -196,10 +245,10 @@ export class AIController {
     }
     // If physics put us on the other route, follow reality.
     const onSc = me.tracker.onShortcut;
-    if (onSc && this.lineId !== 'shortcut' && this.lines.has('shortcut')) {
+    if (onSc && me.tracker.s > 18 && this.lineId !== 'shortcut' && this.lines.has('shortcut')) {
       this.lineId = 'shortcut';
       this.index = this.line.globalNearest(v.pos.x, v.pos.z);
-    } else if (!onSc && this.lineId === 'shortcut' && me.tracker.progress > track.splitS + 5 && me.tracker.progress < track.rejoinS - 5) {
+    } else if (!onSc && this.lineId === 'shortcut' && me.tracker.outside < -1 && me.tracker.progress > track.splitS + 25 && me.tracker.progress < track.rejoinS - 5) {
       this.lineId = 'safe';
       this.index = this.line.globalNearest(v.pos.x, v.pos.z);
     }
@@ -227,8 +276,26 @@ export class AIController {
       }
     }
     const pt = line.route.points[this.index];
+    if (this.laneHold > 0) {
+      if (!v.frozen) this.laneHold -= dt;
+      desiredBias += this.gridLane * Math.min(1, (this.laneHold / this.laneHoldMax) * 1.6);
+    }
     const room = Math.max(0, pt.halfWidth - 2.2 - Math.abs(line.offset[this.index]));
     desiredBias = Math.max(-room, Math.min(room, desiredBias));
+    // Never let the lane offset steer us into a boulder the racing line avoids.
+    for (const o of line.obstacles) {
+      const ox = o.x - v.pos.x, oz = o.z - v.pos.z;
+      const ahead = (ox * fx + oz * fz) / fl;
+      if (ahead < -3 || ahead > 35) continue;
+      const oi = line.nearest(o.x, o.z, this.index, 40);
+      const op = line.route.points[oi];
+      const oLat = (o.x - op.x) * op.lx + (o.z - op.z) * op.lz;
+      const lineLat = line.offset[oi];
+      const need = o.r + 2.4;
+      if (Math.abs(lineLat + desiredBias - oLat) < need) {
+        desiredBias = lineLat >= oLat ? Math.max(desiredBias, oLat + need - lineLat) : Math.min(desiredBias, oLat - need - lineLat);
+      }
+    }
     if (pt.bridge) desiredBias = 0;
     this.laneBias += (desiredBias - this.laneBias) * Math.min(1, dt * 2.5);
 
@@ -290,9 +357,9 @@ export class AIController {
     if (!v.frozen && Math.abs(speed) < 1.5 && throttle > 0) {
       this.stuckTime += dt;
       this.hopelessTime += dt;
-      if (this.stuckTime > 1.3) {
+      if (this.stuckTime > 0.8) {
         this.stuckTime = 0;
-        this.reverseTime = 1.1;
+        this.reverseTime = 1.0;
       }
     } else {
       this.stuckTime = 0;

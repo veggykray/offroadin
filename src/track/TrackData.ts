@@ -190,12 +190,13 @@ export const TRACK1: TrackDef = {
         { name: 'fordNorth', x: -108, z: -30, y: -1.9, width: 18 },
         { name: 'ford', x: -109, z: -15, y: -2.95, width: 18 },
         { name: 'fordSouth', x: -104, z: 1, y: -1.5, width: 18 },
-        // ---- REJOIN: wide merge funnel, both routes arrive heading south ----
-        { name: 'rejoin', x: -89, z: 20, y: 0, width: 24 },
-        // ---- TECHNICAL: chicane with a mud puddle on the inside, then a hairpin ----
-        { name: 'techEntry', x: -76, z: 31, y: 0.4, width: 17 },
-        { name: 'chicaneA', x: -63, z: 42, y: 0.8, width: 14 },
-        { name: 'chicaneB', x: -77, z: 55, y: 1.0, width: 13 },
+        { name: 'safeExit', x: -93, z: 15, y: -0.4, width: 19 },
+        { name: 'safeMerge', x: -80, z: 22, y: 0, width: 22 },
+        // ---- REJOIN: the shortcut arrives from the north already heading the same way ----
+        { name: 'rejoin', x: -70, z: 30, y: 0.2, width: 24 },
+        // ---- TECHNICAL: right-hander with mud on the inside, then a left hairpin ----
+        { name: 'chicaneA', x: -61, z: 40, y: 0.6, width: 15 },
+        { name: 'chicaneB', x: -77, z: 54, y: 1.0, width: 13 },
         { name: 'hairpin', x: -86, z: 71, y: 0.6, width: 15 },
         // ---- FINAL FAST SECTION: sweeping downhill run onto the straight ----
         { name: 'finalBend', x: -68, z: 78, y: 0.3, width: 19 },
@@ -208,15 +209,19 @@ export const TRACK1: TrackDef = {
       closed: false,
       branchFrom: 'split',
       rejoinAt: 'rejoin',
+      // One long left-hand sweep: rocky approach → narrow curved log bridge over the
+      // gorge → merges into the main road already pointing the right way.
       nodes: [
         { name: 'scStart', x: -41, z: -63, y: 1.4, width: 14, surface: 'dirt', edge: 'berm' },
-        { name: 'scTurn', x: -46, z: -50, y: 1.9, width: 11 },
-        { name: 'bridgeApproach', x: -51, z: -41, y: 2.1, width: 7.5, edge: 'open' },
-        { name: 'bridgeNorth', x: -54, z: -35, y: 2.2, width: 5.6, surface: 'wood', bridge: true },
-        { name: 'bridgeSouth', x: -66, z: -10, y: 2.2, width: 5.6, surface: 'dirt', edge: 'open' },
-        { name: 'scExit', x: -71, z: 0, y: 1.6, width: 9, edge: 'berm' },
-        { name: 'scMerge', x: -80, z: 11, y: 0.6, width: 12 },
-        { name: 'scEnd', x: -89, z: 20, y: 0, width: 16 },
+        { name: 'scA', x: -53.8, z: -57.5, y: 1.6, width: 11 },
+        { name: 'scB', x: -66.1, z: -47.3, y: 1.9, width: 9, surface: 'rough' },
+        { name: 'bridgeApproach', x: -71.9, z: -39.2, y: 2.1, width: 7, edge: 'open' },
+        { name: 'bridgeNorth', x: -74.6, z: -33.9, y: 2.2, width: 5.2, surface: 'wood', bridge: true },
+        { name: 'bridgeSouth', x: -81.5, z: -8.8, y: 2.2, width: 5.2, surface: 'dirt', edge: 'open' },
+        { name: 'scExit', x: -81.9, z: -0.9, y: 1.8, width: 8, edge: 'berm' },
+        { name: 'scC', x: -80.0, z: 11.0, y: 1.0, width: 11 },
+        { name: 'scD', x: -74.3, z: 23.7, y: 0.4, width: 13 },
+        { name: 'scEnd', x: -70, z: 30, y: 0.2, width: 16 },
       ],
     },
   ],
@@ -232,7 +237,7 @@ export const TRACK1: TrackDef = {
 
   patches: [
     // Mud puddle on the inside of the chicane — cut through it or drive around it.
-    { surface: 'mud', path: 'main', at: 'chicaneA', offset: 10, lateral: -3.5, length: 16, width: 8, depth: 0.25 },
+    { surface: 'mud', path: 'main', at: 'chicaneA', offset: 4, lateral: -4, length: 16, width: 8, depth: 0.25 },
     // Mud on the outside of the hairpin exit punishes running wide.
     { surface: 'mud', path: 'main', at: 'hairpin', offset: 10, lateral: -6, length: 12, width: 6, depth: 0.2 },
   ],
@@ -242,9 +247,9 @@ export const TRACK1: TrackDef = {
       // Flows from the infield lake west through the gorge (under the bridge) and the ford.
       nodes: [
         { name: 'lakeMouth', x: -2, z: -14, level: -2.3, width: 10, depth: 1.5, bankWidth: 8 },
-        { name: 'gorgeEast', x: -36, z: -24, level: -2.4, width: 12, depth: 4, bankWidth: 3 },
-        { name: 'underBridge', x: -60, z: -23, level: -2.45, width: 13, depth: 5, bankWidth: 2 },
-        { name: 'gorgeWest', x: -84, z: -19, level: -2.55, width: 13, depth: 3, bankWidth: 5 },
+        { name: 'gorgeEast', x: -40, z: -25, level: -2.4, width: 12, depth: 3.5, bankWidth: 4 },
+        { name: 'underBridge', x: -78.5, z: -21.5, level: -2.45, width: 13, depth: 5, bankWidth: 2 },
+        { name: 'gorgeWest', x: -93, z: -18, level: -2.55, width: 14, depth: 2, bankWidth: 6 },
         { name: 'fordCrossing', x: -109, z: -15, level: -2.6, width: 20, depth: 0.5, bankWidth: 12 },
         { name: 'outflow', x: -160, z: -12, level: -2.7, width: 14, depth: 1.5, bankWidth: 8 },
       ],
@@ -253,7 +258,7 @@ export const TRACK1: TrackDef = {
 
   lakes: [{ x: 12, z: -6, radiusX: 26, radiusZ: 20, level: -2.3, depth: 3 }],
 
-  checkpoints: ['finish', 'corner1Exit', 'roughEnd', 'hillTop', 'sweeperExit', 'jumpLanding', 'techEntry', 'hairpin'],
+  checkpoints: ['finish', 'corner1Exit', 'roughEnd', 'hillTop', 'sweeperExit', 'jumpLanding', 'chicaneA', 'hairpin'],
 
   // Grid just past the line. Slot offsets: + = left = inside of corner 1.
   grid: { at: 'finish', offset: 7, slots: [7.5, 2.5, -2.5, -7.5] },
@@ -262,13 +267,13 @@ export const TRACK1: TrackDef = {
     { kind: 'nitro', path: 'main', at: 'straightMid', offset: 6, lateral: 8 },
     { kind: 'nitro', path: 'main', at: 'sweeperMid', offset: 0, lateral: 4 },
     // Reward for taking the risk route.
-    { kind: 'nitro', path: 'shortcut', at: 'bridgeSouth', offset: 6, lateral: 0 },
+    { kind: 'nitro', path: 'shortcut', at: 'scExit', offset: 2, lateral: 0 },
     { kind: 'nitro', path: 'main', at: 'fordSouth', offset: 4, lateral: 5 },
   ],
 
   decor: [
     // Shortcut entrance: bone arch so the risk route reads instantly.
-    { kind: 'arch', path: 'shortcut', at: 'scTurn', offset: 2, lateral: 0, scale: 1 },
+    { kind: 'arch', path: 'shortcut', at: 'scB', offset: -3, lateral: 0, scale: 1 },
     // Rough section rocks (solid, at the edges).
     { kind: 'boulder', path: 'main', at: 'roughStart', offset: 4, lateral: 7.5, scale: 1.4, solid: true },
     { kind: 'boulder', path: 'main', at: 'roughMid', offset: -3, lateral: -8, scale: 1.6, solid: true },

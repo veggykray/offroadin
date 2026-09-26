@@ -83,6 +83,7 @@ export function buildTrack(def: TrackDef, physics: PhysicsWorld, reverse = false
         const lx = road ? road.sample.lx : 1, lz = road ? road.sample.lz : 0;
         for (const side of [-1, 1]) {
           const px = d.position.x + lx * hw * side, pz = d.position.z + lz * hw * side;
+          warnIfOnRoad(track, px, pz, 0.5, 'arch post');
           const py = track.groundHeight(px, pz);
           const post = RAPIER.ColliderDesc.cylinder(2.5, 0.45).setTranslation(px, py + 2.5, pz).setCollisionGroups(TERRAIN_GROUPS);
           physics.tag(physics.world.createCollider(post), { kind: 'static', surface: 'rock' });
@@ -92,6 +93,7 @@ export function buildTrack(def: TrackDef, physics: PhysicsWorld, reverse = false
       default:
         break;
     }
+    if (desc && d.def.kind === 'pillar') warnIfOnRoad(track, d.position.x, d.position.z, 1.6 * s, 'pillar');
     if (desc) {
       desc.setCollisionGroups(TERRAIN_GROUPS).setFriction(0.3).setRestitution(0.2);
       physics.tag(physics.world.createCollider(desc), { kind: 'static', surface: 'rock' });
@@ -99,6 +101,12 @@ export function buildTrack(def: TrackDef, physics: PhysicsWorld, reverse = false
   }
 
   return { track, terrain, deck, decor };
+}
+
+/** Solid props that accidentally block a road are a classic data-edit mistake — shout about it. */
+function warnIfOnRoad(track: Track, x: number, z: number, radius: number, what: string): void {
+  const q = track.queryRoad(x, z, 30);
+  if (q && q.outside < radius) console.warn(`[TrackBuilder] ${what} at (${x.toFixed(1)}, ${z.toFixed(1)}) intrudes on road "${q.path.def.id}" (s=${q.sample.s.toFixed(0)})`);
 }
 
 function buildDeck(track: Track): DeckSegment[] {
