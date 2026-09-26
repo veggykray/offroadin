@@ -267,12 +267,16 @@ export class AIController {
       const dx = o.pos.x - v.pos.x, dz = o.pos.z - v.pos.z;
       const ahead = (dx * fx + dz * fz) / fl;
       const side = (dx * fz - dz * fx) / fl; // + = to our left
-      if (ahead > -2 && ahead < 14 && Math.abs(side) < 3.4) {
+      if (ahead > 2 && ahead < 14 && Math.abs(side) < 3.4) {
+        // Someone in front: pull out to pass (aggressive drivers are less polite about it).
         const closing = speed - o.vel.dot(v.fwd);
         if (closing > -1) {
           const push = (1 - p.aggression * 0.7) * (3.4 - Math.abs(side));
           desiredBias += side >= 0 ? -push : push;
         }
+      } else if (Math.abs(ahead) <= 2.5 && Math.abs(side) < 4.5 && p.aggression > 0.6) {
+        // Wheel to wheel: aggressive drivers lean on their rival to take the line.
+        desiredBias += Math.sign(side) * p.aggression * 1.4;
       }
     }
     const pt = line.route.points[this.index];

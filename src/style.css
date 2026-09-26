@@ -43,3 +43,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1b1714; fon
 .dbg-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
 .dbg-buttons button { background: #333; color: #eee; border: 1px solid #555; border-radius: 4px; padding: 3px 7px; font: inherit; cursor: pointer; }
 .dbg-buttons button.on { background: #2d6a3a; border-color: #5c5; }
+.hud-paused { position: absolute; inset: 0; display: none; place-content: center; text-align: center; font-size: 72px; font-weight: 900; background: rgba(0,0,0,0.35); }
+.hud-paused.show { display: grid; }
+.hud-paused small { display: block; font-size: 20px; font-weight: 600; opacity: 0.85; }

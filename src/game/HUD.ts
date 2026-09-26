@@ -1,7 +1,7 @@
 import type { Simulation } from './Simulation';
 
 const ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
-const COLORS = ['#e74c3c', '#3cf0ff', '#c8894b', '#b5a36a'];
+const COLORS = ['#e74c3c', '#f1c40f', '#e67e22', '#b07cff']; // matches Game.RACER_COLORS
 
 /** Minimal HTML HUD: position, lap, times, speed, nitro, minimap, messages, results. */
 export class HUD {
@@ -36,6 +36,7 @@ export class HUD {
       <div class="hud-center" id="h-center"></div>
       <div class="hud-msg" id="h-msg"></div>
       <div class="hud-results" id="h-results"></div>
+      <div class="hud-paused" id="h-paused">PAUSED<small>press P to continue</small></div>
       <div class="hud-help" id="h-help">
         <b>W/↑</b> accelerate · <b>S/↓</b> brake/reverse · <b>A D/← →</b> steer · <b>Space</b> nitro<br/>
         <b>R</b> reset car · <b>Enter</b> restart · <b>C</b> near/overview camera · <b>M</b> mute · <b>\`</b> debug
@@ -108,6 +109,10 @@ export class HUD {
 
   private m(x: number, z: number): [number, number] {
     return [this.mapXform.ox + x * this.mapXform.sx, this.mapXform.oz + z * this.mapXform.sx];
+  }
+
+  setPaused(paused: boolean): void {
+    this.el.querySelector('#h-paused')!.classList.toggle('show', paused);
   }
 
   flash(text: string, cls = '', seconds = 1.6): void {

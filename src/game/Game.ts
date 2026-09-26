@@ -22,6 +22,9 @@ export interface GameOptions {
   catchUp?: boolean;
 }
 
+/** Identification colours for AI racers (player is always cyan). Shared with the minimap. */
+export const RACER_COLORS = [0xe74c3c, 0xf1c40f, 0xe67e22, 0xb07cff];
+
 const PARTICLE_COLOR: Partial<Record<SurfaceId, number>> = {
   dirt: 0xd8b98e,
   berm: 0xc49a6c,
@@ -109,9 +112,10 @@ export class Game {
 
     // ---- Vehicles ----
     sim.vehicles.forEach((v, i) => {
-      const vis = new VehicleVisual(v.cfg, i === sim.playerIndex);
+      const isPlayer = i === sim.playerIndex;
+      const vis = new VehicleVisual(v.cfg, isPlayer, isPlayer ? 0x3cf0ff : RACER_COLORS[i % RACER_COLORS.length]);
       this.visuals.push(vis);
-      this.scene.add(vis.root);
+      this.scene.add(vis.root, vis.ring);
       void vis.loadModel();
       this.emitAcc.push(0);
     });
@@ -224,7 +228,10 @@ export class Game {
     if (inp.consume('Enter') || inp.padButton(9)) this.restart();
     if (inp.consume('KeyC')) this.raceCam.toggleMode();
     if (inp.consume('KeyM')) this.audio.toggleMute();
-    if (inp.consume('KeyP')) this.paused = !this.paused;
+    if (inp.consume('KeyP')) {
+      this.paused = !this.paused;
+      this.hud.setPaused(this.paused);
+    }
     if (this.debug.visible) {
       if (inp.consume('Digit1')) this.debug.toggle('colliders');
       if (inp.consume('Digit2')) this.debug.toggle('aiLines');

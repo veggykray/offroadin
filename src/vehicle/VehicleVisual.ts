@@ -43,7 +43,10 @@ export class VehicleVisual {
   private ghostMats: THREE.Material[] = [];
   readonly marker: THREE.Object3D | null;
 
-  constructor(readonly cfg: VehicleConfig, isPlayer: boolean) {
+  /** Flat coloured ring on the ground under the car — identifies racers from far away. */
+  readonly ring: THREE.Mesh;
+
+  constructor(readonly cfg: VehicleConfig, isPlayer: boolean, ringColor: number) {
     this.root.name = `vehicle-${cfg.id}`;
     this.root.add(this.body);
     this.body.add(this.placeholder);
@@ -78,6 +81,12 @@ export class VehicleVisual {
     }
     this.marker = isPlayer ? playerMarker() : null;
     if (this.marker) this.root.add(this.marker);
+    this.ring = new THREE.Mesh(
+      new THREE.RingGeometry(2.25, 2.75, 28),
+      new THREE.MeshBasicMaterial({ color: ringColor, transparent: true, opacity: isPlayer ? 0.85 : 0.6, depthWrite: false, side: THREE.DoubleSide }),
+    );
+    this.ring.rotation.x = -Math.PI / 2;
+    this.ring.renderOrder = 2;
   }
 
   /** Try to load the configured model; keep the placeholder if it doesn't exist. */
@@ -140,6 +149,7 @@ export class VehicleVisual {
   update(v: Vehicle, alpha: number, dt: number, time: number): void {
     const visible = v.respawnTimer <= 0;
     this.root.visible = visible;
+    this.ring.visible = visible;
     if (!visible) return;
     this.root.position.lerpVectors(v.prevPos, v.pos, alpha);
     this.root.quaternion.slerpQuaternions(v.prevQuat, v.quat, alpha);
@@ -169,6 +179,14 @@ export class VehicleVisual {
         if (w.front) mw.rotation.y = -v.steer * 0.45;
       }
     });
+
+    // Ground ring sits on the terrain under the car (not tilted with the body).
+    let gy = this.root.position.y - 1.05, hits = 0, sum = 0;
+    for (const w of v.wheels) if (w.hit) { sum += w.point.y; hits++; }
+    if (hits) gy = sum / hits;
+    this.ring.position.set(this.root.position.x, gy + 0.08, this.root.position.z);
+    const air = Math.min(1, Math.max(0, (this.root.position.y - gy - 1.1) / 6));
+    this.ring.scale.setScalar(1 + air * 0.6);
 
     // Ghost flicker after respawn.
     const ghost = v.ghostTime > 0;

@@ -59,6 +59,18 @@ if (scenario === 'basic') {
   await page.keyboard.press('Backquote');
   await page.waitForTimeout(500);
   await shot('race-debug');
+} else if (scenario === 'finish') {
+  await page.keyboard.press('Backquote');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Digit7');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Backquote');
+  await page.waitForFunction(() => window.game.sim.race.racers[window.game.sim.playerIndex].finished, null, { timeout: 240000 });
+  await page.waitForTimeout(2000);
+  await shot('finish');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(1500);
+  await shot('after-restart');
 } else if (scenario === 'overview') {
   await page.keyboard.press('KeyC');
   await page.waitForTimeout(8000);
