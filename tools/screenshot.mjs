@@ -71,6 +71,16 @@ if (scenario === 'basic') {
   await page.keyboard.press('Enter');
   await page.waitForTimeout(1500);
   await shot('after-restart');
+} else if (scenario === 'debugviews') {
+  await page.keyboard.press('Backquote');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Digit1');
+  await page.waitForTimeout(300);
+  await page.keyboard.press('Digit2');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { window.game.raceCam.mode = 'near'; });
+  await page.waitForTimeout(5000);
+  await shot('debug-views');
 } else if (scenario === 'overview') {
   await page.keyboard.press('KeyC');
   await page.waitForTimeout(8000);
