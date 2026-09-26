@@ -3,6 +3,7 @@ import { initPhysics, PhysicsWorld, FIXED_DT, RAPIER } from '../physics/PhysicsW
 import { buildTrack, type BuiltTrack } from '../track/TrackBuilder';
 import { TRACK1, type TrackDef } from '../track/TrackData';
 import type { Track } from '../track/Track';
+import { reverseTrackDef } from '../track/reverseTrack';
 import type { SurfaceId } from '../track/SurfaceManager';
 import { Vehicle } from '../vehicle/Vehicle';
 import { VEHICLES, type VehicleConfig } from '../vehicle/VehicleConfig';
@@ -75,7 +76,8 @@ export class Simulation {
 
   private constructor(private opts: SimOptions) {
     this.physics = new PhysicsWorld();
-    this.built = buildTrack(opts.track ?? TRACK1, this.physics, opts.reverse ?? false);
+    const def = opts.track ?? TRACK1;
+    this.built = buildTrack(opts.reverse ? reverseTrackDef(def) : def, this.physics);
     this.track = this.built.track;
     this.roster = opts.roster ?? DEFAULT_ROSTER;
     this.playerIndex = opts.playerIndex;

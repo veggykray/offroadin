@@ -5,11 +5,12 @@
 import { Simulation, type SimEvent } from '../src/game/Simulation';
 import { FIXED_DT } from '../src/physics/PhysicsWorld';
 
-const races = Number(process.argv[2] ?? 1);
+const races = Number(process.argv.find((a, i) => i >= 2 && /^\d+$/.test(a)) ?? 1);
 const verbose = process.argv.includes('-v');
+const reverse = process.argv.includes('--reverse');
 let failures = 0;
 for (let r = 0; r < races; r++) {
-  const sim = await Simulation.create({ playerIndex: null, catchUp: true });
+  const sim = await Simulation.create({ playerIndex: null, catchUp: true, reverse });
   // Vary the random streams per race.
   sim.vehicles.forEach((v) => { for (let k = 0; k < r * 13 + v.index; k++) v.random(); });
   const resets: Record<string, number> = {};

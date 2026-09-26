@@ -266,7 +266,7 @@ export class Track {
   private readonly cell = 8;
   private riverSamples: Array<{ x: number; z: number; tx: number; tz: number; level: number; half: number; depth: number; bank: number }> = [];
 
-  constructor(readonly def: TrackDef, readonly reverse = false) {
+  constructor(readonly def: TrackDef) {
     for (const p of def.paths) this.paths.set(p.id, new TrackPath(p, def.features));
     this.main = this.paths.get('main')!;
     for (const p of this.paths.values()) {
@@ -520,25 +520,19 @@ export class Track {
   }
 
   private buildGates(): void {
-    const names = this.reverse ? [this.def.checkpoints[0], ...this.def.checkpoints.slice(1).reverse()] : this.def.checkpoints;
-    names.forEach((name, index) => {
+    this.def.checkpoints.forEach((name, index) => {
       const s = this.main.node(name);
       const smp = this.main.sampleAt(s);
-      const dir = this.reverse ? -1 : 1;
-      this.gates.push({ index, name, x: smp.x, y: smp.y, z: smp.z, tx: smp.tx * dir, tz: smp.tz * dir, halfWidth: smp.halfWidth + 8, s });
+      this.gates.push({ index, name, x: smp.x, y: smp.y, z: smp.z, tx: smp.tx, tz: smp.tz, halfWidth: smp.halfWidth + 8, s });
     });
   }
 
   /** Grid slot transforms (position + yaw) for the start. */
   gridSlots(): Array<{ position: THREE.Vector3; yaw: number }> {
     const g = this.def.grid;
-    const dir = this.reverse ? -1 : 1;
-    const s = this.main.node(g.at) + g.offset * dir;
+    const s = this.main.node(g.at) + g.offset;
     const smp = this.main.sampleAt(s);
-    return g.slots.map((lat) => {
-      const p = this.main.pointAt(s, lat * dir);
-      return { position: p, yaw: Math.atan2(smp.tx * dir, smp.tz * dir) };
-    });
+    return g.slots.map((lat) => ({ position: this.main.pointAt(s, lat), yaw: Math.atan2(smp.tx, smp.tz) }));
   }
 
   /** Ground height lookup (heightfield when built, road otherwise). */

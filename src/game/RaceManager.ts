@@ -84,8 +84,6 @@ export interface RacerState {
   lap: number;
   /** Index of the next checkpoint gate to cross (0 = finish line). */
   nextGate: number;
-  /** Signed distance to each gate last step (for crossing detection). */
-  gateSide: number;
   finished: boolean;
   finishTime: number;
   lapStart: number;
@@ -129,7 +127,6 @@ export class RaceManager {
         tracker,
         lap: 1,
         nextGate: 1 % track.gates.length,
-        gateSide: this.gateDistance(1 % track.gates.length, v.pos.x, v.pos.z),
         finished: false,
         finishTime: 0,
         lapStart: 0,
@@ -145,9 +142,24 @@ export class RaceManager {
     });
   }
 
-  private gateDistance(gateIndex: number, x: number, z: number): number {
-    const g = this.track.gates[gateIndex];
-    return (x - g.x) * g.tx + (z - g.z) * g.tz;
+  /** Did the vehicle's movement this step cross gate `i` in the forward direction? */
+  private crossedGate(i: number, v: Vehicle): boolean {
+    const g = this.track.gates[i];
+    const x0 = v.prevPos.x, z0 = v.prevPos.z, x1 = v.pos.x, z1 = v.pos.z;
+    const mx = x1 - x0, mz = z1 - z0;
+    if (mx * mx + mz * mz > 100) return false; // teleport, not driving
+    if (mx * g.tx + mz * g.tz <= 0) return false; // must be going forwards
+    if (Math.abs(v.pos.y - g.y) > 12) return false;
+    // Gate segment: centre ± halfWidth along the left normal (tz, -tx).
+    const ax = g.x + g.tz * g.halfWidth, az = g.z - g.tx * g.halfWidth;
+    const bx = g.x - g.tz * g.halfWidth, bz = g.z + g.tx * g.halfWidth;
+    const d0 = (x0 - g.x) * g.tx + (z0 - g.z) * g.tz;
+    const d1 = (x1 - g.x) * g.tx + (z1 - g.z) * g.tz;
+    if (!(d0 < 0 && d1 >= 0)) return false;
+    const t = d0 / (d0 - d1);
+    const cx = x0 + mx * t, cz = z0 + mz * t;
+    const along = ((cx - ax) * (bx - ax) + (cz - az) * (bz - az)) / ((bx - ax) ** 2 + (bz - az) ** 2);
+    return along >= 0 && along <= 1;
   }
 
   get allFinished(): boolean {
@@ -175,12 +187,18 @@ export class RaceManager {
       const sc = this.track.shortcut;
       if (sc && r.tracker.path === sc && r.tracker.s > sc.length * 0.3 && r.tracker.s < sc.length * 0.7) r.onShortcutThisLap = true;
 
-      // ---- Checkpoints ----
+      // ---- Checkpoints: the car's movement this step must cross the gate SEGMENT forwards ----
       if (this.phase !== 'countdown' && !r.finished) {
-        const g = this.track.gates[r.nextGate];
-        const d = this.gateDistance(r.nextGate, v.pos.x, v.pos.z);
-        const lat = Math.abs((v.pos.x - g.x) * g.tz - (v.pos.z - g.z) * g.tx);
-        if (r.gateSide < 0 && d >= 0 && lat < g.halfWidth && Math.abs(v.pos.y - g.y) < 12) {
+        let passed = this.crossedGate(r.nextGate, v);
+        // Safety net: clearly past the gate, on the road and moving forwards (e.g. crossed it
+        // while sliding sideways over the edge) → count it. Can't be abused to skip track:
+        // progress is measured along the road itself.
+        if (!passed && r.tracker.outside < 1.5 && r.nextGate !== 0) {
+          const gs = this.track.gates[r.nextGate].s;
+          const p = r.tracker.progress;
+          if (p > gs + 25 && p < gs + 90) passed = true;
+        }
+        if (passed) {
           if (r.nextGate === 0) {
             // Completed a lap.
             const lapTime = this.raceTime - r.lapStart;
@@ -201,9 +219,6 @@ export class RaceManager {
             events.push({ type: 'checkpoint', racer: r.index, gate: r.nextGate });
           }
           r.nextGate = (r.nextGate + 1) % this.track.gates.length;
-          r.gateSide = this.gateDistance(r.nextGate, v.pos.x, v.pos.z);
-        } else {
-          r.gateSide = d;
         }
       }
 

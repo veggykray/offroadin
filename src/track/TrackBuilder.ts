@@ -34,8 +34,8 @@ export interface BuiltTrack {
  * bridge deck and solid props. Render-free, so it also runs in the headless simulator.
  * (Visual meshes are built separately by `TrackVisuals`.)
  */
-export function buildTrack(def: TrackDef, physics: PhysicsWorld, reverse = false): BuiltTrack {
-  const track = new Track(def, reverse);
+export function buildTrack(def: TrackDef, physics: PhysicsWorld): BuiltTrack {
+  const track = new Track(def);
   const terrain = new Terrain(track);
 
   // ---- Terrain heightfield collider ----

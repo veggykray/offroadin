@@ -29,6 +29,22 @@ if (scenario === 'basic') {
   await page.keyboard.press('KeyC');
   await page.waitForTimeout(1500);
   await shot('04-overview');
+} else if (scenario === 'bridge') {
+  // Teleport the player just before the bridge and take a close look.
+  await page.waitForTimeout(3600);
+  await page.evaluate(() => {
+    const g = window.game, sim = g.sim, sc = sim.track.shortcut;
+    const s = sc.node('bridgeApproach') - 14; const p = sc.sampleAt(s);
+    const v = sim.vehicles[sim.playerIndex];
+    const q = v.quat.clone().setFromAxisAngle({ x: 0, y: 1, z: 0, isVector3: true }, Math.atan2(p.tx, p.tz));
+    v.teleport({ x: p.x, y: p.y + 1.2, z: p.z, isVector3: true }, q, 14);
+    sim.race.racers[sim.playerIndex].tracker.snap(p.x, p.z);
+    g.raceCam.mode = 'near';
+  });
+  await hold(['KeyW'], 1200);
+  await shot('bridge-1');
+  await hold(['KeyW'], 1000);
+  await shot('bridge-2');
 } else if (scenario === 'overview') {
   await page.keyboard.press('KeyC');
   await page.waitForTimeout(8000);
