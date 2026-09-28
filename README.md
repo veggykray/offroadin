@@ -104,6 +104,13 @@ scenes, draw conditional/optional routes, track recurring threads, and zoom
 or pan to see the whole map. **New map…** regenerates the shape with other
 branch counts and depths.
 
+**Installable app with sync:** with GitHub Pages serving this branch from the
+repository root, the app lives at https://veggykray.github.io/offroadin/story-map/
+and can be added to a phone or laptop home screen. **☁ Sync devices** connects
+it to a GitHub key (classic token with only the `gist` scope); the map then
+saves to a secret gist named `long-way-home-map.json`, and every connected
+device loads and saves the same map.
+
 Open the file directly in a browser, or through `npm run dev` at
 http://localhost:5173/story-map/. Edits are kept in the browser's local
 storage; use **Export** to save a `.json` copy and **Import** to load one.

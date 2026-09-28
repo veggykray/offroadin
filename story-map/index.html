@@ -1,5 +1,13 @@
 <title>The Long Way Home</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b1422">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Long Way Home">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
@@ -133,6 +141,9 @@ svg#edges{position:absolute;overflow:visible;pointer-events:none}
 #panel{right:0;border-left:1px solid var(--line)}
 #bible{left:0;border-right:1px solid var(--line)}
 .panel header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel p{margin:0;line-height:1.5}
+.panel code{background:#0b1422;padding:0 4px;border-radius:4px}
+a.btn{text-decoration:none;color:inherit}
 .panel header .pnum{font:700 18px var(--body);min-width:38px;height:38px;padding:0 6px;display:grid;place-items:center;border-radius:8px;background:var(--pc,#63b3ff);color:#0b1422;font-variant-numeric:tabular-nums}
 .panel header h3{margin:0;font:600 15px var(--display);letter-spacing:.1em;text-transform:uppercase;flex:1}
 .panel header h3 small{display:block;font:400 13px var(--body);letter-spacing:0;text-transform:none;color:var(--ink-3)}
@@ -217,6 +228,7 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
       <input type="file" id="importFile" accept=".json,application/json" hidden>
     </div>
     <div class="status" id="status" data-s="local"><i></i><span>Loading…</span></div>
+    <button class="btn" id="syncBtn" hidden>☁ Sync devices</button>
   </div>
 
   <div class="stage" id="stage">
@@ -560,7 +572,9 @@ function renderBible(){
 }
 function renderBanner(){
   const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
-  $("#bannerSlot").innerHTML = te ? `<div class="banner" style="--tc:${te.color}"><span>Picking scenes for <b>${esc(te.name)}</b>. Click scenes to add or remove them.</span><button class="btn" data-tedit="${te.id}">Done</button></div>` : "";
+  $("#bannerSlot").innerHTML = conflictRemote
+    ? `<div class="banner" style="--tc:#f5c451"><span>This map was also changed on another device. Which version do you want?</span><button class="btn primary" id="cfTheirs">Use the other device's</button><button class="btn" id="cfMine">Keep this one</button></div>`
+    : te ? `<div class="banner" style="--tc:${te.color}"><span>Picking scenes for <b>${esc(te.name)}</b>. Click scenes to add or remove them.</span><button class="btn" data-tedit="${te.id}">Done</button></div>` : "";
   $("#hint").hidden = !!te || !!sel;
 }
 
@@ -633,6 +647,8 @@ function renderPanel(){
       <div class="row"><button class="btn primary" data-act="insert">+ Insert scene on this link</button></div>
       <div class="row"><button class="btn" data-act="reverse">⇄ Reverse</button><button class="btn danger" data-act="dellink">Delete link</button></div>
     </div>`;
+  } else if(sel.kind==="sync"){
+    h = syncPanelHTML();
   } else if(sel.kind==="generate"){
     const {b,d,shape} = sel; const st = shapeText(b,d,shape);
     h = `<header><span class="pnum">✦</span><h3>New map<small>Start from a fresh branching shape</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
@@ -915,6 +931,15 @@ panel.addEventListener("click", e=>{
     if(act==="insert"){ const n=insertOnLink(l.id); gotoScene(n); focusTitle(); return; }
     if(act==="dellink"){ sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==l.id)); return; }
   }
+  if(sel?.kind==="sync"){
+    if(act==="connect"){
+      const btn=t.closest("[data-act]"), msg=$("#s-msg"); btn.disabled=true; msg.textContent="Connecting…";
+      connectGitHub($("#s-token").value).then(()=>{ renderSyncBtn(); }).catch(err=>{ msg.textContent = err.offline ? "Couldn't reach GitHub. Check your internet connection." : err.message; btn.disabled=false; });
+      return;
+    }
+    if(act==="syncnow"){ localDirty ? pushGist() : pullGist(); return; }
+    if(act==="disconnect"){ disconnectGitHub(); return; }
+  }
   if(sel?.kind==="generate"){
     const gb=t.closest("[data-gb]"), gd=t.closest("[data-gd]"), gs=t.closest("[data-gshape]");
     if(gb||gd||gs){ if(gb) sel.b=+gb.dataset.gb; if(gd) sel.d=+gd.dataset.gd; if(gs) sel.shape=gs.dataset.gshape; renderPanel(); return; }
@@ -992,12 +1017,17 @@ function normalize(d){
 }
 
 /* ================= persistence ================= */
+// Three places a map can live, in order of preference:
+//  1. inside a Claude artifact (the page republishes its own map.json),
+//  2. a secret GitHub gist, when this device is connected to GitHub (the installable app),
+//  3. this browser's local storage (always kept as a backup).
 let toastT;
-const saveState = {s:"local", msg:"Saved in this browser"};
+const saveState = {s:"local", msg:"Saved on this device"};
 function setStatus(s,msg){ const el=$("#status"); el.dataset.s=s; el.querySelector("span").textContent=msg; }
 function status(s,msg){ saveState.s=s; saveState.msg=msg; setStatus(s,msg); }
 function flash(msg,bad){ setStatus(bad?"error":saveState.s,msg); clearTimeout(toastT); toastT=setTimeout(()=>setStatus(saveState.s,saveState.msg),4500); }
-function persistLocal(dirty){ try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty,state:S})); }catch{} }
+let localDirty = false;
+function persistLocal(dirty){ localDirty = dirty; try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty,state:S})); }catch{} }
 const capCache = {};
 function capability(name){
   if(!(name in capCache)) capCache[name] = (window.claude && typeof window.claude.use==="function") ? window.claude.use(name).catch(()=>null) : Promise.resolve(null);
@@ -1005,9 +1035,10 @@ function capability(name){
 }
 let artifactApi=null, canPublish=false, saveTimer=null, saving=false, pending=false, backoff=2500;
 function scheduleSave(){
-  if(!canPublish){ status("local","Saved in this browser"); return; }
-  status("saving","Unsaved changes…");
-  clearTimeout(saveTimer); saveTimer=setTimeout(publishNow, backoff);
+  clearTimeout(saveTimer);
+  if(canPublish){ status("saving","Unsaved changes…"); saveTimer=setTimeout(publishNow, backoff); return; }
+  if(sync.gistId){ status("saving","Unsaved changes…"); saveTimer=setTimeout(pushGist, 2500); return; }
+  status("local","Saved on this device");
 }
 async function publishNow(retried){
   if(!canPublish) return;
@@ -1028,17 +1059,169 @@ async function publishNow(retried){
   if(pending){ pending=false; publishNow(); }
 }
 
+/* ---------- GitHub gist sync ---------- */
+const SYNC_KEY = "long-way-home-diamond:sync";
+const GIST_FILE = "long-way-home-map.json";
+const TOKEN_URL = "https://github.com/settings/tokens/new?scopes=gist&description=Long%20Way%20Home%20map";
+let sync = {};
+try{ sync = JSON.parse(localStorage.getItem(SYNC_KEY)||"{}") || {}; }catch{}
+function saveSync(){ try{ localStorage.setItem(SYNC_KEY, JSON.stringify(sync)); }catch{} }
+let syncBusy = false, syncQueued = false, lastSyncAt = 0, conflictRemote = null, syncError = "";
+async function gh(path, opts={}, token=sync.token){
+  let r;
+  try{ r = await fetch("https://api.github.com"+path, {...opts, cache:"no-store", headers:{Accept:"application/vnd.github+json", Authorization:"Bearer "+token, ...(opts.body?{"Content-Type":"application/json"}:{})}}); }
+  catch{ const e=new Error("offline"); e.offline=true; throw e; }
+  if(!r.ok){
+    const e = new Error(r.status===401 ? "GitHub didn't accept the key. It may have been deleted or expired." : r.status===403 ? "GitHub refused the request. Check the key has the “gist” box ticked." : r.status===404 ? "The saved map wasn't found on GitHub." : "GitHub error "+r.status+".");
+    e.status = r.status; throw e;
+  }
+  return r.json();
+}
+async function readGist(id, token){
+  const g = await gh("/gists/"+id, {}, token);
+  const f = g.files && g.files[GIST_FILE];
+  if(!f) { const e=new Error("The saved map wasn't found on GitHub."); e.status=404; throw e; }
+  const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+  return normalize(JSON.parse(text));
+}
+function syncFailed(err){
+  if(err.offline){ status("local","Offline · saved on this device, will sync when back online"); return; }
+  syncError = err.message; status("error", err.message);
+  if(sel?.kind==="sync") renderPanel();
+}
+async function connectGitHub(token){
+  token = token.trim();
+  if(!token) throw new Error("Paste the key from GitHub first.");
+  const me = await gh("/user", {}, token);
+  let id = null;
+  for(let page=1; page<=10 && !id; page++){
+    const list = await gh(`/gists?per_page=100&page=${page}`, {}, token);
+    const hit = list.find(g=>g.files && g.files[GIST_FILE]); if(hit) id = hit.id;
+    if(list.length<100) break;
+  }
+  let loadedRemote = false;
+  if(id){
+    const remote = await readGist(id, token);
+    undoStack.push(clone(S)); redoStack=[];
+    S = remote; loadedRemote = true;
+  } else {
+    if(!S.updatedAt) S.updatedAt = Date.now();
+    const g = await gh("/gists", {method:"POST", body:JSON.stringify({description:"The Long Way Home story map (saved by the map app; edit it in the app)", public:false, files:{[GIST_FILE]:{content:JSON.stringify(S)}}})}, token);
+    id = g.id;
+  }
+  sync = {token, gistId:id, login:me.login, base:S.updatedAt||0};
+  saveSync(); persistLocal(false); lastSyncAt = Date.now(); syncError = "";
+  sel = null; threadEdit = null; renderAll(); fit();
+  status("saved","Synced");
+  flash(loadedRemote ? "Loaded your map from GitHub. Undo brings back the one that was on this device." : "Connected. This map now syncs to GitHub.");
+}
+async function pushGist(){
+  if(!sync.gistId) return;
+  if(syncBusy){ syncQueued = true; return; }
+  syncBusy = true; status("saving","Syncing…");
+  try{
+    const remote = await readGist(sync.gistId);
+    const r = remote.updatedAt||0;
+    if(r > (sync.base||0) && r !== S.updatedAt){ showConflict(remote); return; }
+    const sentAt = S.updatedAt||0, body = JSON.stringify(S);
+    await gh("/gists/"+sync.gistId, {method:"PATCH", body:JSON.stringify({files:{[GIST_FILE]:{content:body}}})});
+    sync.base = sentAt; saveSync(); lastSyncAt = Date.now(); syncError = "";
+    if((S.updatedAt||0)===sentAt) persistLocal(false); else syncQueued = true;
+    status("saved","Synced");
+  }catch(err){ syncFailed(err); }
+  finally{
+    syncBusy = false;
+    if(syncQueued){ syncQueued=false; pushGist(); }
+    if(sel?.kind==="sync") renderPanel();
+  }
+}
+async function pullGist(){
+  if(!sync.gistId || syncBusy || conflictRemote) return;
+  syncBusy = true;
+  try{
+    const remote = await readGist(sync.gistId);
+    const r = remote.updatedAt||0;
+    lastSyncAt = Date.now(); syncError = "";
+    if(r > (sync.base||0) && r !== S.updatedAt){
+      if(localDirty){ syncBusy=false; showConflict(remote); return; }
+      S = remote; sync.base = r; saveSync(); persistLocal(false);
+      if(sel?.kind==="scene" && !S.nodes[sel.id]) sel=null;
+      renderAll(); status("saved","Synced"); flash("Loaded changes from another device.");
+    } else if(localDirty){ syncBusy=false; pushGist(); return; }
+    else status("saved","Synced");
+  }catch(err){ syncFailed(err); }
+  syncBusy = false;
+  if(sel?.kind==="sync") renderPanel();
+}
+function showConflict(remote){
+  conflictRemote = remote;
+  status("error","Changed on another device");
+  renderBanner();
+}
+$("#bannerSlot").addEventListener("click", e=>{
+  if(e.target.id==="cfTheirs" && conflictRemote){
+    undoStack.push(clone(S)); redoStack=[];
+    S = conflictRemote; sync.base = S.updatedAt||0; conflictRemote=null; saveSync(); persistLocal(false);
+    sel=null; renderAll(); status("saved","Synced"); flash("Loaded the other device's version. Undo brings yours back (then it syncs again).");
+  }
+  if(e.target.id==="cfMine" && conflictRemote){
+    sync.base = conflictRemote.updatedAt||0; conflictRemote=null; saveSync(); S.updatedAt = Date.now(); renderBanner(); pushGist();
+  }
+});
+function disconnectGitHub(){ sync = {}; saveSync(); renderSyncBtn(); status("local","Saved on this device"); renderPanel(); }
+function renderSyncBtn(){
+  const b = $("#syncBtn");
+  b.hidden = canPublish;
+  b.textContent = sync.gistId ? "☁ Synced" : "☁ Sync devices";
+  b.setAttribute("aria-pressed", !!sync.gistId);
+}
+function syncPanelHTML(){
+  if(sync.gistId){
+    const when = lastSyncAt ? new Date(lastSyncAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : "not yet";
+    return `<header><span class="pnum">☁</span><h3>Sync<small>Connected to GitHub as ${esc(sync.login||"you")}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <p>Every change saves to a private copy in your GitHub account. Open the app on another device, connect it with a key, and you'll see the same map.</p>
+      <p class="muted">Last synced: ${when}${syncError?`<br><span style="color:#ffb3c0">${esc(syncError)}</span>`:""}</p>
+      <div class="row"><button class="btn primary" data-act="syncnow">Sync now</button><a class="btn" href="https://gist.github.com/${esc(sync.login||"")}/${esc(sync.gistId)}" target="_blank" rel="noopener">View on GitHub</a></div>
+      <hr class="divider">
+      <p class="muted">Disconnecting only affects this device. Your map stays on GitHub and on your other devices.</p>
+      <div class="row"><button class="btn danger" data-act="disconnect">Disconnect this device</button></div>
+    </div>`;
+  }
+  return `<header><span class="pnum">☁</span><h3>Sync your devices<small>Same map on your laptop, phone and tablet</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+  <div class="pbody">
+    <p>The map saves to a private file in your GitHub account. Do these steps once on each device.</p>
+    <ol style="margin:0;padding-left:20px;display:grid;gap:8px">
+      <li><a href="${TOKEN_URL}" target="_blank" rel="noopener" style="color:var(--focus)">Open GitHub's “new key” page</a> and sign in.</li>
+      <li>Under <b>Expiration</b>, pick <b>No expiration</b> (or a date you'll remember). The <b>gist</b> box is already ticked; leave everything else.</li>
+      <li>Click <b>Generate token</b> at the bottom and copy the key that starts with <code>ghp_</code>.</li>
+      <li>Paste it here and press Connect.</li>
+    </ol>
+    <div class="field"><label for="s-token">GitHub key</label><input class="inp" id="s-token" type="password" autocomplete="off" placeholder="ghp_…"></div>
+    <div class="row"><button class="btn primary" data-act="connect">Connect</button></div>
+    <span class="muted" id="s-msg"></span>
+    <p class="muted">On the first device, your current map is uploaded. On every other device, the map from GitHub is loaded (whatever was on that device stays one Undo away). The key is stored only on this device and can only read and write your gists.</p>
+  </div>`;
+}
+
 async function boot(){
   let loaded=null, draft=null, draftWins=false;
   try{ const r=await fetch("map.json",{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(d) loaded=normalize(d); } }catch{}
   try{ draft=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(draft?.state) draft.state=normalize(draft.state); else draft=null; }catch{ draft=null; }
   if(draft && (!loaded || (draft.dirty && (draft.state.updatedAt||0)>(loaded.updatedAt||0)))) draftWins=true;
   S = draftWins ? draft.state : (loaded || S);
+  localDirty = !!(draftWins && draft.dirty);
   renderAll(); fit(false);
-  status("local","Saved in this browser");
+  status("local","Saved on this device");
   artifactApi = await capability("artifact");
   if(artifactApi){ canPublish=true; if(draftWins && loaded && draft.dirty) scheduleSave(); else status("saved","All changes saved"); }
+  renderSyncBtn();
+  if(!canPublish && sync.gistId){ status("saving","Syncing…"); pullGist(); }
+  if(!canPublish && "serviceWorker" in navigator && location.protocol==="https:"){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 }
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible" && !canPublish && sync.gistId && Date.now()-lastSyncAt>5000) pullGist(); });
+window.addEventListener("online", ()=>{ if(!canPublish && sync.gistId) (localDirty ? pushGist() : pullGist()); });
+$("#syncBtn").onclick = ()=>select({kind:"sync"});
 document.fonts?.ready.then(()=>renderEdges());
 boot();
 })();
