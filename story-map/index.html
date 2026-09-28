@@ -142,6 +142,9 @@ svg#edges{position:absolute;overflow:visible;pointer-events:none}
 #bible{left:0;border-right:1px solid var(--line)}
 .panel header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
 .panel p{margin:0;line-height:1.5}
+.step{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.step>b{width:26px;height:26px;border-radius:50%;background:#2a4a70;display:grid;place-items:center;font-size:14px}
+.step>div{display:grid;gap:4px}
 .panel code{background:#0b1422;padding:0 4px;border-radius:4px}
 a.btn{text-decoration:none;color:inherit}
 .panel header .pnum{font:700 18px var(--body);min-width:38px;height:38px;padding:0 6px;display:grid;place-items:center;border-radius:8px;background:var(--pc,#63b3ff);color:#0b1422;font-variant-numeric:tabular-nums}
@@ -932,9 +935,16 @@ panel.addEventListener("click", e=>{
     if(act==="dellink"){ sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==l.id)); return; }
   }
   if(sel?.kind==="sync"){
+    if(act==="paste"){
+      navigator.clipboard?.readText().then(x=>{ $("#s-token").value=x.trim(); }).catch(()=>{ $("#s-msg").textContent="Your browser blocked the Paste button. Tap the box and paste the usual way (long-press → Paste, or Ctrl+V / Cmd+V)."; });
+      return;
+    }
     if(act==="connect"){
-      const btn=t.closest("[data-act]"), msg=$("#s-msg"); btn.disabled=true; msg.textContent="Connecting…";
-      connectGitHub($("#s-token").value).then(()=>{ renderSyncBtn(); }).catch(err=>{ msg.textContent = err.offline ? "Couldn't reach GitHub. Check your internet connection." : err.message; btn.disabled=false; });
+      const btn=t.closest("[data-act]"), msg=$("#s-msg"), key=$("#s-token").value.trim();
+      if(key.startsWith("github_pat_")){ msg.textContent="That's a “fine-grained” key, which can't save maps. Use the button in step 1: it opens the classic key page, and that key starts with ghp_."; return; }
+      if(key && !key.startsWith("ghp_")){ msg.textContent="That doesn't look like a GitHub key. It should start with ghp_ and be about 40 characters long."; return; }
+      btn.disabled=true; msg.style.color="var(--ink-2)"; msg.textContent="Connecting…";
+      connectGitHub(key).then(()=>{ renderSyncBtn(); }).catch(err=>{ msg.style.color="#ffb3c0"; msg.textContent = err.offline ? "Couldn't reach GitHub. Check your internet connection." : err.message; btn.disabled=false; });
       return;
     }
     if(act==="syncnow"){ localDirty ? pushGist() : pullGist(); return; }
@@ -1190,17 +1200,21 @@ function syncPanelHTML(){
   }
   return `<header><span class="pnum">☁</span><h3>Sync your devices<small>Same map on your laptop, phone and tablet</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
   <div class="pbody">
-    <p>The map saves to a private file in your GitHub account. Do these steps once on each device.</p>
-    <ol style="margin:0;padding-left:20px;display:grid;gap:8px">
-      <li><a href="${TOKEN_URL}" target="_blank" rel="noopener" style="color:var(--focus)">Open GitHub's “new key” page</a> and sign in.</li>
-      <li>Under <b>Expiration</b>, pick <b>No expiration</b> (or a date you'll remember). The <b>gist</b> box is already ticked; leave everything else.</li>
-      <li>Click <b>Generate token</b> at the bottom and copy the key that starts with <code>ghp_</code>.</li>
-      <li>Paste it here and press Connect.</li>
-    </ol>
-    <div class="field"><label for="s-token">GitHub key</label><input class="inp" id="s-token" type="password" autocomplete="off" placeholder="ghp_…"></div>
-    <div class="row"><button class="btn primary" data-act="connect">Connect</button></div>
-    <span class="muted" id="s-msg"></span>
-    <p class="muted">On the first device, your current map is uploaded. On every other device, the map from GitHub is loaded (whatever was on that device stays one Undo away). The key is stored only on this device and can only read and write your gists.</p>
+    <p>To keep one map on all your devices, the app needs a <b>key</b> from your GitHub account. It's a long password-like code. You make it once, then paste it into the app on each device.</p>
+    <div class="step"><b>1</b><div><p><a class="btn primary" href="${TOKEN_URL}" target="_blank" rel="noopener">Open GitHub to make a key ↗</a></p>
+      <p class="muted">It opens in a new tab. Sign in if GitHub asks, and confirm your password if it asks again.</p></div></div>
+    <div class="step"><b>2</b><div><p>On that page, the <b>Note</b> box already says “Long Way Home map” and the <b>gist</b> box is already ticked. Leave them.</p>
+      <p class="muted">Optional: change <b>Expiration</b> to <b>No expiration</b>, or the key stops working after 30 days.</p></div></div>
+    <div class="step"><b>3</b><div><p>Scroll to the bottom and press the green <b>Generate token</b> button.</p></div></div>
+    <div class="step"><b>4</b><div><p>GitHub shows a code starting with <code>ghp_</code>. Press the copy icon (two squares) next to it.</p>
+      <p class="muted">GitHub only shows it once. If you lose it, just make another.</p></div></div>
+    <div class="step"><b>5</b><div><p>Come back to this tab, paste the code in the box below, and press <b>Connect</b>.</p></div></div>
+    <div class="field"><label for="s-token">Your GitHub key</label>
+      <div class="row" style="flex-wrap:nowrap"><input class="inp" id="s-token" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ghp_…"><button class="btn" data-act="paste">Paste</button></div></div>
+    <div class="row"><button class="btn primary" data-act="connect" style="font-size:16px;padding:8px 18px">Connect</button></div>
+    <span id="s-msg" style="color:#ffb3c0"></span>
+    <hr class="divider">
+    <p class="muted"><b>What happens next:</b> on the first device you connect, the map on it is uploaded. On every other device, that map is downloaded (the one that was there is one Undo away). The key stays on this device and can only save and read your maps.</p>
   </div>`;
 }
 
