@@ -93,3 +93,13 @@ src/
 tools/                    headless tests & debug renders (Node / Playwright)
 models/                   drop-in vehicle GLBs
 ```
+
+## Story map (The Long Way Home)
+
+`story-map/index.html` is a standalone, editable 50-scene story map for the
+narrative game plan: scenes per act, drag-to-link routes (main / conditional /
+optional), recurring threads, notes. Open it through `npm run dev` at
+http://localhost:5173/story-map/ (or any static server). Edits are kept in the
+browser's local storage; use **Export JSON** to save a copy and **Import JSON**
+to load one. Saving the export over `story-map/map.json` makes it the default
+map that loads for everyone.
