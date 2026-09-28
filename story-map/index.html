@@ -2,13 +2,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Caveat:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <style>
 :root{
   color-scheme: dark;
   --night:#0b1422;
-  --night-2:#101c2e;
-  --panel:#132236;
+  --panel:#0f1b2c;
   --panel-2:#1a2c44;
   --line:#2a3f5c;
   --ink:#e9eef8;
@@ -19,43 +18,37 @@
   --focus:#9fd0ff;
   --display:"Cinzel","Trajan Pro","Palatino Linotype",Georgia,serif;
   --body:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
-  --hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
 }
 *{box-sizing:border-box}
-html,body{background:var(--night);color:var(--ink)}
-body{
-  margin:0;font:15px/1.4 var(--body);
-  background:
-    radial-gradient(1200px 500px at 70% -10%, #1d3350 0%, transparent 60%),
-    radial-gradient(800px 400px at 0% 0%, #142741 0%, transparent 70%),
-    var(--night);
-  min-height:100vh;
-}
+[hidden]{display:none!important}
+html,body{height:100%;background:var(--night);color:var(--ink)}
+body{margin:0;font:15px/1.4 var(--body);overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.wrap{padding-inline:16px;padding-block:18px 40px;max-width:1720px;margin:0 auto}
+
+.app{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr)}
 
 /* ---------- Header ---------- */
-.masthead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 32px;align-items:start}
-.bare{background:transparent;border:1px solid transparent;border-radius:6px;padding:2px 6px;margin:0 -6px;width:100%;resize:none;overflow:hidden}
+.masthead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;padding:12px 16px 4px}
+.bare{background:transparent;border:1px solid transparent;border-radius:6px;padding:1px 6px;margin:0 -6px;min-width:0}
 .bare:hover{border-color:var(--line)}
 .bare:focus{border-color:var(--focus);outline:none;background:rgba(255,255,255,.03)}
-#m-title{font:600 clamp(28px,4.4vw,52px)/1.05 var(--display);letter-spacing:.06em;text-transform:uppercase;text-wrap:balance}
-#m-subtitle{font:600 clamp(16px,2vw,24px)/1.2 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
-#m-tagline{font:500 12px/1.4 var(--body);letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
-#m-quote{font:500 22px/1.15 var(--hand);color:#dfe7f5;width:280px;transform:rotate(-3deg);text-align:left}
-.stats{margin-top:6px;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+#m-title{font:600 clamp(22px,3vw,34px)/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;width:min(560px,100%)}
+#m-subtitle{font:600 clamp(13px,1.4vw,16px)/1.2 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);width:min(420px,100%)}
+.stats{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.03em;margin-left:auto}
 
 /* ---------- Toolbar ---------- */
-.toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;margin-block:14px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 10px;background:rgba(13,23,38,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:10px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:6px 16px 10px;padding:7px 10px;background:rgba(15,27,44,.95);border:1px solid var(--line);border-radius:10px}
 .tgroup{display:flex;gap:4px;align-items:center}
 .tlabel{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:4px}
-.btn{background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:14px;line-height:1.2;display:inline-flex;gap:6px;align-items:center}
-.btn:hover{border-color:#3d5a80;background:#20365280}
+.btn{background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:14px;line-height:1.2;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.btn:hover{border-color:#3d5a80;background:#203652}
 .btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:#2a4a70;border-color:#4d77a8}
 .btn.danger{border-color:#6b2a3a;color:#ffb3c0}
 .btn.danger.armed{background:#6b2a3a;color:#fff}
+.btn[aria-pressed="true"]{background:#2a4a70;border-color:#4d77a8}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
 .seg button{background:transparent;border:0;padding:5px 10px;font-size:14px;display:inline-flex;gap:6px;align-items:center;color:var(--ink-2)}
 .seg button+button{border-left:1px solid var(--line)}
@@ -67,92 +60,80 @@ button{cursor:pointer}
 .status[data-s="saving"] i{background:var(--gold)}
 .status[data-s="local"] i{background:#6aa8ff}
 .status[data-s="error"] i{background:var(--choice)}
-.hint{font-size:13px;color:var(--ink-3);margin:-6px 0 12px}
-.hint kbd{font:inherit;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--ink-2)}
 
-.banner{display:flex;gap:12px;align-items:center;padding:8px 12px;margin-bottom:12px;border-radius:8px;border:1px solid var(--tc,#4fc8f0);background:color-mix(in srgb,var(--tc,#4fc8f0) 14%,transparent)}
-.banner b{color:var(--tc)}
+/* ---------- Canvas ---------- */
+.stage{position:relative;margin:0 16px 16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background:
+    radial-gradient(900px 500px at 50% 0%, #182c46 0%, transparent 70%),
+    radial-gradient(circle, rgba(160,190,230,.10) 1px, transparent 1.2px) 0 0/28px 28px,
+    #0a1320;}
+#viewport{position:absolute;inset:0;touch-action:none;cursor:grab}
+#viewport.panning{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+svg#edges{position:absolute;overflow:visible;pointer-events:none}
+.lk .vis{fill:none;stroke-width:2.2;stroke-linecap:round}
+.lk .hit{fill:none;stroke:transparent;stroke-width:14;pointer-events:stroke;cursor:pointer}
+.lk:hover .vis,.lk.sel .vis{stroke-width:3.6}
+.lk.sel .vis{filter:drop-shadow(0 0 5px currentColor)}
+.lk.dim{opacity:.12}
+.lk text{font:600 12px var(--body);paint-order:stroke;stroke:#0a1320;stroke-width:4px;stroke-linejoin:round}
+.tmp{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-dasharray:5 5}
+.threadpath{fill:none;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;opacity:.22}
 
-/* ---------- Board ---------- */
-.board-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:6px;margin-inline:-4px;padding-inline:4px}
-.board{position:relative;display:flex;gap:34px;align-items:flex-start;width:max-content;padding:2px 26px 2px 26px}
-.act{--c:#63b3ff;width:268px;flex:none;border:1.5px solid color-mix(in srgb,var(--c) 70%,transparent);border-radius:12px;padding:12px 12px 12px 12px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 16%,#0d1726) 0%,color-mix(in srgb,var(--c) 7%,#0b1422) 100%);box-shadow:0 0 22px color-mix(in srgb,var(--c) 22%,transparent)}
-.act-head{text-align:center;margin-bottom:10px;position:relative}
-.act-kicker{font:600 11px var(--body);letter-spacing:.24em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 70%,#fff)}
-.act-name{font:600 19px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;text-align:center;color:color-mix(in srgb,var(--c) 55%,#fff)}
-.act-sub{font-size:14px;text-align:center;color:var(--ink-2)}
-.act-x{position:absolute;right:-4px;top:-4px;border:0;background:none;color:var(--ink-3);font-size:18px;line-height:1}
-.scenes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
-.card{position:relative;display:grid;grid-template-columns:30px 28px minmax(0,1fr) auto;align-items:center;min-height:50px;border-radius:8px;background:color-mix(in srgb,var(--c) 22%,#0f1a2b);border:1px solid color-mix(in srgb,var(--c) 50%,transparent);cursor:pointer;transition:opacity .15s,box-shadow .15s,transform .1s}
-.card:not(:last-child)::after{content:"";position:absolute;left:50%;bottom:-11px;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid color-mix(in srgb,var(--c) 70%,#fff);opacity:.7;transform:translateX(-50%)}
-.card:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 80%,#fff),0 0 14px color-mix(in srgb,var(--c) 40%,transparent)}
-.card.sel{box-shadow:0 0 0 2px #fff,0 0 18px color-mix(in srgb,var(--c) 60%,transparent)}
-.card.choice{--c:var(--choice)}
-.card.dim{opacity:.28}
-.card.member{box-shadow:0 0 0 2px var(--tc),0 0 14px color-mix(in srgb,var(--tc) 55%,transparent)}
-.num{align-self:stretch;display:grid;place-items:center;font:700 14px var(--body);font-variant-numeric:tabular-nums;border-radius:7px 0 0 7px;background:color-mix(in srgb,var(--c) 38%,#e9eef8 30%);color:#0b1422}
+.tier{position:absolute;display:flex;flex-direction:column;align-items:center;gap:0;width:230px;transform:translateX(0)}
+.tier-kicker{font:600 11px var(--body);letter-spacing:.24em;text-transform:uppercase;color:var(--c)}
+.tier-name{font:600 17px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;text-align:center;color:color-mix(in srgb,var(--c) 55%,#fff);width:100%}
+.tier-name::placeholder{color:color-mix(in srgb,var(--c) 45%,#0a1320)}
+
+.node{--c:#63b3ff;position:absolute;width:230px;height:64px;display:grid;grid-template-columns:34px 28px minmax(0,1fr) auto;align-items:center;border-radius:9px;
+  background:color-mix(in srgb,var(--c) 22%,#0f1a2b);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);cursor:pointer;
+  box-shadow:0 0 18px color-mix(in srgb,var(--c) 14%,transparent);transition:opacity .15s,box-shadow .15s}
+.node:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 80%,#fff),0 0 16px color-mix(in srgb,var(--c) 40%,transparent)}
+.node.sel{box-shadow:0 0 0 2.5px #fff,0 0 22px color-mix(in srgb,var(--c) 70%,transparent)}
+.node.choice{--c:var(--choice)}
+.node.dim{opacity:.25}
+.node.member{box-shadow:0 0 0 3px var(--tc),0 0 18px color-mix(in srgb,var(--tc) 60%,transparent)}
+.node.droptarget{box-shadow:0 0 0 3px var(--gold),0 0 18px rgba(245,196,81,.55)}
+.num{align-self:stretch;display:grid;place-items:center;font:700 15px var(--body);font-variant-numeric:tabular-nums;border-radius:8px 0 0 8px;background:color-mix(in srgb,var(--c) 45%,#e9eef8 25%);color:#0b1422}
 .glyph{display:grid;place-items:center;align-self:stretch;background:rgba(0,0,0,.18)}
 .glyph svg{width:18px;height:18px}
 .body{padding:6px 8px;min-width:0}
-.t{display:block;font-weight:700;font-size:14.5px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t{display:block;font-weight:700;font-size:15px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .t.empty{font-weight:400;font-style:italic;color:var(--ink-3)}
-.d{display:block;font-size:12.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.extras{display:flex;gap:3px;align-items:center;padding-right:10px}
+.d{display:block;font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.extras{display:flex;gap:3px;align-items:center;padding-right:12px}
 .extras svg{width:12px;height:12px}
-.tdot{width:7px;height:7px;border-radius:50%;background:var(--tc)}
-.handle{position:absolute;right:-7px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:#0b1422;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);opacity:0;cursor:crosshair;touch-action:none;transition:opacity .12s;z-index:3}
-.card:hover .handle,.card.sel .handle,.card:focus-within .handle{opacity:1}
-@media (hover:none){.handle{opacity:.85}}
-.card.droptarget{box-shadow:0 0 0 2px var(--gold),0 0 16px rgba(245,196,81,.5)}
-.add-scene{margin-top:10px;width:100%;border:1px dashed color-mix(in srgb,var(--c) 45%,transparent);background:transparent;border-radius:8px;padding:6px;color:var(--ink-3);font-size:13px}
-.add-scene:hover{color:var(--ink);border-style:solid}
-.add-act{align-self:stretch;width:120px;flex:none;border:1.5px dashed var(--line);border-radius:12px;background:transparent;color:var(--ink-3);font:600 13px var(--display);letter-spacing:.1em;text-transform:uppercase}
-.add-act:hover{color:var(--ink);border-color:#3d5a80}
+.tdot{width:8px;height:8px;border-radius:50%;background:var(--tc)}
+.handle{position:absolute;width:22px;height:22px;border-radius:50%;background:#0b1422;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);color:color-mix(in srgb,var(--c) 70%,#fff);
+  display:grid;place-items:center;font:700 15px/1 var(--body);opacity:0;cursor:crosshair;touch-action:none;transition:opacity .12s;z-index:3;padding:0}
+.across .handle{right:-11px;top:50%;margin-top:-11px}
+.down .handle{bottom:-11px;left:50%;margin-left:-11px}
+.node:hover .handle,.node.sel .handle{opacity:1}
+@media (hover:none){.node.sel .handle{opacity:1}}
 
-svg#links{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:2}
-.lk{transition:opacity .15s}
-.lk .vis{fill:none;stroke-width:2;stroke-linecap:round}
-.lk .hit{fill:none;stroke:transparent;stroke-width:12;pointer-events:stroke;cursor:pointer}
-.lk:hover .vis,.lk.sel .vis{stroke-width:3.2}
-.lk.sel .vis{filter:drop-shadow(0 0 4px currentColor)}
-.lk.dim{opacity:.1}
-.lk text{font:600 11px var(--body);paint-order:stroke;stroke:#0b1422;stroke-width:4px;stroke-linejoin:round}
-[hidden]{display:none!important}
-.tmp{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:4 4}
+/* zoom controls + legend */
+.zoombar{position:absolute;right:12px;bottom:12px;display:flex;gap:4px;align-items:center;background:rgba(15,27,44,.92);border:1px solid var(--line);border-radius:9px;padding:4px;z-index:5}
+.zoombar button{background:transparent;border:0;border-radius:6px;min-width:32px;height:32px;font-size:18px;color:var(--ink)}
+.zoombar button:hover{background:#203652}
+.zoombar .pct{font-size:13px;min-width:48px;text-align:center;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.zoombar .fit{font-size:13px;padding:0 10px}
+.legend{position:absolute;left:12px;bottom:12px;z-index:5;background:rgba(15,27,44,.92);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px;color:var(--ink-2);max-width:calc(100% - 250px)}
+.legend summary{cursor:pointer;font:600 12px var(--display);letter-spacing:.14em;text-transform:uppercase;color:#bfe3ff}
+.legend ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px}
+.legend li{display:flex;gap:8px;align-items:center}
+.legend svg{width:16px;height:16px;flex:none}
+.legend .ln{width:34px;height:10px}
+.banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:6;display:flex;gap:12px;align-items:center;padding:7px 8px 7px 14px;border-radius:9px;border:1px solid var(--tc,#4fc8f0);background:#0f1b2cf0;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:calc(100% - 24px)}
+.banner b{color:var(--tc)}
+.hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;font-size:13px;color:var(--ink-3);background:rgba(10,19,32,.8);padding:4px 10px;border-radius:7px;pointer-events:none;white-space:nowrap}
+@media (max-width:900px){.hint{display:none}}
 
-/* ---------- Lower panels ---------- */
-.lower{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:22px}
-.box{border:1px solid var(--line);border-radius:10px;background:rgba(16,28,46,.8);padding:12px 14px}
-.box h2{margin:0 0 10px;font:600 14px var(--display);letter-spacing:.16em;text-transform:uppercase;color:#bfe3ff;display:flex;align-items:baseline;gap:10px}
-.box h2 small{font:400 13px var(--body);letter-spacing:0;text-transform:none;color:var(--ink-3)}
-.thread{display:grid;grid-template-columns:170px minmax(160px,1fr) minmax(0,.8fr) auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,.14)}
-.thread.editing{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc)}
-.tname{display:flex;align-items:center;gap:8px;min-width:0}
-.swatch{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--tc);background:color-mix(in srgb,var(--tc) 30%,transparent);padding:0}
-.tname input{font:600 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--tc)}
-.track{position:relative;height:34px}
-.track::before{content:"";position:absolute;left:0;right:0;top:11px;height:2px;background:var(--tc);opacity:.55;border-radius:2px}
-.tick{position:absolute;top:4px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px;border:0;background:none;padding:0;color:var(--ink-2);font-size:11px;font-variant-numeric:tabular-nums}
-.tick i{width:16px;height:16px;border-radius:50%;border:2px solid var(--tc);background:#0b1422;display:block}
-.tick:hover i{background:var(--tc)}
-.track .empty{position:absolute;left:0;top:16px;white-space:nowrap;font-size:12px;color:var(--ink-3);font-style:italic}
-.tnote{font-size:13px;color:var(--ink-2)}
-.tactions{display:flex;gap:4px}
-.icon-btn{border:1px solid var(--line);background:transparent;border-radius:6px;padding:3px 8px;font-size:13px;color:var(--ink-2)}
-.icon-btn:hover{color:var(--ink);border-color:#3d5a80}
-.icon-btn[aria-pressed="true"]{background:var(--tc);color:#0b1422;border-color:var(--tc)}
-.key{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:14px;color:var(--ink-2)}
-.key li{display:flex;gap:10px;align-items:center}
-.key svg{width:18px;height:18px;flex:none}
-.key .ln{width:38px;height:10px;flex:none}
-#notes{width:100%;min-height:190px;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical;line-height:1.5}
-.aside{font:500 23px/1.1 var(--hand);color:#d9c9a0;transform:rotate(-4deg);margin-top:14px;text-align:center;white-space:pre-line}
-#m-aside{font:500 22px/1.1 var(--hand);color:#e4d3a6;text-align:center}
-
-/* ---------- Side panel ---------- */
-.panel{position:fixed;right:0;top:0;bottom:0;width:min(380px,100%);z-index:50;background:#0f1b2c;border-left:1px solid var(--line);box-shadow:-20px 0 40px rgba(0,0,0,.45);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* ---------- Side panels ---------- */
+.panel{position:fixed;top:0;bottom:0;width:min(380px,100%);z-index:50;background:var(--panel);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 0 40px rgba(0,0,0,.45)}
+#panel{right:0;border-left:1px solid var(--line)}
+#bible{left:0;border-right:1px solid var(--line)}
 .panel header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
-.panel header .pnum{font:700 18px var(--body);min-width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:var(--pc,#63b3ff);color:#0b1422;font-variant-numeric:tabular-nums}
+.panel header .pnum{font:700 18px var(--body);min-width:38px;height:38px;padding:0 6px;display:grid;place-items:center;border-radius:8px;background:var(--pc,#63b3ff);color:#0b1422;font-variant-numeric:tabular-nums}
 .panel header h3{margin:0;font:600 15px var(--display);letter-spacing:.1em;text-transform:uppercase;flex:1}
 .panel header h3 small{display:block;font:400 13px var(--body);letter-spacing:0;text-transform:none;color:var(--ink-3)}
 .pbody{overflow-y:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
@@ -170,40 +151,54 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
 .chip[aria-pressed="true"] i{background:var(--tc)}
 .links-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .links-list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:7px}
-.links-list .go{border:0;background:none;padding:0;text-align:left;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.links-list .go:hover{text-decoration:underline}
-.pill{font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 7px;border:1px solid currentColor}
+.go{border:0;background:none;padding:0;text-align:left;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.go:hover{text-decoration:underline}
+.pill{font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 7px;border:1px solid currentColor;background:none}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .muted{color:var(--ink-3);font-size:13px}
 .colors{display:flex;gap:6px;flex-wrap:wrap}
 .colors button{width:26px;height:26px;border-radius:50%;border:2px solid transparent;padding:0;background:var(--sw)}
-.colors button[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px #0f1b2c inset}
-.divider{border:0;border-top:1px solid var(--line);margin:4px 0}
+.colors button[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px var(--panel) inset}
+.divider{border:0;border-top:1px solid var(--line);margin:2px 0}
+.icon-btn{border:1px solid var(--line);background:transparent;border-radius:6px;padding:3px 8px;font-size:13px;color:var(--ink-2)}
+.icon-btn:hover{color:var(--ink);border-color:#3d5a80}
+.icon-btn[aria-pressed="true"]{background:var(--tc);color:#0b1422;border-color:var(--tc)}
+.shape{font:600 15px var(--body);font-variant-numeric:tabular-nums;color:var(--gold);letter-spacing:.02em}
+.tabs{display:flex;gap:4px;padding:10px 16px 0}
+.tabs button{border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:transparent;padding:6px 12px;color:var(--ink-2);font:600 12px var(--display);letter-spacing:.12em;text-transform:uppercase}
+.tabs button[aria-selected="true"]{background:var(--panel-2);color:var(--ink)}
+.thread{border:1px solid var(--line);border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.15)}
+.thread.active{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc)}
+.tname{display:flex;align-items:center;gap:8px}
+.swatch{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--tc);background:color-mix(in srgb,var(--tc) 30%,transparent);padding:0}
+.tname input{font:600 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--tc);flex:1}
+.nums{display:flex;flex-wrap:wrap;gap:4px}
+.nums button{border:1.5px solid var(--tc);background:transparent;border-radius:999px;min-width:28px;padding:1px 7px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.nums button:hover{background:var(--tc);color:#0b1422}
+#notes{min-height:320px}
 
-@media (max-width:1100px){.lower{grid-template-columns:1fr 1fr}.lower .threads{grid-column:1/-1}}
 @media (max-width:720px){
-  .masthead{grid-template-columns:1fr}
-  #m-quote{width:100%;transform:none}
-  .lower{grid-template-columns:1fr}
-  .thread{grid-template-columns:1fr;gap:6px}
-  .panel{top:auto;height:72vh;width:100%;border-left:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}
+  .stats{margin-left:0;width:100%}
   .status{margin-left:0}
+  #panel,#bible{top:auto;height:70vh;width:100%;border:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}
+  .legend{display:none}
+  .stage{margin:0 8px 8px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<div class="wrap">
+<div class="app">
   <header class="masthead">
-    <div>
-      <input class="bare" id="m-title" aria-label="Map title" spellcheck="false">
-      <input class="bare" id="m-subtitle" aria-label="Map subtitle" spellcheck="false">
-      <input class="bare" id="m-tagline" aria-label="Tagline" spellcheck="false">
-      <div class="stats" id="stats"></div>
-    </div>
-    <textarea class="bare" id="m-quote" rows="4" aria-label="Quote" spellcheck="false"></textarea>
+    <input class="bare" id="m-title" aria-label="Map title" spellcheck="false">
+    <input class="bare" id="m-subtitle" aria-label="Map subtitle" spellcheck="false">
+    <span class="stats" id="stats"></span>
   </header>
 
   <div class="toolbar" role="toolbar" aria-label="Map tools">
+    <div class="tgroup">
+      <button class="btn" id="bibleBtn" aria-pressed="false">☰ Threads &amp; notes</button>
+      <button class="btn" id="newMap">✦ New map…</button>
+    </div>
     <div class="tgroup">
       <button class="btn" id="undo" title="Undo (Ctrl+Z)">↶ Undo</button>
       <button class="btn" id="redo" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
@@ -213,37 +208,43 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
       <div class="seg" id="kindSeg"></div>
     </div>
     <div class="tgroup">
-      <button class="btn" id="export">Export JSON</button>
-      <label class="btn" for="importFile" style="cursor:pointer">Import JSON</label>
+      <span class="tlabel">Flow</span>
+      <div class="seg" id="dirSeg"><button data-dir="across">Across →</button><button data-dir="down">Down ↓</button></div>
+    </div>
+    <div class="tgroup">
+      <button class="btn" id="export">Export</button>
+      <label class="btn" for="importFile" style="cursor:pointer">Import</label>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
-      <button class="btn danger" id="reset">Reset to blank</button>
     </div>
     <div class="status" id="status" data-s="local"><i></i><span>Loading…</span></div>
   </div>
-  <p class="hint">Click a scene to edit it. Drag the ◦ handle on a scene's right edge onto another scene to link them. Hover a scene to trace its routes. <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</p>
-  <div id="bannerSlot"></div>
 
-  <div class="board-scroll" id="boardScroll">
-    <div class="board" id="board"></div>
+  <div class="stage" id="stage">
+    <div id="viewport"><div id="world"></div></div>
+    <div class="hint" id="hint">Scroll to zoom · drag the background to pan · click a scene to edit · drag its + onto another scene to link</div>
+    <div id="bannerSlot"></div>
+    <details class="legend" open>
+      <summary>Key</summary>
+      <ul id="legend"></ul>
+    </details>
+    <div class="zoombar">
+      <button id="zoomOut" aria-label="Zoom out">−</button>
+      <span class="pct" id="zoomPct">100%</span>
+      <button id="zoomIn" aria-label="Zoom in">+</button>
+      <button class="fit" id="zoomFit" title="Show the whole map (0)">Whole map</button>
+    </div>
   </div>
-
-  <section class="lower">
-    <div class="box threads">
-      <h2>Recurring threads <small>appear across multiple scenes</small></h2>
-      <div id="threads"></div>
-      <button class="btn" id="addThread">+ Add thread</button>
-    </div>
-    <div class="box">
-      <h2>Key</h2>
-      <ul class="key" id="key"></ul>
-    </div>
-    <div class="box">
-      <h2>Notes</h2>
-      <textarea id="notes" aria-label="Notes" placeholder="Design notes, open questions, ideas…"></textarea>
-      <textarea class="bare" id="m-aside" rows="3" aria-label="Margin note" spellcheck="false"></textarea>
-    </div>
-  </section>
 </div>
+
+<aside class="panel" id="bible" hidden aria-label="Threads and notes">
+  <header><h3>Story bible<small>Threads that recur, and your notes</small></h3><button class="icon-btn" id="bibleClose" aria-label="Close">✕</button></header>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="threads" aria-selected="true">Threads</button>
+    <button role="tab" data-tab="notes" aria-selected="false">Notes</button>
+  </div>
+  <div class="pbody" id="tab-threads"></div>
+  <div class="pbody" id="tab-notes" hidden><textarea class="inp" id="notes" aria-label="Notes" placeholder="Design notes, open questions, ideas…"></textarea></div>
+</aside>
 
 <aside class="panel" id="panel" hidden aria-label="Editor"></aside>
 
@@ -252,600 +253,793 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
 "use strict";
 
 /* ================= constants ================= */
-const ACT_COLORS = ["#63b3ff","#f4a74c","#5ed49b","#b48cff","#ff6b81","#4fd3d6"];
+const TIER_COLORS = ["#63b3ff","#4fd3d6","#5ed49b","#f4a74c","#b48cff","#ff8fb1","#ff6b81","#f5c451"];
 const LINK_COLORS = ["#e6ebf5","#f5c451","#ff6fa8","#4fd6e0","#6aa8ff","#8fe07a","#b48cff"];
 const THREAD_COLORS = ["#c3e05a","#ff6f8e","#4fc8f0","#b98bff","#f5c451","#6ee0b0","#ff9a5a"];
 const KINDS = {
-  main:        {label:"Main path",   dash:"",    color:"#e6ebf5", desc:"always connects"},
-  conditional: {label:"Conditional", dash:"7 5", color:"#f5c451", desc:"item / state dependent"},
-  optional:    {label:"Optional",    dash:"2 5", color:"#4fd6e0", desc:"secret route"},
+  main:        {label:"Main path",   dash:"",    color:"#e6ebf5", desc:"Shapes the map: sets which tier a scene sits in."},
+  conditional: {label:"Conditional", dash:"7 5", color:"#f5c451", desc:"Item or state dependent. Drawn over the map; doesn't move scenes."},
+  optional:    {label:"Optional",    dash:"2 5", color:"#4fd6e0", desc:"Secret route. Drawn over the map; doesn't move scenes."},
 };
-const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const W = 230, H = 64;
+const GEOM = { across:{layer:W+130, spread:H+22}, down:{layer:H+120, spread:W+26} };
 const ICON = {
-  star:    c => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${c||"#f5c451"}" d="M12 2.4l2.9 6.2 6.7.8-5 4.6 1.4 6.6L12 17.3l-6 3.3 1.4-6.6-5-4.6 6.7-.8z"/></svg>`,
-  diamond: c => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${c||"#ff5d7a"}" d="M12 2.5 20 12l-8 9.5L4 12z"/></svg>`,
-  paw:     c => `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="${c||"#6fc3ff"}"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><circle cx="5.5" cy="10.5" r="2.2"/><circle cx="9.5" cy="6.5" r="2.2"/><circle cx="14.5" cy="6.5" r="2.2"/><circle cx="18.5" cy="10.5" r="2.2"/></g></svg>`,
-  clue:    c => `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="${c||"#4fa9ff"}"/><circle cx="10" cy="10" r="2.4" fill="#d6ecff"/></svg>`,
+  star:    () => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f5c451" d="M12 2.4l2.9 6.2 6.7.8-5 4.6 1.4 6.6L12 17.3l-6 3.3 1.4-6.6-5-4.6 6.7-.8z"/></svg>`,
+  diamond: () => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ff5d7a" d="M12 2.5 20 12l-8 9.5L4 12z"/></svg>`,
+  paw:     () => `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#6fc3ff"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><circle cx="5.5" cy="10.5" r="2.2"/><circle cx="9.5" cy="6.5" r="2.2"/><circle cx="14.5" cy="6.5" r="2.2"/><circle cx="18.5" cy="10.5" r="2.2"/></g></svg>`,
+  clue:    () => `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="#4fa9ff"/><circle cx="10" cy="10" r="2.4" fill="#d6ecff"/></svg>`,
 };
-const LS_KEY = "long-way-home-map:draft";
+const small = s => s.replace("<svg","<svg width='14' height='14'");
+const LS_KEY = "long-way-home-diamond:draft";
 
-/* ================= default blank map ================= */
-function blankMap(){
-  const acts = [["Curiosity","Strange things begin to happen"],["Patterns","Things start to repeat"],
-    ["Connections","Choices begin to pay off"],["Understanding","The rules become clearer"],["The Search","Everything comes together"]];
-  const major = [1,8,14,24,30,33,42,47,49,50], choice = [4,10,20,25,40,43,48];
-  const scenes = {};
-  for(let n=1;n<=50;n++) scenes["s"+n] = {title:"",desc:"",type:major.includes(n)?"major":choice.includes(n)?"choice":"normal",dog:false,clue:false,notes:""};
-  const L = [[4,11,"conditional",1],[4,15,"conditional",2],[7,10,"optional",3],[10,4,"main",2],[10,20,"main",2],
-    [11,21,"optional",3],[11,22,"conditional",2],[14,6,"conditional",1],[15,26,"optional",3],[20,30,"main",1],
-    [24,14,"conditional",5],[24,31,"conditional",1],[23,33,"optional",3],[25,35,"conditional",2],[30,40,"main",2],
-    [33,42,"conditional",2],[35,41,"optional",3],[35,44,"conditional",1],[38,48,"optional",3],[40,47,"conditional",1],[43,48,"conditional",1]];
-  return {
-    version:1, updatedAt:0,
-    meta:{title:"The Long Way Home",subtitle:"50 Scene Master Map",tagline:"A journey through memory, dreams and what remains",
-      quote:"“Places change.\nPeople echo.\nChoices matter.\nThe story is yours to fill in.”",
-      aside:"Not all who wander are lost.\nSome are just on a different route home."},
-    acts: acts.map(([name,subtitle],i)=>({id:"a"+(i+1),name,subtitle,color:ACT_COLORS[i],scenes:Array.from({length:10},(_,k)=>"s"+(i*10+k+1))})),
-    scenes,
-    links: L.map(([f,t,kind,c],i)=>({id:"l"+(i+1),from:"s"+f,to:"s"+t,kind,color:LINK_COLORS[c],label:""})),
-    threads: [["The Giant",0],["The Dog",1],["The Search",2],["Other motifs",3]].map(([name,c],i)=>({id:"t"+(i+1),name,color:THREAD_COLORS[c],scenes:[],note:""})),
-    notes:"",
-    seq: 100,
+/* ================= map generator ================= */
+function newScene(){ return {title:"",desc:"",type:"normal",dog:false,clue:false,notes:""}; }
+// branches: children per scene; depth: tiers until the widest one (widest = branches^depth)
+function diamondMap(branches=3, depth=3, shape="diamond", base){
+  const S = base ? {...base, nodes:{}, edges:[], tiers:{}} : {
+    version:2, updatedAt:0, seq:0, dir:"across",
+    meta:{title:"The Long Way Home", subtitle:"Scene master map"},
+    tiers:{}, nodes:{}, edges:[], notes:"",
+    threads:[["The Giant",0],["The Dog",1],["The Search",2],["Other motifs",3]].map(([name,c],i)=>({id:"t"+(i+1),name,color:THREAD_COLORS[c],scenes:[],note:""})),
   };
+  S.seq = S.seq || 0;
+  const mk = () => { const id = "n"+(++S.seq); S.nodes[id] = newScene(); return id; };
+  const edge = (from,to) => S.edges.push({id:"e"+(++S.seq),from,to,kind:"main",color:KINDS.main.color,label:""});
+  let layer = [mk()];
+  for(let d=0; d<depth; d++){
+    const next = [];
+    layer.forEach(p=>{ for(let i=0;i<branches;i++){ const c=mk(); edge(p,c); next.push(c); } });
+    layer = next;
+  }
+  if(shape==="diamond"){
+    while(layer.length>1){
+      const next = [];
+      for(let i=0;i<layer.length;i+=branches){ const c=mk(); layer.slice(i,i+branches).forEach(p=>edge(p,c)); next.push(c); }
+      layer = next;
+    }
+  }
+  S.threads.forEach(t=>t.scenes=t.scenes.filter(id=>S.nodes[id]));
+  return S;
+}
+function shapeText(b,d,shape){
+  const up = Array.from({length:d+1},(_,i)=>b**i);
+  const all = shape==="diamond" ? [...up, ...up.slice(0,-1).reverse()] : up;
+  return {text: all.join(" → "), total: all.reduce((a,x)=>a+x,0)};
 }
 
 /* ================= state ================= */
-let S = blankMap();
+let S = diamondMap(3,3);
+let L = null;                       // current layout
 let undoStack = [], redoStack = [], lastMutAt = 0, lastMutKey = "";
-let sel = null;            // {kind:"scene"|"link", id}
-let hoverId = null;
-let threadEdit = null;     // thread id in membership-edit mode
+let sel = null;                     // {kind:"scene"|"link"|"multi"|"generate", id|ids}
+let hoverId = null, threadEdit = null, threadShow = null;
 let newKind = "main";
-let armedDelete = null;
+let armed = null;
+const view = {k:1, tx:0, ty:0};
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const uid = p => p + (++S.seq) + Math.random().toString(36).slice(2,5);
+const uid = p => p + (++S.seq);
 const clone = o => JSON.parse(JSON.stringify(o));
+const mains = () => S.edges.filter(e=>e.kind==="main");
 
-function order(){ const out=[]; S.acts.forEach((a,ai)=>a.scenes.forEach(id=>out.push({id,ai}))); return out; }
-function numbers(){ const m={}; order().forEach((o,i)=>m[o.id]=i+1); return m; }
-function actOf(id){ return S.acts.findIndex(a=>a.scenes.includes(id)); }
-function sceneColor(id){ const s=S.scenes[id]; return s&&s.type==="choice" ? "#ff5d7a" : (S.acts[actOf(id)]||{}).color; }
+/* ================= layout ================= */
+// Tiers come from the main-path links: a scene sits one tier after its deepest parent.
+function layout(){
+  const ids = Object.keys(S.nodes);
+  const idx = Object.fromEntries(ids.map((id,i)=>[id,i]));
+  const out = {}, inn = {};
+  ids.forEach(id=>{out[id]=[];inn[id]=[];});
+  const main = mains().filter(e=>S.nodes[e.from]&&S.nodes[e.to]&&e.from!==e.to);
+  // break cycles: drop main links that point back up the DFS stack
+  const state = {}, back = new Set();
+  const adj = {}; ids.forEach(id=>adj[id]=[]); main.forEach(e=>adj[e.from].push(e));
+  const visit = id => { state[id]=1; for(const e of adj[id]){ if(state[e.to]===1) back.add(e.id); else if(!state[e.to]) visit(e.to); } state[id]=2; };
+  const roots = ids.filter(id=>!main.some(e=>e.to===id));
+  [...roots, ...ids].forEach(id=>{ if(!state[id]) visit(id); });
+  const fwd = main.filter(e=>!back.has(e.id));
+  fwd.forEach(e=>{ out[e.from].push(e); inn[e.to].push(e); });
+  // longest-path layering (Kahn)
+  const layerOf = {}, indeg = {};
+  ids.forEach(id=>{ indeg[id]=inn[id].length; layerOf[id]=0; });
+  const q = ids.filter(id=>!indeg[id]);
+  while(q.length){ const id=q.shift(); for(const e of out[id]){ layerOf[e.to]=Math.max(layerOf[e.to],layerOf[id]+1); if(--indeg[e.to]===0) q.push(e.to); } }
+  const nLayers = ids.length ? Math.max(...ids.map(id=>layerOf[id]))+1 : 0;
+  const layers = Array.from({length:nLayers},()=>[]);
+  ids.forEach(id=>layers[layerOf[id]].push(id));
+  const g = GEOM[S.dir||"across"];
+  const pos = {}, coord = {};
+  // Taper tiers toward the start and the end so the map reads as a diamond:
+  // each tier's span grows linearly up to the widest tier, then shrinks again.
+  const counts = layers.map(l=>l.length);
+  const iw = counts.indexOf(Math.max(...counts, 1));
+  const maxSpan = (Math.max(...counts, 1)-1)*g.spread;
+  const spacingFor = li => {
+    const n = counts[li]; if(n<2) return g.spread;
+    const frac = li<=iw ? (iw? li/iw : 1) : (layers.length-1-li)/Math.max(1,layers.length-1-iw);
+    return Math.max(g.spread, frac*maxSpan/(n-1));
+  };
+  layers.forEach((layer,li)=>{
+    const key = id => {
+      const ps = inn[id];
+      if(!ps.length) return [0, 0, idx[id]];
+      const ys = ps.map(e=>coord[e.from]);
+      const first = ps.reduce((a,e)=>coord[e.from]<coord[a.from]?e:a, ps[0]);
+      return [ys.reduce((a,b)=>a+b,0)/ys.length, coord[first.from], out[first.from].indexOf(first), idx[id]];
+    };
+    const keys = Object.fromEntries(layer.map(id=>[id,key(id)]));
+    layer.sort((a,b)=>{ const x=keys[a], y=keys[b]; for(let i=0;i<x.length;i++) if(x[i]!==y[i]) return x[i]-y[i]; return 0; });
+    const withParents = layer.filter(id=>inn[id].length);
+    const center = withParents.length ? withParents.reduce((a,id)=>a+keys[id][0],0)/withParents.length : 0;
+    const sp = spacingFor(li);
+    layer.forEach((id,i)=>{ coord[id] = center + (i-(layer.length-1)/2)*sp; pos[id]=i; });
+  });
+  const xy = {};
+  ids.forEach(id=>{
+    const a = layerOf[id]*g.layer, b = coord[id];
+    xy[id] = S.dir==="down" ? {x:b-W/2, y:a} : {x:a, y:b-H/2};
+  });
+  // reading-order numbering: tier by tier, top to bottom
+  const num = {}; let n = 0;
+  layers.forEach(layer=>layer.forEach(id=>num[id]=++n));
+  const box = ids.length ? {
+    x0:Math.min(...ids.map(id=>xy[id].x)), y0:Math.min(...ids.map(id=>xy[id].y)),
+    x1:Math.max(...ids.map(id=>xy[id].x+W)), y1:Math.max(...ids.map(id=>xy[id].y+H)),
+  } : {x0:0,y0:0,x1:W,y1:H};
+  return {layers, layerOf, xy, num, box, back, inn, out};
+}
 
-/* mutate: snapshot for undo; rapid edits to the same field coalesce */
+/* ================= undo / change ================= */
 function mutate(fn, key){
   const now = Date.now();
   if(!key || key!==lastMutKey || now-lastMutAt>1200){ undoStack.push(clone(S)); if(undoStack.length>150) undoStack.shift(); redoStack=[]; }
   lastMutAt = now; lastMutKey = key||"";
   fn();
   S.updatedAt = now;
-  changed();
+  changed(key);
 }
-function changed(opts={}){
-  renderBoard(); renderThreads(); renderStats(); syncHistoryBtns();
-  if(opts.panel) renderPanel();
+function changed(key){
+  renderMap(); renderStats(); syncHistoryBtns();
+  if(!key) { renderPanel(); renderBible(); }
   persistLocal(true); scheduleSave();
 }
 function undo(){ if(!undoStack.length) return; redoStack.push(clone(S)); S=undoStack.pop(); lastMutKey=""; afterSwap(); }
 function redo(){ if(!redoStack.length) return; undoStack.push(clone(S)); S=redoStack.pop(); lastMutKey=""; afterSwap(); }
 function afterSwap(){
   S.updatedAt = Date.now();
-  if(sel && sel.kind==="scene" && !S.scenes[sel.id]) sel=null;
-  if(sel && sel.kind==="link" && !S.links.find(l=>l.id===sel.id)) sel=null;
+  if(sel?.kind==="scene" && !S.nodes[sel.id]) sel=null;
+  if(sel?.kind==="link" && !S.edges.find(e=>e.id===sel.id)) sel=null;
+  if(sel?.kind==="multi"){ sel.ids = sel.ids.filter(id=>S.nodes[id]); if(!sel.ids.length) sel=null; }
   if(threadEdit && !S.threads.find(t=>t.id===threadEdit)) threadEdit=null;
   renderAll(); persistLocal(true); scheduleSave();
 }
 function syncHistoryBtns(){ $("#undo").disabled=!undoStack.length; $("#redo").disabled=!redoStack.length; }
 
-/* ================= rendering: header ================= */
-function autosize(el){ el.style.height="auto"; el.style.height=el.scrollHeight+"px"; }
+/* ================= render ================= */
+function nodeColor(id){ return S.nodes[id]?.type==="choice" ? "#ff5d7a" : TIER_COLORS[(L.layerOf[id]||0)%TIER_COLORS.length]; }
+function glyph(s){ return s.type==="major"?ICON.star():s.type==="choice"?ICON.diamond():s.dog?ICON.paw():s.clue?ICON.clue():""; }
+function selectedIds(){ return sel?.kind==="scene" ? [sel.id] : sel?.kind==="multi" ? sel.ids : []; }
+
 function renderMeta(){
-  for(const k of ["title","subtitle","tagline","quote","aside"]){ const el=$("#m-"+k); if(document.activeElement!==el) el.value=S.meta[k]||""; if(el.tagName==="TEXTAREA") autosize(el); }
+  for(const k of ["title","subtitle"]){ const el=$("#m-"+k); if(document.activeElement!==el) el.value=S.meta[k]||""; }
   if(document.activeElement!==$("#notes")) $("#notes").value=S.notes||"";
   document.title = S.meta.title || "Story map";
+  document.querySelectorAll("#dirSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.dir===(S.dir||"across")));
 }
 function renderStats(){
-  const n=order().length, filled=Object.values(S.scenes).filter(s=>s.title.trim()).length;
-  const maj=Object.values(S.scenes).filter(s=>s.type==="major").length, ch=Object.values(S.scenes).filter(s=>s.type==="choice").length;
-  $("#stats").textContent = `${n} scenes · ${filled} named · ${maj} major · ${ch} choices · ${S.links.length} links · ${S.threads.length} threads`;
+  const v = Object.values(S.nodes);
+  const widths = L.layers.map(l=>l.length);
+  $("#stats").textContent = `${v.length} scenes · ${L.layers.length} tiers (${widths.join("·")}) · ${v.filter(s=>s.type==="major").length} major · ${v.filter(s=>s.type==="choice").length} choices · ${S.edges.length} links`;
 }
 
-/* ================= rendering: board ================= */
-function cardGlyph(s){
-  if(s.type==="major") return ICON.star();
-  if(s.type==="choice") return ICON.diamond();
-  if(s.dog) return ICON.paw();
-  if(s.clue) return ICON.clue();
-  return "";
-}
-function renderBoard(){
-  const nums = numbers();
+function renderMap(){
+  L = layout();
+  const world = $("#world");
   const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
-  const linked = hoverId ? new Set(S.links.filter(l=>l.from===hoverId||l.to===hoverId).flatMap(l=>[l.from,l.to])) : null;
+  const ts = !te && threadShow && S.threads.find(t=>t.id===threadShow);
+  const focus = te || ts;
+  const selIds = new Set(selectedIds());
+  const dir = S.dir||"across";
+  const g = GEOM[dir];
   let h = "";
-  S.acts.forEach((a,ai)=>{
-    h += `<section class="act" style="--c:${a.color}" data-act="${ai}">
-      <div class="act-head">
-        ${a.scenes.length?"":`<button class="act-x" data-del-act="${ai}" title="Remove this empty act" aria-label="Remove act">×</button>`}
-        <div class="act-kicker">Act ${ROMAN[ai]||ai+1}</div>
-        <input class="bare act-name" data-act-name="${ai}" value="${esc(a.name)}" aria-label="Act ${ai+1} name" spellcheck="false">
-        <input class="bare act-sub" data-act-sub="${ai}" value="${esc(a.subtitle)}" aria-label="Act ${ai+1} subtitle" spellcheck="false">
-      </div>
-      <ol class="scenes">`;
-    a.scenes.forEach(id=>{
-      const s = S.scenes[id];
-      const threads = S.threads.filter(t=>t.scenes.includes(id));
-      const extras = [];
-      if(s.dog && (s.type!=="normal")) extras.push(ICON.paw());
-      if(s.clue && (s.type!=="normal"||s.dog)) extras.push(ICON.clue());
-      threads.forEach(t=>extras.push(`<span class="tdot" style="--tc:${t.color}" title="${esc(t.name)}"></span>`));
-      let cls = "card";
-      if(s.type==="choice") cls+=" choice";
-      if(sel&&sel.kind==="scene"&&sel.id===id) cls+=" sel";
-      if(te){ if(te.scenes.includes(id)) cls+=" member"; else cls+=" dim"; }
-      else if(linked && linked.size && !linked.has(id) && id!==hoverId) cls+=" dim";
-      h += `<li class="${cls}" data-id="${id}" data-col="${ai}" tabindex="0" ${te?`style="--tc:${te.color}"`:""} aria-label="Scene ${nums[id]}${s.title?": "+esc(s.title):""}">
-        <span class="num">${nums[id]}</span>
-        <span class="glyph">${cardGlyph(s)}</span>
-        <span class="body"><span class="t${s.title?"":" empty"}">${s.title?esc(s.title):"Untitled scene"}</span>${s.desc?`<span class="d">${esc(s.desc)}</span>`:""}</span>
-        <span class="extras">${extras.join("")}</span>
-        <span class="handle" data-handle="${id}" title="Drag onto another scene to link"></span>
-      </li>`;
-    });
-    h += `</ol><button class="add-scene" data-add-scene="${ai}">+ Add scene</button></section>`;
+  // tier labels
+  L.layers.forEach((layer,li)=>{
+    const c = TIER_COLORS[li%TIER_COLORS.length];
+    const first = L.xy[layer[0]];
+    let x, y;
+    if(dir==="down"){ x = L.box.x0 - W - 40; y = first.y + 6; }
+    else { x = first.x; y = Math.min(...layer.map(id=>L.xy[id].y)) - 62; }
+    h += `<div class="tier" style="left:${x}px;top:${y}px;--c:${c}"><span class="tier-kicker">Tier ${li+1} · ${layer.length} scene${layer.length>1?"s":""}</span><input class="bare tier-name" data-tier="${li}" value="${esc(S.tiers[li]||"")}" placeholder="Name this tier" aria-label="Tier ${li+1} name" spellcheck="false"></div>`;
   });
-  h += `<button class="add-act" id="addAct">+ Add act</button><svg id="links" aria-hidden="false"></svg>`;
-  const scroller = $("#boardScroll"), sl = scroller.scrollLeft;
-  const board = $("#board");
-  const focusedAct = document.activeElement && (document.activeElement.dataset.actName ?? document.activeElement.dataset.actSub);
-  if(focusedAct!==undefined && board.contains(document.activeElement)) { renderLinks(); return; } // don't clobber an act title being typed
-  board.innerHTML = h;
-  scroller.scrollLeft = sl;
-  renderLinks();
+  for(const id in S.nodes){
+    const s = S.nodes[id], p = L.xy[id];
+    const threads = S.threads.filter(t=>t.scenes.includes(id));
+    const extras = [];
+    if(s.dog && s.type!=="normal") extras.push(ICON.paw());
+    if(s.clue && (s.type!=="normal"||s.dog)) extras.push(ICON.clue());
+    threads.forEach(t=>extras.push(`<span class="tdot" style="--tc:${t.color}" title="${esc(t.name)}"></span>`));
+    let cls = "node";
+    if(s.type==="choice") cls+=" choice";
+    if(selIds.has(id)) cls+=" sel";
+    if(focus){ cls += focus.scenes.includes(id) ? " member" : " dim"; }
+    h += `<div class="${cls}" data-id="${id}" tabindex="0" style="left:${p.x}px;top:${p.y}px;--c:${nodeColor(id)};${focus?`--tc:${focus.color}`:""}" aria-label="Scene ${L.num[id]}${s.title?": "+esc(s.title):""}">
+      <span class="num">${L.num[id]}</span><span class="glyph">${glyph(s)}</span>
+      <span class="body"><span class="t${s.title?"":" empty"}">${s.title?esc(s.title):"Untitled scene"}</span>${s.desc?`<span class="d">${esc(s.desc)}</span>`:""}</span>
+      <span class="extras">${extras.join("")}</span>
+      <button class="handle" data-handle="${id}" title="Click: add a branch. Drag: link to another scene, or drop on empty space for a new branch." aria-label="Add branch from scene ${L.num[id]}">+</button>
+    </div>`;
+  }
+  h += `<svg id="edges"></svg>`;
+  const active = document.activeElement;
+  if(active && active.dataset && active.dataset.tier!==undefined && world.contains(active)){ renderEdges(); return; }
+  world.className = dir;
+  world.innerHTML = h;
+  renderEdges();
 }
 
-function renderLinks(){
-  const board = $("#board"), svg = $("#links");
-  if(!svg) return;
-  const br = board.getBoundingClientRect();
-  const P = {};
-  board.querySelectorAll(".card").forEach(el=>{
-    const r = el.getBoundingClientRect();
-    P[el.dataset.id] = {l:r.left-br.left, r:r.right-br.left, t:r.top-br.top, b:r.bottom-br.top, h:r.height, cy:(r.top+r.bottom)/2-br.top, col:+el.dataset.col};
-  });
-  svg.setAttribute("width", board.scrollWidth); svg.setAttribute("height", board.scrollHeight);
-  svg.setAttribute("viewBox", `0 0 ${board.scrollWidth} ${board.scrollHeight}`);
-
-  // decide sides, then spread endpoints that share a side
-  const ends = {};
-  const plan = S.links.filter(l=>P[l.from]&&P[l.to]).map(l=>{
-    const a=P[l.from], b=P[l.to];
-    let fs, ts;
-    if(b.col>a.col){fs="R";ts="L";} else if(b.col<a.col){fs="L";ts="R";} else {fs="L";ts="L";}
-    const p={l,a,b,fs,ts};
-    (ends[l.from+fs] ||= []).push({p,end:"f",oy:b.cy});
-    (ends[l.to+ts] ||= []).push({p,end:"t",oy:a.cy});
-    return p;
-  });
-  for(const k in ends){
-    const list = ends[k].sort((x,y)=>x.oy-y.oy), n=list.length;
-    list.forEach((e,i)=>{ const c=e.end==="f"?e.p.a:e.p.b; const step=Math.min(9,(c.h-14)/Math.max(1,n)); e.p[e.end+"y"] = c.cy + (i-(n-1)/2)*step; });
+function edgePath(e){
+  const a = L.xy[e.from], b = L.xy[e.to]; if(!a||!b) return null;
+  const la = L.layerOf[e.from], lb = L.layerOf[e.to];
+  const down = S.dir==="down";
+  let sx, sy, ex, ey, c1x, c1y, c2x, c2y;
+  if(lb > la){
+    if(down){ sx=a.x+W/2; sy=a.y+H; ex=b.x+W/2; ey=b.y-8; const d=Math.max(40,(ey-sy)*.5); c1x=sx; c1y=sy+d; c2x=ex; c2y=ey-d; }
+    else    { sx=a.x+W;   sy=a.y+H/2; ex=b.x-8; ey=b.y+H/2; const d=Math.max(40,(ex-sx)*.5); c1x=sx+d; c1y=sy; c2x=ex-d; c2y=ey; }
+  } else {
+    // same tier or backwards: loop around the outside
+    const span = Math.abs(la-lb)+1;
+    if(down){ sx=a.x+W; sy=a.y+H/2; ex=b.x+W+8; ey=b.y+H/2; const k=60+span*14; c1x=sx+k; c1y=sy; c2x=ex+k; c2y=ey; }
+    else    { sx=a.x+W/2; sy=a.y+H; ex=b.x+W/2; ey=b.y+H+8; const k=50+span*12; c1x=sx; c1y=sy+k; c2x=ex; c2y=ey+k; }
   }
-  const markers = new Set();
+  const f = v=>v.toFixed(1);
+  return {d:`M${f(sx)} ${f(sy)} C${f(c1x)} ${f(c1y)} ${f(c2x)} ${f(c2y)} ${f(ex)} ${f(ey)}`,
+    mx:(sx+3*c1x+3*c2x+ex)/8, my:(sy+3*c1y+3*c2y+ey)/8};
+}
+function renderEdges(){
+  const svg = $("#edges"); if(!svg) return;
+  const pad = 400, b = L.box;
+  const x0=b.x0-pad, y0=b.y0-pad, w=b.x1-b.x0+2*pad, hgt=b.y1-b.y0+2*pad;
+  Object.assign(svg.style,{left:x0+"px",top:y0+"px"});
+  svg.setAttribute("width",w); svg.setAttribute("height",hgt); svg.setAttribute("viewBox",`${x0} ${y0} ${w} ${hgt}`);
+  const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
+  const ts = !te && threadShow && S.threads.find(t=>t.id===threadShow);
+  const focus = te || ts;
+  const selIds = new Set(selectedIds());
+  const markers = new Set([KINDS.main.color]);
   let paths = "";
-  const nums = numbers();
-  const te = !!threadEdit;
-  plan.forEach(p=>{
-    const {l,a,b,fs,ts} = p;
-    const color = l.color || KINDS[l.kind].color;
-    markers.add(color);
-    const sx = fs==="R"?a.r:a.l, ex = ts==="R"?b.r:b.l, sy=p.fy, ey=p.ty;
-    let d, c1x, c2x;
-    if(fs==="L"&&ts==="L"){
-      const span = Math.abs(nums[l.to]-nums[l.from]);
-      const k = 22 + Math.min(span,9)*3.2;
-      c1x = sx-k; c2x = ex-k;
-    } else {
-      const dx = Math.max(36, Math.abs(ex-sx)*.42), dir = fs==="R"?1:-1;
-      c1x = sx+dir*dx; c2x = ex-dir*dx;
-    }
-    const exAdj = ex + (ts==="R"?7:-7);
-    d = `M${sx.toFixed(1)} ${sy.toFixed(1)} C${c1x.toFixed(1)} ${sy.toFixed(1)} ${c2x.toFixed(1)} ${ey.toFixed(1)} ${exAdj.toFixed(1)} ${ey.toFixed(1)}`;
+  // a highlighted thread is drawn as a soft ribbon through its scenes in reading order
+  if(focus){
+    const pts = focus.scenes.filter(id=>L.xy[id]).sort((a,b)=>L.num[a]-L.num[b]).map(id=>[L.xy[id].x+W/2, L.xy[id].y+H/2]);
+    if(pts.length>1) paths += `<path class="threadpath" stroke="${focus.color}" d="M${pts.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join(" L")}"/>`;
+  }
+  const hot = hoverId || (selIds.size===1 ? [...selIds][0] : null);
+  S.edges.forEach(e=>{
+    const p = edgePath(e); if(!p) return;
+    const color = e.color || KINDS[e.kind].color; markers.add(color);
     let cls = "lk";
-    if(sel&&sel.kind==="link"&&sel.id===l.id) cls+=" sel";
-    if(te || (hoverId && l.from!==hoverId && l.to!==hoverId)) cls+=" dim";
-    const mx=(sx+3*c1x+3*c2x+exAdj)/8, my=(sy+3*sy+3*ey+ey)/8;
-    paths += `<g class="${cls}" data-link="${l.id}" style="color:${color}">
-      <path class="vis" d="${d}" stroke="${color}" ${KINDS[l.kind].dash?`stroke-dasharray="${KINDS[l.kind].dash}"`:""} marker-end="url(#ah-${color.slice(1)})"/>
-      <path class="hit" d="${d}"><title>${nums[l.from]} → ${nums[l.to]} · ${KINDS[l.kind].label}${l.label?" · "+esc(l.label):""}</title></path>
-      ${l.label?`<text x="${mx.toFixed(1)}" y="${(my-5).toFixed(1)}" text-anchor="middle" fill="${color}">${esc(l.label)}</text>`:""}
+    if(sel?.kind==="link" && sel.id===e.id) cls+=" sel";
+    if(focus || (hot && e.from!==hot && e.to!==hot)) cls+=" dim";
+    paths += `<g class="${cls}" data-link="${e.id}" style="color:${color}">
+      <path class="vis" d="${p.d}" stroke="${color}" ${KINDS[e.kind].dash?`stroke-dasharray="${KINDS[e.kind].dash}"`:""} marker-end="url(#ah-${color.slice(1)})"/>
+      <path class="hit" d="${p.d}"><title>${L.num[e.from]} → ${L.num[e.to]} · ${KINDS[e.kind].label}${e.label?" · "+esc(e.label):""}</title></path>
+      ${e.label?`<text x="${p.mx.toFixed(1)}" y="${(p.my-6).toFixed(1)}" text-anchor="middle" fill="${color}">${esc(e.label)}</text>`:""}
     </g>`;
   });
   let defs = "<defs>";
-  markers.add(KINDS.main.color);
-  markers.forEach(c=>{ defs += `<marker id="ah-${c.slice(1)}" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`; });
-  defs += "</defs>";
-  svg.innerHTML = defs + paths + `<path class="tmp" id="tmpLine" d="" hidden/>`;
+  markers.forEach(c=>{ defs += `<marker id="ah-${c.slice(1)}" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`; });
+  svg.innerHTML = defs + "</defs>" + paths + `<path class="tmp" id="tmpLine" d="" visibility="hidden"/>`;
 }
 
-/* ================= rendering: threads + key ================= */
-function renderThreads(){
-  const nums = numbers(), total = Math.max(2, order().length);
-  $("#threads").innerHTML = S.threads.map(t=>{
-    const ids = t.scenes.filter(id=>nums[id]).sort((a,b)=>nums[a]-nums[b]);
-    const ticks = ids.map(id=>{ const pct = ((nums[id]-1)/(total-1))*100; return `<button class="tick" style="left:${pct}%" data-goto="${id}" title="Scene ${nums[id]}${S.scenes[id].title?": "+esc(S.scenes[id].title):""}"><i></i>${nums[id]}</button>`; }).join("");
-    const editing = threadEdit===t.id;
-    return `<div class="thread${editing?" editing":""}" style="--tc:${t.color}" data-thread="${t.id}">
-      <div class="tname"><button class="swatch" data-tcolor="${t.id}" title="Change colour" aria-label="Change colour"></button><input class="bare" data-tname="${t.id}" value="${esc(t.name)}" aria-label="Thread name" spellcheck="false"></div>
-      <div class="track">${ticks || `<span class="empty">No scenes yet. Use Edit.</span>`}</div>
-      <input class="bare tnote" data-tnote="${t.id}" value="${esc(t.note)}" placeholder="What is this thread?" aria-label="Thread note">
-      <div class="tactions"><button class="icon-btn" data-tedit="${t.id}" aria-pressed="${editing}">${editing?"Done":"Edit"}</button><button class="icon-btn" data-tdel="${t.id}" title="Delete thread" aria-label="Delete thread">${armedDelete==="t"+t.id?"Sure?":"×"}</button></div>
-    </div>`;
-  }).join("");
-  const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
-  $("#bannerSlot").innerHTML = te ? `<div class="banner" style="--tc:${te.color}"><span>Editing thread <b>${esc(te.name)}</b>. Click scenes on the map to add or remove them.</span><button class="btn" data-tedit="${te.id}">Done</button></div>` : "";
-}
-function renderKey(){
-  const ln = (k)=>`<svg class="ln" viewBox="0 0 38 10"><defs><marker id="k-${k}" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${KINDS[k].color}"/></marker></defs><path d="M1 5H30" stroke="${KINDS[k].color}" stroke-width="2" fill="none" ${KINDS[k].dash?`stroke-dasharray="${KINDS[k].dash}"`:""} marker-end="url(#k-${k})"/></svg>`;
-  $("#key").innerHTML = `
-    <li>${ICON.star()} Major scene (set-piece / revelation)</li>
-    <li>${ICON.diamond()} Choice (take one, lose others)</li>
-    <li>${ICON.paw()} Dog appearance (may be interactive)</li>
-    <li>${ICON.clue()} Significant clue / notebook entry</li>
-    <li>${ln("main")} Main path (always connects)</li>
-    <li>${ln("conditional")} Conditional route (item / state dependent)</li>
-    <li>${ln("optional")} Optional / secret route</li>
-    <li class="muted">Link colours are yours to assign, e.g. one per key item.</li>`;
+function renderLegend(){
+  const ln = k=>`<svg class="ln" viewBox="0 0 34 10"><path d="M1 5H26" stroke="${KINDS[k].color}" stroke-width="2" fill="none" ${KINDS[k].dash?`stroke-dasharray="${KINDS[k].dash}"`:""}/><path d="M25 1L33 5L25 9z" fill="${KINDS[k].color}"/></svg>`;
+  $("#legend").innerHTML = `<li>${ICON.star()} Major scene</li><li>${ICON.diamond()} Choice (take one, lose others)</li><li>${ICON.paw()} Dog appears</li><li>${ICON.clue()} Clue / notebook entry</li>
+    <li>${ln("main")} Main path</li><li>${ln("conditional")} Conditional route</li><li>${ln("optional")} Optional / secret route</li>`;
   $("#kindSeg").innerHTML = Object.entries(KINDS).map(([k,v])=>`<button data-kind="${k}" aria-pressed="${k===newKind}"><svg class="linesample" viewBox="0 0 26 8"><path d="M1 4H25" stroke="${v.color}" stroke-width="2" ${v.dash?`stroke-dasharray="${v.dash}"`:""}/></svg>${v.label.split(" ")[0]}</button>`).join("");
 }
 
-/* ================= rendering: side panel ================= */
+/* ---------- threads & notes panel ---------- */
+function renderBible(){
+  const open = !$("#bible").hidden;
+  $("#bibleBtn").setAttribute("aria-pressed", open);
+  if(!open) return;
+  const focusEl = document.activeElement;
+  if(focusEl && $("#tab-threads").contains(focusEl) && focusEl.tagName==="INPUT") return;
+  $("#tab-threads").innerHTML = S.threads.map(t=>{
+    const ids = t.scenes.filter(id=>L.num[id]).sort((a,b)=>L.num[a]-L.num[b]);
+    const editing = threadEdit===t.id, showing = threadShow===t.id;
+    return `<div class="thread${editing||showing?" active":""}" style="--tc:${t.color}">
+      <div class="tname"><button class="swatch" data-tcolor="${t.id}" title="Change colour" aria-label="Change colour"></button><input class="bare" data-tname="${t.id}" value="${esc(t.name)}" aria-label="Thread name" spellcheck="false"></div>
+      <input class="inp" data-tnote="${t.id}" value="${esc(t.note)}" placeholder="What is this thread?" aria-label="Thread note">
+      <div class="nums">${ids.map(id=>`<button data-goto="${id}" title="${esc(S.nodes[id].title||"Untitled scene")}">${L.num[id]}</button>`).join("") || `<span class="muted">No scenes yet.</span>`}</div>
+      <div class="row">
+        <button class="icon-btn" data-tedit="${t.id}" aria-pressed="${editing}">${editing?"Done picking":"Pick scenes"}</button>
+        <button class="icon-btn" data-tshow="${t.id}" aria-pressed="${showing}">${showing?"Hide on map":"Show on map"}</button>
+        <button class="icon-btn" data-tdel="${t.id}" style="margin-left:auto">${armed==="t"+t.id?"Click again to delete":"Delete"}</button>
+      </div></div>`;
+  }).join("") + `<button class="btn" id="addThread">+ Add thread</button>`;
+}
+function renderBanner(){
+  const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
+  $("#bannerSlot").innerHTML = te ? `<div class="banner" style="--tc:${te.color}"><span>Picking scenes for <b>${esc(te.name)}</b>. Click scenes to add or remove them.</span><button class="btn" data-tedit="${te.id}">Done</button></div>` : "";
+  $("#hint").hidden = !!te || !!sel;
+}
+
+/* ---------- editor panel ---------- */
+function linkRow(e, other, arrow){
+  const c = e.color||KINDS[e.kind].color;
+  return `<li><span style="color:${c}">${arrow}</span><button class="go" data-goto="${other}">${L.num[other]} · ${esc(S.nodes[other].title||"Untitled")}</button>
+    <button class="pill" style="color:${c}" data-openlink="${e.id}" title="Edit link">${e.kind}</button><button class="icon-btn" data-dellink="${e.id}" aria-label="Delete link">×</button></li>`;
+}
 function renderPanel(){
   const panel = $("#panel");
+  renderBanner();
   if(!sel){ panel.hidden = true; return; }
-  const nums = numbers();
+  let h = "";
   if(sel.kind==="scene"){
-    const id = sel.id, s = S.scenes[id], ai = actOf(id), a = S.acts[ai];
-    const out = S.links.filter(l=>l.from===id), inc = S.links.filter(l=>l.to===id);
-    const li = (l, other, dir) => `<li><span style="color:${l.color||KINDS[l.kind].color}">${dir}</span>
-        <button class="go" data-goto="${other}">${nums[other]} · ${esc(S.scenes[other].title||"Untitled")}</button>
-        <button class="pill" style="color:${l.color||KINDS[l.kind].color};background:none" data-openlink="${l.id}" title="Edit link">${l.kind}</button>
-        <button class="icon-btn" data-dellink="${l.id}" aria-label="Delete link">×</button></li>`;
-    const idx = a.scenes.indexOf(id);
-    panel.innerHTML = `<header style="--pc:${sceneColor(id)}"><span class="pnum">${nums[id]}</span><h3>Scene ${nums[id]}<small>Act ${ROMAN[ai]||ai+1} · ${esc(a.name)}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
-      <div class="pbody">
-        <div class="field"><label for="f-title">Title</label><input class="inp" id="f-title" value="${esc(s.title)}" placeholder="The Waiting Room"></div>
-        <div class="field"><label for="f-desc">One-line hook</label><input class="inp" id="f-desc" value="${esc(s.desc)}" placeholder="Three doors. The journey begins."></div>
-        <div class="field"><span class="flabel">Scene type</span>
-          <div class="seg" id="f-type">${[["normal","Standard",""],["major","Major",ICON.star()],["choice","Choice",ICON.diamond()]].map(([k,lab,ic])=>`<button data-type="${k}" aria-pressed="${s.type===k}">${ic?ic.replace("<svg","<svg width='14' height='14'"):""}${lab}</button>`).join("")}</div></div>
-        <div class="checks">
-          <label class="chk"><input type="checkbox" id="f-dog" ${s.dog?"checked":""}>${ICON.paw().replace("<svg","<svg width='14' height='14'")} Dog appears</label>
-          <label class="chk"><input type="checkbox" id="f-clue" ${s.clue?"checked":""}>${ICON.clue().replace("<svg","<svg width='14' height='14'")} Clue / notebook entry</label>
-        </div>
-        <div class="field"><span class="flabel">Threads</span>
-          <div class="checks">${S.threads.map(t=>`<button class="chip" style="--tc:${t.color}" data-tchip="${t.id}" aria-pressed="${t.scenes.includes(id)}"><i></i>${esc(t.name)}</button>`).join("") || `<span class="muted">No threads yet.</span>`}</div></div>
-        <div class="field"><label for="f-notes">Notes</label><textarea class="inp" id="f-notes" placeholder="What happens, what the player learns, items found, how it changes on a revisit…">${esc(s.notes)}</textarea></div>
-        <hr class="divider">
-        <div class="field"><span class="flabel">Leads to</span>${out.length?`<ul class="links-list">${out.map(l=>li(l,l.to,"→")).join("")}</ul>`:`<span class="muted">No outgoing links besides the default flow.</span>`}</div>
-        <div class="field"><span class="flabel">Reached from</span>${inc.length?`<ul class="links-list">${inc.map(l=>li(l,l.from,"←")).join("")}</ul>`:`<span class="muted">No incoming links.</span>`}</div>
-        <div class="field"><label for="f-linkto">Add link to scene number</label>
-          <div class="row"><input class="inp" id="f-linkto" type="number" min="1" max="${order().length}" style="width:90px">
-          <select class="inp" id="f-linkkind" style="width:auto">${Object.entries(KINDS).map(([k,v])=>`<option value="${k}" ${k===newKind?"selected":""}>${v.label}</option>`).join("")}</select>
-          <button class="btn" id="f-addlink">Add</button></div><span class="muted" id="f-linkmsg"></span></div>
-        <hr class="divider">
-        <div class="field"><span class="flabel">Position</span>
-          <div class="row"><button class="btn" id="f-up" ${idx===0?"disabled":""}>↑ Up</button><button class="btn" id="f-down" ${idx===a.scenes.length-1?"disabled":""}>↓ Down</button>
-          <select class="inp" id="f-act" style="width:auto" aria-label="Move to act">${S.acts.map((x,i)=>`<option value="${i}" ${i===ai?"selected":""}>Act ${ROMAN[i]||i+1} · ${esc(x.name)}</option>`).join("")}</select></div></div>
-        <div class="row"><button class="btn danger${armedDelete===id?" armed":""}" id="f-delete">${armedDelete===id?"Click again to delete scene "+nums[id]:"Delete scene"}</button></div>
-      </div>`;
-  } else {
-    const l = S.links.find(x=>x.id===sel.id); if(!l){ sel=null; panel.hidden=true; return; }
-    const color = l.color||KINDS[l.kind].color;
-    panel.innerHTML = `<header style="--pc:${color}"><span class="pnum" style="font-size:15px">⇢</span><h3>Link ${nums[l.from]} → ${nums[l.to]}<small>${KINDS[l.kind].label}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
-      <div class="pbody">
-        <ul class="links-list">
-          <li><span class="muted">From</span><button class="go" data-goto="${l.from}">${nums[l.from]} · ${esc(S.scenes[l.from].title||"Untitled")}</button><span></span><span></span></li>
-          <li><span class="muted">To</span><button class="go" data-goto="${l.to}">${nums[l.to]} · ${esc(S.scenes[l.to].title||"Untitled")}</button><span></span><span></span></li>
-        </ul>
-        <div class="field"><span class="flabel">Route type</span>
-          <div class="seg" id="l-kind">${Object.entries(KINDS).map(([k,v])=>`<button data-lkind="${k}" aria-pressed="${l.kind===k}">${v.label}</button>`).join("")}</div>
-          <span class="muted">${KINDS[l.kind].desc}</span></div>
-        <div class="field"><span class="flabel">Colour</span>
-          <div class="colors">${LINK_COLORS.map(c=>`<button style="--sw:${c}" data-lcolor="${c}" aria-pressed="${color===c}" aria-label="Colour ${c}"></button>`).join("")}</div></div>
-        <div class="field"><label for="l-label">Label on the map</label><input class="inp" id="l-label" value="${esc(l.label)}" placeholder="needs the red key"></div>
-        <div class="row"><button class="btn" id="l-reverse">⇄ Reverse direction</button><button class="btn danger" id="l-delete">Delete link</button></div>
-      </div>`;
+    const id = sel.id, s = S.nodes[id];
+    const out = S.edges.filter(e=>e.from===id), inc = S.edges.filter(e=>e.to===id);
+    const hasBoth = inc.some(e=>e.kind==="main") && out.some(e=>e.kind==="main");
+    h = `<header style="--pc:${nodeColor(id)}"><span class="pnum">${L.num[id]}</span><h3>Scene ${L.num[id]}<small>Tier ${L.layerOf[id]+1}${S.tiers[L.layerOf[id]]?" · "+esc(S.tiers[L.layerOf[id]]):""}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <div class="row"><button class="btn primary" data-act="branch1">+ 1 branch</button><button class="btn primary" data-act="branch3">+ 3 branches</button><button class="btn" data-act="before" title="Add a scene between this one and the scenes that lead into it">Insert before</button></div>
+      <div class="field"><label for="f-title">Title</label><input class="inp" id="f-title" value="${esc(s.title)}" placeholder="The Waiting Room"></div>
+      <div class="field"><label for="f-desc">One-line hook</label><input class="inp" id="f-desc" value="${esc(s.desc)}" placeholder="Three doors. The journey begins."></div>
+      <div class="field"><span class="flabel">Scene type</span>
+        <div class="seg">${[["normal","Standard",""],["major","Major",ICON.star()],["choice","Choice",ICON.diamond()]].map(([k,lab,ic])=>`<button data-type="${k}" aria-pressed="${s.type===k}">${ic?small(ic):""}${lab}</button>`).join("")}</div></div>
+      <div class="checks">
+        <label class="chk"><input type="checkbox" id="f-dog" ${s.dog?"checked":""}>${small(ICON.paw())} Dog appears</label>
+        <label class="chk"><input type="checkbox" id="f-clue" ${s.clue?"checked":""}>${small(ICON.clue())} Clue / notebook entry</label>
+      </div>
+      <div class="field"><span class="flabel">Threads</span>
+        <div class="checks">${S.threads.map(t=>`<button class="chip" style="--tc:${t.color}" data-tchip="${t.id}" aria-pressed="${t.scenes.includes(id)}"><i></i>${esc(t.name)}</button>`).join("") || `<span class="muted">No threads yet.</span>`}</div></div>
+      <div class="field"><label for="f-notes">Notes</label><textarea class="inp" id="f-notes" placeholder="What happens, what the player learns, items found…">${esc(s.notes)}</textarea></div>
+      <hr class="divider">
+      <div class="field"><span class="flabel">Leads to</span>${out.length?`<ul class="links-list">${out.map(e=>linkRow(e,e.to,"→")).join("")}</ul>`:`<span class="muted">Nothing yet. This is an ending.</span>`}</div>
+      <div class="field"><span class="flabel">Reached from</span>${inc.length?`<ul class="links-list">${inc.map(e=>linkRow(e,e.from,"←")).join("")}</ul>`:`<span class="muted">Nothing. This is a starting scene.</span>`}</div>
+      <div class="field"><label for="f-linkto">Link to scene number</label>
+        <div class="row"><input class="inp" id="f-linkto" type="number" min="1" max="${Object.keys(S.nodes).length}" style="width:90px">
+        <select class="inp" id="f-linkkind" style="width:auto">${Object.entries(KINDS).map(([k,v])=>`<option value="${k}" ${k===newKind?"selected":""}>${v.label}</option>`).join("")}</select>
+        <button class="btn" data-act="addlink">Add</button></div><span class="muted" id="f-linkmsg"></span></div>
+      <hr class="divider">
+      ${hasBoth?`<label class="chk" style="align-self:flex-start"><input type="checkbox" id="f-rejoin" checked> On delete, join the scenes before it to the scenes after it</label>`:""}
+      <div class="row"><button class="btn danger${armed===id?" armed":""}" data-act="delete">${armed===id?"Click again to delete scene "+L.num[id]:"Delete scene"}</button></div>
+      <p class="muted">Shift-click other scenes to select several, then join them into one.</p>
+    </div>`;
+  } else if(sel.kind==="multi"){
+    const ids = sel.ids.slice().sort((a,b)=>L.num[a]-L.num[b]);
+    h = `<header><span class="pnum">${ids.length}</span><h3>${ids.length} scenes<small>${ids.map(id=>L.num[id]).join(", ")}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <button class="btn primary" data-act="join">⤳ Join into one new scene</button>
+      <p class="muted">Adds a scene that all ${ids.length} lead into, the way branches converge on the diamond.</p>
+      <div class="field"><label for="m-linkto">Or link them all to scene number</label>
+        <div class="row"><input class="inp" id="m-linkto" type="number" min="1" style="width:90px"><button class="btn" data-act="linkall">Link all</button></div><span class="muted" id="m-linkmsg"></span></div>
+      <ul class="links-list">${ids.map(id=>`<li><span class="muted">${L.num[id]}</span><button class="go" data-goto="${id}">${esc(S.nodes[id].title||"Untitled scene")}</button><span></span><span></span></li>`).join("")}</ul>
+      <div class="row"><button class="btn danger${armed==="multi"?" armed":""}" data-act="deleteall">${armed==="multi"?"Click again to delete "+ids.length+" scenes":"Delete these scenes"}</button></div>
+    </div>`;
+  } else if(sel.kind==="link"){
+    const e = S.edges.find(x=>x.id===sel.id); if(!e){ sel=null; panel.hidden=true; return; }
+    const c = e.color||KINDS[e.kind].color;
+    h = `<header style="--pc:${c}"><span class="pnum">⇢</span><h3>Link ${L.num[e.from]} → ${L.num[e.to]}<small>${KINDS[e.kind].label}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <ul class="links-list">
+        <li><span class="muted">From</span><button class="go" data-goto="${e.from}">${L.num[e.from]} · ${esc(S.nodes[e.from].title||"Untitled")}</button><span></span><span></span></li>
+        <li><span class="muted">To</span><button class="go" data-goto="${e.to}">${L.num[e.to]} · ${esc(S.nodes[e.to].title||"Untitled")}</button><span></span><span></span></li>
+      </ul>
+      <div class="field"><span class="flabel">Route type</span>
+        <div class="seg">${Object.entries(KINDS).map(([k,v])=>`<button data-lkind="${k}" aria-pressed="${e.kind===k}">${v.label}</button>`).join("")}</div>
+        <span class="muted">${KINDS[e.kind].desc}</span></div>
+      <div class="field"><span class="flabel">Colour</span><div class="colors">${LINK_COLORS.map(x=>`<button style="--sw:${x}" data-lcolor="${x}" aria-pressed="${c===x}" aria-label="Colour ${x}"></button>`).join("")}</div></div>
+      <div class="field"><label for="l-label">Label on the map</label><input class="inp" id="l-label" value="${esc(e.label)}" placeholder="needs the red key"></div>
+      <div class="row"><button class="btn primary" data-act="insert">+ Insert scene on this link</button></div>
+      <div class="row"><button class="btn" data-act="reverse">⇄ Reverse</button><button class="btn danger" data-act="dellink">Delete link</button></div>
+    </div>`;
+  } else if(sel.kind==="generate"){
+    const {b,d,shape} = sel; const st = shapeText(b,d,shape);
+    h = `<header><span class="pnum">✦</span><h3>New map<small>Start from a fresh branching shape</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <div class="field"><span class="flabel">Shape</span><div class="seg">${[["diamond","Diamond (branch, then rejoin)"],["tree","Tree (branch only)"]].map(([k,l])=>`<button data-gshape="${k}" aria-pressed="${shape===k}">${l}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Each scene branches into</span><div class="seg">${[2,3,4].map(n=>`<button data-gb="${n}" aria-pressed="${b===n}">${n}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Tiers until the widest point</span><div class="seg">${[1,2,3,4].map(n=>`<button data-gd="${n}" aria-pressed="${d===n}">${n}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Scenes per tier</span><span class="shape">${st.text}</span><span class="muted">${st.total} scenes in total${st.total>150?". That's a lot; it may feel slow.":""}</span></div>
+      <p class="muted">This replaces the current map. Your threads and notes stay, but scene assignments are cleared. Undo brings the old map back.</p>
+      <button class="btn primary" data-act="generate">Replace map with this shape</button>
+    </div>`;
   }
+  panel.innerHTML = h;
   panel.hidden = false;
 }
-function renderAll(){ renderMeta(); renderKey(); renderBoard(); renderThreads(); renderStats(); renderPanel(); syncHistoryBtns(); }
+function renderAll(){ renderMap(); renderMeta(); renderLegend(); renderStats(); renderPanel(); renderBible(); syncHistoryBtns(); applyView(); }
 
-/* ================= actions ================= */
-function select(s){ sel = s; armedDelete=null; renderBoard(); renderPanel(); }
-function gotoScene(id){
-  select({kind:"scene",id});
-  const el = document.querySelector(`.card[data-id="${id}"]`);
-  if(el){ el.scrollIntoView({behavior:"smooth",block:"center",inline:"center"}); el.focus({preventScroll:true}); }
-}
-function addLink(from,to,kind){
+/* ================= graph actions ================= */
+function addEdge(from,to,kind,silent){
   if(from===to) return "A scene can't link to itself.";
-  if(S.links.some(l=>l.from===from&&l.to===to)) return "Those scenes are already linked.";
-  const l = {id:uid("l"),from,to,kind,color:KINDS[kind].color,label:""};
-  mutate(()=>S.links.push(l));
-  return l;
+  if(S.edges.some(e=>e.from===from&&e.to===to)) return "Those scenes are already linked.";
+  const e = {id:uid("e"),from,to,kind,color:KINDS[kind].color,label:""};
+  if(silent) S.edges.push(e); else mutate(()=>S.edges.push(e));
+  return e;
 }
-function deleteScene(id){
+function addBranches(id,n){
+  const made = [];
+  mutate(()=>{ for(let i=0;i<n;i++){ const c=uid("n"); S.nodes[c]=newScene(); S.edges.push({id:uid("e"),from:id,to:c,kind:"main",color:KINDS.main.color,label:""}); made.push(c); } });
+  return made;
+}
+function insertBefore(id){
+  const c = uid("n");
   mutate(()=>{
-    S.acts.forEach(a=>a.scenes=a.scenes.filter(x=>x!==id));
-    delete S.scenes[id];
-    S.links = S.links.filter(l=>l.from!==id&&l.to!==id);
-    S.threads.forEach(t=>t.scenes=t.scenes.filter(x=>x!==id));
+    S.nodes[c]=newScene();
+    S.edges.forEach(e=>{ if(e.to===id && e.kind==="main") e.to=c; });
+    S.edges.push({id:uid("e"),from:c,to:id,kind:"main",color:KINDS.main.color,label:""});
   });
-  sel=null; renderPanel();
+  return c;
+}
+function insertOnLink(eid){
+  const e = S.edges.find(x=>x.id===eid), c = uid("n");
+  mutate(()=>{ S.nodes[c]=newScene(); S.edges.push({id:uid("e"),from:c,to:e.to,kind:e.kind,color:e.color,label:""}); e.to=c; });
+  return c;
+}
+function removeNodes(ids, rejoin){
+  mutate(()=>{
+    ids.forEach(id=>{
+      if(rejoin){
+        const ps = S.edges.filter(e=>e.to===id&&e.kind==="main").map(e=>e.from);
+        const cs = S.edges.filter(e=>e.from===id&&e.kind==="main").map(e=>e.to);
+        ps.forEach(p=>cs.forEach(c=>{ if(p!==c && !S.edges.some(e=>e.from===p&&e.to===c)) S.edges.push({id:uid("e"),from:p,to:c,kind:"main",color:KINDS.main.color,label:""}); }));
+      }
+      delete S.nodes[id];
+      S.edges = S.edges.filter(e=>e.from!==id&&e.to!==id);
+      S.threads.forEach(t=>t.scenes=t.scenes.filter(x=>x!==id));
+    });
+  });
 }
 function toggleThread(tid,id){
   const t = S.threads.find(x=>x.id===tid); if(!t) return;
   mutate(()=>{ t.scenes = t.scenes.includes(id) ? t.scenes.filter(x=>x!==id) : [...t.scenes,id]; });
 }
+function select(s){
+  if(!s && document.activeElement && $("#panel").contains(document.activeElement)) document.activeElement.blur();
+  sel=s; armed=null; renderMap(); renderPanel();
+}
+function gotoScene(id, zoomTo){
+  select({kind:"scene",id});
+  const p = L.xy[id]; if(!p) return;
+  const r = $("#viewport").getBoundingClientRect();
+  const k = zoomTo ? Math.max(view.k, .8) : view.k;
+  // centre the scene in the part of the canvas not covered by side panels
+  const right = $("#panel").hidden || innerWidth<720 ? 0 : 380, left = $("#bible").hidden || innerWidth<720 ? 0 : 380;
+  animateTo(k, left + (r.width-left-right)/2 - (p.x+W/2)*k, r.height/2 - (p.y+H/2)*k);
+}
 
-/* ================= events ================= */
-const board = $("#board");
-board.addEventListener("click", e=>{
-  const hit = e.target.closest("[data-link]");
-  if(e.target.classList.contains("hit") && hit){ select({kind:"link",id:hit.dataset.link}); return; }
-  const addS = e.target.closest("[data-add-scene]");
-  if(addS){ const ai=+addS.dataset.addScene, id=uid("s"); mutate(()=>{ S.scenes[id]={title:"",desc:"",type:"normal",dog:false,clue:false,notes:""}; S.acts[ai].scenes.push(id); }); gotoScene(id); setTimeout(()=>$("#f-title")?.focus(),50); return; }
-  if(e.target.id==="addAct"){ mutate(()=>S.acts.push({id:uid("a"),name:"New act",subtitle:"",color:ACT_COLORS[S.acts.length%ACT_COLORS.length],scenes:[]})); return; }
-  const delA = e.target.closest("[data-del-act]");
-  if(delA){ const ai=+delA.dataset.delAct; if(!S.acts[ai].scenes.length) mutate(()=>S.acts.splice(ai,1)); return; }
-  const card = e.target.closest(".card");
-  if(card && !e.target.closest(".handle")){
-    if(threadEdit){ toggleThread(threadEdit, card.dataset.id); return; }
-    select({kind:"scene",id:card.dataset.id});
+/* ================= pan & zoom ================= */
+const vp = $("#viewport");
+function applyView(){
+  $("#world").style.transform = `translate(${view.tx}px,${view.ty}px) scale(${view.k})`;
+  $("#zoomPct").textContent = Math.round(view.k*100)+"%";
+}
+function zoomAt(k, px, py){
+  k = Math.min(2.5, Math.max(0.05, k));
+  view.tx = px - (px-view.tx)*(k/view.k); view.ty = py - (py-view.ty)*(k/view.k); view.k = k; applyView();
+}
+let anim = null;
+function animateTo(k,tx,ty){
+  cancelAnimationFrame(anim);
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ Object.assign(view,{k,tx,ty}); applyView(); return; }
+  const s = {...view}, t0 = performance.now();
+  const step = t=>{ const u=Math.min(1,(t-t0)/280), e=1-Math.pow(1-u,3);
+    view.k=s.k+(k-s.k)*e; view.tx=s.tx+(tx-s.tx)*e; view.ty=s.ty+(ty-s.ty)*e; applyView(); if(u<1) anim=requestAnimationFrame(step); };
+  anim = requestAnimationFrame(step);
+}
+function fit(animated=true){
+  const r = vp.getBoundingClientRect(), b = L.box;
+  const m = 90, bw = b.x1-b.x0 + 2*m, bh = b.y1-b.y0 + 2*m + 70;
+  const k = Math.min(1.2, Math.max(0.05, Math.min(r.width/bw, r.height/bh)));
+  const tx = r.width/2 - ((b.x0+b.x1)/2)*k, ty = r.height/2 - ((b.y0+b.y1)/2 - 35)*k;
+  if(animated) animateTo(k,tx,ty); else { Object.assign(view,{k,tx,ty}); applyView(); }
+}
+vp.addEventListener("wheel", e=>{
+  e.preventDefault();
+  const r = vp.getBoundingClientRect();
+  const dy = e.deltaMode===1 ? e.deltaY*16 : e.deltaY;
+  zoomAt(view.k*Math.exp(-dy*(e.ctrlKey?0.01:0.0015)), e.clientX-r.left, e.clientY-r.top);
+},{passive:false});
+$("#zoomIn").onclick = ()=>{ const r=vp.getBoundingClientRect(); zoomAt(view.k*1.25, r.width/2, r.height/2); };
+$("#zoomOut").onclick = ()=>{ const r=vp.getBoundingClientRect(); zoomAt(view.k/1.25, r.width/2, r.height/2); };
+$("#zoomFit").onclick = ()=>fit();
+
+const pointers = new Map();
+let pan = null, pinch = null, drag = null, moved = false;
+function toWorld(cx,cy){ const r=vp.getBoundingClientRect(); return {x:(cx-r.left-view.tx)/view.k, y:(cy-r.top-view.ty)/view.k}; }
+vp.addEventListener("pointerdown", e=>{
+  const h = e.target.closest(".handle");
+  if(h){ e.preventDefault(); vp.setPointerCapture(e.pointerId); drag={from:h.dataset.handle,target:null,sx:e.clientX,sy:e.clientY,moved:false}; return; }
+  if(e.target.closest(".node,.hit,input,button")) { moved=false; return; }
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  vp.setPointerCapture(e.pointerId);
+  moved = false;
+  if(pointers.size===1){ pan={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty}; vp.classList.add("panning"); }
+  if(pointers.size===2){ const [a,b]=[...pointers.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),k:view.k}; pan=null; }
+});
+vp.addEventListener("pointermove", e=>{
+  if(drag){
+    if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>5) drag.moved=true;
+    if(!drag.moved) return;
+    const a = L.xy[drag.from], down = S.dir==="down";
+    const sx = down? a.x+W/2 : a.x+W, sy = down? a.y+H : a.y+H/2;
+    const p = toWorld(e.clientX,e.clientY);
+    const tmp = $("#tmpLine"); tmp.setAttribute("visibility","visible");
+    tmp.setAttribute("d", down ? `M${sx} ${sy} C${sx} ${sy+60} ${p.x} ${p.y-60} ${p.x} ${p.y}` : `M${sx} ${sy} C${sx+60} ${sy} ${p.x-60} ${p.y} ${p.x} ${p.y}`);
+    const under = document.elementFromPoint(e.clientX,e.clientY)?.closest(".node");
+    const tid = under && under.dataset.id!==drag.from ? under.dataset.id : null;
+    if(tid!==drag.target){ document.querySelector(".droptarget")?.classList.remove("droptarget"); if(tid) under.classList.add("droptarget"); drag.target=tid; }
+    drag.wx=p.x; drag.wy=p.y;
+    return;
+  }
+  if(!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch && pointers.size===2){
+    const [a,b]=[...pointers.values()], r=vp.getBoundingClientRect();
+    zoomAt(pinch.k*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d, (a.x+b.x)/2-r.left, (a.y+b.y)/2-r.top); moved=true;
+  } else if(pan){
+    const dx=e.clientX-pan.x, dy=e.clientY-pan.y;
+    if(Math.abs(dx)+Math.abs(dy)>3) moved=true;
+    view.tx=pan.tx+dx; view.ty=pan.ty+dy; applyView();
   }
 });
-board.addEventListener("keydown", e=>{
-  const card = e.target.closest?.(".card");
-  if(card && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); card.click(); }
-});
-board.addEventListener("input", e=>{
-  const t=e.target;
-  if(t.dataset.actName!==undefined) mutate(()=>S.acts[+t.dataset.actName].name=t.value, "an"+t.dataset.actName);
-  if(t.dataset.actSub!==undefined) mutate(()=>S.acts[+t.dataset.actSub].subtitle=t.value, "as"+t.dataset.actSub);
-});
-board.addEventListener("focusout", e=>{ if(e.target.dataset && (e.target.dataset.actName!==undefined||e.target.dataset.actSub!==undefined)) setTimeout(renderBoard,0); });
-board.addEventListener("pointerover", e=>{
-  if(drag||threadEdit) return;
-  const card = e.target.closest(".card"); const id = card?card.dataset.id:null;
-  if(id!==hoverId){ hoverId=id; applyHover(); }
-});
-board.addEventListener("pointerleave", ()=>{ if(hoverId){ hoverId=null; applyHover(); } });
-function applyHover(){
-  // lightweight: toggle classes without re-rendering
-  const linked = hoverId ? new Set(S.links.filter(l=>l.from===hoverId||l.to===hoverId).flatMap(l=>[l.from,l.to])) : null;
-  if(!threadEdit) board.querySelectorAll(".card").forEach(el=>el.classList.toggle("dim", !!linked && !linked.has(el.dataset.id) && el.dataset.id!==hoverId && linked.size>0));
-  board.querySelectorAll(".lk").forEach(g=>{ const l=S.links.find(x=>x.id===g.dataset.link); g.classList.toggle("dim", !!threadEdit || (!!hoverId && l && l.from!==hoverId && l.to!==hoverId)); });
+function endPointer(e){
+  if(drag){
+    const d = drag; drag = null;
+    $("#tmpLine")?.setAttribute("visibility","hidden");
+    document.querySelector(".droptarget")?.classList.remove("droptarget");
+    if(!d.moved){ const [c]=addBranches(d.from,1); gotoScene(c); focusTitle(); return; }
+    if(d.target){ const r=addEdge(d.from,d.target,newKind); if(typeof r==="object") select({kind:"link",id:r.id}); }
+    else { const [c]=addBranches(d.from,1); gotoScene(c); focusTitle(); }
+    return;
+  }
+  pointers.delete(e.pointerId);
+  if(pointers.size<2) pinch=null;
+  if(!pointers.size){
+    vp.classList.remove("panning");
+    if(pan && !moved && !e.target.closest(".node,.hit") && e.type==="pointerup"){ if(sel && sel.kind!=="generate") select(null); }
+    pan=null;
+  }
 }
+vp.addEventListener("pointerup", endPointer);
+vp.addEventListener("pointercancel", e=>{ if(drag){ drag=null; $("#tmpLine")?.setAttribute("visibility","hidden"); } pointers.delete(e.pointerId); pan=null; pinch=null; vp.classList.remove("panning"); });
+function focusTitle(){ setTimeout(()=>{ const t=$("#f-title"); if(t && innerWidth>720) t.focus(); },60); }
 
-/* drag-to-link */
-let drag = null;
-board.addEventListener("pointerdown", e=>{
-  const h = e.target.closest(".handle"); if(!h) return;
-  e.preventDefault(); h.setPointerCapture(e.pointerId);
-  drag = {from:h.dataset.handle, pid:e.pointerId, target:null};
+/* ================= events ================= */
+vp.addEventListener("click", e=>{
+  if(e.target.closest(".handle")) return;
+  const hit = e.target.closest("[data-link]");
+  if(e.target.classList.contains("hit") && hit){ select({kind:"link",id:hit.dataset.link}); return; }
+  const node = e.target.closest(".node"); if(!node) return;
+  const id = node.dataset.id;
+  if(threadEdit){ toggleThread(threadEdit,id); return; }
+  if(e.shiftKey || e.metaKey || e.ctrlKey){
+    const cur = selectedIds();
+    const ids = cur.includes(id) ? cur.filter(x=>x!==id) : [...cur,id];
+    select(ids.length===0 ? null : ids.length===1 ? {kind:"scene",id:ids[0]} : {kind:"multi",ids});
+    return;
+  }
+  select({kind:"scene",id});
 });
-board.addEventListener("pointermove", e=>{
-  if(!drag) return;
-  const br = board.getBoundingClientRect();
-  const fromEl = board.querySelector(`.card[data-id="${drag.from}"]`).getBoundingClientRect();
-  const sx = fromEl.right-br.left, sy=(fromEl.top+fromEl.bottom)/2-br.top, ex=e.clientX-br.left, ey=e.clientY-br.top;
-  const tmp = $("#tmpLine"); tmp.removeAttribute("hidden");
-  tmp.setAttribute("d", `M${sx} ${sy} C${sx+60} ${sy} ${ex-60} ${ey} ${ex} ${ey}`);
-  const under = document.elementFromPoint(e.clientX,e.clientY)?.closest(".card");
-  const tid = under && under.dataset.id!==drag.from ? under.dataset.id : null;
-  if(tid!==drag.target){ board.querySelector(".droptarget")?.classList.remove("droptarget"); if(tid) under.classList.add("droptarget"); drag.target=tid; }
-  // auto-scroll the board horizontally near its edges
-  const sr = $("#boardScroll").getBoundingClientRect();
-  if(e.clientX > sr.right-40) $("#boardScroll").scrollLeft += 14; else if(e.clientX < sr.left+40) $("#boardScroll").scrollLeft -= 14;
+vp.addEventListener("dblclick", e=>{ if(e.target.closest(".node")) focusTitle(); });
+vp.addEventListener("keydown", e=>{ const n=e.target.closest?.(".node"); if(n && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); n.click(); } });
+vp.addEventListener("input", e=>{ const t=e.target; if(t.dataset.tier!==undefined) mutate(()=>{ if(t.value) S.tiers[t.dataset.tier]=t.value; else delete S.tiers[t.dataset.tier]; }, "tier"+t.dataset.tier); });
+vp.addEventListener("focusout", e=>{ if(e.target.dataset?.tier!==undefined) setTimeout(renderMap,0); });
+vp.addEventListener("pointerover", e=>{
+  if(drag||threadEdit||pan) return;
+  const n = e.target.closest(".node"); const id = n?n.dataset.id:null;
+  if(id!==hoverId){ hoverId=id; renderEdges(); }
 });
-function endDrag(){
-  if(!drag) return;
-  const {from,target} = drag; drag=null;
-  $("#tmpLine")?.setAttribute("hidden","");
-  board.querySelector(".droptarget")?.classList.remove("droptarget");
-  if(target){ const r = addLink(from,target,newKind); if(typeof r==="object") select({kind:"link",id:r.id}); }
-}
-board.addEventListener("pointerup", endDrag);
-board.addEventListener("pointercancel", ()=>{ drag=null; $("#tmpLine")?.setAttribute("hidden",""); });
+vp.addEventListener("pointerleave", ()=>{ if(hoverId){ hoverId=null; renderEdges(); } });
 
-/* header + notes */
-for(const k of ["title","subtitle","tagline","quote","aside"]){
-  $("#m-"+k).addEventListener("input", e=>{ mutate(()=>S.meta[k]=e.target.value, "m"+k); if(e.target.tagName==="TEXTAREA") autosize(e.target); if(k==="title") document.title=e.target.value||"Story map"; });
-}
+for(const k of ["title","subtitle"]) $("#m-"+k).addEventListener("input", e=>{ mutate(()=>S.meta[k]=e.target.value, "m"+k); if(k==="title") document.title=e.target.value||"Story map"; });
 $("#notes").addEventListener("input", e=>mutate(()=>S.notes=e.target.value, "notes"));
 
-/* toolbar */
 $("#undo").onclick = undo; $("#redo").onclick = redo;
-$("#kindSeg").addEventListener("click", e=>{ const b=e.target.closest("[data-kind]"); if(b){ newKind=b.dataset.kind; renderKey(); } });
-let resetTimer;
-$("#reset").onclick = e=>{
-  const b = e.currentTarget;
-  if(!b.classList.contains("armed")){ b.classList.add("armed"); b.textContent="Click again to wipe the map"; clearTimeout(resetTimer); resetTimer=setTimeout(()=>{b.classList.remove("armed");b.textContent="Reset to blank";},3500); return; }
-  b.classList.remove("armed"); b.textContent="Reset to blank";
-  undoStack.push(clone(S)); redoStack=[]; const seqKeep=S.seq; S = blankMap(); S.seq=seqKeep; S.updatedAt=Date.now(); sel=null; threadEdit=null; renderAll(); persistLocal(true); scheduleSave();
-  flash("Map reset. Undo brings it back.");
-};
-$("#export").onclick = async ()=>{
-  const data = JSON.stringify(S,null,2), name = (S.meta.title||"story-map").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".json";
-  const dl = await capability("downloads");
-  if(dl){ try{ await dl.save({filename:name,data}); return; }catch(err){ if(err&&err.code==="declined") return; } }
-  try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type:"application/json"})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }catch{}
-  try{ await navigator.clipboard.writeText(data); flash("JSON copied to clipboard."); }catch{}
-};
-$("#importFile").onchange = e=>{
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=>{ try{ const d=JSON.parse(r.result); validate(d); undoStack.push(clone(S)); redoStack=[]; S=d; S.updatedAt=Date.now(); sel=null; threadEdit=null; renderAll(); persistLocal(true); scheduleSave(); flash("Imported "+f.name+"."); }catch(err){ flash("That file isn't a story map export: "+err.message, true); } e.target.value=""; };
-  r.readAsText(f);
-};
-function validate(d){
-  if(!d||!Array.isArray(d.acts)||typeof d.scenes!=="object"||!Array.isArray(d.links)||!Array.isArray(d.threads)) throw new Error("missing acts, scenes, links or threads");
-  d.meta ||= {}; d.notes ??= ""; d.seq ??= 1000;
-  d.acts.forEach(a=>a.scenes=a.scenes.filter(id=>d.scenes[id]));
-  d.links = d.links.filter(l=>d.scenes[l.from]&&d.scenes[l.to]&&KINDS[l.kind]);
-}
+$("#kindSeg").addEventListener("click", e=>{ const b=e.target.closest("[data-kind]"); if(b){ newKind=b.dataset.kind; renderLegend(); } });
+$("#dirSeg").addEventListener("click", e=>{ const b=e.target.closest("[data-dir]"); if(b && b.dataset.dir!==S.dir){ mutate(()=>S.dir=b.dataset.dir); renderMeta(); fit(false); } });
+$("#newMap").onclick = ()=>select({kind:"generate",b:3,d:3,shape:"diamond"});
 
-/* threads */
-$("#threads").addEventListener("click", e=>{
-  const t=e.target;
-  const g = t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto); return; }
-  const ed = t.closest("[data-tedit]"); if(ed){ toggleThreadEdit(ed.dataset.tedit); return; }
-  const sw = t.closest("[data-tcolor]"); if(sw){ const th=S.threads.find(x=>x.id===sw.dataset.tcolor); mutate(()=>th.color=THREAD_COLORS[(THREAD_COLORS.indexOf(th.color)+1)%THREAD_COLORS.length]); return; }
-  const del = t.closest("[data-tdel]");
-  if(del){ const id=del.dataset.tdel; if(armedDelete!=="t"+id){ armedDelete="t"+id; renderThreads(); return; } armedDelete=null; if(threadEdit===id) threadEdit=null; mutate(()=>S.threads=S.threads.filter(x=>x.id!==id)); renderPanel(); }
+/* bible */
+$("#bibleBtn").onclick = ()=>{ $("#bible").hidden = !$("#bible").hidden; renderBible(); };
+$("#bibleClose").onclick = ()=>{ $("#bible").hidden = true; renderBible(); };
+document.querySelector("#bible .tabs").addEventListener("click", e=>{
+  const b=e.target.closest("[data-tab]"); if(!b) return;
+  document.querySelectorAll("#bible [data-tab]").forEach(x=>x.setAttribute("aria-selected", x===b));
+  $("#tab-threads").hidden = b.dataset.tab!=="threads"; $("#tab-notes").hidden = b.dataset.tab!=="notes";
 });
-$("#threads").addEventListener("input", e=>{
+$("#tab-threads").addEventListener("click", e=>{
   const t=e.target;
-  if(t.dataset.tname){ const th=S.threads.find(x=>x.id===t.dataset.tname); mutateQuiet(()=>th.name=t.value, "tn"+th.id); }
-  if(t.dataset.tnote){ const th=S.threads.find(x=>x.id===t.dataset.tnote); mutateQuiet(()=>th.note=t.value, "tt"+th.id); }
+  const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto,true); return; }
+  const ed=t.closest("[data-tedit]"); if(ed){ toggleThreadEdit(ed.dataset.tedit); return; }
+  const sh=t.closest("[data-tshow]"); if(sh){ threadShow = threadShow===sh.dataset.tshow ? null : sh.dataset.tshow; renderMap(); renderBible(); return; }
+  const sw=t.closest("[data-tcolor]"); if(sw){ const th=S.threads.find(x=>x.id===sw.dataset.tcolor); mutate(()=>th.color=THREAD_COLORS[(THREAD_COLORS.indexOf(th.color)+1)%THREAD_COLORS.length]); return; }
+  const del=t.closest("[data-tdel]");
+  if(del){ const id=del.dataset.tdel; if(armed!=="t"+id){ armed="t"+id; renderBible(); return; } armed=null; if(threadEdit===id) threadEdit=null; if(threadShow===id) threadShow=null; mutate(()=>S.threads=S.threads.filter(x=>x.id!==id)); return; }
+  if(t.id==="addThread"){ const id=uid("t"); mutate(()=>S.threads.push({id,name:"New thread",color:THREAD_COLORS[S.threads.length%THREAD_COLORS.length],scenes:[],note:""})); const inp=document.querySelector(`[data-tname="${id}"]`); inp?.focus(); inp?.select(); }
 });
-// text edits inside the threads list: record undo + save, but don't rebuild the list under the cursor
-function mutateQuiet(fn,key){
-  const now=Date.now();
-  if(key!==lastMutKey || now-lastMutAt>1200){ undoStack.push(clone(S)); redoStack=[]; }
-  fn(); lastMutAt=now; lastMutKey=key; S.updatedAt=now;
-  const b=$("#bannerSlot b"); if(b && threadEdit) b.textContent=S.threads.find(x=>x.id===threadEdit)?.name||"";
-  renderBoard(); renderStats(); syncHistoryBtns(); persistLocal(true); scheduleSave();
-  if(sel&&sel.kind==="scene") renderPanel();
-}
+$("#tab-threads").addEventListener("input", e=>{
+  const t=e.target;
+  if(t.dataset.tname){ const th=S.threads.find(x=>x.id===t.dataset.tname); mutate(()=>th.name=t.value,"tn"+th.id); }
+  if(t.dataset.tnote){ const th=S.threads.find(x=>x.id===t.dataset.tnote); mutate(()=>th.note=t.value,"tt"+th.id); }
+});
 $("#bannerSlot").addEventListener("click", e=>{ const ed=e.target.closest("[data-tedit]"); if(ed) toggleThreadEdit(ed.dataset.tedit); });
-function toggleThreadEdit(id){ threadEdit = threadEdit===id ? null : id; hoverId=null; if(threadEdit){ sel=null; renderPanel(); } renderThreads(); renderBoard(); if(threadEdit) $("#boardScroll").scrollIntoView({behavior:"smooth",block:"start"}); }
-$("#addThread").onclick = ()=>{ const id=uid("t"); mutate(()=>S.threads.push({id,name:"New thread",color:THREAD_COLORS[S.threads.length%THREAD_COLORS.length],scenes:[],note:""})); const inp=document.querySelector(`[data-tname="${id}"]`); inp?.focus(); inp?.select(); };
+function toggleThreadEdit(id){
+  threadEdit = threadEdit===id ? null : id; hoverId=null;
+  if(threadEdit){ sel=null; if(innerWidth<720) $("#bible").hidden=true; }
+  renderMap(); renderPanel(); renderBible();
+}
 
-/* panel */
+/* editor panel */
 const panel = $("#panel");
 panel.addEventListener("click", e=>{
   const t=e.target;
   if(t.closest("#pclose")){ select(null); return; }
   const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto); return; }
   const ol=t.closest("[data-openlink]"); if(ol){ select({kind:"link",id:ol.dataset.openlink}); return; }
-  const dl=t.closest("[data-dellink]"); if(dl){ mutate(()=>S.links=S.links.filter(l=>l.id!==dl.dataset.dellink)); renderPanel(); return; }
+  const dl=t.closest("[data-dellink]"); if(dl){ mutate(()=>S.edges=S.edges.filter(x=>x.id!==dl.dataset.dellink)); return; }
+  const act = t.closest("[data-act]")?.dataset.act;
   if(sel?.kind==="scene"){
-    const id=sel.id, s=S.scenes[id];
-    const ty=t.closest("[data-type]"); if(ty){ mutate(()=>s.type=ty.dataset.type); renderPanel(); return; }
-    const ch=t.closest("[data-tchip]"); if(ch){ toggleThread(ch.dataset.tchip,id); renderPanel(); return; }
-    if(t.closest("#f-addlink")){
-      const n=+$("#f-linkto").value, target=order()[n-1];
-      if(!target){ $("#f-linkmsg").textContent=`Enter a scene number from 1 to ${order().length}.`; return; }
-      const r=addLink(id,target.id,$("#f-linkkind").value);
-      if(typeof r==="string"){ $("#f-linkmsg").textContent=r; return; }
-      renderPanel(); return;
+    const id=sel.id, s=S.nodes[id];
+    const ty=t.closest("[data-type]"); if(ty){ mutate(()=>s.type=ty.dataset.type); return; }
+    const ch=t.closest("[data-tchip]"); if(ch){ toggleThread(ch.dataset.tchip,id); return; }
+    if(act==="branch1"){ const [c]=addBranches(id,1); gotoScene(c); focusTitle(); return; }
+    if(act==="branch3"){ addBranches(id,3); renderPanel(); return; }
+    if(act==="before"){ const c=insertBefore(id); gotoScene(c); focusTitle(); return; }
+    if(act==="addlink"){
+      const n=+$("#f-linkto").value, target=Object.keys(L.num).find(x=>L.num[x]===n);
+      if(!target){ $("#f-linkmsg").textContent=`Enter a scene number from 1 to ${Object.keys(S.nodes).length}.`; return; }
+      const r=addEdge(id,target,$("#f-linkkind").value); if(typeof r==="string") $("#f-linkmsg").textContent=r; return;
     }
-    if(t.closest("#f-up")||t.closest("#f-down")){
-      const a=S.acts[actOf(id)], i=a.scenes.indexOf(id), j=i+(t.closest("#f-up")?-1:1);
-      mutate(()=>{ [a.scenes[i],a.scenes[j]]=[a.scenes[j],a.scenes[i]]; }); renderPanel(); return;
+    if(act==="delete"){ if(armed!==id){ armed=id; renderPanel(); return; } const rejoin=$("#f-rejoin")?.checked; sel=null; armed=null; removeNodes([id],rejoin); return; }
+  }
+  if(sel?.kind==="multi"){
+    if(act==="join"){
+      const c=uid("n");
+      mutate(()=>{ S.nodes[c]=newScene(); sel.ids.forEach(p=>S.edges.push({id:uid("e"),from:p,to:c,kind:"main",color:KINDS.main.color,label:""})); });
+      gotoScene(c); focusTitle(); return;
     }
-    if(t.closest("#f-delete")){ if(armedDelete!==id){ armedDelete=id; renderPanel(); return; } armedDelete=null; deleteScene(id); return; }
+    if(act==="linkall"){
+      const n=+$("#m-linkto").value, target=Object.keys(L.num).find(x=>L.num[x]===n);
+      if(!target){ $("#m-linkmsg").textContent=`Enter a scene number from 1 to ${Object.keys(S.nodes).length}.`; return; }
+      mutate(()=>sel.ids.forEach(p=>addEdge(p,target,newKind,true))); return;
+    }
+    if(act==="deleteall"){ if(armed!=="multi"){ armed="multi"; renderPanel(); return; } const ids=sel.ids; sel=null; armed=null; removeNodes(ids,true); return; }
   }
   if(sel?.kind==="link"){
-    const l=S.links.find(x=>x.id===sel.id);
-    const k=t.closest("[data-lkind]"); if(k){ mutate(()=>{ const wasDefault = !l.color || l.color===KINDS[l.kind].color; l.kind=k.dataset.lkind; if(wasDefault) l.color=KINDS[l.kind].color; }); renderPanel(); return; }
-    const c=t.closest("[data-lcolor]"); if(c){ mutate(()=>l.color=c.dataset.lcolor); renderPanel(); return; }
-    if(t.closest("#l-reverse")){ mutate(()=>{ [l.from,l.to]=[l.to,l.from]; }); renderPanel(); return; }
-    if(t.closest("#l-delete")){ mutate(()=>S.links=S.links.filter(x=>x.id!==l.id)); select(null); }
+    const l=S.edges.find(x=>x.id===sel.id);
+    const k=t.closest("[data-lkind]"); if(k){ mutate(()=>{ const def=!l.color||l.color===KINDS[l.kind].color; l.kind=k.dataset.lkind; if(def) l.color=KINDS[l.kind].color; }); return; }
+    const c=t.closest("[data-lcolor]"); if(c){ mutate(()=>l.color=c.dataset.lcolor); return; }
+    if(act==="reverse"){ mutate(()=>{ [l.from,l.to]=[l.to,l.from]; }); return; }
+    if(act==="insert"){ const n=insertOnLink(l.id); gotoScene(n); focusTitle(); return; }
+    if(act==="dellink"){ sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==l.id)); return; }
+  }
+  if(sel?.kind==="generate"){
+    const gb=t.closest("[data-gb]"), gd=t.closest("[data-gd]"), gs=t.closest("[data-gshape]");
+    if(gb||gd||gs){ if(gb) sel.b=+gb.dataset.gb; if(gd) sel.d=+gd.dataset.gd; if(gs) sel.shape=gs.dataset.gshape; renderPanel(); return; }
+    if(act==="generate"){
+      const {b,d,shape}=sel; sel=null;
+      mutate(()=>{ const keep={threads:S.threads.map(t=>({...t,scenes:[]})),notes:S.notes,meta:S.meta,dir:S.dir,seq:S.seq,version:2}; S=diamondMap(b,d,shape,keep); });
+      fit();
+    }
   }
 });
 panel.addEventListener("input", e=>{
   const t=e.target;
   if(sel?.kind==="scene"){
-    const s=S.scenes[sel.id];
+    const s=S.nodes[sel.id];
     if(t.id==="f-title") mutate(()=>s.title=t.value,"ft"+sel.id);
     if(t.id==="f-desc") mutate(()=>s.desc=t.value,"fd"+sel.id);
     if(t.id==="f-notes") mutate(()=>s.notes=t.value,"fn"+sel.id);
   }
-  if(sel?.kind==="link" && t.id==="l-label"){ const l=S.links.find(x=>x.id===sel.id); mutate(()=>l.label=t.value,"ll"+l.id); }
+  if(sel?.kind==="link" && t.id==="l-label"){ const l=S.edges.find(x=>x.id===sel.id); mutate(()=>l.label=t.value,"ll"+l.id); }
 });
 panel.addEventListener("change", e=>{
-  const t=e.target;
   if(sel?.kind!=="scene") return;
-  const id=sel.id, s=S.scenes[id];
+  const s=S.nodes[sel.id], t=e.target;
   if(t.id==="f-dog") mutate(()=>s.dog=t.checked);
   if(t.id==="f-clue") mutate(()=>s.clue=t.checked);
-  if(t.id==="f-act"){ const to=+t.value; mutate(()=>{ S.acts.forEach(a=>a.scenes=a.scenes.filter(x=>x!==id)); S.acts[to].scenes.push(id); }); renderPanel(); gotoScene(id); }
 });
-panel.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="f-linkto") $("#f-addlink").click(); });
+panel.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="f-linkto") panel.querySelector('[data-act="addlink"]').click(); if(e.key==="Enter" && e.target.id==="m-linkto") panel.querySelector('[data-act="linkall"]').click(); });
 
 document.addEventListener("keydown", e=>{
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||"");
-  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="z" && !typing){ e.preventDefault(); e.shiftKey?redo():undo(); }
-  else if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="y" && !typing){ e.preventDefault(); redo(); }
-  else if(e.key==="Escape"){ if(drag){ drag=null; $("#tmpLine")?.setAttribute("hidden",""); } else if(threadEdit){ toggleThreadEdit(threadEdit); } else if(sel){ select(null); } }
-  else if((e.key==="Delete"||e.key==="Backspace") && !typing && sel?.kind==="link"){ mutate(()=>S.links=S.links.filter(x=>x.id!==sel.id)); select(null); }
+  const mod = e.ctrlKey||e.metaKey;
+  if(mod && e.key.toLowerCase()==="z" && !typing){ e.preventDefault(); e.shiftKey?redo():undo(); }
+  else if(mod && e.key.toLowerCase()==="y" && !typing){ e.preventDefault(); redo(); }
+  else if(e.key==="Escape"){ if(drag){ drag=null; $("#tmpLine")?.setAttribute("visibility","hidden"); } else if(threadEdit) toggleThreadEdit(threadEdit); else if(sel) select(null); }
+  else if(!typing && !mod){
+    const r=vp.getBoundingClientRect();
+    if(e.key==="+"||e.key==="=") zoomAt(view.k*1.25,r.width/2,r.height/2);
+    else if(e.key==="-"||e.key==="_") zoomAt(view.k/1.25,r.width/2,r.height/2);
+    else if(e.key==="0") fit();
+    else if((e.key==="Delete"||e.key==="Backspace") && sel?.kind==="link"){ const id=sel.id; sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==id)); }
+  }
 });
 
-new ResizeObserver(()=>renderLinks()).observe(board);
-window.addEventListener("resize", ()=>renderLinks());
-document.fonts?.ready.then(()=>renderLinks());
+/* export / import */
+$("#export").onclick = async ()=>{
+  const data = JSON.stringify(S,null,2), name=(S.meta.title||"story-map").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".json";
+  const dl = await capability("downloads");
+  if(dl){ try{ await dl.save({filename:name,data}); return; }catch(err){ if(err?.code==="declined") return; } }
+  try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type:"application/json"})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); flash("Exported "+name+"."); }catch{ flash("Couldn't export here.", true); }
+};
+$("#importFile").onchange = e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=normalize(JSON.parse(r.result)); undoStack.push(clone(S)); redoStack=[]; S=d; S.updatedAt=Date.now(); sel=null; threadEdit=null; threadShow=null; renderAll(); fit(); persistLocal(true); scheduleSave(); flash("Imported "+f.name+"."); }catch(err){ flash("That file isn't a story map export ("+err.message+").", true); } e.target.value=""; };
+  r.readAsText(f);
+};
+// accepts this map's format, and converts exports from the earlier column version
+function normalize(d){
+  if(!d || typeof d!=="object") throw new Error("empty file");
+  if(d.acts && d.scenes && !d.nodes){
+    const nodes={}, edges=[]; let seq=d.seq||1000;
+    const flat = d.acts.flatMap(a=>a.scenes).filter(id=>d.scenes[id]);
+    flat.forEach(id=>nodes[id]={...newScene(),...d.scenes[id]});
+    d.acts.forEach(a=>a.scenes.forEach((id,i)=>{ if(i && nodes[id] && nodes[a.scenes[i-1]]) edges.push({id:"e"+(++seq),from:a.scenes[i-1],to:id,kind:"main",color:KINDS.main.color,label:""}); }));
+    for(let i=1;i<d.acts.length;i++){ const p=d.acts[i-1].scenes.at(-1), c=d.acts[i].scenes[0]; if(p&&c&&!edges.some(e=>e.from===p&&e.to===c)) edges.push({id:"e"+(++seq),from:p,to:c,kind:"main",color:KINDS.main.color,label:""}); }
+    (d.links||[]).forEach(l=>{ if(nodes[l.from]&&nodes[l.to]&&!edges.some(e=>e.from===l.from&&e.to===l.to)) edges.push({...l, kind:l.kind==="main"?"conditional":l.kind}); });
+    d = {version:2,updatedAt:d.updatedAt||0,seq,dir:"across",meta:{title:d.meta?.title||"The Long Way Home",subtitle:d.meta?.subtitle||""},tiers:{},nodes,edges,threads:d.threads||[],notes:d.notes||""};
+  }
+  if(typeof d.nodes!=="object" || !Array.isArray(d.edges)) throw new Error("no scenes or links found");
+  d.meta ||= {title:"",subtitle:""}; d.tiers ||= {}; d.threads ||= []; d.notes ??= ""; d.dir ||= "across";
+  d.seq = Math.max(d.seq||0, 1000);
+  d.edges = d.edges.filter(e=>d.nodes[e.from]&&d.nodes[e.to]&&KINDS[e.kind]);
+  d.threads.forEach(t=>t.scenes=(t.scenes||[]).filter(id=>d.nodes[id]));
+  return d;
+}
 
 /* ================= persistence ================= */
 let toastT;
-function flash(msg, bad){ setStatus(bad?"error":($("#status").dataset.s), msg); clearTimeout(toastT); toastT=setTimeout(()=>setStatus(saveState.s, saveState.msg),4000); }
 const saveState = {s:"local", msg:"Saved in this browser"};
 function setStatus(s,msg){ const el=$("#status"); el.dataset.s=s; el.querySelector("span").textContent=msg; }
 function status(s,msg){ saveState.s=s; saveState.msg=msg; setStatus(s,msg); }
-
-function persistLocal(dirty){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty, state:S})); }catch{}
-}
+function flash(msg,bad){ setStatus(bad?"error":saveState.s,msg); clearTimeout(toastT); toastT=setTimeout(()=>setStatus(saveState.s,saveState.msg),4500); }
+function persistLocal(dirty){ try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty,state:S})); }catch{} }
 const capCache = {};
 function capability(name){
   if(!(name in capCache)) capCache[name] = (window.claude && typeof window.claude.use==="function") ? window.claude.use(name).catch(()=>null) : Promise.resolve(null);
   return capCache[name];
 }
-let artifactApi = null, canPublish = false, saveTimer = null, saving = false, pending = false, backoff = 2500;
+let artifactApi=null, canPublish=false, saveTimer=null, saving=false, pending=false, backoff=2500;
 function scheduleSave(){
   if(!canPublish){ status("local","Saved in this browser"); return; }
   status("saving","Unsaved changes…");
-  clearTimeout(saveTimer); saveTimer = setTimeout(publishNow, backoff);
+  clearTimeout(saveTimer); saveTimer=setTimeout(publishNow, backoff);
 }
 async function publishNow(retried){
   if(!canPublish) return;
   if(saving){ pending=true; return; }
-  saving = true; status("saving","Saving…");
+  saving=true; status("saving","Saving…");
   try{
     await artifactApi.publish({"map.json":{content:JSON.stringify(S),contentType:"application/json"}});
     persistLocal(false); backoff=2500; status("saved","All changes saved");
   }catch(err){
-    const code = err && err.code;
-    if(code==="conflict"){ status("error","Someone else saved. Reloading their version; your draft stays in this browser."); }
+    const code=err&&err.code;
+    if(code==="conflict") status("error","Someone else saved. Loading their version; your draft stays in this browser.");
     else if(code==="rate_limited"){ backoff=Math.min(backoff*2,30000); status("saving","Saving shortly…"); clearTimeout(saveTimer); saveTimer=setTimeout(publishNow,backoff); }
-    else if(code==="upstream_error" && !retried){ saving=false; setTimeout(()=>publishNow(true), 1500+Math.random()*1500); return; }
+    else if(code==="upstream_error" && !retried){ saving=false; setTimeout(()=>publishNow(true),1500+Math.random()*1500); return; }
     else if(["not_writer","not_granted","capability_disabled","capability_removed","not_declared","consent_required"].includes(code)){ canPublish=false; status("local","View only here · edits kept in this browser"); }
-    else { status("error","Couldn't save. Your edits are kept in this browser; try Export JSON."); }
+    else status("error","Couldn't save. Edits are kept in this browser; use Export for a copy.");
   }
-  saving = false;
+  saving=false;
   if(pending){ pending=false; publishNow(); }
 }
 
 async function boot(){
-  let loaded = null;
-  try{ const r = await fetch("map.json",{cache:"no-store"}); if(r.ok){ const d = await r.json(); if(d){ validate(d); loaded=d; } } }catch{}
-  let draft = null;
-  try{ draft = JSON.parse(localStorage.getItem(LS_KEY)||"null"); }catch{}
-  let draftWins = false;
-  if(draft && draft.state){
-    try{ validate(draft.state); if(!loaded || (draft.dirty && (draft.state.updatedAt||0) > (loaded.updatedAt||0))) draftWins = true; }catch{ draft=null; }
-  }
+  let loaded=null, draft=null, draftWins=false;
+  try{ const r=await fetch("map.json",{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(d) loaded=normalize(d); } }catch{}
+  try{ draft=JSON.parse(localStorage.getItem(LS_KEY)||"null"); if(draft?.state) draft.state=normalize(draft.state); else draft=null; }catch{ draft=null; }
+  if(draft && (!loaded || (draft.dirty && (draft.state.updatedAt||0)>(loaded.updatedAt||0)))) draftWins=true;
   S = draftWins ? draft.state : (loaded || S);
-  renderAll();
+  renderAll(); fit(false);
   status("local","Saved in this browser");
   artifactApi = await capability("artifact");
-  if(artifactApi){
-    canPublish = true;
-    if(draftWins && loaded && draft.dirty) scheduleSave(); else status("saved","All changes saved");
-  }
+  if(artifactApi){ canPublish=true; if(draftWins && loaded && draft.dirty) scheduleSave(); else status("saved","All changes saved"); }
 }
+document.fonts?.ready.then(()=>renderEdges());
 boot();
 })();
 </script>

@@ -96,10 +96,16 @@ models/                   drop-in vehicle GLBs
 
 ## Story map (The Long Way Home)
 
-`story-map/index.html` is a standalone, editable 50-scene story map for the
-narrative game plan: scenes per act, drag-to-link routes (main / conditional /
-optional), recurring threads, notes. Open it through `npm run dev` at
-http://localhost:5173/story-map/ (or any static server). Edits are kept in the
-browser's local storage; use **Export JSON** to save a copy and **Import JSON**
-to load one. Saving the export over `story-map/map.json` makes it the default
-map that loads for everyone.
+`story-map/index.html` is a standalone, editable branching story map for the
+narrative game plan. It starts as a diamond: 1 scene branches into 3, each of
+those into 3 more, then the branches rejoin 3-into-1 back to a single ending
+(1 → 3 → 9 → 27 → 9 → 3 → 1). Add branches, join scenes, insert or delete
+scenes, draw conditional/optional routes, track recurring threads, and zoom
+or pan to see the whole map. **New map…** regenerates the shape with other
+branch counts and depths.
+
+Open the file directly in a browser, or through `npm run dev` at
+http://localhost:5173/story-map/. Edits are kept in the browser's local
+storage; use **Export** to save a `.json` copy and **Import** to load one.
+Saving an export over `story-map/map.json` makes it the default map when
+served.
