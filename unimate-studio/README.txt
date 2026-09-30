@@ -9,10 +9,12 @@ It doesn't install anything. It uses the UniMate folder, the conda environment
 and the downloaded model you already set up.
 
 START IT
-1. Unzip this folder anywhere.
-2. Double-click "Start UniMate Studio.bat".
+1. Put "UniMate Studio.bat" anywhere (your Desktop is fine). It is the whole
+   app in one file.
+2. Double-click it. A black window opens and stays open while you use the app;
+   if anything goes wrong, the reason is shown there.
    It looks for your conda environment called "unimate". If yours has a
-   different name, open the .bat in Notepad and change ENVNAME at the top.
+   different name, open the .bat in Notepad and change ENVNAME near the top.
 3. The first time, the app asks you to show it two folders:
    - your UniMate folder (the one with "unimate" and "data_process" inside)
    - the folder you downloaded the trained model to from Hugging Face
@@ -29,9 +31,14 @@ USE IT
    prompt, with a .glb and an .fbx for each version.
 
 TIPS
-- Characters work best if the file also has at least one animation in it.
+- A character with no animation of its own still works: the app gives
+  UniMate a still rest-pose clip to start from.
 - UniMate's main model handles skeletons of up to about 60 bones after cleanup.
   If the app says your rig has too many, use a version without finger bones.
-- The black log area at the bottom shows exactly what ran and any errors.
+- The black log area at the bottom of the app shows exactly what ran.
 
-The app keeps its own settings and scratch files in %LOCALAPPDATA%\UniMateStudio.
+The app keeps its settings and scratch files in %LOCALAPPDATA%\UniMateStudio.
+
+FOR DEVELOPERS
+studio.py is the app; launcher_header.bat is the launcher. Run build.py to
+combine them into "UniMate Studio.bat".
