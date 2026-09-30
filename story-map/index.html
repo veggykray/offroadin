@@ -54,8 +54,8 @@ button{cursor:pointer}
 .btn:hover{border-color:#3d5a80;background:#203652}
 .btn:disabled{opacity:.4;cursor:default}
 .btn.primary{background:#2a4a70;border-color:#4d77a8}
+.btn.big{font-size:15px;padding:7px 14px}
 .btn.danger{border-color:#6b2a3a;color:#ffb3c0}
-.btn.danger.armed{background:#6b2a3a;color:#fff}
 .btn[aria-pressed="true"]{background:#2a4a70;border-color:#4d77a8}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
 .seg button{background:transparent;border:0;padding:5px 10px;font-size:14px;display:inline-flex;gap:6px;align-items:center;color:var(--ink-2)}
@@ -75,7 +75,7 @@ button{cursor:pointer}
     radial-gradient(900px 500px at 50% 0%, #182c46 0%, transparent 70%),
     radial-gradient(circle, rgba(160,190,230,.10) 1px, transparent 1.2px) 0 0/28px 28px,
     #0a1320;}
-#viewport{position:absolute;inset:0;touch-action:none;cursor:grab}
+#viewport{position:absolute;inset:0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 #viewport.panning{cursor:grabbing}
 #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 svg#edges{position:absolute;overflow:visible;pointer-events:none}
@@ -88,16 +88,12 @@ svg#edges{position:absolute;overflow:visible;pointer-events:none}
 .tmp{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-dasharray:5 5}
 .threadpath{fill:none;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;opacity:.22}
 
-.tier{position:absolute;display:flex;flex-direction:column;align-items:center;gap:0;width:230px;transform:translateX(0)}
-.tier-kicker{font:600 11px var(--body);letter-spacing:.24em;text-transform:uppercase;color:var(--c)}
-.tier-name{font:600 17px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;text-align:center;color:color-mix(in srgb,var(--c) 55%,#fff);width:100%}
-.tier-name::placeholder{color:color-mix(in srgb,var(--c) 45%,#0a1320)}
-
 .node{--c:#63b3ff;position:absolute;width:230px;height:64px;display:grid;grid-template-columns:34px 28px minmax(0,1fr) auto;align-items:center;border-radius:9px;
-  background:color-mix(in srgb,var(--c) 22%,#0f1a2b);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);cursor:pointer;
+  background:color-mix(in srgb,var(--c) 22%,#0f1a2b);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);cursor:move;
   box-shadow:0 0 18px color-mix(in srgb,var(--c) 14%,transparent);transition:opacity .15s,box-shadow .15s}
 .node:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 80%,#fff),0 0 16px color-mix(in srgb,var(--c) 40%,transparent)}
 .node.sel{box-shadow:0 0 0 2.5px #fff,0 0 22px color-mix(in srgb,var(--c) 70%,transparent)}
+.node.dragging{opacity:.85;z-index:4;box-shadow:0 0 0 2.5px #fff,0 12px 30px rgba(0,0,0,.55)}
 .node.choice{--c:var(--choice)}
 .node.dim{opacity:.25}
 .node.member{box-shadow:0 0 0 3px var(--tc),0 0 18px color-mix(in srgb,var(--tc) 60%,transparent)}
@@ -109,17 +105,24 @@ svg#edges{position:absolute;overflow:visible;pointer-events:none}
 .t{display:block;font-weight:700;font-size:15px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .t.empty{font-weight:400;font-style:italic;color:var(--ink-3)}
 .d{display:block;font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.extras{display:flex;gap:3px;align-items:center;padding-right:12px}
+.extras{display:flex;gap:3px;align-items:center;padding-right:14px}
 .extras svg{width:12px;height:12px}
 .tdot{width:8px;height:8px;border-radius:50%;background:var(--tc)}
-.handle{position:absolute;width:22px;height:22px;border-radius:50%;background:#0b1422;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);color:color-mix(in srgb,var(--c) 70%,#fff);
-  display:grid;place-items:center;font:700 15px/1 var(--body);opacity:0;cursor:crosshair;touch-action:none;transition:opacity .12s;z-index:3;padding:0}
-.across .handle{right:-11px;top:50%;margin-top:-11px}
-.down .handle{bottom:-11px;left:50%;margin-left:-11px}
+.handle{position:absolute;right:-12px;top:50%;margin-top:-12px;width:24px;height:24px;border-radius:50%;background:#0b1422;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);
+  opacity:0;cursor:crosshair;touch-action:none;transition:opacity .12s;z-index:3;padding:0}
+.handle::after{content:"";position:absolute;inset:6px;border-radius:50%;background:color-mix(in srgb,var(--c) 70%,#fff)}
 .node:hover .handle,.node.sel .handle{opacity:1}
-@media (hover:none){.node.sel .handle{opacity:1}}
+.selbox{position:absolute;border:1.5px dashed var(--focus);background:rgba(159,208,255,.08);pointer-events:none;z-index:6}
 
-/* zoom controls + legend */
+/* floating bar over the selected scene(s) */
+.nodebar{position:absolute;z-index:7;display:flex;gap:4px;padding:4px;background:#0f1b2cf2;border:1px solid #3d5a80;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);transform:translate(-50%,-100%);white-space:nowrap}
+.nodebar button{background:transparent;border:0;border-radius:7px;padding:6px 10px;font-size:14px;color:var(--ink);display:inline-flex;gap:5px;align-items:center}
+.nodebar button:hover{background:#203652}
+.nodebar button.del{color:#ffb3c0}
+.nodebar button.del:hover{background:#4a1f2b}
+.nodebar .count{padding:6px 8px;font-size:13px;color:var(--ink-3)}
+
+/* zoom controls + legend + toast */
 .zoombar{position:absolute;right:12px;bottom:12px;display:flex;gap:4px;align-items:center;background:rgba(15,27,44,.92);border:1px solid var(--line);border-radius:9px;padding:4px;z-index:5}
 .zoombar button{background:transparent;border:0;border-radius:6px;min-width:32px;height:32px;font-size:18px;color:var(--ink)}
 .zoombar button:hover{background:#203652}
@@ -131,10 +134,11 @@ svg#edges{position:absolute;overflow:visible;pointer-events:none}
 .legend li{display:flex;gap:8px;align-items:center}
 .legend svg{width:16px;height:16px;flex:none}
 .legend .ln{width:34px;height:10px}
-.banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:6;display:flex;gap:12px;align-items:center;padding:7px 8px 7px 14px;border-radius:9px;border:1px solid var(--tc,#4fc8f0);background:#0f1b2cf0;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:calc(100% - 24px)}
+.banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:8;display:flex;gap:12px;align-items:center;padding:7px 8px 7px 14px;border-radius:9px;border:1px solid var(--tc,#4fc8f0);background:#0f1b2cf0;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:calc(100% - 24px)}
 .banner b{color:var(--tc)}
-.hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;font-size:13px;color:var(--ink-3);background:rgba(10,19,32,.8);padding:4px 10px;border-radius:7px;pointer-events:none;white-space:nowrap}
-@media (max-width:900px){.hint{display:none}}
+.toast{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);z-index:9;display:flex;gap:10px;align-items:center;padding:7px 8px 7px 14px;border-radius:9px;background:#1a2c44;border:1px solid #3d5a80;box-shadow:0 8px 24px rgba(0,0,0,.45);white-space:nowrap}
+.hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;font-size:13px;color:var(--ink-3);background:rgba(10,19,32,.85);padding:4px 10px;border-radius:7px;pointer-events:none;white-space:nowrap}
+@media (max-width:1000px){.hint{display:none}}
 
 /* ---------- Side panels ---------- */
 .panel{position:fixed;top:0;bottom:0;width:min(380px,100%);z-index:50;background:var(--panel);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 0 40px rgba(0,0,0,.45)}
@@ -197,6 +201,7 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
   #panel,#bible{top:auto;height:70vh;width:100%;border:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}
   .legend{display:none}
   .stage{margin:0 8px 8px}
+  .handle{opacity:.9}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -210,8 +215,7 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
 
   <div class="toolbar" role="toolbar" aria-label="Map tools">
     <div class="tgroup">
-      <button class="btn" id="bibleBtn" aria-pressed="false">☰ Threads &amp; notes</button>
-      <button class="btn" id="newMap">✦ New map…</button>
+      <button class="btn primary big" id="addScene" title="Add a scene in the middle of the screen (or double-click empty space)">＋ Add scene</button>
     </div>
     <div class="tgroup">
       <button class="btn" id="undo" title="Undo (Ctrl+Z)">↶ Undo</button>
@@ -222,10 +226,8 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
       <div class="seg" id="kindSeg"></div>
     </div>
     <div class="tgroup">
-      <span class="tlabel">Flow</span>
-      <div class="seg" id="dirSeg"><button data-dir="across">Across →</button><button data-dir="down">Down ↓</button></div>
-    </div>
-    <div class="tgroup">
+      <button class="btn" id="bibleBtn" aria-pressed="false">☰ Threads &amp; notes</button>
+      <button class="btn" id="newMap">✦ New map…</button>
       <button class="btn" id="export">Export</button>
       <label class="btn" for="importFile" style="cursor:pointer">Import</label>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
@@ -236,10 +238,12 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
 
   <div class="stage" id="stage">
     <div id="viewport"><div id="world"></div></div>
-    <div class="hint" id="hint">Scroll to zoom · drag the background to pan · click a scene to edit · drag its + onto another scene to link</div>
+    <div class="hint" id="hint">Drag scenes to move them · double-click empty space to add one · drag a scene's ● onto another to link · scroll to zoom</div>
     <div id="bannerSlot"></div>
-    <details class="legend" open>
-      <summary>Key</summary>
+    <div class="nodebar" id="nodebar" hidden></div>
+    <div class="toast" id="toast" hidden></div>
+    <details class="legend">
+      <summary>Key &amp; tips</summary>
       <ul id="legend"></ul>
     </details>
     <div class="zoombar">
@@ -268,16 +272,16 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
 "use strict";
 
 /* ================= constants ================= */
-const TIER_COLORS = ["#63b3ff","#4fd3d6","#5ed49b","#f4a74c","#b48cff","#ff8fb1","#ff6b81","#f5c451"];
+// colour runs from the first column to the last: blue → teal → green → gold → violet → rose
+const RAMP = ["#63b3ff","#4fd3d6","#5ed49b","#f4c04c","#b48cff","#ff7f9a"];
 const LINK_COLORS = ["#e6ebf5","#f5c451","#ff6fa8","#4fd6e0","#6aa8ff","#8fe07a","#b48cff"];
 const THREAD_COLORS = ["#c3e05a","#ff6f8e","#4fc8f0","#b98bff","#f5c451","#6ee0b0","#ff9a5a"];
 const KINDS = {
-  main:        {label:"Main path",   dash:"",    color:"#e6ebf5", desc:"Shapes the map: sets which tier a scene sits in."},
-  conditional: {label:"Conditional", dash:"7 5", color:"#f5c451", desc:"Item or state dependent. Drawn over the map; doesn't move scenes."},
-  optional:    {label:"Optional",    dash:"2 5", color:"#4fd6e0", desc:"Secret route. Drawn over the map; doesn't move scenes."},
+  main:        {label:"Main path",   dash:"",    color:"#e6ebf5", desc:"The usual way through."},
+  conditional: {label:"Conditional", dash:"7 5", color:"#f5c451", desc:"Needs an item or earlier choice."},
+  optional:    {label:"Optional",    dash:"2 5", color:"#4fd6e0", desc:"Secret or side route."},
 };
-const W = 230, H = 64;
-const GEOM = { across:{layer:W+130, spread:H+22}, down:{layer:H+120, spread:W+26} };
+const W = 230, H = 64, COL = 320, ROW = 88, SNAP = 10;
 const ICON = {
   star:    () => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f5c451" d="M12 2.4l2.9 6.2 6.7.8-5 4.6 1.4 6.6L12 17.3l-6 3.3 1.4-6.6-5-4.6 6.7-.8z"/></svg>`,
   diamond: () => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ff5d7a" d="M12 2.5 20 12l-8 9.5L4 12z"/></svg>`,
@@ -285,129 +289,79 @@ const ICON = {
   clue:    () => `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="#4fa9ff"/><circle cx="10" cy="10" r="2.4" fill="#d6ecff"/></svg>`,
 };
 const small = s => s.replace("<svg","<svg width='14' height='14'");
-const LS_KEY = "long-way-home-diamond:draft";
+const LS_KEY = "long-way-home-v3:draft";
 
-/* ================= map generator ================= */
-function newScene(){ return {title:"",desc:"",type:"normal",dog:false,clue:false,notes:""}; }
-// branches: children per scene; depth: tiers until the widest one (widest = branches^depth)
-function diamondMap(branches=3, depth=3, shape="diamond", base){
-  const S = base ? {...base, nodes:{}, edges:[], tiers:{}} : {
-    version:2, updatedAt:0, seq:0, dir:"across",
-    meta:{title:"The Long Way Home", subtitle:"Scene master map"},
-    tiers:{}, nodes:{}, edges:[], notes:"",
-    threads:[["The Giant",0],["The Dog",1],["The Search",2],["Other motifs",3]].map(([name,c],i)=>({id:"t"+(i+1),name,color:THREAD_COLORS[c],scenes:[],note:""})),
-  };
-  S.seq = S.seq || 0;
-  const mk = () => { const id = "n"+(++S.seq); S.nodes[id] = newScene(); return id; };
-  const edge = (from,to) => S.edges.push({id:"e"+(++S.seq),from,to,kind:"main",color:KINDS.main.color,label:""});
-  let layer = [mk()];
-  for(let d=0; d<depth; d++){
-    const next = [];
-    layer.forEach(p=>{ for(let i=0;i<branches;i++){ const c=mk(); edge(p,c); next.push(c); } });
-    layer = next;
-  }
-  if(shape==="diamond"){
-    while(layer.length>1){
-      const next = [];
-      for(let i=0;i<layer.length;i+=branches){ const c=mk(); layer.slice(i,i+branches).forEach(p=>edge(p,c)); next.push(c); }
-      layer = next;
-    }
-  }
-  S.threads.forEach(t=>t.scenes=t.scenes.filter(id=>S.nodes[id]));
-  return S;
+/* ================= map shape ================= */
+function newScene(x=0,y=0){ return {title:"",desc:"",type:"normal",dog:false,clue:false,notes:"",x,y}; }
+// Tier sizes: 1, then +step per tier for `grow` tiers, then back down the same way.
+// step 3, grow 5 → 1 3 6 9 12 15 12 9 6 3 1
+function tierSizes(step, grow){
+  const up = [1]; for(let k=1;k<=grow;k++) up.push(k*step);
+  return [...up, ...up.slice(0,-1).reverse()];
 }
-function shapeText(b,d,shape){
-  const up = Array.from({length:d+1},(_,i)=>b**i);
-  const all = shape==="diamond" ? [...up, ...up.slice(0,-1).reverse()] : up;
-  return {text: all.join(" → "), total: all.reduce((a,x)=>a+x,0)};
+function shapedMap(step=3, grow=5, dir="across", base){
+  const S = base ? {...base, nodes:{}, edges:[]} : {
+    version:3, updatedAt:0, seq:0, dir,
+    meta:{title:"The Long Way Home", subtitle:"Scene master map"},
+    nodes:{}, edges:[], notes:"",
+    threads:[["The Giant",0],["The Dog",1],["The Search",2],["Other motifs",3]].map(([name,c],i)=>({id:"t"+(i+1),name,color:THREAD_COLORS[c],scenes:[]})),
+  };
+  S.dir = dir; S.seq = S.seq||0;
+  tierSizes(step,grow).forEach((n,i)=>{
+    for(let j=0;j<n;j++){
+      const off = (j-(n-1)/2);
+      const [x,y] = dir==="down" ? [Math.round(off*(W+30)), i*(H+80)] : [i*COL, Math.round(off*ROW)];
+      S.nodes["n"+(++S.seq)] = newScene(x - (dir==="down"?W/2:0), y - (dir==="down"?0:H/2));
+    }
+  });
+  S.threads.forEach(t=>{ t.scenes=[]; t.note ??= ""; });
+  return S;
 }
 
 /* ================= state ================= */
-let S = diamondMap(3,3);
-let L = null;                       // current layout
+let S = shapedMap();
+let L = null;
 let undoStack = [], redoStack = [], lastMutAt = 0, lastMutKey = "";
-let sel = null;                     // {kind:"scene"|"link"|"multi"|"generate", id|ids}
+let sel = null;                 // {kind:"scene",id} | {kind:"multi",ids} | {kind:"link",id} | {kind:"generate",...} | {kind:"sync"}
+let panelOpen = false;          // scene editor shown for the selected scene
 let hoverId = null, threadEdit = null, threadShow = null;
 let newKind = "main";
-let armed = null;
 const view = {k:1, tx:0, ty:0};
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid = p => p + (++S.seq);
 const clone = o => JSON.parse(JSON.stringify(o));
-const mains = () => S.edges.filter(e=>e.kind==="main");
+const snap = v => Math.round(v/SNAP)*SNAP;
 
-/* ================= layout ================= */
-// Tiers come from the main-path links: a scene sits one tier after its deepest parent.
-function layout(){
+/* ================= derived: numbering + colours ================= */
+function mix(a,b,t){ const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); const A=p(a),B=p(b); return "#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
+function rampColor(t){ const x=Math.max(0,Math.min(1,t))*(RAMP.length-1), i=Math.min(RAMP.length-2,Math.floor(x)); return mix(RAMP[i],RAMP[i+1],x-i); }
+// Scenes are numbered in reading order: column by column (or row by row when the map flows down).
+function derive(){
   const ids = Object.keys(S.nodes);
-  const idx = Object.fromEntries(ids.map((id,i)=>[id,i]));
-  const out = {}, inn = {};
-  ids.forEach(id=>{out[id]=[];inn[id]=[];});
-  const main = mains().filter(e=>S.nodes[e.from]&&S.nodes[e.to]&&e.from!==e.to);
-  // break cycles: drop main links that point back up the DFS stack
-  const state = {}, back = new Set();
-  const adj = {}; ids.forEach(id=>adj[id]=[]); main.forEach(e=>adj[e.from].push(e));
-  const visit = id => { state[id]=1; for(const e of adj[id]){ if(state[e.to]===1) back.add(e.id); else if(!state[e.to]) visit(e.to); } state[id]=2; };
-  const roots = ids.filter(id=>!main.some(e=>e.to===id));
-  [...roots, ...ids].forEach(id=>{ if(!state[id]) visit(id); });
-  const fwd = main.filter(e=>!back.has(e.id));
-  fwd.forEach(e=>{ out[e.from].push(e); inn[e.to].push(e); });
-  // longest-path layering (Kahn)
-  const layerOf = {}, indeg = {};
-  ids.forEach(id=>{ indeg[id]=inn[id].length; layerOf[id]=0; });
-  const q = ids.filter(id=>!indeg[id]);
-  while(q.length){ const id=q.shift(); for(const e of out[id]){ layerOf[e.to]=Math.max(layerOf[e.to],layerOf[id]+1); if(--indeg[e.to]===0) q.push(e.to); } }
-  const nLayers = ids.length ? Math.max(...ids.map(id=>layerOf[id]))+1 : 0;
-  const layers = Array.from({length:nLayers},()=>[]);
-  ids.forEach(id=>layers[layerOf[id]].push(id));
-  const g = GEOM[S.dir||"across"];
-  const pos = {}, coord = {};
-  // Taper tiers toward the start and the end so the map reads as a diamond:
-  // each tier's span grows linearly up to the widest tier, then shrinks again.
-  const counts = layers.map(l=>l.length);
-  const iw = counts.indexOf(Math.max(...counts, 1));
-  const maxSpan = (Math.max(...counts, 1)-1)*g.spread;
-  const spacingFor = li => {
-    const n = counts[li]; if(n<2) return g.spread;
-    const frac = li<=iw ? (iw? li/iw : 1) : (layers.length-1-li)/Math.max(1,layers.length-1-iw);
-    return Math.max(g.spread, frac*maxSpan/(n-1));
-  };
-  layers.forEach((layer,li)=>{
-    const key = id => {
-      const ps = inn[id];
-      if(!ps.length) return [0, 0, idx[id]];
-      const ys = ps.map(e=>coord[e.from]);
-      const first = ps.reduce((a,e)=>coord[e.from]<coord[a.from]?e:a, ps[0]);
-      return [ys.reduce((a,b)=>a+b,0)/ys.length, coord[first.from], out[first.from].indexOf(first), idx[id]];
-    };
-    const keys = Object.fromEntries(layer.map(id=>[id,key(id)]));
-    layer.sort((a,b)=>{ const x=keys[a], y=keys[b]; for(let i=0;i<x.length;i++) if(x[i]!==y[i]) return x[i]-y[i]; return 0; });
-    const withParents = layer.filter(id=>inn[id].length);
-    const center = withParents.length ? withParents.reduce((a,id)=>a+keys[id][0],0)/withParents.length : 0;
-    const sp = spacingFor(li);
-    layer.forEach((id,i)=>{ coord[id] = center + (i-(layer.length-1)/2)*sp; pos[id]=i; });
-  });
-  const xy = {};
-  ids.forEach(id=>{
-    const a = layerOf[id]*g.layer, b = coord[id];
-    xy[id] = S.dir==="down" ? {x:b-W/2, y:a} : {x:a, y:b-H/2};
-  });
-  // reading-order numbering: tier by tier, top to bottom
-  const num = {}; let n = 0;
-  layers.forEach(layer=>layer.forEach(id=>num[id]=++n));
+  const down = S.dir==="down";
+  const major = id => down ? S.nodes[id].y : S.nodes[id].x;
+  const minor = id => down ? S.nodes[id].x : S.nodes[id].y;
+  const sorted = ids.slice().sort((a,b)=>major(a)-major(b));
+  const bands = []; let cur=null, last=-Infinity;
+  sorted.forEach(id=>{ const m=major(id); if(!cur || m-last > (down?H:W)/2){ cur=[]; bands.push(cur); } cur.push(id); last=m; });
+  const num = {}, band = {}; let n=0;
+  bands.forEach((b,bi)=>{ b.sort((a,c)=>minor(a)-minor(c)); b.forEach(id=>{ num[id]=++n; band[id]=bi; }); });
   const box = ids.length ? {
-    x0:Math.min(...ids.map(id=>xy[id].x)), y0:Math.min(...ids.map(id=>xy[id].y)),
-    x1:Math.max(...ids.map(id=>xy[id].x+W)), y1:Math.max(...ids.map(id=>xy[id].y+H)),
+    x0:Math.min(...ids.map(id=>S.nodes[id].x)), y0:Math.min(...ids.map(id=>S.nodes[id].y)),
+    x1:Math.max(...ids.map(id=>S.nodes[id].x+W)), y1:Math.max(...ids.map(id=>S.nodes[id].y+H)),
   } : {x0:0,y0:0,x1:W,y1:H};
-  return {layers, layerOf, xy, num, box, back, inn, out};
+  const color = {};
+  ids.forEach(id=>color[id] = S.nodes[id].type==="choice" ? "#ff5d7a" : rampColor(bands.length>1 ? band[id]/(bands.length-1) : 0));
+  return {num, band, bands, box, color};
 }
 
 /* ================= undo / change ================= */
+function snapshot(){ undoStack.push(clone(S)); if(undoStack.length>200) undoStack.shift(); redoStack=[]; }
 function mutate(fn, key){
   const now = Date.now();
-  if(!key || key!==lastMutKey || now-lastMutAt>1200){ undoStack.push(clone(S)); if(undoStack.length>150) undoStack.shift(); redoStack=[]; }
+  if(!key || key!==lastMutKey || now-lastMutAt>1200) snapshot();
   lastMutAt = now; lastMutKey = key||"";
   fn();
   S.updatedAt = now;
@@ -415,7 +369,7 @@ function mutate(fn, key){
 }
 function changed(key){
   renderMap(); renderStats(); syncHistoryBtns();
-  if(!key) { renderPanel(); renderBible(); }
+  if(!key){ renderPanel(); renderBible(); }
   persistLocal(true); scheduleSave();
 }
 function undo(){ if(!undoStack.length) return; redoStack.push(clone(S)); S=undoStack.pop(); lastMutKey=""; afterSwap(); }
@@ -426,12 +380,11 @@ function afterSwap(){
   if(sel?.kind==="link" && !S.edges.find(e=>e.id===sel.id)) sel=null;
   if(sel?.kind==="multi"){ sel.ids = sel.ids.filter(id=>S.nodes[id]); if(!sel.ids.length) sel=null; }
   if(threadEdit && !S.threads.find(t=>t.id===threadEdit)) threadEdit=null;
-  renderAll(); persistLocal(true); scheduleSave();
+  hideToast(); renderAll(); persistLocal(true); scheduleSave();
 }
 function syncHistoryBtns(){ $("#undo").disabled=!undoStack.length; $("#redo").disabled=!redoStack.length; }
 
 /* ================= render ================= */
-function nodeColor(id){ return S.nodes[id]?.type==="choice" ? "#ff5d7a" : TIER_COLORS[(L.layerOf[id]||0)%TIER_COLORS.length]; }
 function glyph(s){ return s.type==="major"?ICON.star():s.type==="choice"?ICON.diamond():s.dog?ICON.paw():s.clue?ICON.clue():""; }
 function selectedIds(){ return sel?.kind==="scene" ? [sel.id] : sel?.kind==="multi" ? sel.ids : []; }
 
@@ -439,95 +392,78 @@ function renderMeta(){
   for(const k of ["title","subtitle"]){ const el=$("#m-"+k); if(document.activeElement!==el) el.value=S.meta[k]||""; }
   if(document.activeElement!==$("#notes")) $("#notes").value=S.notes||"";
   document.title = S.meta.title || "Story map";
-  document.querySelectorAll("#dirSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.dir===(S.dir||"across")));
 }
 function renderStats(){
   const v = Object.values(S.nodes);
-  const widths = L.layers.map(l=>l.length);
-  $("#stats").textContent = `${v.length} scenes · ${L.layers.length} tiers (${widths.join("·")}) · ${v.filter(s=>s.type==="major").length} major · ${v.filter(s=>s.type==="choice").length} choices · ${S.edges.length} links`;
+  $("#stats").textContent = `${v.length} scenes · ${L.bands.length} ${S.dir==="down"?"rows":"columns"} (${L.bands.map(b=>b.length).join("·")}) · ${S.edges.length} links`;
 }
-
-function renderMap(){
-  L = layout();
-  const world = $("#world");
+function nodeHTML(id){
+  const s = S.nodes[id];
   const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
   const ts = !te && threadShow && S.threads.find(t=>t.id===threadShow);
   const focus = te || ts;
-  const selIds = new Set(selectedIds());
-  const dir = S.dir||"across";
-  const g = GEOM[dir];
+  const extras = [];
+  if(s.dog && s.type!=="normal") extras.push(ICON.paw());
+  if(s.clue && (s.type!=="normal"||s.dog)) extras.push(ICON.clue());
+  S.threads.filter(t=>t.scenes.includes(id)).forEach(t=>extras.push(`<span class="tdot" style="--tc:${t.color}" title="${esc(t.name)}"></span>`));
+  let cls = "node";
+  if(s.type==="choice") cls+=" choice";
+  if(selectedIds().includes(id)) cls+=" sel";
+  if(focus) cls += focus.scenes.includes(id) ? " member" : " dim";
+  return `<div class="${cls}" data-id="${id}" tabindex="0" style="left:${s.x}px;top:${s.y}px;--c:${L.color[id]};${focus?`--tc:${focus.color}`:""}" aria-label="Scene ${L.num[id]}${s.title?": "+esc(s.title):""}">
+    <span class="num">${L.num[id]}</span><span class="glyph">${glyph(s)}</span>
+    <span class="body"><span class="t${s.title?"":" empty"}">${s.title?esc(s.title):"Untitled scene"}</span>${s.desc?`<span class="d">${esc(s.desc)}</span>`:""}</span>
+    <span class="extras">${extras.join("")}</span>
+    <button class="handle" data-handle="${id}" title="Drag onto another scene to link them" aria-label="Link from scene ${L.num[id]}"></button>
+  </div>`;
+}
+function renderMap(){
+  L = derive();
   let h = "";
-  // tier labels
-  L.layers.forEach((layer,li)=>{
-    const c = TIER_COLORS[li%TIER_COLORS.length];
-    const first = L.xy[layer[0]];
-    let x, y;
-    if(dir==="down"){ x = L.box.x0 - W - 40; y = first.y + 6; }
-    else { x = first.x; y = Math.min(...layer.map(id=>L.xy[id].y)) - 62; }
-    h += `<div class="tier" style="left:${x}px;top:${y}px;--c:${c}"><span class="tier-kicker">Tier ${li+1} · ${layer.length} scene${layer.length>1?"s":""}</span><input class="bare tier-name" data-tier="${li}" value="${esc(S.tiers[li]||"")}" placeholder="Name this tier" aria-label="Tier ${li+1} name" spellcheck="false"></div>`;
-  });
-  for(const id in S.nodes){
-    const s = S.nodes[id], p = L.xy[id];
-    const threads = S.threads.filter(t=>t.scenes.includes(id));
-    const extras = [];
-    if(s.dog && s.type!=="normal") extras.push(ICON.paw());
-    if(s.clue && (s.type!=="normal"||s.dog)) extras.push(ICON.clue());
-    threads.forEach(t=>extras.push(`<span class="tdot" style="--tc:${t.color}" title="${esc(t.name)}"></span>`));
-    let cls = "node";
-    if(s.type==="choice") cls+=" choice";
-    if(selIds.has(id)) cls+=" sel";
-    if(focus){ cls += focus.scenes.includes(id) ? " member" : " dim"; }
-    h += `<div class="${cls}" data-id="${id}" tabindex="0" style="left:${p.x}px;top:${p.y}px;--c:${nodeColor(id)};${focus?`--tc:${focus.color}`:""}" aria-label="Scene ${L.num[id]}${s.title?": "+esc(s.title):""}">
-      <span class="num">${L.num[id]}</span><span class="glyph">${glyph(s)}</span>
-      <span class="body"><span class="t${s.title?"":" empty"}">${s.title?esc(s.title):"Untitled scene"}</span>${s.desc?`<span class="d">${esc(s.desc)}</span>`:""}</span>
-      <span class="extras">${extras.join("")}</span>
-      <button class="handle" data-handle="${id}" title="Click: add a branch. Drag: link to another scene, or drop on empty space for a new branch." aria-label="Add branch from scene ${L.num[id]}">+</button>
-    </div>`;
-  }
-  h += `<svg id="edges"></svg>`;
-  const active = document.activeElement;
-  if(active && active.dataset && active.dataset.tier!==undefined && world.contains(active)){ renderEdges(); return; }
-  world.className = dir;
-  world.innerHTML = h;
-  renderEdges();
+  for(const id in S.nodes) h += nodeHTML(id);
+  h += `<svg id="edges"></svg><div class="selbox" id="selbox" hidden></div>`;
+  $("#world").innerHTML = h;
+  renderEdges(); renderNodebar();
 }
 
-function edgePath(e){
-  const a = L.xy[e.from], b = L.xy[e.to]; if(!a||!b) return null;
-  const la = L.layerOf[e.from], lb = L.layerOf[e.to];
-  const down = S.dir==="down";
-  let sx, sy, ex, ey, c1x, c1y, c2x, c2y;
-  if(lb > la){
-    if(down){ sx=a.x+W/2; sy=a.y+H; ex=b.x+W/2; ey=b.y-8; const d=Math.max(40,(ey-sy)*.5); c1x=sx; c1y=sy+d; c2x=ex; c2y=ey-d; }
-    else    { sx=a.x+W;   sy=a.y+H/2; ex=b.x-8; ey=b.y+H/2; const d=Math.max(40,(ex-sx)*.5); c1x=sx+d; c1y=sy; c2x=ex-d; c2y=ey; }
-  } else {
-    // same tier or backwards: loop around the outside
-    const span = Math.abs(la-lb)+1;
-    if(down){ sx=a.x+W; sy=a.y+H/2; ex=b.x+W+8; ey=b.y+H/2; const k=60+span*14; c1x=sx+k; c1y=sy; c2x=ex+k; c2y=ey; }
-    else    { sx=a.x+W/2; sy=a.y+H; ex=b.x+W/2; ey=b.y+H+8; const k=50+span*12; c1x=sx; c1y=sy+k; c2x=ex; c2y=ey+k; }
+// Connect the facing sides of two scenes, whatever direction they sit in.
+function anchors(a,b){
+  const acx=a.x+W/2, acy=a.y+H/2, bcx=b.x+W/2, bcy=b.y+H/2, dx=bcx-acx, dy=bcy-acy;
+  if(Math.abs(dx) > W*0.75 || Math.abs(dx)/W > Math.abs(dy)/H){
+    const r = dx>=0 ? 1 : -1;
+    return {sx: r>0?a.x+W:a.x, sy: acy, ex: r>0?b.x-8:b.x+W+8, ey: bcy, h:true, r};
   }
+  const r = dy>=0 ? 1 : -1;
+  return {sx: acx, sy: r>0?a.y+H:a.y, ex: bcx, ey: r>0?b.y-8:b.y+H+8, h:false, r};
+}
+function edgePath(e){
+  const a = S.nodes[e.from], b = S.nodes[e.to]; if(!a||!b) return null;
+  const p = anchors(a,b);
+  const d = p.h ? Math.max(40,Math.abs(p.ex-p.sx)*.5) : Math.max(30,Math.abs(p.ey-p.sy)*.5);
+  const c1x = p.h ? p.sx+p.r*d : p.sx, c1y = p.h ? p.sy : p.sy+p.r*d;
+  const c2x = p.h ? p.ex-p.r*d : p.ex, c2y = p.h ? p.ey : p.ey-p.r*d;
   const f = v=>v.toFixed(1);
-  return {d:`M${f(sx)} ${f(sy)} C${f(c1x)} ${f(c1y)} ${f(c2x)} ${f(c2y)} ${f(ex)} ${f(ey)}`,
-    mx:(sx+3*c1x+3*c2x+ex)/8, my:(sy+3*c1y+3*c2y+ey)/8};
+  return {d:`M${f(p.sx)} ${f(p.sy)} C${f(c1x)} ${f(c1y)} ${f(c2x)} ${f(c2y)} ${f(p.ex)} ${f(p.ey)}`,
+    mx:(p.sx+3*c1x+3*c2x+p.ex)/8, my:(p.sy+3*c1y+3*c2y+p.ey)/8};
 }
 function renderEdges(){
   const svg = $("#edges"); if(!svg) return;
-  const pad = 400, b = L.box;
-  const x0=b.x0-pad, y0=b.y0-pad, w=b.x1-b.x0+2*pad, hgt=b.y1-b.y0+2*pad;
+  const ids = Object.keys(S.nodes);
+  const b = ids.length ? {x0:Math.min(...ids.map(id=>S.nodes[id].x)), y0:Math.min(...ids.map(id=>S.nodes[id].y)), x1:Math.max(...ids.map(id=>S.nodes[id].x+W)), y1:Math.max(...ids.map(id=>S.nodes[id].y+H))} : L.box;
+  const pad = 600, x0=b.x0-pad, y0=b.y0-pad, w=b.x1-b.x0+2*pad, hh=b.y1-b.y0+2*pad;
   Object.assign(svg.style,{left:x0+"px",top:y0+"px"});
-  svg.setAttribute("width",w); svg.setAttribute("height",hgt); svg.setAttribute("viewBox",`${x0} ${y0} ${w} ${hgt}`);
+  svg.setAttribute("width",w); svg.setAttribute("height",hh); svg.setAttribute("viewBox",`${x0} ${y0} ${w} ${hh}`);
   const te = threadEdit && S.threads.find(t=>t.id===threadEdit);
   const ts = !te && threadShow && S.threads.find(t=>t.id===threadShow);
   const focus = te || ts;
-  const selIds = new Set(selectedIds());
+  const selIds = selectedIds();
   const markers = new Set([KINDS.main.color]);
   let paths = "";
-  // a highlighted thread is drawn as a soft ribbon through its scenes in reading order
   if(focus){
-    const pts = focus.scenes.filter(id=>L.xy[id]).sort((a,b)=>L.num[a]-L.num[b]).map(id=>[L.xy[id].x+W/2, L.xy[id].y+H/2]);
+    const pts = focus.scenes.filter(id=>S.nodes[id]).sort((a,c)=>L.num[a]-L.num[c]).map(id=>[S.nodes[id].x+W/2, S.nodes[id].y+H/2]);
     if(pts.length>1) paths += `<path class="threadpath" stroke="${focus.color}" d="M${pts.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join(" L")}"/>`;
   }
-  const hot = hoverId || (selIds.size===1 ? [...selIds][0] : null);
+  const hot = hoverId || (selIds.length===1 ? selIds[0] : null);
   S.edges.forEach(e=>{
     const p = edgePath(e); if(!p) return;
     const color = e.color || KINDS[e.kind].color; markers.add(color);
@@ -545,10 +481,37 @@ function renderEdges(){
   svg.innerHTML = defs + "</defs>" + paths + `<path class="tmp" id="tmpLine" d="" visibility="hidden"/>`;
 }
 
+/* floating action bar above the selection, drawn in screen space so it stays readable at any zoom */
+function renderNodebar(){
+  const bar = $("#nodebar");
+  const ids = selectedIds().filter(id=>S.nodes[id]);
+  if(!ids.length || drag || nodeDrag?.moved){ bar.hidden = true; return; }
+  if(ids.length===1){
+    bar.innerHTML = `<button data-bar="edit">✎ Edit</button><button data-bar="below" title="Add a scene underneath">＋ Below</button><button data-bar="right" title="Add a scene to the right">＋ Right</button><button data-bar="delete" class="del">🗑 Delete</button>`;
+  } else {
+    bar.innerHTML = `<span class="count">${ids.length} selected</span><button data-bar="col" title="Stack them in one tidy column">⇅ Line up</button><button data-bar="row" title="Put them in one tidy row">⇄ Line up</button><button data-bar="delete" class="del">🗑 Delete ${ids.length}</button>`;
+  }
+  bar.hidden = false;
+  placeNodebar();
+}
+function placeNodebar(){
+  const bar = $("#nodebar"); if(bar.hidden) return;
+  const ids = selectedIds().filter(id=>S.nodes[id]); if(!ids.length) return;
+  const x0 = Math.min(...ids.map(id=>S.nodes[id].x)), x1 = Math.max(...ids.map(id=>S.nodes[id].x+W)), y0 = Math.min(...ids.map(id=>S.nodes[id].y));
+  const r = $("#stage").getBoundingClientRect();
+  let x = ((x0+x1)/2)*view.k + view.tx, y = y0*view.k + view.ty - 10;
+  x = Math.max(bar.offsetWidth/2+6, Math.min(r.width-bar.offsetWidth/2-6, x));
+  y = Math.max(bar.offsetHeight+6, y);
+  bar.style.left = x+"px"; bar.style.top = y+"px";
+}
+
 function renderLegend(){
   const ln = k=>`<svg class="ln" viewBox="0 0 34 10"><path d="M1 5H26" stroke="${KINDS[k].color}" stroke-width="2" fill="none" ${KINDS[k].dash?`stroke-dasharray="${KINDS[k].dash}"`:""}/><path d="M25 1L33 5L25 9z" fill="${KINDS[k].color}"/></svg>`;
   $("#legend").innerHTML = `<li>${ICON.star()} Major scene</li><li>${ICON.diamond()} Choice (take one, lose others)</li><li>${ICON.paw()} Dog appears</li><li>${ICON.clue()} Clue / notebook entry</li>
-    <li>${ln("main")} Main path</li><li>${ln("conditional")} Conditional route</li><li>${ln("optional")} Optional / secret route</li>`;
+    <li>${ln("main")} Main path</li><li>${ln("conditional")} Conditional route</li><li>${ln("optional")} Optional / secret route</li>
+    <li class="muted">Move: drag a scene. Several: Shift-drag a box, or Shift-click.</li>
+    <li class="muted">Add: double-click empty space. Delete: select, then 🗑 or the Delete key.</li>
+    <li class="muted">Link: drag a scene's ● onto another scene.</li>`;
   $("#kindSeg").innerHTML = Object.entries(KINDS).map(([k,v])=>`<button data-kind="${k}" aria-pressed="${k===newKind}"><svg class="linesample" viewBox="0 0 26 8"><path d="M1 4H25" stroke="${v.color}" stroke-width="2" ${v.dash?`stroke-dasharray="${v.dash}"`:""}/></svg>${v.label.split(" ")[0]}</button>`).join("");
 }
 
@@ -569,7 +532,7 @@ function renderBible(){
       <div class="row">
         <button class="icon-btn" data-tedit="${t.id}" aria-pressed="${editing}">${editing?"Done picking":"Pick scenes"}</button>
         <button class="icon-btn" data-tshow="${t.id}" aria-pressed="${showing}">${showing?"Hide on map":"Show on map"}</button>
-        <button class="icon-btn" data-tdel="${t.id}" style="margin-left:auto">${armed==="t"+t.id?"Click again to delete":"Delete"}</button>
+        <button class="icon-btn" data-tdel="${t.id}" style="margin-left:auto">Delete</button>
       </div></div>`;
   }).join("") + `<button class="btn" id="addThread">+ Add thread</button>`;
 }
@@ -581,6 +544,16 @@ function renderBanner(){
   $("#hint").hidden = !!te || !!sel;
 }
 
+/* ---------- toast with undo ---------- */
+let toastTimer;
+function toast(msg, withUndo){
+  const t = $("#toast");
+  t.innerHTML = `<span>${esc(msg)}</span>${withUndo?`<button class="btn" id="toastUndo">↶ Undo</button>`:""}`;
+  t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 6000);
+}
+function hideToast(){ $("#toast").hidden = true; }
+$("#toast").addEventListener("click", e=>{ if(e.target.id==="toastUndo"){ undo(); hideToast(); } });
+
 /* ---------- editor panel ---------- */
 function linkRow(e, other, arrow){
   const c = e.color||KINDS[e.kind].color;
@@ -589,16 +562,15 @@ function linkRow(e, other, arrow){
 }
 function renderPanel(){
   const panel = $("#panel");
-  renderBanner();
-  if(!sel){ panel.hidden = true; return; }
+  renderBanner(); renderNodebar();
+  const show = sel && (sel.kind==="scene" ? panelOpen : sel.kind!=="multi");
+  if(!show){ panel.hidden = true; return; }
   let h = "";
   if(sel.kind==="scene"){
     const id = sel.id, s = S.nodes[id];
     const out = S.edges.filter(e=>e.from===id), inc = S.edges.filter(e=>e.to===id);
-    const hasBoth = inc.some(e=>e.kind==="main") && out.some(e=>e.kind==="main");
-    h = `<header style="--pc:${nodeColor(id)}"><span class="pnum">${L.num[id]}</span><h3>Scene ${L.num[id]}<small>Tier ${L.layerOf[id]+1}${S.tiers[L.layerOf[id]]?" · "+esc(S.tiers[L.layerOf[id]]):""}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    h = `<header style="--pc:${L.color[id]}"><span class="pnum">${L.num[id]}</span><h3>Scene ${L.num[id]}<small>${S.dir==="down"?"Row":"Column"} ${L.band[id]+1}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
     <div class="pbody">
-      <div class="row"><button class="btn primary" data-act="branch1">+ 1 branch</button><button class="btn primary" data-act="branch3">+ 3 branches</button><button class="btn" data-act="before" title="Add a scene between this one and the scenes that lead into it">Insert before</button></div>
       <div class="field"><label for="f-title">Title</label><input class="inp" id="f-title" value="${esc(s.title)}" placeholder="The Waiting Room"></div>
       <div class="field"><label for="f-desc">One-line hook</label><input class="inp" id="f-desc" value="${esc(s.desc)}" placeholder="Three doors. The journey begins."></div>
       <div class="field"><span class="flabel">Scene type</span>
@@ -611,27 +583,14 @@ function renderPanel(){
         <div class="checks">${S.threads.map(t=>`<button class="chip" style="--tc:${t.color}" data-tchip="${t.id}" aria-pressed="${t.scenes.includes(id)}"><i></i>${esc(t.name)}</button>`).join("") || `<span class="muted">No threads yet.</span>`}</div></div>
       <div class="field"><label for="f-notes">Notes</label><textarea class="inp" id="f-notes" placeholder="What happens, what the player learns, items found…">${esc(s.notes)}</textarea></div>
       <hr class="divider">
-      <div class="field"><span class="flabel">Leads to</span>${out.length?`<ul class="links-list">${out.map(e=>linkRow(e,e.to,"→")).join("")}</ul>`:`<span class="muted">Nothing yet. This is an ending.</span>`}</div>
-      <div class="field"><span class="flabel">Reached from</span>${inc.length?`<ul class="links-list">${inc.map(e=>linkRow(e,e.from,"←")).join("")}</ul>`:`<span class="muted">Nothing. This is a starting scene.</span>`}</div>
+      <div class="field"><span class="flabel">Leads to</span>${out.length?`<ul class="links-list">${out.map(e=>linkRow(e,e.to,"→")).join("")}</ul>`:`<span class="muted">No links yet.</span>`}</div>
+      <div class="field"><span class="flabel">Reached from</span>${inc.length?`<ul class="links-list">${inc.map(e=>linkRow(e,e.from,"←")).join("")}</ul>`:`<span class="muted">No links yet.</span>`}</div>
       <div class="field"><label for="f-linkto">Link to scene number</label>
         <div class="row"><input class="inp" id="f-linkto" type="number" min="1" max="${Object.keys(S.nodes).length}" style="width:90px">
         <select class="inp" id="f-linkkind" style="width:auto">${Object.entries(KINDS).map(([k,v])=>`<option value="${k}" ${k===newKind?"selected":""}>${v.label}</option>`).join("")}</select>
         <button class="btn" data-act="addlink">Add</button></div><span class="muted" id="f-linkmsg"></span></div>
       <hr class="divider">
-      ${hasBoth?`<label class="chk" style="align-self:flex-start"><input type="checkbox" id="f-rejoin" checked> On delete, join the scenes before it to the scenes after it</label>`:""}
-      <div class="row"><button class="btn danger${armed===id?" armed":""}" data-act="delete">${armed===id?"Click again to delete scene "+L.num[id]:"Delete scene"}</button></div>
-      <p class="muted">Shift-click other scenes to select several, then join them into one.</p>
-    </div>`;
-  } else if(sel.kind==="multi"){
-    const ids = sel.ids.slice().sort((a,b)=>L.num[a]-L.num[b]);
-    h = `<header><span class="pnum">${ids.length}</span><h3>${ids.length} scenes<small>${ids.map(id=>L.num[id]).join(", ")}</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
-    <div class="pbody">
-      <button class="btn primary" data-act="join">⤳ Join into one new scene</button>
-      <p class="muted">Adds a scene that all ${ids.length} lead into, the way branches converge on the diamond.</p>
-      <div class="field"><label for="m-linkto">Or link them all to scene number</label>
-        <div class="row"><input class="inp" id="m-linkto" type="number" min="1" style="width:90px"><button class="btn" data-act="linkall">Link all</button></div><span class="muted" id="m-linkmsg"></span></div>
-      <ul class="links-list">${ids.map(id=>`<li><span class="muted">${L.num[id]}</span><button class="go" data-goto="${id}">${esc(S.nodes[id].title||"Untitled scene")}</button><span></span><span></span></li>`).join("")}</ul>
-      <div class="row"><button class="btn danger${armed==="multi"?" armed":""}" data-act="deleteall">${armed==="multi"?"Click again to delete "+ids.length+" scenes":"Delete these scenes"}</button></div>
+      <div class="row"><button class="btn danger" data-act="delete">🗑 Delete this scene</button></div>
     </div>`;
   } else if(sel.kind==="link"){
     const e = S.edges.find(x=>x.id===sel.id); if(!e){ sel=null; panel.hidden=true; return; }
@@ -647,85 +606,83 @@ function renderPanel(){
         <span class="muted">${KINDS[e.kind].desc}</span></div>
       <div class="field"><span class="flabel">Colour</span><div class="colors">${LINK_COLORS.map(x=>`<button style="--sw:${x}" data-lcolor="${x}" aria-pressed="${c===x}" aria-label="Colour ${x}"></button>`).join("")}</div></div>
       <div class="field"><label for="l-label">Label on the map</label><input class="inp" id="l-label" value="${esc(e.label)}" placeholder="needs the red key"></div>
-      <div class="row"><button class="btn primary" data-act="insert">+ Insert scene on this link</button></div>
+      <div class="row"><button class="btn primary" data-act="insert">＋ Insert a scene on this link</button></div>
       <div class="row"><button class="btn" data-act="reverse">⇄ Reverse</button><button class="btn danger" data-act="dellink">Delete link</button></div>
+    </div>`;
+  } else if(sel.kind==="generate"){
+    const {step,grow,dir} = sel; const sizes = tierSizes(step,grow), total = sizes.reduce((a,b)=>a+b,0);
+    h = `<header><span class="pnum">✦</span><h3>New map<small>Lay out a fresh set of scenes</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+    <div class="pbody">
+      <div class="field"><span class="flabel">Each column grows by</span><div class="seg">${[1,2,3,4].map(n=>`<button data-gstep="${n}" aria-pressed="${step===n}">+${n}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Columns that grow before it narrows again</span><div class="seg">${[2,3,4,5,6,7].map(n=>`<button data-ggrow="${n}" aria-pressed="${grow===n}">${n}</button>`).join("")}</div></div>
+      <div class="field"><span class="flabel">Flow</span><div class="seg"><button data-gdir="across" aria-pressed="${dir==="across"}">Across →</button><button data-gdir="down" aria-pressed="${dir==="down"}">Down ↓</button></div></div>
+      <div class="field"><span class="flabel">Scenes per column</span><span class="shape">${sizes.join(" → ")}</span><span class="muted">${total} scenes. No links are added; you draw those.</span></div>
+      <p class="muted">This replaces the current map. Threads and notes stay (their scene picks are cleared). Undo brings the old map back.</p>
+      <button class="btn primary big" data-act="generate">Replace map</button>
     </div>`;
   } else if(sel.kind==="sync"){
     h = syncPanelHTML();
-  } else if(sel.kind==="generate"){
-    const {b,d,shape} = sel; const st = shapeText(b,d,shape);
-    h = `<header><span class="pnum">✦</span><h3>New map<small>Start from a fresh branching shape</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
-    <div class="pbody">
-      <div class="field"><span class="flabel">Shape</span><div class="seg">${[["diamond","Diamond (branch, then rejoin)"],["tree","Tree (branch only)"]].map(([k,l])=>`<button data-gshape="${k}" aria-pressed="${shape===k}">${l}</button>`).join("")}</div></div>
-      <div class="field"><span class="flabel">Each scene branches into</span><div class="seg">${[2,3,4].map(n=>`<button data-gb="${n}" aria-pressed="${b===n}">${n}</button>`).join("")}</div></div>
-      <div class="field"><span class="flabel">Tiers until the widest point</span><div class="seg">${[1,2,3,4].map(n=>`<button data-gd="${n}" aria-pressed="${d===n}">${n}</button>`).join("")}</div></div>
-      <div class="field"><span class="flabel">Scenes per tier</span><span class="shape">${st.text}</span><span class="muted">${st.total} scenes in total${st.total>150?". That's a lot; it may feel slow.":""}</span></div>
-      <p class="muted">This replaces the current map. Your threads and notes stay, but scene assignments are cleared. Undo brings the old map back.</p>
-      <button class="btn primary" data-act="generate">Replace map with this shape</button>
-    </div>`;
   }
   panel.innerHTML = h;
   panel.hidden = false;
 }
 function renderAll(){ renderMap(); renderMeta(); renderLegend(); renderStats(); renderPanel(); renderBible(); syncHistoryBtns(); applyView(); }
 
-/* ================= graph actions ================= */
-function addEdge(from,to,kind,silent){
-  if(from===to) return "A scene can't link to itself.";
-  if(S.edges.some(e=>e.from===from&&e.to===to)) return "Those scenes are already linked.";
-  const e = {id:uid("e"),from,to,kind,color:KINDS[kind].color,label:""};
-  if(silent) S.edges.push(e); else mutate(()=>S.edges.push(e));
-  return e;
+/* ================= scene actions ================= */
+function overlaps(x,y,skip){ return Object.entries(S.nodes).some(([id,n])=>id!==skip && Math.abs(n.x-x)<W+10 && Math.abs(n.y-y)<H+10); }
+function freeSpot(x,y,dx,dy){ x=snap(x); y=snap(y); for(let i=0;i<60 && overlaps(x,y);i++){ x+=dx; y+=dy; } return {x,y}; }
+function addSceneAt(x,y,dx=0,dy=ROW){
+  const p = freeSpot(x,y,dx,dy), id = uid("n");
+  mutate(()=>{ S.nodes[id] = newScene(p.x,p.y); });
+  sel = {kind:"scene",id}; panelOpen = false;
+  renderMap(); renderPanel();
+  return id;
 }
-function addBranches(id,n){
-  const made = [];
-  mutate(()=>{ for(let i=0;i<n;i++){ const c=uid("n"); S.nodes[c]=newScene(); S.edges.push({id:uid("e"),from:id,to:c,kind:"main",color:KINDS.main.color,label:""}); made.push(c); } });
-  return made;
-}
-function insertBefore(id){
-  const c = uid("n");
-  mutate(()=>{
-    S.nodes[c]=newScene();
-    S.edges.forEach(e=>{ if(e.to===id && e.kind==="main") e.to=c; });
-    S.edges.push({id:uid("e"),from:c,to:id,kind:"main",color:KINDS.main.color,label:""});
-  });
-  return c;
-}
-function insertOnLink(eid){
-  const e = S.edges.find(x=>x.id===eid), c = uid("n");
-  mutate(()=>{ S.nodes[c]=newScene(); S.edges.push({id:uid("e"),from:c,to:e.to,kind:e.kind,color:e.color,label:""}); e.to=c; });
-  return c;
-}
-function removeNodes(ids, rejoin){
+function deleteScenes(ids){
+  if(!ids.length) return;
   mutate(()=>{
     ids.forEach(id=>{
-      if(rejoin){
-        const ps = S.edges.filter(e=>e.to===id&&e.kind==="main").map(e=>e.from);
-        const cs = S.edges.filter(e=>e.from===id&&e.kind==="main").map(e=>e.to);
-        ps.forEach(p=>cs.forEach(c=>{ if(p!==c && !S.edges.some(e=>e.from===p&&e.to===c)) S.edges.push({id:uid("e"),from:p,to:c,kind:"main",color:KINDS.main.color,label:""}); }));
-      }
       delete S.nodes[id];
       S.edges = S.edges.filter(e=>e.from!==id&&e.to!==id);
       S.threads.forEach(t=>t.scenes=t.scenes.filter(x=>x!==id));
     });
   });
+  sel = null; panelOpen = false; renderMap(); renderPanel();
+  toast(ids.length===1 ? "Scene deleted." : ids.length+" scenes deleted.", true);
+}
+function lineUp(ids, vertical){
+  const ns = ids.map(id=>[id,S.nodes[id]]).sort((a,b)=>vertical ? a[1].y-b[1].y : a[1].x-b[1].x);
+  const x0 = snap(ns.reduce((a,[,n])=>a+n.x,0)/ns.length), y0 = snap(ns.reduce((a,[,n])=>a+n.y,0)/ns.length);
+  mutate(()=>ns.forEach(([,n],i)=>{
+    if(vertical){ n.x = x0; n.y = snap(y0 + (i-(ns.length-1)/2)*ROW); }
+    else { n.y = y0; n.x = snap(x0 + (i-(ns.length-1)/2)*(W+30)); }
+  }));
+}
+function addEdge(from,to,kind){
+  if(from===to) return "A scene can't link to itself.";
+  if(S.edges.some(e=>e.from===from&&e.to===to)) return "Those scenes are already linked.";
+  const e = {id:uid("e"),from,to,kind,color:KINDS[kind].color,label:""};
+  mutate(()=>S.edges.push(e));
+  return e;
 }
 function toggleThread(tid,id){
   const t = S.threads.find(x=>x.id===tid); if(!t) return;
   mutate(()=>{ t.scenes = t.scenes.includes(id) ? t.scenes.filter(x=>x!==id) : [...t.scenes,id]; });
 }
-function select(s){
+function select(s, open){
   if(!s && document.activeElement && $("#panel").contains(document.activeElement)) document.activeElement.blur();
-  sel=s; armed=null; renderMap(); renderPanel();
+  sel = s; panelOpen = !!open;
+  renderMap(); renderPanel();
 }
-function gotoScene(id, zoomTo){
-  select({kind:"scene",id});
-  const p = L.xy[id]; if(!p) return;
+function openEditor(id){ select({kind:"scene",id}, true); focusTitle(); }
+function focusTitle(){ setTimeout(()=>{ const t=$("#f-title"); if(t && innerWidth>720) t.focus(); },60); }
+function gotoScene(id, open){
+  select({kind:"scene",id}, open);
+  const n = S.nodes[id]; if(!n) return;
   const r = $("#viewport").getBoundingClientRect();
-  const k = zoomTo ? Math.max(view.k, .8) : view.k;
-  // centre the scene in the part of the canvas not covered by side panels
+  const k = Math.max(view.k, .7);
   const right = $("#panel").hidden || innerWidth<720 ? 0 : 380, left = $("#bible").hidden || innerWidth<720 ? 0 : 380;
-  animateTo(k, left + (r.width-left-right)/2 - (p.x+W/2)*k, r.height/2 - (p.y+H/2)*k);
+  animateTo(k, left + (r.width-left-right)/2 - (n.x+W/2)*k, r.height/2 - (n.y+H/2)*k);
 }
 
 /* ================= pan & zoom ================= */
@@ -733,6 +690,7 @@ const vp = $("#viewport");
 function applyView(){
   $("#world").style.transform = `translate(${view.tx}px,${view.ty}px) scale(${view.k})`;
   $("#zoomPct").textContent = Math.round(view.k*100)+"%";
+  placeNodebar();
 }
 function zoomAt(k, px, py){
   k = Math.min(2.5, Math.max(0.05, k));
@@ -749,11 +707,12 @@ function animateTo(k,tx,ty){
 }
 function fit(animated=true){
   const r = vp.getBoundingClientRect(), b = L.box;
-  const m = 90, bw = b.x1-b.x0 + 2*m, bh = b.y1-b.y0 + 2*m + 70;
+  const m = 70, bw = b.x1-b.x0 + 2*m, bh = b.y1-b.y0 + 2*m + 40;
   const k = Math.min(1.2, Math.max(0.05, Math.min(r.width/bw, r.height/bh)));
-  const tx = r.width/2 - ((b.x0+b.x1)/2)*k, ty = r.height/2 - ((b.y0+b.y1)/2 - 35)*k;
+  const tx = r.width/2 - ((b.x0+b.x1)/2)*k, ty = r.height/2 - ((b.y0+b.y1)/2 - 20)*k;
   if(animated) animateTo(k,tx,ty); else { Object.assign(view,{k,tx,ty}); applyView(); }
 }
+function viewCenter(){ const r=vp.getBoundingClientRect(); return toWorld(r.left+r.width/2, r.top+r.height/2); }
 vp.addEventListener("wheel", e=>{
   e.preventDefault();
   const r = vp.getBoundingClientRect();
@@ -764,28 +723,55 @@ $("#zoomIn").onclick = ()=>{ const r=vp.getBoundingClientRect(); zoomAt(view.k*1
 $("#zoomOut").onclick = ()=>{ const r=vp.getBoundingClientRect(); zoomAt(view.k/1.25, r.width/2, r.height/2); };
 $("#zoomFit").onclick = ()=>fit();
 
+/* ================= pointer: move scenes, pan, box-select, link ================= */
 const pointers = new Map();
-let pan = null, pinch = null, drag = null, moved = false;
+let pan = null, pinch = null, drag = null, nodeDrag = null, box = null, moved = false, suppressClick = false;
 function toWorld(cx,cy){ const r=vp.getBoundingClientRect(); return {x:(cx-r.left-view.tx)/view.k, y:(cy-r.top-view.ty)/view.k}; }
 vp.addEventListener("pointerdown", e=>{
+  if(e.button>0) return;
   const h = e.target.closest(".handle");
   if(h){ e.preventDefault(); vp.setPointerCapture(e.pointerId); drag={from:h.dataset.handle,target:null,sx:e.clientX,sy:e.clientY,moved:false}; return; }
-  if(e.target.closest(".node,.hit,input,button")) { moved=false; return; }
+  const node = e.target.closest(".node");
+  if(node && !threadEdit){
+    const id = node.dataset.id;
+    const group = selectedIds().includes(id) ? selectedIds() : [id];
+    const start = toWorld(e.clientX,e.clientY);
+    nodeDrag = {id, group, start, origin:Object.fromEntries(group.map(g=>[g,{x:S.nodes[g].x,y:S.nodes[g].y}])), moved:false, pid:e.pointerId};
+    return;
+  }
+  if(e.target.closest(".hit,input,button")) return;
   pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  vp.setPointerCapture(e.pointerId);
   moved = false;
+  if(pointers.size===1 && e.shiftKey){ vp.setPointerCapture(e.pointerId); box = {start:toWorld(e.clientX,e.clientY)}; return; }
   if(pointers.size===1){ pan={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty}; vp.classList.add("panning"); }
-  if(pointers.size===2){ const [a,b]=[...pointers.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),k:view.k}; pan=null; }
+  if(pointers.size===2){ const [a,b]=[...pointers.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),k:view.k}; pan=null; box=null; nodeDrag=null; try{ pointers.forEach((_,id)=>vp.setPointerCapture(id)); }catch{} }
 });
 vp.addEventListener("pointermove", e=>{
+  if(nodeDrag && e.pointerId===nodeDrag.pid){
+    const p = toWorld(e.clientX,e.clientY), dx = p.x-nodeDrag.start.x, dy = p.y-nodeDrag.start.y;
+    if(!nodeDrag.moved){
+      if(Math.hypot(dx*view.k,dy*view.k) < 5) return;
+      nodeDrag.moved = true; snapshot(); lastMutKey = "";
+      try{ vp.setPointerCapture(e.pointerId); }catch{}
+      $("#nodebar").hidden = true; hoverId = null;
+    }
+    nodeDrag.group.forEach(g=>{
+      const n = S.nodes[g], o = nodeDrag.origin[g];
+      n.x = o.x+dx; n.y = o.y+dy;
+      const el = document.querySelector(`.node[data-id="${g}"]`);
+      if(el){ el.style.left = n.x+"px"; el.style.top = n.y+"px"; el.classList.add("dragging"); }
+    });
+    renderEdges();
+    autoScroll(e);
+    return;
+  }
   if(drag){
     if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>5) drag.moved=true;
     if(!drag.moved) return;
-    const a = L.xy[drag.from], down = S.dir==="down";
-    const sx = down? a.x+W/2 : a.x+W, sy = down? a.y+H : a.y+H/2;
+    const a = S.nodes[drag.from], sx = a.x+W, sy = a.y+H/2;
     const p = toWorld(e.clientX,e.clientY);
     const tmp = $("#tmpLine"); tmp.setAttribute("visibility","visible");
-    tmp.setAttribute("d", down ? `M${sx} ${sy} C${sx} ${sy+60} ${p.x} ${p.y-60} ${p.x} ${p.y}` : `M${sx} ${sy} C${sx+60} ${sy} ${p.x-60} ${p.y} ${p.x} ${p.y}`);
+    tmp.setAttribute("d", `M${sx} ${sy} C${sx+60} ${sy} ${p.x-60} ${p.y} ${p.x} ${p.y}`);
     const under = document.elementFromPoint(e.clientX,e.clientY)?.closest(".node");
     const tid = under && under.dataset.id!==drag.from ? under.dataset.id : null;
     if(tid!==drag.target){ document.querySelector(".droptarget")?.classList.remove("droptarget"); if(tid) under.classList.add("droptarget"); drag.target=tid; }
@@ -794,40 +780,80 @@ vp.addEventListener("pointermove", e=>{
   }
   if(!pointers.has(e.pointerId)) return;
   pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pinch && pointers.size===2){
+  if(box){
+    const p = toWorld(e.clientX,e.clientY), b = $("#selbox");
+    box.end = p; moved = true;
+    Object.assign(b.style,{left:Math.min(p.x,box.start.x)+"px", top:Math.min(p.y,box.start.y)+"px", width:Math.abs(p.x-box.start.x)+"px", height:Math.abs(p.y-box.start.y)+"px"});
+    b.hidden = false;
+  } else if(pinch && pointers.size===2){
     const [a,b]=[...pointers.values()], r=vp.getBoundingClientRect();
     zoomAt(pinch.k*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d, (a.x+b.x)/2-r.left, (a.y+b.y)/2-r.top); moved=true;
   } else if(pan){
     const dx=e.clientX-pan.x, dy=e.clientY-pan.y;
-    if(Math.abs(dx)+Math.abs(dy)>3) moved=true;
+    if(!moved && Math.abs(dx)+Math.abs(dy)>3){ moved=true; try{ vp.setPointerCapture(e.pointerId); }catch{} }
     view.tx=pan.tx+dx; view.ty=pan.ty+dy; applyView();
   }
 });
+function autoScroll(e){
+  const r = vp.getBoundingClientRect(), m = 40, s = 12;
+  let dx = 0, dy = 0;
+  if(e.clientX < r.left+m) dx = s; else if(e.clientX > r.right-m) dx = -s;
+  if(e.clientY < r.top+m) dy = s; else if(e.clientY > r.bottom-m) dy = -s;
+  if(dx||dy){ view.tx+=dx; view.ty+=dy; nodeDrag.start.x -= dx/view.k; nodeDrag.start.y -= dy/view.k; applyView(); }
+}
 function endPointer(e){
+  if(nodeDrag && e.pointerId===nodeDrag.pid){
+    const d = nodeDrag; nodeDrag = null;
+    if(d.moved){
+      d.group.forEach(g=>{ const n=S.nodes[g]; n.x=snap(n.x); n.y=snap(n.y); });
+      S.updatedAt = Date.now();
+      suppressClick = true; setTimeout(()=>suppressClick=false, 0);
+      if(!selectedIds().includes(d.id)) sel = {kind:"scene",id:d.id};
+      changed();
+    }
+    return;
+  }
   if(drag){
     const d = drag; drag = null;
     $("#tmpLine")?.setAttribute("visibility","hidden");
     document.querySelector(".droptarget")?.classList.remove("droptarget");
-    if(!d.moved){ const [c]=addBranches(d.from,1); gotoScene(c); focusTitle(); return; }
-    if(d.target){ const r=addEdge(d.from,d.target,newKind); if(typeof r==="object") select({kind:"link",id:r.id}); }
-    else { const [c]=addBranches(d.from,1); gotoScene(c); focusTitle(); }
+    if(!d.moved) return;
+    if(d.target){ const r=addEdge(d.from,d.target,newKind); if(typeof r==="object") select({kind:"link",id:r.id}); else toast(r); }
+    else {
+      // dropped on empty space: make a new scene there, linked from this one
+      const id = uid("n"), x = snap(d.wx), y = snap(d.wy - H/2);
+      mutate(()=>{ S.nodes[id] = newScene(x,y); S.edges.push({id:uid("e"),from:d.from,to:id,kind:newKind,color:KINDS[newKind].color,label:""}); });
+      select({kind:"scene",id});
+    }
     return;
   }
   pointers.delete(e.pointerId);
   if(pointers.size<2) pinch=null;
   if(!pointers.size){
     vp.classList.remove("panning");
-    if(pan && !moved && !e.target.closest(".node,.hit") && e.type==="pointerup"){ if(sel && sel.kind!=="generate") select(null); }
+    if(box){
+      $("#selbox").hidden = true;
+      if(box.end){
+        const x0=Math.min(box.start.x,box.end.x), x1=Math.max(box.start.x,box.end.x), y0=Math.min(box.start.y,box.end.y), y1=Math.max(box.start.y,box.end.y);
+        const ids = Object.keys(S.nodes).filter(id=>{ const n=S.nodes[id]; return n.x<x1 && n.x+W>x0 && n.y<y1 && n.y+H>y0; });
+        select(ids.length>1 ? {kind:"multi",ids} : ids.length ? {kind:"scene",id:ids[0]} : null);
+      }
+      box = null; pan = null; return;
+    }
+    if(pan && !moved && e.type==="pointerup" && !e.target.closest(".node,.hit") && sel && sel.kind!=="generate" && sel.kind!=="sync") select(null);
     pan=null;
   }
 }
 vp.addEventListener("pointerup", endPointer);
-vp.addEventListener("pointercancel", e=>{ if(drag){ drag=null; $("#tmpLine")?.setAttribute("visibility","hidden"); } pointers.delete(e.pointerId); pan=null; pinch=null; vp.classList.remove("panning"); });
-function focusTitle(){ setTimeout(()=>{ const t=$("#f-title"); if(t && innerWidth>720) t.focus(); },60); }
+vp.addEventListener("pointercancel", e=>{
+  if(nodeDrag){ const d=nodeDrag; nodeDrag=null; if(d.moved){ d.group.forEach(g=>{ S.nodes[g].x=snap(S.nodes[g].x); S.nodes[g].y=snap(S.nodes[g].y); }); changed(); } }
+  if(drag){ drag=null; $("#tmpLine")?.setAttribute("visibility","hidden"); }
+  pointers.delete(e.pointerId); pan=null; pinch=null; box=null; $("#selbox") && ($("#selbox").hidden=true); vp.classList.remove("panning");
+});
 
 /* ================= events ================= */
 vp.addEventListener("click", e=>{
-  if(e.target.closest(".handle")) return;
+  if(suppressClick || e.target.closest(".handle")) return;
   const hit = e.target.closest("[data-link]");
   if(e.target.classList.contains("hit") && hit){ select({kind:"link",id:hit.dataset.link}); return; }
   const node = e.target.closest(".node"); if(!node) return;
@@ -839,26 +865,43 @@ vp.addEventListener("click", e=>{
     select(ids.length===0 ? null : ids.length===1 ? {kind:"scene",id:ids[0]} : {kind:"multi",ids});
     return;
   }
-  select({kind:"scene",id});
+  // a second click on the selected scene opens its editor
+  if(sel?.kind==="scene" && sel.id===id && !panelOpen){ openEditor(id); return; }
+  select({kind:"scene",id}, panelOpen && sel?.kind==="scene");
 });
-vp.addEventListener("dblclick", e=>{ if(e.target.closest(".node")) focusTitle(); });
-vp.addEventListener("keydown", e=>{ const n=e.target.closest?.(".node"); if(n && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); n.click(); } });
-vp.addEventListener("input", e=>{ const t=e.target; if(t.dataset.tier!==undefined) mutate(()=>{ if(t.value) S.tiers[t.dataset.tier]=t.value; else delete S.tiers[t.dataset.tier]; }, "tier"+t.dataset.tier); });
-vp.addEventListener("focusout", e=>{ if(e.target.dataset?.tier!==undefined) setTimeout(renderMap,0); });
+vp.addEventListener("dblclick", e=>{
+  const node = e.target.closest(".node");
+  if(node){ openEditor(node.dataset.id); return; }
+  if(e.target.closest(".hit,button,input")) return;
+  const p = toWorld(e.clientX,e.clientY);
+  addSceneAt(p.x-W/2, p.y-H/2, 0, ROW);
+});
+vp.addEventListener("keydown", e=>{ const n=e.target.closest?.(".node"); if(n && e.key==="Enter"){ e.preventDefault(); openEditor(n.dataset.id); } });
 vp.addEventListener("pointerover", e=>{
-  if(drag||threadEdit||pan) return;
+  if(drag||nodeDrag||threadEdit||pan) return;
   const n = e.target.closest(".node"); const id = n?n.dataset.id:null;
   if(id!==hoverId){ hoverId=id; renderEdges(); }
 });
 vp.addEventListener("pointerleave", ()=>{ if(hoverId){ hoverId=null; renderEdges(); } });
+
+$("#nodebar").addEventListener("click", e=>{
+  const act = e.target.closest("[data-bar]")?.dataset.bar; if(!act) return;
+  const ids = selectedIds();
+  if(act==="edit") openEditor(ids[0]);
+  if(act==="delete") deleteScenes(ids);
+  if(act==="below"){ const n=S.nodes[ids[0]]; addSceneAt(n.x, n.y+ROW, 0, ROW); }
+  if(act==="right"){ const n=S.nodes[ids[0]]; addSceneAt(n.x+COL, n.y, 0, ROW); }
+  if(act==="col") lineUp(ids, true);
+  if(act==="row") lineUp(ids, false);
+});
+$("#addScene").onclick = ()=>{ const c=viewCenter(); const id=addSceneAt(c.x-W/2, c.y-H/2, 0, ROW); toast("New scene added. Drag it where you want it."); void id; };
 
 for(const k of ["title","subtitle"]) $("#m-"+k).addEventListener("input", e=>{ mutate(()=>S.meta[k]=e.target.value, "m"+k); if(k==="title") document.title=e.target.value||"Story map"; });
 $("#notes").addEventListener("input", e=>mutate(()=>S.notes=e.target.value, "notes"));
 
 $("#undo").onclick = undo; $("#redo").onclick = redo;
 $("#kindSeg").addEventListener("click", e=>{ const b=e.target.closest("[data-kind]"); if(b){ newKind=b.dataset.kind; renderLegend(); } });
-$("#dirSeg").addEventListener("click", e=>{ const b=e.target.closest("[data-dir]"); if(b && b.dataset.dir!==S.dir){ mutate(()=>S.dir=b.dataset.dir); renderMeta(); fit(false); } });
-$("#newMap").onclick = ()=>select({kind:"generate",b:3,d:3,shape:"diamond"});
+$("#newMap").onclick = ()=>select({kind:"generate",step:3,grow:5,dir:S.dir||"across"});
 
 /* bible */
 $("#bibleBtn").onclick = ()=>{ $("#bible").hidden = !$("#bible").hidden; renderBible(); };
@@ -870,12 +913,12 @@ document.querySelector("#bible .tabs").addEventListener("click", e=>{
 });
 $("#tab-threads").addEventListener("click", e=>{
   const t=e.target;
-  const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto,true); return; }
+  const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto); return; }
   const ed=t.closest("[data-tedit]"); if(ed){ toggleThreadEdit(ed.dataset.tedit); return; }
   const sh=t.closest("[data-tshow]"); if(sh){ threadShow = threadShow===sh.dataset.tshow ? null : sh.dataset.tshow; renderMap(); renderBible(); return; }
   const sw=t.closest("[data-tcolor]"); if(sw){ const th=S.threads.find(x=>x.id===sw.dataset.tcolor); mutate(()=>th.color=THREAD_COLORS[(THREAD_COLORS.indexOf(th.color)+1)%THREAD_COLORS.length]); return; }
   const del=t.closest("[data-tdel]");
-  if(del){ const id=del.dataset.tdel; if(armed!=="t"+id){ armed="t"+id; renderBible(); return; } armed=null; if(threadEdit===id) threadEdit=null; if(threadShow===id) threadShow=null; mutate(()=>S.threads=S.threads.filter(x=>x.id!==id)); return; }
+  if(del){ const id=del.dataset.tdel; if(threadEdit===id) threadEdit=null; if(threadShow===id) threadShow=null; mutate(()=>S.threads=S.threads.filter(x=>x.id!==id)); toast("Thread deleted.", true); return; }
   if(t.id==="addThread"){ const id=uid("t"); mutate(()=>S.threads.push({id,name:"New thread",color:THREAD_COLORS[S.threads.length%THREAD_COLORS.length],scenes:[],note:""})); const inp=document.querySelector(`[data-tname="${id}"]`); inp?.focus(); inp?.select(); }
 });
 $("#tab-threads").addEventListener("input", e=>{
@@ -894,8 +937,8 @@ function toggleThreadEdit(id){
 const panel = $("#panel");
 panel.addEventListener("click", e=>{
   const t=e.target;
-  if(t.closest("#pclose")){ select(null); return; }
-  const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto); return; }
+  if(t.closest("#pclose")){ if(sel?.kind==="scene"){ panelOpen=false; renderPanel(); } else select(null); return; }
+  const g=t.closest("[data-goto]"); if(g){ gotoScene(g.dataset.goto, true); return; }
   const ol=t.closest("[data-openlink]"); if(ol){ select({kind:"link",id:ol.dataset.openlink}); return; }
   const dl=t.closest("[data-dellink]"); if(dl){ mutate(()=>S.edges=S.edges.filter(x=>x.id!==dl.dataset.dellink)); return; }
   const act = t.closest("[data-act]")?.dataset.act;
@@ -903,36 +946,34 @@ panel.addEventListener("click", e=>{
     const id=sel.id, s=S.nodes[id];
     const ty=t.closest("[data-type]"); if(ty){ mutate(()=>s.type=ty.dataset.type); return; }
     const ch=t.closest("[data-tchip]"); if(ch){ toggleThread(ch.dataset.tchip,id); return; }
-    if(act==="branch1"){ const [c]=addBranches(id,1); gotoScene(c); focusTitle(); return; }
-    if(act==="branch3"){ addBranches(id,3); renderPanel(); return; }
-    if(act==="before"){ const c=insertBefore(id); gotoScene(c); focusTitle(); return; }
     if(act==="addlink"){
       const n=+$("#f-linkto").value, target=Object.keys(L.num).find(x=>L.num[x]===n);
       if(!target){ $("#f-linkmsg").textContent=`Enter a scene number from 1 to ${Object.keys(S.nodes).length}.`; return; }
       const r=addEdge(id,target,$("#f-linkkind").value); if(typeof r==="string") $("#f-linkmsg").textContent=r; return;
     }
-    if(act==="delete"){ if(armed!==id){ armed=id; renderPanel(); return; } const rejoin=$("#f-rejoin")?.checked; sel=null; armed=null; removeNodes([id],rejoin); return; }
-  }
-  if(sel?.kind==="multi"){
-    if(act==="join"){
-      const c=uid("n");
-      mutate(()=>{ S.nodes[c]=newScene(); sel.ids.forEach(p=>S.edges.push({id:uid("e"),from:p,to:c,kind:"main",color:KINDS.main.color,label:""})); });
-      gotoScene(c); focusTitle(); return;
-    }
-    if(act==="linkall"){
-      const n=+$("#m-linkto").value, target=Object.keys(L.num).find(x=>L.num[x]===n);
-      if(!target){ $("#m-linkmsg").textContent=`Enter a scene number from 1 to ${Object.keys(S.nodes).length}.`; return; }
-      mutate(()=>sel.ids.forEach(p=>addEdge(p,target,newKind,true))); return;
-    }
-    if(act==="deleteall"){ if(armed!=="multi"){ armed="multi"; renderPanel(); return; } const ids=sel.ids; sel=null; armed=null; removeNodes(ids,true); return; }
+    if(act==="delete"){ deleteScenes([id]); return; }
   }
   if(sel?.kind==="link"){
     const l=S.edges.find(x=>x.id===sel.id);
     const k=t.closest("[data-lkind]"); if(k){ mutate(()=>{ const def=!l.color||l.color===KINDS[l.kind].color; l.kind=k.dataset.lkind; if(def) l.color=KINDS[l.kind].color; }); return; }
     const c=t.closest("[data-lcolor]"); if(c){ mutate(()=>l.color=c.dataset.lcolor); return; }
     if(act==="reverse"){ mutate(()=>{ [l.from,l.to]=[l.to,l.from]; }); return; }
-    if(act==="insert"){ const n=insertOnLink(l.id); gotoScene(n); focusTitle(); return; }
+    if(act==="insert"){
+      const a=S.nodes[l.from], b=S.nodes[l.to], id=uid("n");
+      const p = freeSpot((a.x+b.x)/2, (a.y+b.y)/2, 0, ROW);
+      mutate(()=>{ S.nodes[id]=newScene(p.x,p.y); S.edges.push({id:uid("e"),from:id,to:l.to,kind:l.kind,color:l.color,label:""}); l.to=id; });
+      select({kind:"scene",id}); return;
+    }
     if(act==="dellink"){ sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==l.id)); return; }
+  }
+  if(sel?.kind==="generate"){
+    const gs=t.closest("[data-gstep]"), gg=t.closest("[data-ggrow]"), gd=t.closest("[data-gdir]");
+    if(gs||gg||gd){ if(gs) sel.step=+gs.dataset.gstep; if(gg) sel.grow=+gg.dataset.ggrow; if(gd) sel.dir=gd.dataset.gdir; renderPanel(); return; }
+    if(act==="generate"){
+      const {step,grow,dir}=sel; sel=null;
+      mutate(()=>{ const keep={threads:S.threads,notes:S.notes,meta:S.meta,seq:S.seq,version:3}; S=shapedMap(step,grow,dir,keep); });
+      fit();
+    }
   }
   if(sel?.kind==="sync"){
     if(act==="paste"){
@@ -949,15 +990,6 @@ panel.addEventListener("click", e=>{
     }
     if(act==="syncnow"){ localDirty ? pushGist() : pullGist(); return; }
     if(act==="disconnect"){ disconnectGitHub(); return; }
-  }
-  if(sel?.kind==="generate"){
-    const gb=t.closest("[data-gb]"), gd=t.closest("[data-gd]"), gs=t.closest("[data-gshape]");
-    if(gb||gd||gs){ if(gb) sel.b=+gb.dataset.gb; if(gd) sel.d=+gd.dataset.gd; if(gs) sel.shape=gs.dataset.gshape; renderPanel(); return; }
-    if(act==="generate"){
-      const {b,d,shape}=sel; sel=null;
-      mutate(()=>{ const keep={threads:S.threads.map(t=>({...t,scenes:[]})),notes:S.notes,meta:S.meta,dir:S.dir,seq:S.seq,version:2}; S=diamondMap(b,d,shape,keep); });
-      fit();
-    }
   }
 });
 panel.addEventListener("input", e=>{
@@ -976,7 +1008,7 @@ panel.addEventListener("change", e=>{
   if(t.id==="f-dog") mutate(()=>s.dog=t.checked);
   if(t.id==="f-clue") mutate(()=>s.clue=t.checked);
 });
-panel.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="f-linkto") panel.querySelector('[data-act="addlink"]').click(); if(e.key==="Enter" && e.target.id==="m-linkto") panel.querySelector('[data-act="linkall"]').click(); });
+panel.addEventListener("keydown", e=>{ if(e.key==="Enter" && e.target.id==="f-linkto") panel.querySelector('[data-act="addlink"]').click(); });
 
 document.addEventListener("keydown", e=>{
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||"");
@@ -989,7 +1021,10 @@ document.addEventListener("keydown", e=>{
     if(e.key==="+"||e.key==="=") zoomAt(view.k*1.25,r.width/2,r.height/2);
     else if(e.key==="-"||e.key==="_") zoomAt(view.k/1.25,r.width/2,r.height/2);
     else if(e.key==="0") fit();
-    else if((e.key==="Delete"||e.key==="Backspace") && sel?.kind==="link"){ const id=sel.id; sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==id)); }
+    else if(e.key==="Delete"||e.key==="Backspace"){
+      if(sel?.kind==="link"){ const id=sel.id; sel=null; mutate(()=>S.edges=S.edges.filter(x=>x.id!==id)); }
+      else if(selectedIds().length){ e.preventDefault(); deleteScenes(selectedIds()); }
+    }
   }
 });
 
@@ -1003,27 +1038,39 @@ $("#export").onclick = async ()=>{
 $("#importFile").onchange = e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
-  r.onload=()=>{ try{ const d=normalize(JSON.parse(r.result)); undoStack.push(clone(S)); redoStack=[]; S=d; S.updatedAt=Date.now(); sel=null; threadEdit=null; threadShow=null; renderAll(); fit(); persistLocal(true); scheduleSave(); flash("Imported "+f.name+"."); }catch(err){ flash("That file isn't a story map export ("+err.message+").", true); } e.target.value=""; };
+  r.onload=()=>{ try{ const d=normalize(JSON.parse(r.result)); snapshot(); S=d; S.updatedAt=Date.now(); sel=null; threadEdit=null; threadShow=null; renderAll(); fit(); persistLocal(true); scheduleSave(); flash("Imported "+f.name+"."); }catch(err){ flash("That file isn't a story map export ("+err.message+").", true); } e.target.value=""; };
   r.readAsText(f);
 };
-// accepts this map's format, and converts exports from the earlier column version
+// Accepts this format and exports from earlier versions (which had no positions: they get laid out once).
 function normalize(d){
   if(!d || typeof d!=="object") throw new Error("empty file");
   if(d.acts && d.scenes && !d.nodes){
     const nodes={}, edges=[]; let seq=d.seq||1000;
-    const flat = d.acts.flatMap(a=>a.scenes).filter(id=>d.scenes[id]);
-    flat.forEach(id=>nodes[id]={...newScene(),...d.scenes[id]});
-    d.acts.forEach(a=>a.scenes.forEach((id,i)=>{ if(i && nodes[id] && nodes[a.scenes[i-1]]) edges.push({id:"e"+(++seq),from:a.scenes[i-1],to:id,kind:"main",color:KINDS.main.color,label:""}); }));
-    for(let i=1;i<d.acts.length;i++){ const p=d.acts[i-1].scenes.at(-1), c=d.acts[i].scenes[0]; if(p&&c&&!edges.some(e=>e.from===p&&e.to===c)) edges.push({id:"e"+(++seq),from:p,to:c,kind:"main",color:KINDS.main.color,label:""}); }
-    (d.links||[]).forEach(l=>{ if(nodes[l.from]&&nodes[l.to]&&!edges.some(e=>e.from===l.from&&e.to===l.to)) edges.push({...l, kind:l.kind==="main"?"conditional":l.kind}); });
-    d = {version:2,updatedAt:d.updatedAt||0,seq,dir:"across",meta:{title:d.meta?.title||"The Long Way Home",subtitle:d.meta?.subtitle||""},tiers:{},nodes,edges,threads:d.threads||[],notes:d.notes||""};
+    d.acts.forEach((a,ai)=>a.scenes.forEach((id,i)=>{ if(d.scenes[id]) nodes[id]={...newScene(ai*COL, i*ROW), ...d.scenes[id], x:ai*COL, y:i*ROW}; }));
+    (d.links||[]).forEach(l=>{ if(nodes[l.from]&&nodes[l.to]) edges.push({...l}); });
+    d = {version:3,updatedAt:d.updatedAt||0,seq,dir:"across",meta:{title:d.meta?.title||"The Long Way Home",subtitle:d.meta?.subtitle||""},nodes,edges,threads:d.threads||[],notes:d.notes||""};
   }
-  if(typeof d.nodes!=="object" || !Array.isArray(d.edges)) throw new Error("no scenes or links found");
-  d.meta ||= {title:"",subtitle:""}; d.tiers ||= {}; d.threads ||= []; d.notes ??= ""; d.dir ||= "across";
+  if(typeof d.nodes!=="object" || !Array.isArray(d.edges)) throw new Error("no scenes found");
+  d.meta ||= {title:"",subtitle:""}; d.threads ||= []; d.notes ??= ""; d.dir ||= "across";
   d.seq = Math.max(d.seq||0, 1000);
   d.edges = d.edges.filter(e=>d.nodes[e.from]&&d.nodes[e.to]&&KINDS[e.kind]);
-  d.threads.forEach(t=>t.scenes=(t.scenes||[]).filter(id=>d.nodes[id]));
+  d.threads.forEach(t=>{ t.scenes=(t.scenes||[]).filter(id=>d.nodes[id]); t.note ??= ""; });
+  const unplaced = Object.keys(d.nodes).filter(id=>typeof d.nodes[id].x!=="number" || typeof d.nodes[id].y!=="number");
+  if(unplaced.length) placeByLinks(d, unplaced);
+  d.version = 3;
   return d;
+}
+// one-off layout for scenes from older versions: column = longest chain of main links leading to it
+function placeByLinks(d, ids){
+  const col = {}; ids.forEach(id=>col[id]=0);
+  const main = d.edges.filter(e=>e.kind==="main");
+  for(let pass=0; pass<ids.length; pass++){
+    let changedAny=false;
+    main.forEach(e=>{ if(e.to in col && e.from in col && col[e.to] < col[e.from]+1 && col[e.from]+1 < ids.length){ col[e.to]=col[e.from]+1; changedAny=true; } });
+    if(!changedAny) break;
+  }
+  const byCol = {}; ids.forEach(id=>(byCol[col[id]] ||= []).push(id));
+  Object.entries(byCol).forEach(([c,list])=>list.forEach((id,j)=>{ d.nodes[id].x = +c*COL; d.nodes[id].y = Math.round((j-(list.length-1)/2)*ROW - H/2); }));
 }
 
 /* ================= persistence ================= */
@@ -1071,7 +1118,7 @@ async function publishNow(retried){
 
 /* ---------- GitHub gist sync ---------- */
 const SYNC_KEY = "long-way-home-diamond:sync";
-const GIST_FILE = "long-way-home-map.json";
+const GIST_FILE = "long-way-home-map-v3.json";
 const TOKEN_URL = "https://github.com/settings/tokens/new?scopes=gist&description=Long%20Way%20Home%20map";
 let sync = {};
 try{ sync = JSON.parse(localStorage.getItem(SYNC_KEY)||"{}") || {}; }catch{}

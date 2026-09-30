@@ -96,13 +96,13 @@ models/                   drop-in vehicle GLBs
 
 ## Story map (The Long Way Home)
 
-`story-map/index.html` is a standalone, editable branching story map for the
-narrative game plan. It starts as a diamond: 1 scene branches into 3, each of
-those into 3 more, then the branches rejoin 3-into-1 back to a single ending
-(1 → 3 → 9 → 27 → 9 → 3 → 1). Add branches, join scenes, insert or delete
-scenes, draw conditional/optional routes, track recurring threads, and zoom
-or pan to see the whole map. **New map…** regenerates the shape with other
-branch counts and depths.
+`story-map/index.html` is a standalone, editable story map for the narrative
+game plan. It starts with 77 unlinked scenes laid out as an overlapping
+diamond, 1 → 3 → 6 → 9 → 12 → 15 → 12 → 9 → 6 → 3 → 1, and everything is
+free-form: drag scenes to move them, double-click empty space (or use
+**＋ Add scene**) to add one, select and press 🗑 or Delete to remove, and drag
+a scene's ● onto another to draw a link. **New map…** lays out a different
+shape. Undo covers every change.
 
 **Installable app with sync:** with GitHub Pages serving this branch from the
 repository root, the app lives at https://veggykray.github.io/offroadin/story-map/
