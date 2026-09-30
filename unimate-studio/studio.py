@@ -673,4 +673,17 @@ class Studio(tk.Tk):
 
 
 if __name__ == "__main__":
-    Studio().mainloop()
+    try:
+        Studio().mainloop()
+    except Exception:
+        import traceback
+        err = traceback.format_exc()
+        print(err, file=sys.stderr)
+        try:
+            os.makedirs(BASE, exist_ok=True)
+            with open(os.path.join(BASE, "crash-log.txt"), "w", encoding="utf-8") as f:
+                f.write(err)
+            messagebox.showerror(APP, "UniMate Studio couldn't start:\n\n" + err[-1500:])
+        except Exception:
+            pass
+        sys.exit(1)
