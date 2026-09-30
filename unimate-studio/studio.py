@@ -8,8 +8,10 @@ scenes this runs UniMate's own pipeline:
   2. sample           - generate motion from the prompt with the trained model
   3. animate_motion   - put that motion back on your character, export GLB + FBX
 
-Everything lives in %LOCALAPPDATA%\\UniMateStudio (set up by the installer).
-Finished animations go to a folder on your desktop.
+It uses the UniMate you already installed: start it with that environment's
+Python ("Start UniMate Studio.bat" does this) and point it at your UniMate
+folder and model folder the first time. Its own settings and scratch files live
+in %LOCALAPPDATA%\\UniMateStudio. Finished animations go to a folder on your desktop.
 """
 import datetime
 import glob
@@ -28,10 +30,11 @@ from tkinter import filedialog, messagebox, ttk
 
 APP = "UniMate Studio"
 BASE = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "UniMateStudio")
-ENGINE = os.path.join(BASE, "UniMate")
-CHECKPOINTS = os.path.join(BASE, "checkpoints")
 WORK = os.path.join(BASE, "work")
 SETTINGS = os.path.join(BASE, "settings.json")
+PATHS = os.path.join(BASE, "paths.json")
+ENGINE = ""        # your UniMate folder (the one containing unimate/ and data_process/)
+CHECKPOINTS = ""   # the folder the trained model was downloaded to
 PY = sys.executable.replace("pythonw.exe", "python.exe")
 NO_WINDOW = 0x08000000 if os.name == "nt" else 0
 
@@ -75,12 +78,41 @@ def save_settings(data):
         pass
 
 
-def find_models():
-    """Every trained run under the checkpoints folder: a dir with config.json + checkpoints/*.pt."""
+def is_engine(d):
+    return bool(d) and os.path.isfile(os.path.join(d, "unimate", "inference", "sample.py")) \
+        and os.path.isdir(os.path.join(d, "data_process"))
+
+
+def guess_engine():
+    home = os.path.expanduser("~")
+    roots = [home, desktop_dir(), os.path.join(home, "Desktop"), os.path.join(home, "OneDrive", "Desktop"),
+             os.path.join(home, "Documents"), os.path.join(home, "OneDrive", "Documents"),
+             os.path.join(home, "Downloads"), "C:\\", "D:\\"]
+    for r in roots:
+        for name in ("UniMate", "unimate", "UniMate-main", "unimate-main"):
+            d = os.path.join(r, name)
+            if is_engine(d):
+                return d
+            if is_engine(os.path.join(d, name)):
+                return os.path.join(d, name)
+    return ""
+
+
+SKIP_DIRS = {".git", "dataset", "node_modules", "__pycache__", "samples", "motions", "animations", "debug", "logs"}
+
+
+def find_models(root=None, depth=7):
+    """Every trained run under a folder: a dir with config.json + checkpoints/*.pt."""
+    root = root or CHECKPOINTS
     models = []
-    for cfg in glob.glob(os.path.join(CHECKPOINTS, "**", "config.json"), recursive=True):
-        d = os.path.dirname(cfg)
-        if glob.glob(os.path.join(d, "checkpoints", "*.pt")):
+    if not root or not os.path.isdir(root):
+        return models
+    base_depth = root.rstrip("\\/").count(os.sep)
+    for d, dirs, files in os.walk(root):
+        dirs[:] = [x for x in dirs if x not in SKIP_DIRS and not x.startswith(".")]
+        if d.count(os.sep) - base_depth >= depth:
+            dirs[:] = []
+        if "config.json" in files and glob.glob(os.path.join(d, "checkpoints", "*.pt")):
             models.append(d)
     # the full-data graph model first: it's the one the paper leads with
     models.sort(key=lambda d: (0 if "uniml3d" in d and "graph" in d else 1 if "uniml3d" in d else 2, d))
@@ -166,14 +198,78 @@ class Studio(tk.Tk):
         self.cancelled = False
         self.gpu = None
         self.settings = load_settings()
+        self._load_paths()
         self.models = find_models()
         self._build()
         self.after(100, self._drain)
         threading.Thread(target=self._check_gpu, daemon=True).start()
-        if not os.path.isdir(ENGINE):
-            self.log("UniMate isn't installed yet. Run 'Install UniMate Studio.bat' first.")
-        elif not self.models:
-            self.log("No trained model found in " + CHECKPOINTS + ". Run the installer again to download it.")
+        self.after(400, self.ensure_paths)
+
+    # ---- where UniMate and the model live
+    def _load_paths(self):
+        global ENGINE, CHECKPOINTS
+        try:
+            with open(PATHS, encoding="utf-8") as f:
+                p = json.load(f)
+        except Exception:
+            p = {}
+        ENGINE = p.get("engine", "") if is_engine(p.get("engine", "")) else guess_engine()
+        CHECKPOINTS = p.get("checkpoints", "") or ENGINE
+        if not find_models(CHECKPOINTS) and ENGINE and find_models(ENGINE):
+            CHECKPOINTS = ENGINE
+
+    def _save_paths(self):
+        os.makedirs(BASE, exist_ok=True)
+        with open(PATHS, "w", encoding="utf-8") as f:
+            json.dump({"engine": ENGINE, "checkpoints": CHECKPOINTS}, f, indent=2)
+
+    def ensure_paths(self, force=False):
+        global ENGINE, CHECKPOINTS
+        if force or not is_engine(ENGINE):
+            if not force:
+                messagebox.showinfo(APP, "Show me your UniMate folder: the one you downloaded from GitHub, "
+                                         "with folders called 'unimate' and 'data_process' inside it.")
+            while True:
+                d = filedialog.askdirectory(title="Your UniMate folder", initialdir=ENGINE or os.path.expanduser("~"))
+                if not d:
+                    break
+                d = os.path.normpath(d)
+                if is_engine(d):
+                    ENGINE = d
+                    break
+                if is_engine(os.path.join(d, "UniMate")):
+                    ENGINE = os.path.join(d, "UniMate")
+                    break
+                messagebox.showwarning(APP, "That folder doesn't look like UniMate (no 'unimate' and 'data_process' "
+                                            "folders inside). Pick the folder that has them.")
+        models = find_models(CHECKPOINTS) or (find_models(ENGINE) if ENGINE else [])
+        if models and not force:
+            CHECKPOINTS = CHECKPOINTS if find_models(CHECKPOINTS) else ENGINE
+        else:
+            if not models:
+                messagebox.showinfo(APP, "Now show me where the trained model is: the folder you downloaded "
+                                         "from Hugging Face (Linzhan/UniMate). Any folder above it is fine too.")
+            d = filedialog.askdirectory(title="Folder with the downloaded UniMate model",
+                                        initialdir=CHECKPOINTS or ENGINE or os.path.expanduser("~"))
+            if d:
+                found = find_models(os.path.normpath(d))
+                if found:
+                    CHECKPOINTS = os.path.normpath(d)
+                else:
+                    messagebox.showwarning(APP, "I couldn't find a model in that folder. A model folder has a "
+                                                "config.json and a 'checkpoints' folder with a .pt file in it.")
+        self.models = find_models()
+        names = [os.path.relpath(m, CHECKPOINTS) for m in self.models]
+        self.cb_model["values"] = names
+        if names and self.model.get() not in names:
+            self.model.set(self.settings.get("model") if self.settings.get("model") in names else names[0])
+        if is_engine(ENGINE):
+            self._save_paths()
+            self.log(f"UniMate folder: {ENGINE}")
+        else:
+            self.log("No UniMate folder chosen yet. Press 'Folders…' to pick it.")
+        self.log(f"Models found: {len(self.models)}" + (f" (in {CHECKPOINTS})" if self.models else
+                 ". Press 'Folders…' and pick the folder with the downloaded model."))
 
     # ---- layout
     def _build(self):
@@ -257,6 +353,7 @@ class Studio(tk.Tk):
         self.stop = ttk.Button(btns, text="Stop", command=self.cancel, state="disabled")
         self.stop.pack(side="left", padx=8)
         ttk.Button(btns, text="Open output folder", command=self.open_out).pack(side="left", padx=8)
+        ttk.Button(btns, text="Folders…", command=lambda: self.ensure_paths(force=True)).pack(side="left")
         self.status = ttk.Label(btns, text="Ready.")
         self.status.pack(side="right")
 
@@ -397,8 +494,8 @@ class Studio(tk.Tk):
         if not prompt:
             messagebox.showwarning(APP, "Type what the character should do (step 2).")
             return
-        if not self.models:
-            messagebox.showerror(APP, "No trained model is installed. Run 'Install UniMate Studio.bat' again.")
+        if not is_engine(ENGINE) or not self.models:
+            messagebox.showerror(APP, "I don't know where your UniMate folder or model is yet. Press 'Folders…' to show me.")
             return
         exp = os.path.join(CHECKPOINTS, self.model.get())
         opts = dict(char=char, prompt=prompt, reps=max(1, min(6, int(self.reps.get() or 1))),
