@@ -89,7 +89,7 @@ def guess_engine():
              os.path.join(home, "Documents"), os.path.join(home, "OneDrive", "Documents"),
              os.path.join(home, "Downloads"), "C:\\", "D:\\"]
     for r in roots:
-        for name in ("UniMate", "unimate", "UniMate-main", "unimate-main"):
+        for name in ("UniMate-code", "UniMate", "unimate", "UniMate-main", "unimate-main", "unimate-code"):
             d = os.path.join(r, name)
             if is_engine(d):
                 return d
@@ -112,7 +112,8 @@ def find_models(root=None, depth=7):
         dirs[:] = [x for x in dirs if x not in SKIP_DIRS and not x.startswith(".")]
         if d.count(os.sep) - base_depth >= depth:
             dirs[:] = []
-        if "config.json" in files and glob.glob(os.path.join(d, "checkpoints", "*.pt")):
+        if "config.json" in files and (glob.glob(os.path.join(d, "checkpoints", "*.pt")) or
+                                       any(f.endswith(".pt") for f in files)):
             models.append(d)
     # the full-data graph model first: it's the one the paper leads with
     models.sort(key=lambda d: (0 if "uniml3d" in d and "graph" in d else 1 if "uniml3d" in d else 2, d))
@@ -120,7 +121,7 @@ def find_models(root=None, depth=7):
 
 
 def latest_checkpoint(exp_dir):
-    pts = glob.glob(os.path.join(exp_dir, "checkpoints", "*.pt"))
+    pts = glob.glob(os.path.join(exp_dir, "checkpoints", "*.pt")) or glob.glob(os.path.join(exp_dir, "*.pt"))
     def step(p):
         m = re.search(r"(\d+)", os.path.basename(p))
         return int(m.group(1)) if m else -1
