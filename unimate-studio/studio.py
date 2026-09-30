@@ -168,6 +168,25 @@ print("@@BONES@@" + json.dumps({"bones": names, "actions": actions}))
 """
 
 
+# A motion clip of the rig standing still in its canonical rest pose, in the feature format
+# UniMate's loader reads (global positions, local rotations, root facing, 30 fps).
+REST_CLIP = r"""
+import sys, numpy as np
+cond_path, name, out = sys.argv[1:4]
+d = np.load(cond_path, allow_pickle=True).item()
+c = d[name] if name in d else next(iter(d.values()))
+pos = np.asarray(c["tpos_first_frame"], dtype=np.float64)
+rot = np.asarray(c["tpos_local_rotations"], dtype=np.float64)
+T = 90
+np.savez(out,
+         global_positions=np.repeat(pos[None], T, axis=0),
+         local_rotations=np.repeat(rot[None], T, axis=0),
+         root_facing_quat=np.tile(np.array([1.0, 0.0, 0.0, 0.0]), (T, 1)),
+         fps=np.array(30))
+print("rest-pose clip:", out, "joints:", pos.shape[0])
+"""
+
+
 def guess_hips(bones):
     """Pick the right/left hip (upper-leg) bones, used to work out which way the character faces."""
     def side(n):
@@ -593,6 +612,13 @@ class Studio(tk.Tk):
             dst = os.path.join(feat, "motions", os.path.basename(npz))
             if not os.path.exists(dst):
                 shutil.copy2(npz, dst)
+
+        # UniMate only accepts a character that has at least one motion clip. A rig with no
+        # animation gets one: its canonical rest pose held still for 3 seconds.
+        if not glob.glob(os.path.join(feat, "motions", name + "-*.npz")):
+            self.log("This character has no animation of its own, so I'm giving UniMate a still rest-pose clip to start from.")
+            rest = os.path.join(feat, "motions", name + "-rest_pose-0.npz")
+            self.run_cmd([PY, "-c", REST_CLIP, cond, name, rest], "Making a rest-pose clip")
 
         # a copy of the model's run folder pointed at this character (checkpoint stays where it is)
         run_exp = os.path.join(WORK, "runs", f"{os.path.basename(o['exp'])}__{name}_{key}")
