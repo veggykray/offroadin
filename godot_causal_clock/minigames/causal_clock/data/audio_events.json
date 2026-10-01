@@ -1,0 +1,18 @@
+{
+	"_comment": "Optional audio overrides. Leave a path empty to use the built-in synthesized placeholder. Paths must be importable audio (wav/ogg/mp3). volume_db is added on top.",
+	"events": {
+		"ring_rotate":   { "path": "", "volume_db": 0 },
+		"gear_engage":   { "path": "", "volume_db": 0 },
+		"gear_slip":     { "path": "", "volume_db": 0 },
+		"pin_place":     { "path": "", "volume_db": 0 },
+		"pin_remove":    { "path": "", "volume_db": 0 },
+		"invalid":       { "path": "", "volume_db": 0 },
+		"align_chime":   { "path": "", "volume_db": 0 },
+		"chain_break":   { "path": "", "volume_db": 0 },
+		"milestone":     { "path": "", "volume_db": 0 },
+		"complete":      { "path": "", "volume_db": 0 },
+		"ui_click":      { "path": "", "volume_db": 0 },
+		"tick":          { "path": "", "volume_db": -6 },
+		"ambient":       { "path": "", "volume_db": -4 }
+	}
+}

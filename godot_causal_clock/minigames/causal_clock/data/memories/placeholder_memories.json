@@ -1,0 +1,45 @@
+{
+	"_comment": "Placeholder memory content. Replace freely: every field is optional except id. icon_path: any image Godot can import (png, svg, webp...). video_path: an .ogv (Theora) clip; if missing or unloadable a placeholder frame is shown instead.",
+	"memories": [
+		{
+			"id": "prelude_moment",
+			"label": "Prelude",
+			"date_text": "— date —",
+			"icon_path": "",
+			"video_path": "",
+			"description_text": "Placeholder: the first small mechanism gives way. Replace this text with your own."
+		},
+		{
+			"id": "moment_1",
+			"label": "Moment 1",
+			"date_text": "Date placeholder I",
+			"icon_path": "res://minigames/causal_clock/art/icons/placeholder_moment_1.svg",
+			"video_path": "res://minigames/causal_clock/art/video/moment_1.ogv",
+			"description_text": "Placeholder description for the first recovered moment. The outer rings agree."
+		},
+		{
+			"id": "moment_2",
+			"label": "Moment 2",
+			"date_text": "Date placeholder II",
+			"icon_path": "res://minigames/causal_clock/art/icons/placeholder_moment_2.svg",
+			"video_path": "",
+			"description_text": "Placeholder description for the second recovered moment."
+		},
+		{
+			"id": "moment_3",
+			"label": "Moment 3",
+			"date_text": "Date placeholder III",
+			"icon_path": "res://minigames/causal_clock/art/icons/placeholder_moment_3.svg",
+			"video_path": "",
+			"description_text": "Placeholder description for the third recovered moment. Only the heart remains."
+		},
+		{
+			"id": "moment_4",
+			"label": "Moment 4",
+			"date_text": "Date placeholder IV",
+			"icon_path": "res://minigames/causal_clock/art/icons/placeholder_moment_4.svg",
+			"video_path": "",
+			"description_text": "Placeholder description for the final reveal. The chain is whole; the clock remembers."
+		}
+	]
+}

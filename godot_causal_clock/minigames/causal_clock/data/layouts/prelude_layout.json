@@ -1,0 +1,40 @@
+{
+	"format": 1,
+	"id": "causal_clock_prelude",
+	"title": "Prelude",
+	"subtitle": "A smaller movement, to learn the hands.",
+	"result_id": "causal_clock_prelude_complete",
+	"entry_angle_deg": 0,
+	"pin_count": 1,
+	"intro_lines": [
+		"Turn a ring and watch which others follow.",
+		"A pinned ring holds still — its gears slip.",
+		"Connect the chain to the heart."
+	],
+	"rings": [
+		{
+			"id": "A", "label": "Ring A", "positions": 8, "start": 4,
+			"material": "iron", "ornaments": ["rivets", "hammered"], "mass": 1.6,
+			"segments": [ { "out": 0, "in": 2 }, { "out": 4, "in": -1 } ]
+		},
+		{
+			"id": "B", "label": "Ring B", "positions": 8, "start": 4,
+			"material": "brass", "ornaments": ["ticks", "numerals"], "mass": 1.2,
+			"segments": [ { "out": 0, "in": 5 } ]
+		},
+		{
+			"id": "C", "label": "Ring C", "positions": 8, "start": 4,
+			"material": "walnut", "ornaments": ["grain", "inlay_dots"], "mass": 0.9,
+			"segments": [ { "out": 0, "in": 1 }, { "out": 6, "in": -1 } ]
+		}
+	],
+	"hub": { "id": "H", "label": "Heart", "positions": 8, "start": 0, "manual": false, "pinnable": false, "material": "gold", "sockets": [0] },
+	"couplings": [
+		{ "id": "gear_ab", "a": "A", "b": "B", "ratio": -1, "angle_deg": 67.5 },
+		{ "id": "ratchet_bc", "a": "B", "b": "C", "ratio": 1, "one_way": true, "angle_deg": 202.5 }
+	],
+	"milestones": [
+		{ "id": "prelude_complete", "trigger": { "type": "complete" }, "memory_id": "prelude_moment", "presentation": "card" }
+	],
+	"reference_solution": ["A+", "A+", "C-", "C-", "C-", "pin:B", "A+", "A+"]
+}

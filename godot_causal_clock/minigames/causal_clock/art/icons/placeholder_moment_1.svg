@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Placeholder memory icon 1. Replace with your own artwork (any size, any format Godot imports). -->
+  <defs><radialGradient id="g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f4dca0"/><stop offset="1" stop-color="#8a6326"/></radialGradient></defs>
+  <circle cx="64" cy="64" r="60" fill="url(#g)" stroke="#3a2610" stroke-width="4"/>
+  <circle cx="64" cy="64" r="46" fill="#173f4c" stroke="#d9b56a" stroke-width="3"/>
+  <rect x="59.0" y="44" width="10" height="40" fill="#f4dca0"/>
+  <rect x="34" y="40" width="60" height="4" fill="#f4dca0"/><rect x="34" y="84" width="60" height="4" fill="#f4dca0"/>
+</svg>

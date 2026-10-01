@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/causal_clock/scripts/causal_clock_game.gd" id="1_game"]
+
+[node name="CausalClockPrelude" type="Node"]
+script = ExtResource("1_game")
+layout_path = "res://minigames/causal_clock/data/layouts/prelude_layout.json"
+memories_path = "res://minigames/causal_clock/data/memories/placeholder_memories.json"
+standalone = true
+exit_scene = "res://minigames/causal_clock/scenes/causal_clock_title.tscn"
