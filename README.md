@@ -93,3 +93,8 @@ src/
 tools/                    headless tests & debug renders (Node / Playwright)
 models/                   drop-in vehicle GLBs
 ```
+
+## Also in this repo
+
+`dark_void/` — a separate, self-contained **Godot 4.3+** prototype mini-game ("Dark Void").
+Open `dark_void/project.godot`; see `dark_void/README.md`.

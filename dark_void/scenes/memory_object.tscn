@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/memory/memory_object.gd" id="1_memory"]
+[ext_resource type="Script" path="res://scripts/illumination/illuminated_object.gd" id="2_detector"]
+
+[node name="Memory" type="Node3D"]
+script = ExtResource("1_memory")
+
+[node name="Detector" type="Node3D" parent="."]
+script = ExtResource("2_detector")
+lit_threshold = 0.3
+unlit_threshold = 0.2
+sample_radius = 0.45
