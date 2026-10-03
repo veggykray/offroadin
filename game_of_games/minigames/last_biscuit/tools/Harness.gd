@@ -53,6 +53,9 @@ func _process(dt: float) -> void:
 		game.player.use_mouse = false
 	match scenario:
 		"overview":
+			if at(3.4, "dbg"):
+				var h: Label = game.hud.hint
+				print("hint rect ", h.get_global_rect(), " col ", h.get_theme_color("font_color"), " vis ", h.is_visible_in_tree(), " text ", h.text.length())
 			if at(3.5, "a"): shot("a")
 			if at(4.0, "q"): get_tree().quit()
 		"debug":
@@ -179,17 +182,66 @@ func _process(dt: float) -> void:
 						line += str(mini(int(f2 * 10.0), 9)) + " "
 					print(line)
 				get_tree().quit()
+		"rivals":
+			if at(1.0, "p"):
+				game.debug_jump_phase(4)
+				game.player.plane_pos = LBConst.BILL_HAND_HOME
+				game.player.snap_cursor_to_hand()
+				Engine.time_scale = 2.0 if DisplayServer.get_name() == "headless" else 1.0
+			if frame % 30 == 0 and t > 1.0:
+				var line := "t=%.1f " % t
+				for r in game.rivals:
+					line += "| %s %s %s %s (%.2f,%.2f) " % [r.name.substr(0, 6), LBRivalHand.St.keys()[r.state], r.ai_note, "F" if r.frozen else "", r.plane_pos.x, r.plane_pos.y]
+				var bs := ""
+				for b in game.world.biscuits():
+					bs += "%s%.2f@(%.2f,%.2f)%s " % ["FAKE" if b.is_fake else "B", b.size_fraction, b.plane_pos.x, b.plane_pos.y, ("held:" + b.held_by.name) if b.held_by else ""]
+				print(line, " || ", bs)
+			if t > 1.0 and int(t) % 6 == 0 and at(t, "s%d" % int(t)) and DisplayServer.get_name() != "headless":
+				shot("t%d" % int(t))
+			if t > 40.0:
+				get_tree().quit()
+		"reach":
+			if at(1.0, "1"): game.comedy.trigger("legit_reach")
+			if frame % 20 == 0:
+				for d in game.diners:
+					if d.reaching > 0.0:
+						var v := d.visual as LBDinerVisual
+						print("%s reaching %.2f arm vis %s pos %s scale %s" % [d.display_name, d.reaching, v.point_arm.visible, v.point_arm.global_position, v.point_arm.scale])
+			if at(4.0, "a"): shot("a")
+			if at(5.0, "q"): get_tree().quit()
+		"closeup":
+			var cam := game.camera
+			var spots := [
+				["teapot", Vector3(0.9, 1.25, 0.2), Vector3(0.36, 0.85, -0.82)],
+				["cheat", Vector3(0.2, 1.4, -1.6), Vector3(1.48, 1.2, -2.4)],
+				["sleeper", Vector3(-0.3, 1.4, 3.4), Vector3(-1.48, 1.25, 2.4)],
+				["glasses", Vector3(-0.2, 1.4, 1.0), Vector3(-1.48, 1.25, 0.0)],
+				["plate", Vector3(0.0, 1.3, 0.9), Vector3(0.0, 0.76, 0.0)],
+				["hand", Vector3(0.6, 1.5, 5.6), Vector3(0.18, 0.8, 4.4)],
+			]
+			if t > 2.0:
+				cam.set_process(false)
+				var idx := int((t - 2.0) / 1.0)
+				if idx < spots.size():
+					var sp: Array = spots[idx]
+					cam.global_position = sp[1]
+					cam.look_at(sp[2], Vector3.UP)
+					cam.fov = 40.0
+					if at(2.0 + idx + 0.8, sp[0]):
+						shot(sp[0])
+				else:
+					get_tree().quit()
 		"events":
 			if at(1.0, "1"): game.comedy.trigger("sneeze")
 			if at(2.0, "a"): shot("sneeze")
 			if at(5.0, "2"): game.comedy.trigger("legit_reach")
-			if at(8.0, "b"): shot("reach")
+			if at(8.6, "b"): shot("reach")
 			if at(12.0, "3"): game.comedy.trigger("waiter")
-			if at(15.0, "c"): shot("waiter")
+			if at(18.5, "c"): shot("waiter")
 			if at(21.0, "4"): game.comedy.trigger("fly")
-			if at(24.5, "d"): shot("fly")
+			if at(25.0, "d"): shot("fly")
 			if at(28.0, "5"): game.comedy.trigger("teeth")
-			if at(29.0, "e"): shot("teeth")
+			if at(29.6, "e"): shot("teeth")
 			if at(32.0, "6"): game.comedy.trigger("cat_tail")
 			if at(34.6, "f"): shot("cat")
 			if at(38.0, "q"): get_tree().quit()

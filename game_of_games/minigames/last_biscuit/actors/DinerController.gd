@@ -59,7 +59,7 @@ enum Behaviour { SLEEPER, GLASSES, TWITCH, DEAF_WATCHER, BLIND_LISTENER, CHEAT }
 @export var listen_gain := 0.95
 @export var fast_hand_gain := 0.25
 ## Cap on suspicion from any single noise.
-@export var max_listen_gain := 0.32
+@export var max_listen_gain := 0.25
 
 @export_group("Cheat")
 @export var mirror_scan_time := Vector2(3.0, 4.5)

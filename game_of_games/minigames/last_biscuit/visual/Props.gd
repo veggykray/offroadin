@@ -289,27 +289,28 @@ static func biscuit_mesh(fraction: float, seed: float, fake := false) -> ArrayMe
 		center += p
 	center /= outline.size()
 	var m := outline.size()
+	# Godot treats clockwise triangles (seen from outside) as front faces
 	for i in m:
 		var a := outline[i]
 		var b := outline[(i + 1) % m]
 		# top
 		st.set_normal(Vector3.UP)
 		st.add_vertex(Vector3(center.x, H * 0.5 + 0.002, center.y))
-		st.add_vertex(Vector3(b.x, H * 0.5, b.y))
 		st.add_vertex(Vector3(a.x, H * 0.5, a.y))
+		st.add_vertex(Vector3(b.x, H * 0.5, b.y))
 		# bottom
 		st.set_normal(Vector3.DOWN)
 		st.add_vertex(Vector3(center.x, -H * 0.5, center.y))
-		st.add_vertex(Vector3(a.x, -H * 0.5, a.y))
 		st.add_vertex(Vector3(b.x, -H * 0.5, b.y))
+		st.add_vertex(Vector3(a.x, -H * 0.5, a.y))
 		# side
 		var e := (b - a)
 		var nrm := Vector3(e.y, 0, -e.x).normalized()
 		st.set_normal(nrm)
 		st.add_vertex(Vector3(a.x, H * 0.5, a.y))
-		st.add_vertex(Vector3(b.x, H * 0.5, b.y))
 		st.add_vertex(Vector3(a.x, -H * 0.5, a.y))
 		st.add_vertex(Vector3(b.x, H * 0.5, b.y))
+		st.add_vertex(Vector3(b.x, H * 0.5, b.y))
+		st.add_vertex(Vector3(a.x, -H * 0.5, a.y))
 		st.add_vertex(Vector3(b.x, -H * 0.5, b.y))
-		st.add_vertex(Vector3(a.x, -H * 0.5, a.y))
 	return st.commit()

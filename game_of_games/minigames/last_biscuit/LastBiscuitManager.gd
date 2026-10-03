@@ -25,10 +25,10 @@ enum GS { INTRO, PLAY, CAUGHT, BREAK_BEAT, ENDING, DONE }
 @export var third_hand_progress := 0.8
 @export var phase2_max_time := 28.0
 @export var phase3_max_time := 30.0
-@export var return_alertness := 1.25
+@export var return_alertness := 1.15
 @export var rival_out_time_return := 6.0
 @export_group("Juice")
-@export var slap_loudness := 0.7
+@export var slap_loudness := 0.6
 @export var hitstop_time := 0.06
 @export var slap_jump_radius := 0.45
 
@@ -63,6 +63,7 @@ var _near_miss := 0.0
 var _chime_cd := 0.0
 var _tense_cd := 0.0
 var _hitstop := 0.0
+var _saved_time_scale := 1.0
 var _target_ring: MeshInstance3D
 var _phase_stagger := 0.0
 var _sugar_cubes: Array = []
@@ -369,12 +370,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_0: paused_rivals = not paused_rivals
 
 
-func _physics_process(dt: float) -> void:
-	_now += dt
+func _process(dt: float) -> void:
+	# hit-stop runs on real time (physics barely ticks while it is active)
 	if _hitstop > 0.0:
 		_hitstop -= dt / maxf(Engine.time_scale, 0.01)
 		if _hitstop <= 0.0:
-			Engine.time_scale = 1.0
+			Engine.time_scale = _saved_time_scale
+
+
+func _physics_process(dt: float) -> void:
+	_now += dt
 	if gs == GS.PLAY:
 		play_time += dt
 		phase_time += dt
@@ -463,6 +468,12 @@ func _on_player_grab(obj: LBTableObject) -> void:
 		var was_free := b.held_by == null
 		player.grab(b)
 		audio.play_at("grab", player.palm_world(), -4.0)
+		# a small, satisfying pluck: the hand bobs up with its prize
+		var pop := create_tween()
+		pop.tween_property(player, "lift", 0.07, 0.09).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		pop.tween_property(player, "lift", 0.0, 0.18).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		if b.is_real_prize():
+			audio.play_flat("chime", -22.0, 0.75)
 		if was_free and plate and b.plane_pos.distance_to(plate.plane_pos) < plate.radius:
 			# lifting it off the plate: tiny porcelain tick if done roughly
 			noise_sys.emit_noise(b.plane_pos, clampf(player.speed() * 0.25, 0.0, 0.4), player, "clink", player.speed() > 0.3)
@@ -533,8 +544,10 @@ func do_slap(attacker: LBHand, target: LBHand) -> void:
 	if camera:
 		camera.bump(Vector3(dir.x, -0.6, dir.y), 0.05)
 		camera.shake(0.35)
+	if _hitstop <= 0.0:
+		_saved_time_scale = Engine.time_scale
 	_hitstop = hitstop_time
-	Engine.time_scale = 0.08
+	Engine.time_scale = _saved_time_scale * 0.08
 
 
 func rival_slap(r: LBRivalHand, target: LBHand) -> void:
@@ -618,7 +631,7 @@ func _break_beat(at: Vector2) -> void:
 # ================================================================== noise
 
 func _on_impact(pos: Vector2, loudness: float, source: LBHand, obj: LBTableObject, kind: String) -> void:
-	noise_sys.emit_noise(pos, loudness, source, kind, kind != "swish" or true)
+	noise_sys.emit_noise(pos, loudness, source, kind)
 	if loudness > 0.9 and camera:
 		camera.shake(0.25)
 	if obj is LBBiscuit or obj == null:
@@ -893,7 +906,7 @@ func _ending(b: LBBiscuit) -> void:
 # ================================================================ restart
 
 func restart() -> void:
-	Engine.time_scale = 1.0
+	Engine.time_scale = _saved_time_scale if _hitstop > 0.0 else Engine.time_scale
 	get_tree().reload_current_scene()
 
 

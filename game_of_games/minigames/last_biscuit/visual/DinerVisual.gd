@@ -122,8 +122,8 @@ func _build_head() -> void:
 		var ep := LBMesh.pivot(head, Vector3(0.042 * s, 0.085, -0.092))
 		var holder := LBMesh.pivot(ep, Vector3.ZERO)
 		LBMesh.add(holder, LBMesh.sphere_mesh(0.024 * eye_scale, 14), LBMat.eye_white(), Vector3.ZERO)
-		LBMesh.add(holder, LBMesh.sphere_mesh(0.0125 * eye_scale, 10), LBMat.std("iris_%d" % d.index, _iris_color(), 0.0, 0.2), Vector3(0, 0, -0.0175 * eye_scale), Vector3.ZERO, Vector3(1, 1, 0.5))
-		LBMesh.add(holder, LBMesh.sphere_mesh(0.0065 * eye_scale, 8), LBMat.pupil(), Vector3(0, 0, -0.0225 * eye_scale), Vector3.ZERO, Vector3(1, 1, 0.4))
+		LBMesh.add(holder, LBMesh.sphere_mesh(0.0145 * eye_scale, 10), LBMat.std("iris_%d" % d.index, _iris_color(), 0.0, 0.2), Vector3(0, 0, -0.016 * eye_scale), Vector3.ZERO, Vector3(1, 1, 0.5))
+		LBMesh.add(holder, LBMesh.sphere_mesh(0.0082 * eye_scale, 8), LBMat.pupil(), Vector3(0, 0, -0.0222 * eye_scale), Vector3.ZERO, Vector3(1, 1, 0.4))
 		eyes.append(holder)
 		var lu := LBMesh.pivot(ep, Vector3.ZERO)
 		LBMesh.add(lu, LBMesh.hemi_mesh(0.0275 * eye_scale, 14), _skin, Vector3.ZERO)
@@ -228,7 +228,7 @@ func _make_glasses(frame_col: Color, dark: bool) -> Node3D:
 
 func attach_reflection(teapot: LBTableObject) -> void:
 	reflection = MeshInstance3D.new()
-	reflection.mesh = LBMesh.quad_mesh(Vector2(0.12, 0.07))
+	reflection.mesh = LBMesh.quad_mesh(Vector2(0.15, 0.085))
 	reflection_mat = LBMat.shader_unique("reflection_eyes.gdshader")
 	reflection.material_override = reflection_mat
 	reflection.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -261,7 +261,7 @@ func _process(dt: float) -> void:
 	var eye_rel := -d.head_dir.angle_to(d.eye_dir)
 	for e in eyes:
 		e.rotation = Vector3(-0.15 + d.head_drop * 0.2, clampf(eye_rel, -0.7, 0.7), 0.0)
-	var lid_angle := lerpf(deg_to_rad(28.0), deg_to_rad(-95.0), clampf(d.lids + d.narrow * 0.35, -0.2, 1.0))
+	var lid_angle := lerpf(deg_to_rad(52.0), deg_to_rad(-95.0), clampf(d.lids + d.narrow * 0.3, -0.2, 1.0))
 	if d.glare > 0.0:
 		lid_angle = minf(lid_angle, deg_to_rad(-30.0))
 	# occasional blink
@@ -271,7 +271,7 @@ func _process(dt: float) -> void:
 	for l in lids_up:
 		l.rotation = Vector3(lid_angle, 0, 0)
 	for l in lids_low:
-		l.rotation = Vector3(PI + deg_to_rad(15.0 + 45.0 * d.narrow), 0, 0)
+		l.rotation = Vector3(PI - deg_to_rad(28.0) + deg_to_rad(70.0) * d.narrow, 0, 0)
 	for i in brows.size():
 		var s := -1.0 if i == 0 else 1.0
 		var raise := d.brow * (0.018 + (0.012 * d.brow_asym if i == 1 else 0.0))
@@ -302,7 +302,7 @@ func _update_arms(_dt: float) -> void:
 			var aim := point_arm.global_transform.looking_at(target, Vector3.UP)
 			var rest := Transform3D(torso.global_transform.basis * Basis(Vector3.RIGHT, -1.2), from)
 			point_arm.global_transform = rest.interpolate_with(Transform3D(aim.basis, from), p)
-		var reach_len := clampf(dir.length() / 0.66, 0.6, 1.5)
+		var reach_len := clampf(dir.length() / 0.66, 0.6, 2.6)
 		point_arm.scale = Vector3(1, 1, lerpf(0.4, reach_len, p) if d.reaching > 0.0 else lerpf(0.4, 1.0, p))
 		point_finger.visible = d.pointing >= d.reaching
 		point_hand_open.visible = not point_finger.visible
@@ -326,7 +326,7 @@ func _update_reflection() -> void:
 		if to_cam.length() > 0.01:
 			# sit on the side of the pot facing the camera, slightly towards the Cheat
 			var tp := reflection.get_parent() as Node3D
-			var off := to_cam.normalized() * 0.075
+			var off := to_cam.normalized() * 0.1
 			reflection.global_position = tp.global_position + Vector3(off.x, 0.13, off.z)
 			reflection.look_at(_cam.global_position, Vector3.UP)
 			reflection.rotate_object_local(Vector3.UP, PI)

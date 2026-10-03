@@ -20,8 +20,8 @@ void fragment() {
 	ALBEDO = col;
 	ROUGHNESS = 0.55 + n * 0.2;
 	SPECULAR = 0.35;
-	SSS_STRENGTH = 0.35;
-	BACKLIGHT = vec3(0.35, 0.12, 0.08);
-	RIM = 0.25;
+	SSS_STRENGTH = 0.15;
+	BACKLIGHT = vec3(0.12, 0.05, 0.03);
+	RIM = 0.15;
 	RIM_TINT = 0.6;
 }

@@ -14,7 +14,7 @@ signal level_crossed(hand: LBHand, level: int)
 ## While watched AND frozen, suspicion still creeps up this much per second
 ## at full visibility (so you can't sit in plain sight forever).
 @export var still_gain := 0.03
-@export var decay_per_sec := 0.2
+@export var decay_per_sec := 0.24
 @export var decay_delay := 0.7
 ## Extra multiplier while the diner is already focused on that hand.
 @export var focus_bonus := 1.35

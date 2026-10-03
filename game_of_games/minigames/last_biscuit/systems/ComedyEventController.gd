@@ -167,7 +167,7 @@ func _make_fly() -> Node3D:
 	var legs := LBMesh.pivot(f, Vector3(0, -0.003, -0.006), "Legs")
 	for s in [-1.0, 1.0]:
 		LBMesh.add(legs, LBMesh.box_mesh(Vector3(0.001, 0.001, 0.008)), black, Vector3(0.003 * s, 0, -0.004))
-	f.scale = Vector3.ONE * 2.0
+	f.scale = Vector3.ONE * 5.0       # an absurdly large fly: it has to read from Bill's seat
 	return f
 
 
@@ -179,7 +179,10 @@ func _legit_reach() -> void:
 		return
 	var d := _pick_diner(func(x: LBDiner):
 		var r := _rival_of(x)
-		return (r == null or r.is_out()) and x.state != "asleep" and x.behaviour != LBDiner.Behaviour.CHEAT)
+		return (r == null or r.is_out()) and x.state != "asleep" and x.behaviour != LBDiner.Behaviour.CHEAT \
+				and x.seat.y > -1.0)
+	if d == null:
+		d = _pick_diner(func(x: LBDiner): return x.state != "asleep")
 	if d == null:
 		return
 	d.point_at = LBConst.p2w(b.plane_pos, LBConst.TABLE_Y + 0.06)
@@ -204,7 +207,7 @@ func _legit_reach() -> void:
 # ------------------------------------------------------------------ teeth
 ## False teeth fall out and chatter across the table: a new obstacle.
 func _teeth() -> void:
-	var d := _pick_diner(func(x: LBDiner): return not x.teeth_out and x.behaviour != LBDiner.Behaviour.CHEAT)
+	var d := _pick_diner(func(x: LBDiner): return not x.teeth_out and x.behaviour != LBDiner.Behaviour.CHEAT and x.seat.y > -1.0)
 	if d == null:
 		return
 	d.teeth_out = true
@@ -212,7 +215,9 @@ func _teeth() -> void:
 	var teeth := LBTableObject.new()
 	var start := d.seat + Vector2(-d.side * 0.5, 0.0)
 	teeth.configure(LBTableObject.Kind.TEETH, start, randf() * TAU)
+	teeth.radius = 0.09
 	manager.world.add_object(teeth)
+	teeth.visual.scale = Vector3.ONE * 2.2
 	manager._teeth.append(teeth)
 	teeth.vel = Vector2(-d.side * 1.3, _rng.randf_range(-0.3, 0.3))
 	teeth.jump(0.6)
@@ -235,7 +240,7 @@ func _teeth() -> void:
 ## A cat's tail rises from under the table and flicks something over.
 func _cat_tail() -> void:
 	var side := -1.0 if _rng.randf() < 0.5 else 1.0
-	var z := _rng.randf_range(-1.5, 3.8)
+	var z := _rng.randf_range(0.6, 3.9)
 	var base := Vector3(side * (LBConst.TABLE_HALF_W + 0.02), LBConst.TABLE_Y - 0.25, z)
 	var im := ImmediateMesh.new()
 	var mi := MeshInstance3D.new()
@@ -253,10 +258,10 @@ func _cat_tail() -> void:
 		for i in 14:
 			var u := float(i) / 13.0
 			var sway := sin(t * 2.2 - u * 3.0) * 0.12 * u
-			var p := base + Vector3(-side * (0.08 + u * 0.22) + sway * 0.5, (u * 0.55) * rise, sway)
-			p.y += sin(u * PI) * 0.1 * rise
+			var p := base + Vector3(-side * (0.06 + u * 0.3) + sway * 0.6, (u * 0.85) * rise, sway * 1.5)
+			p.y += sin(u * PI) * 0.15 * rise
 			pts.append(p)
-			radii.append(lerpf(0.03, 0.012, u))
+			radii.append(lerpf(0.05, 0.022, u))
 		im.clear_surfaces()
 		LBMesh.tube(im, pts, radii, fur, 8)
 		if not flicked and t > 2.2 and target and target.on_table:
@@ -272,12 +277,12 @@ func _cat_tail() -> void:
 ## A waiter glides across the back of the room. Every thief freezes.
 func _waiter() -> void:
 	var w := _make_waiter()
-	var from := Vector3(-3.6, 0, -7.4)
-	var to := Vector3(3.6, 0, -7.4)
+	var from := Vector3(3.0, 0, -8.5)
+	var to := Vector3(3.0, 0, 6.5)
 	w.global_position = from
-	w.rotation.y = -PI * 0.5
+	w.rotation.y = PI
 	_freeze_rivals(true)
-	var dur := 7.5
+	var dur := 10.0
 	var t := 0.0
 	var step_t := 0.0
 	while t < dur:
@@ -309,4 +314,10 @@ func _make_waiter() -> Node3D:
 	LBMesh.add(w, LBMesh.capsule_mesh(0.045, 0.6, 8), black, Vector3(0.22, 1.7, 0), Vector3(0, 0, -10))
 	LBMesh.add(w, LBMesh.cyl_mesh(0.22, 0.22, 0.015, 24), LBMat.silver(), Vector3(0.25, 2.0, 0))
 	LBMesh.add(w, LBMesh.hemi_mesh(0.15, 20), LBMat.silver(), Vector3(0.25, 2.01, 0))
+	var lamp := OmniLight3D.new()
+	lamp.light_color = Color(1.0, 0.8, 0.6)
+	lamp.light_energy = 0.6
+	lamp.omni_range = 2.0
+	lamp.position = Vector3(-0.6, 1.8, 0.4)
+	w.add_child(lamp)
 	return w

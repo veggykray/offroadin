@@ -3,8 +3,8 @@ extends Camera3D
 ## The single cinematic view from behind Bill, down the length of the table.
 ## Adds a slow breathing drift, impact bumps (slaps, chomps) and tiny shakes.
 
-@export var base_position := Vector3(0.0, 3.25, 8.1)
-@export var look_target := Vector3(0.0, 0.62, 1.55)
+@export var base_position := Vector3(0.0, 3.35, 8.45)
+@export var look_target := Vector3(0.0, 0.62, 1.3)
 @export var drift_amount := 0.025
 @export var follow_amount := 0.06
 
@@ -16,7 +16,7 @@ var focus := Vector3.ZERO        # gameplay focus (Bill's hand) for subtle paral
 
 
 func _ready() -> void:
-	fov = 46.0
+	fov = 40.0
 	near = 0.05
 	far = 60.0
 	_apply(0.0)

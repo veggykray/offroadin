@@ -20,23 +20,17 @@ func _ready() -> void:
 	sf.font_italic = true
 	_font = sf
 	var root := Control.new()
-	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	hint = _label(root, 17, Color(0.92, 0.86, 0.72, 0.0))
-	hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_place(root, Vector4(0, 0, 1, 1), Vector4.ZERO)
+	hint = _label(root, 17, Color(0.92, 0.86, 0.72))
+	_place(hint, Vector4(0.5, 1.0, 0.5, 1.0), Vector4(-560, -92, 560, -24))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.position = Vector2(-500, -64)
-	hint.size = Vector2(1000, 40)
 	hint.text = "mouse: reach   ·   hold click: grab   ·   click beside another hand: slap   ·   right click: retract   ·   shift: creep\nwhen someone is looking, keep perfectly still"
-	item = _label(root, 22, Color(0.95, 0.88, 0.7, 0.0))
-	item.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	item.position = Vector2(36, 30)
-	item.size = Vector2(600, 80)
-	replay = _label(root, 15, Color(0.85, 0.8, 0.7, 0.0))
-	replay.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	replay.position = Vector2(-330, -50)
-	replay.size = Vector2(300, 30)
+	item = _label(root, 22, Color(0.95, 0.88, 0.7))
+	_place(item, Vector4(0, 0, 0, 0), Vector4(36, 30, 636, 110))
+	replay = _label(root, 15, Color(0.85, 0.8, 0.7))
+	_place(replay, Vector4(1, 1, 1, 1), Vector4(-340, -56, -30, -24))
 	replay.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	replay.text = "click to sit down again"
 	panel = Label.new()
@@ -50,9 +44,21 @@ func _ready() -> void:
 	root.add_child(panel)
 	fade = ColorRect.new()
 	fade.color = Color(0, 0, 0, 1)
-	fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_place(fade, Vector4(0, 0, 1, 1), Vector4.ZERO)
 	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(fade)
+
+
+## anchors (l, t, r, b) and offsets (l, t, r, b)
+func _place(c: Control, anchors: Vector4, offsets: Vector4) -> void:
+	c.anchor_left = anchors.x
+	c.anchor_top = anchors.y
+	c.anchor_right = anchors.z
+	c.anchor_bottom = anchors.w
+	c.offset_left = offsets.x
+	c.offset_top = offsets.y
+	c.offset_right = offsets.z
+	c.offset_bottom = offsets.w
 
 
 func _label(parent: Control, size: int, col: Color) -> Label:
@@ -64,6 +70,7 @@ func _label(parent: Control, size: int, col: Color) -> Label:
 	l.add_theme_constant_override("shadow_offset_x", 2)
 	l.add_theme_constant_override("shadow_offset_y", 2)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.modulate.a = 0.0
 	parent.add_child(l)
 	return l
 
@@ -77,9 +84,9 @@ func fade_in(t: float) -> void:
 func show_hint() -> void:
 	var tw := create_tween()
 	tw.tween_interval(1.5)
-	tw.tween_property(hint, "theme_override_colors/font_color:a", 0.75, 1.2)
+	tw.tween_property(hint, "modulate:a", 0.75, 1.2)
 	tw.tween_interval(9.0)
-	tw.tween_property(hint, "theme_override_colors/font_color:a", 0.0, 2.0)
+	tw.tween_property(hint, "modulate:a", 0.0, 2.0)
 
 
 func show_item(name_: String, seconds: float, attempts: int) -> void:
@@ -87,12 +94,12 @@ func show_item(name_: String, seconds: float, attempts: int) -> void:
 	var s := int(seconds) % 60
 	item.text = "%s\n%d:%02d  ·  %s" % [name_, m, s, ("first attempt" if attempts == 1 else "%d attempts" % attempts)]
 	var tw := create_tween()
-	tw.tween_property(item, "theme_override_colors/font_color:a", 0.9, 2.0)
+	tw.tween_property(item, "modulate:a", 0.9, 2.0)
 
 
 func show_replay() -> void:
 	var tw := create_tween()
-	tw.tween_property(replay, "theme_override_colors/font_color:a", 0.6, 2.0)
+	tw.tween_property(replay, "modulate:a", 0.6, 2.0)
 
 
 func _process(_dt: float) -> void:

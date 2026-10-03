@@ -89,6 +89,12 @@ func _move_objects(dt: float) -> void:
 				o.lift = maxf(holder.height_above_table() - 0.02, 0.012)
 			o.vel = (target - o.plane_pos) / maxf(dt, 0.0001)
 			o.plane_pos = target
+			# dragging a plate or pot across the polish scrapes audibly
+			if o.mass >= 0.5 and o.vel.length() > 0.7 and holder.cover != o:
+				var now := Time.get_ticks_msec() * 0.001
+				if now - o.last_noise_t > 0.35:
+					o.last_noise_t = now
+					impact.emit(o.plane_pos, 0.1 + o.vel.length() * 0.08, holder, o, "clink")
 			continue
 		o.plane_pos += o.vel * dt
 		o.vel *= exp(-o.friction * dt)

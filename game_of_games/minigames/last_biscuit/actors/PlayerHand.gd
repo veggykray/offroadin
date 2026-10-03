@@ -73,6 +73,9 @@ func control(dt: float) -> void:
 		cap = creep_speed
 	if cover != null:
 		cap *= napkin_speed_mult
+	if held != null and not held.is_biscuit():
+		# dragging crockery about is slow work
+		cap /= 1.0 + held.mass * 0.45
 	retracting = Input.is_action_pressed("lb_retract")
 	var desired := Vector2.ZERO
 	mouse_on_table = _mouse_on_table() if scripted_target == null else scripted_target
@@ -170,7 +173,9 @@ func _on_grab_pressed() -> void:
 
 func _on_grab_released() -> void:
 	if held != null:
-		var o := release(vel * 0.6)
+		# light things can be flicked across the table as a distraction
+		var throw := vel * (1.25 if held.mass < 0.3 else 0.5)
+		var o := release(throw)
 		released_object.emit(o)
 
 
