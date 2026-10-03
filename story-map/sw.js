@@ -1,6 +1,6 @@
 // Offline support for the installed app: serve the latest page when online,
 // fall back to the cached copy when not. GitHub API calls are never cached.
-const CACHE = "long-way-home-v1";
+const CACHE = "long-way-home-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

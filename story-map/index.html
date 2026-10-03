@@ -228,6 +228,7 @@ textarea.inp{min-height:110px;resize:vertical;line-height:1.45}
     <div class="tgroup">
       <button class="btn" id="bibleBtn" aria-pressed="false">☰ Threads &amp; notes</button>
       <button class="btn" id="newMap">✦ New map…</button>
+      <button class="btn" id="recoverBtn" title="Find maps and backups saved on this device">⟲ Recover</button>
       <button class="btn" id="export">Export</button>
       <label class="btn" for="importFile" style="cursor:pointer">Import</label>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
@@ -622,6 +623,8 @@ function renderPanel(){
     </div>`;
   } else if(sel.kind==="sync"){
     h = syncPanelHTML();
+  } else if(sel.kind==="recover"){
+    h = recoverPanelHTML();
   }
   panel.innerHTML = h;
   panel.hidden = false;
@@ -975,6 +978,11 @@ panel.addEventListener("click", e=>{
       fit();
     }
   }
+  if(sel?.kind==="recover"){
+    const r = t.closest("[data-restore]");
+    if(r){ restoreFound(+r.dataset.restore); return; }
+    if(act==="rescan"){ scanSaved(true); return; }
+  }
   if(sel?.kind==="sync"){
     if(act==="paste"){
       navigator.clipboard?.readText().then(x=>{ $("#s-token").value=x.trim(); }).catch(()=>{ $("#s-msg").textContent="Your browser blocked the Paste button. Tap the box and paste the usual way (long-press → Paste, or Ctrl+V / Cmd+V)."; });
@@ -1084,7 +1092,114 @@ function setStatus(s,msg){ const el=$("#status"); el.dataset.s=s; el.querySelect
 function status(s,msg){ saveState.s=s; saveState.msg=msg; setStatus(s,msg); }
 function flash(msg,bad){ setStatus(bad?"error":saveState.s,msg); clearTimeout(toastT); toastT=setTimeout(()=>setStatus(saveState.s,saveState.msg),4500); }
 let localDirty = false;
-function persistLocal(dirty){ localDirty = dirty; try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty,state:S})); }catch{} }
+function persistLocal(dirty){
+  localDirty = dirty;
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({dirty,state:S})); }catch{}
+  if(dirty) maybeBackup();
+}
+
+/* ---------- automatic backups + recovery ---------- */
+// Every few minutes of editing, a copy of the map is kept (the last 25), so a crash, a bad
+// edit or a lost draft can be undone from the Recover screen.
+const BACKUP_KEY = "long-way-home-v3:backups";
+const BACKUP_EVERY = 3*60*1000, BACKUP_KEEP = 25;
+function readBackups(){ try{ return JSON.parse(localStorage.getItem(BACKUP_KEY)||"[]") || []; }catch{ return []; } }
+function maybeBackup(force){
+  const list = readBackups();
+  const last = list[list.length-1];
+  if(!force && last && Date.now()-last.t < BACKUP_EVERY) return;
+  if(!hasContent(S)) return;
+  list.push({t:Date.now(), state:S});
+  while(list.length > BACKUP_KEEP) list.shift();
+  try{ localStorage.setItem(BACKUP_KEY, JSON.stringify(list)); }
+  catch{ try{ localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(-5))); }catch{} }
+}
+window.addEventListener("pagehide", ()=>{ if(localDirty) maybeBackup(true); });
+try{ navigator.storage?.persist?.(); }catch{}
+
+function mapInfo(d){
+  const nodes = d.nodes ? Object.values(d.nodes) : [];
+  return {scenes:nodes.length, named:nodes.filter(n=>(n.title||"").trim()).length,
+          notes:nodes.filter(n=>(n.notes||"").trim()||(n.desc||"").trim()).length,
+          links:(d.edges||[]).length, threads:(d.threads||[]).filter(t=>(t.scenes||[]).length).length,
+          bible:(d.notes||"").trim().length>0};
+}
+function hasContent(d){ const i = mapInfo(d); return i.named || i.notes || i.links || i.threads || i.bible; }
+let found = [];
+function addFound(label, raw, when){
+  try{
+    const st = normalize(clone(raw));
+    const info = mapInfo(st);
+    if(!info.scenes) return;
+    const sig = JSON.stringify(st.nodes)+JSON.stringify(st.edges)+JSON.stringify(st.notes);
+    if(found.some(f=>f.sig===sig)) return;
+    found.push({label, state:st, when: when || st.updatedAt || 0, info, sig});
+  }catch{}
+}
+async function scanSaved(rerender){
+  found = [];
+  const names = {
+    [LS_KEY]: "Your current save on this device",
+    "long-way-home-diamond:draft": "Saved by the earlier diamond version of the app",
+    "long-way-home-map:draft": "Saved by the first (columns) version of the app",
+  };
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(!/long-way-home/i.test(k) || /:sync$/.test(k)) continue;
+    let v; try{ v = JSON.parse(localStorage.getItem(k)); }catch{ continue; }
+    if(k===BACKUP_KEY && Array.isArray(v)){ v.forEach(b=>addFound("Automatic backup", b.state, b.t)); continue; }
+    const st = v && (v.state || v);
+    if(st && (st.nodes || st.acts)) addFound(names[k] || ("Saved on this device ("+k+")"), st);
+  }
+  // copies kept on GitHub by the sync feature, current and earlier versions
+  for(const key of ["long-way-home-v3:sync", "long-way-home-diamond:sync"]){
+    let sv; try{ sv = JSON.parse(localStorage.getItem(key)||"null"); }catch{}
+    if(!sv?.token || !sv?.gistId) continue;
+    try{
+      const g = await gh("/gists/"+sv.gistId, {}, sv.token);
+      for(const [fname, f] of Object.entries(g.files||{})){
+        if(!/^long-way-home-map/.test(fname)) continue;
+        const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+        addFound("Saved on GitHub by the sync feature", JSON.parse(text));
+      }
+    }catch{}
+  }
+  found.sort((a,b)=>b.when-a.when);
+  if(rerender && sel?.kind==="recover") renderPanel();
+  return found;
+}
+function recoverPanelHTML(){
+  const fmt = t => t ? new Date(t).toLocaleString([], {dateStyle:"medium", timeStyle:"short"}) : "date unknown";
+  const rows = found.map((f,i)=>{
+    const x = f.info;
+    const bits = [`${x.scenes} scenes`, `${x.named} named`];
+    if(x.notes) bits.push(`${x.notes} with notes`);
+    if(x.links) bits.push(`${x.links} links`);
+    if(x.threads) bits.push(`${x.threads} threads used`);
+    const titles = Object.values(f.state.nodes).map(n=>n.title).filter(Boolean).slice(0,4);
+    return `<li style="display:block"><div><b>${esc(f.label)}</b></div>
+      <div class="muted">${fmt(f.when)} · ${bits.join(" · ")}</div>
+      ${titles.length?`<div class="muted" style="margin-top:2px">${titles.map(esc).join(" · ")}${x.named>titles.length?" …":""}</div>`:""}
+      <div class="row" style="margin-top:6px"><button class="btn primary" data-restore="${i}">Restore this</button></div></li>`;
+  }).join("");
+  return `<header><span class="pnum">⟲</span><h3>Recover<small>Maps and backups saved on this device</small></h3><button class="icon-btn" id="pclose" aria-label="Close">✕</button></header>
+  <div class="pbody">
+    ${found.length ? `<ul class="links-list">${rows}</ul>` : `<p>Nothing saved was found in this browser.</p>
+      <p class="muted">Saves belong to one browser on one device. If you edited the map in a different browser (Chrome vs Edge), a different browser profile, the installed app vs a browser tab, a private window, or the Claude link, open it there and press ⟲ Recover.</p>`}
+    <p class="muted">Restoring replaces what's on screen. Undo brings it back.</p>
+    <div class="row"><button class="btn" data-act="rescan">Look again</button></div>
+    <hr class="divider">
+    <p class="muted">From now on a backup is kept every few minutes while you edit (the last ${BACKUP_KEEP}), and Export saves a copy you can keep anywhere.</p>
+  </div>`;
+}
+function restoreFound(i){
+  const f = found[i]; if(!f) return;
+  snapshot();
+  S = normalize(clone(f.state)); S.updatedAt = Date.now();
+  sel = null; threadEdit = null; threadShow = null;
+  renderAll(); fit(); persistLocal(true); scheduleSave();
+  toast("Map restored. Undo goes back to what was on screen.", true);
+}
 const capCache = {};
 function capability(name){
   if(!(name in capCache)) capCache[name] = (window.claude && typeof window.claude.use==="function") ? window.claude.use(name).catch(()=>null) : Promise.resolve(null);
@@ -1278,11 +1393,16 @@ async function boot(){
   if(artifactApi){ canPublish=true; if(draftWins && loaded && draft.dirty) scheduleSave(); else status("saved","All changes saved"); }
   renderSyncBtn();
   if(!canPublish && sync.gistId){ status("saving","Syncing…"); pullGist(); }
+  // nothing of yours on screen but something saved earlier? offer it straight away
+  scanSaved().then(list=>{
+    if(!hasContent(S) && list.some(f=>hasContent(f.state)) && !sel){ select({kind:"recover"}); toast("Found a map saved earlier on this device. Pick one to restore."); }
+  });
   if(!canPublish && "serviceWorker" in navigator && location.protocol==="https:"){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible" && !canPublish && sync.gistId && Date.now()-lastSyncAt>5000) pullGist(); });
 window.addEventListener("online", ()=>{ if(!canPublish && sync.gistId) (localDirty ? pushGist() : pullGist()); });
 $("#syncBtn").onclick = ()=>select({kind:"sync"});
+$("#recoverBtn").onclick = ()=>{ select({kind:"recover"}); scanSaved(true); };
 document.fonts?.ready.then(()=>renderEdges());
 boot();
 })();
