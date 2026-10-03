@@ -1,0 +1,193 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Shader" path="res://shaders/sky.gdshader" id="2_sky"]
+[ext_resource type="Script" path="res://scripts/world/far_body.gd" id="3_far"]
+[ext_resource type="Script" path="res://scripts/world/mid_body.gd" id="4_mid"]
+[ext_resource type="Script" path="res://scripts/beast/beast_body.gd" id="5_body"]
+[ext_resource type="Script" path="res://scripts/beast/beast_terrain.gd" id="6_terrain"]
+[ext_resource type="Script" path="res://scripts/beast/beast_decor.gd" id="7_decor"]
+[ext_resource type="Script" path="res://scripts/regions/whisker_field.gd" id="8_whiskers"]
+[ext_resource type="Script" path="res://scripts/regions/great_flap.gd" id="9_flap"]
+[ext_resource type="Script" path="res://scripts/regions/fur_patch.gd" id="10_fur"]
+[ext_resource type="Script" path="res://scripts/regions/soft_fold.gd" id="11_fold"]
+[ext_resource type="Script" path="res://scripts/regions/luminous_nodules.gd" id="12_nodules"]
+[ext_resource type="Script" path="res://scripts/regions/mystery_crevice.gd" id="13_crevice"]
+[ext_resource type="Script" path="res://scripts/world/foreground.gd" id="14_fore"]
+[ext_resource type="Script" path="res://scripts/camera/beast_camera.gd" id="15_camera"]
+[ext_resource type="Script" path="res://scripts/core/gesture_recognizer.gd" id="16_gestures"]
+[ext_resource type="Script" path="res://scripts/beast/beast_mind.gd" id="17_mind"]
+[ext_resource type="Script" path="res://scripts/beast/tending_sequence.gd" id="18_sequence"]
+[ext_resource type="Script" path="res://scripts/audio/beast_voice.gd" id="19_voice"]
+[ext_resource type="Script" path="res://scripts/ui/screen_fx.gd" id="20_fx"]
+[ext_resource type="Script" path="res://scripts/bill/bill_silhouette.gd" id="21_bill"]
+[ext_resource type="Script" path="res://scripts/bill/bill_hand.gd" id="22_hand"]
+[ext_resource type="Script" path="res://scripts/ui/debug_overlay.gd" id="23_debug"]
+[ext_resource type="Script" path="res://scripts/ui/cards.gd" id="24_cards"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("2_sky")
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Sky" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="Rect" type="ColorRect" parent="Sky"]
+material = SubResource("ShaderMaterial_sky")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="FarBody" type="Node2D" parent="World"]
+script = ExtResource("3_far")
+motion_scale = 0.12
+breath_scale = 0.2
+
+[node name="MidBody" type="Node2D" parent="World"]
+script = ExtResource("4_mid")
+motion_scale = 0.45
+breath_scale = 0.5
+
+[node name="Body" type="Node2D" parent="World"]
+script = ExtResource("5_body")
+
+[node name="Terrain" type="Node2D" parent="World/Body"]
+script = ExtResource("6_terrain")
+
+[node name="Decor" type="Node2D" parent="World/Body"]
+script = ExtResource("7_decor")
+
+[node name="WhiskerField" type="Node2D" parent="World/Body"]
+position = Vector2(1000, 760)
+script = ExtResource("8_whiskers")
+region_id = &"whiskers"
+display_name = "The Whisker Field"
+preferred_gesture = 3
+preferred_speed = 650.0
+speed_tolerance = 1.0
+disliked_gestures = Array[int]([2])
+hit_radii = Vector2(520, 300)
+hit_offset = Vector2(0, -200)
+
+[node name="GreatFlap" type="Node2D" parent="World/Body"]
+position = Vector2(2300, 640)
+script = ExtResource("9_flap")
+region_id = &"flap"
+display_name = "The Great Flap"
+hide_texture = true
+hide_detail_scale = 0.03
+preferred_gesture = 4
+preferred_speed = 320.0
+speed_tolerance = 0.9
+disliked_gestures = Array[int]([1])
+sensitivity = 1.4
+irritation_threshold = 0.9
+hit_radii = Vector2(320, 320)
+hit_offset = Vector2(0, -200)
+
+[node name="FurPatch" type="Node2D" parent="World/Body"]
+position = Vector2(3550, 700)
+script = ExtResource("10_fur")
+region_id = &"fur"
+display_name = "The Fur Patch"
+preferred_gesture = 5
+secondary_gesture = 4
+preferred_speed = 550.0
+speed_tolerance = 0.95
+sensitivity = 0.8
+pleasure_contribution = 1.2
+hit_radii = Vector2(330, 190)
+
+[node name="SoftFold" type="Node2D" parent="World/Body"]
+position = Vector2(4850, 660)
+script = ExtResource("11_fold")
+region_id = &"fold"
+display_name = "The Soft Fold"
+hide_texture = true
+secondary_gesture = 2
+preferred_speed = 260.0
+speed_tolerance = 0.75
+preferred_direction = Vector2(1, 0)
+direction_tolerance = 0.6
+disliked_gestures = Array[int]([5, 1])
+sensitivity = 1.2
+hit_radii = Vector2(420, 170)
+hit_offset = Vector2(0, -5)
+
+[node name="LuminousNodules" type="Node2D" parent="World/Body"]
+position = Vector2(6100, 640)
+script = ExtResource("12_nodules")
+region_id = &"nodules"
+display_name = "The Luminous Nodules"
+hide_texture = true
+hide_detail_scale = 0.02
+preferred_gesture = 6
+preferred_rhythm = 0.62
+disliked_gestures = Array[int]([2, 5])
+hit_radii = Vector2(330, 165)
+hit_offset = Vector2(0, 10)
+
+[node name="MysteryCrevice" type="Node2D" parent="World/Body"]
+position = Vector2(7250, 650)
+script = ExtResource("13_crevice")
+region_id = &"crevice"
+display_name = "The Mystery Crevice"
+preferred_gesture = 0
+sensitivity = 1.5
+hit_radii = Vector2(230, 190)
+
+[node name="Foreground" type="Node2D" parent="World"]
+script = ExtResource("14_fore")
+motion_scale = 1.4
+breath_scale = 1.2
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(4850, 540)
+script = ExtResource("15_camera")
+
+[node name="GestureRecognizer" type="Node" parent="."]
+script = ExtResource("16_gestures")
+
+[node name="BeastMind" type="Node" parent="."]
+script = ExtResource("17_mind")
+
+[node name="TendingSequence" type="Node" parent="."]
+script = ExtResource("18_sequence")
+
+[node name="BeastVoice" type="Node" parent="."]
+script = ExtResource("19_voice")
+
+[node name="ScreenFX" type="CanvasLayer" parent="."]
+layer = 5
+script = ExtResource("20_fx")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Bill" type="Node2D" parent="UI"]
+position = Vector2(170, 1046)
+script = ExtResource("21_bill")
+
+[node name="Debug" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("23_debug")
+
+[node name="Hand" type="Node2D" parent="UI"]
+script = ExtResource("22_hand")
+
+[node name="Cards" type="CanvasLayer" parent="."]
+layer = 20
+script = ExtResource("24_cards")

@@ -1,5 +1,8 @@
 # Prehistoric Off-Road — Track 1 prototype
 
+> Also in this repo: [`beast_tending/`](beast_tending/README.md), a standalone
+> Godot 4 mini-game (*The Beast Tending*) for Game of Games.
+
 Arcade four-racer off-road racing in the spirit of *Super Off Road*, in 3D.
 Three.js rendering, Rapier physics, TypeScript, Vite. See `DESIGN.md` for the game
 rules and `PROJECT_PLAN.md` / `PROGRESS.md` for architecture and status.
