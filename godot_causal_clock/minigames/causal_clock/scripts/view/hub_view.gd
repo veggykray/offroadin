@@ -6,6 +6,8 @@ extends CausalClockElementView
 
 var mat: Dictionary
 var linked_socket: int = -1
+## Index into element.sealed of the sealed lock a red-herring chain reached.
+var sealed_hit: int = -1
 var bloom: float = 0.0  # 0..1, animated on completion
 var _time: float = 0.0
 var _glow: Node2D
@@ -22,9 +24,10 @@ func setup(p_layout: CausalClockLayout, p_index: int, p_geo: CausalClockGeometry
 	add_child(_glow)
 
 
-func set_linked_socket(s: int) -> void:
-	if s != linked_socket:
+func set_linked_socket(s: int, sealed: int = -1) -> void:
+	if s != linked_socket or sealed != sealed_hit:
 		linked_socket = s
+		sealed_hit = sealed
 		queue_redraw()
 
 
@@ -65,6 +68,17 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, r * 0.26, dark)
 	draw_circle(Vector2.ZERO, r * 0.21, core)
 	draw_circle(Vector2(-r * 0.06, -r * 0.07), r * 0.07, Color(1, 1, 1, 0.55))
+	# Sealed locks: a keyhole barred with gold. Red herrings end here.
+	for si in element.sealed.size():
+		var a3 := element.sealed[si] * element.step_degrees()
+		var q := CausalClockGeometry.point(a3, r - 9)
+		var t3 := CausalClockGeometry.dir(a3)
+		draw_circle(q, 5.5, Color(0, 0, 0, 0.6))
+		draw_circle(q, 2.4, Color(0.6, 0.15, 0.1) if si == sealed_hit else Color(0.08, 0.05, 0.03))
+		draw_line(q - t3.orthogonal() * 6.0, q + t3.orthogonal() * 6.0, light, 2.2, true)
+		if si == sealed_hit:
+			var pts := PackedVector2Array([CausalClockGeometry.point(a3, r + 2), CausalClockGeometry.point(a3, r - 4)])
+			CausalClockDraw.chain(self, pts, 6.0, CausalClockPalette.CHAIN_LIT, 1.0)
 	# Sockets: a keyhole notch on the rim, and the chain end when linked.
 	var step := element.step_degrees()
 	for si in element.sockets.size():
@@ -83,6 +97,9 @@ func _draw_glow() -> void:
 	var r := geo.hub_radius
 	var beat := 0.5 + 0.5 * sin(_time * 2.2)
 	CausalClockDraw.glow(_glow, Vector2.ZERO, r * (0.5 + bloom * 1.6), Color(1.0, 0.45, 0.25, 0.12 + 0.06 * beat + bloom * 0.6))
+	if sealed_hit >= 0:
+		var a2 := element.sealed[sealed_hit] * element.step_degrees()
+		CausalClockDraw.glow(_glow, CausalClockGeometry.point(a2, r - 9), 16.0, Color(1.0, 0.3, 0.15, 0.3 + 0.2 * beat))
 	if linked_socket >= 0:
 		var a := element.sockets[linked_socket] * element.step_degrees()
 		CausalClockDraw.glow(_glow, CausalClockGeometry.point(a, r - 9), 20.0, CausalClockPalette.GLOW * Color(1, 1, 1, 0.35 + 0.2 * beat))

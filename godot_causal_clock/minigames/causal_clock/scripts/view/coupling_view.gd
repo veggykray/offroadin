@@ -15,7 +15,6 @@ var engaged: bool = true
 var spin: float = 0.0
 var flash: float = 0.0
 var slip: float = 0.0
-var jam: float = 0.0
 var highlight: float = 0.0
 
 var gear_r: float = 15.0
@@ -75,10 +74,9 @@ func reset_follow(angles: PackedFloat32Array) -> void:
 
 func _process(dt: float) -> void:
 	_time += dt
-	var busy := flash > 0.0 or slip > 0.0 or jam > 0.0 or highlight > 0.0
+	var busy := flash > 0.0 or slip > 0.0 or highlight > 0.0
 	flash = maxf(0.0, flash - dt * 1.6)
 	slip = maxf(0.0, slip - dt * 1.4)
-	jam = maxf(0.0, jam - dt * 1.1)
 	if busy or (c.has_cam() and engaged):
 		_fx.queue_redraw()
 	if busy:
@@ -177,8 +175,6 @@ func _draw_fx() -> void:
 			var a := _time * 23.0 + k * 1.7
 			var p := p_outer + Vector2.from_angle(a) * gear_r * (0.9 + 0.2 * sin(a * 3.0))
 			CausalClockDraw.glow(_fx, p, 6.0, Color(1.0, 0.55, 0.2, slip * 0.8))
-	if jam > 0.0:
-		CausalClockDraw.glow(_fx, p_outer, gear_r * 3.2, Color(1.0, 0.15, 0.1, jam * 0.7))
 	if highlight > 0.0:
 		CausalClockDraw.glow(_fx, p_outer, gear_r * 2.2, Color(0.6, 0.85, 1.0, highlight * 0.35))
 	if c.has_cam() and engaged:

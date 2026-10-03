@@ -7,8 +7,16 @@ extends RefCounted
 ## dark / base / light / edge (rim highlight) / engrave (incised lines)
 const MATERIALS := {
 	"brass": {
-		"dark": Color(0.30, 0.20, 0.08), "base": Color(0.62, 0.46, 0.22),
-		"light": Color(0.90, 0.74, 0.44), "edge": Color(1.0, 0.88, 0.6), "engrave": Color(0.22, 0.14, 0.05),
+		"dark": Color(0.40, 0.27, 0.10), "base": Color(0.78, 0.59, 0.28),
+		"light": Color(0.98, 0.84, 0.52), "edge": Color(1.0, 0.92, 0.66), "engrave": Color(0.30, 0.19, 0.07),
+	},
+	"navy": {
+		"dark": Color(0.04, 0.07, 0.16), "base": Color(0.09, 0.16, 0.33),
+		"light": Color(0.18, 0.28, 0.50), "edge": Color(0.92, 0.76, 0.42), "engrave": Color(0.03, 0.05, 0.11),
+	},
+	"ivory": {
+		"dark": Color(0.56, 0.53, 0.47), "base": Color(0.82, 0.79, 0.71),
+		"light": Color(0.95, 0.93, 0.87), "edge": Color(0.92, 0.76, 0.42), "engrave": Color(0.42, 0.36, 0.26),
 	},
 	"iron": {
 		"dark": Color(0.10, 0.11, 0.12), "base": Color(0.25, 0.27, 0.29),
@@ -35,14 +43,14 @@ const MATERIALS := {
 		"light": Color(1.0, 0.85, 0.48), "edge": Color(1.0, 0.95, 0.75), "engrave": Color(0.3, 0.18, 0.04),
 	},
 	"copper": {
-		"dark": Color(0.28, 0.12, 0.07), "base": Color(0.6, 0.32, 0.18),
-		"light": Color(0.88, 0.56, 0.36), "edge": Color(1, 0.78, 0.6), "engrave": Color(0.2, 0.08, 0.04),
+		"dark": Color(0.30, 0.12, 0.07), "base": Color(0.58, 0.28, 0.15),
+		"light": Color(0.82, 0.48, 0.30), "edge": Color(0.95, 0.78, 0.48), "engrave": Color(0.26, 0.09, 0.04),
 	},
 }
 
-const CHAIN_DIM := Color(0.42, 0.36, 0.28)
-const CHAIN_METAL := Color(0.68, 0.62, 0.52)
-const CHAIN_LIT := Color(1.0, 0.86, 0.52)
+const CHAIN_DIM := Color(0.50, 0.38, 0.20)
+const CHAIN_METAL := Color(0.80, 0.63, 0.34)
+const CHAIN_LIT := Color(1.0, 0.86, 0.50)
 const INLAY_DIM := Color(0.55, 0.36, 0.14, 0.75)
 const INLAY_LIT := Color(1.0, 0.82, 0.42)
 const GLOW := Color(1.0, 0.72, 0.32)
@@ -52,7 +60,7 @@ const PIN := Color(0.86, 0.26, 0.2)
 const WARN := Color(1.0, 0.32, 0.25)
 const CW := Color(0.62, 0.9, 1.0)
 const CCW := Color(1.0, 0.78, 0.45)
-const PLATE := Color(0.075, 0.07, 0.08)
+const PLATE := Color(0.06, 0.05, 0.04)
 const INK := Color(0.93, 0.87, 0.74)
 const INK_DIM := Color(0.62, 0.56, 0.46)
 

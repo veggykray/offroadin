@@ -14,7 +14,7 @@ const NOTES := [
 	["Ratchets", "Copper gears with a pawl and an arrow drive one way only: the ring the arrow points to follows, but cannot push back."],
 	["Toothed arcs", "Some rings have teeth on only part of their edge. Their gear bites only while teeth sit under it — the lamp beside the gear is lit when it will."],
 	["Pins", "Right-click a ring (or click its socket on the rail) to pin it. A pinned ring never moves; gears trying to drive it slip, and motion stops there."],
-	["Jams", "If two gear trains try to turn the same part different ways, the clock jams and refuses the turn. Pin a ring to break one of the trains."],
+	["Locks", "The heart has one open lock and several sealed ones. Not every chain that looks right leads home: a chain that ends in a sealed lock took a wrong turn somewhere."],
 	["The heart", "The heart cannot be turned by hand. Find what drives it."],
 	["Reading ahead", "Hover a ring to see what would move if you turned it clockwise: blue = clockwise, amber = anticlockwise."],
 ]

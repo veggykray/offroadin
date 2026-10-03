@@ -17,8 +17,11 @@ extends RefCounted
 ##    the state BEFORE the turn begins.
 ## 5. Pins. A pinned ring never moves. Any gear trying to drive it slips, and
 ##    motion does not pass through it to rings beyond.
-## 6. Jams. If two gear paths try to drive the same element by different
-##    amounts, the mechanism jams and the turn is refused (nothing moves).
+## 6. One drive per ring. If two gear paths reach the same ring, the first
+##    (shortest) path decides how it moves; no turn is ever refused for it.
+## 7. Locks. The chain only counts when it reaches an OPEN lock in the heart.
+##    Sealed locks accept the chain visibly but never complete it, so decoy
+##    chains that lead there are red herrings.
 ##
 ## These rules are deterministic and local, which is what makes the puzzle
 ## learnable: every effect can be seen as a gear meshing on screen.
@@ -26,7 +29,7 @@ extends RefCounted
 
 class MoveResult:
 	var ok: bool = false
-	## "" when ok; otherwise "pinned", "fixed", "jam", "solved", "invalid".
+	## "" when ok; otherwise "pinned", "fixed", "solved", "invalid".
 	var reason: String = ""
 	var element: int = -1
 	var dir: int = 0
@@ -40,9 +43,6 @@ class MoveResult:
 	var slipped: PackedInt32Array = PackedInt32Array()
 	## Couplings left idle because their cam had no tooth under the gear.
 	var idle_cams: PackedInt32Array = PackedInt32Array()
-	## On a jam: the element that was driven two ways and the couplings involved.
-	var jam_element: int = -1
-	var jam_couplings: PackedInt32Array = PackedInt32Array()
 
 	func moved_elements() -> PackedInt32Array:
 		var out := PackedInt32Array()
@@ -64,6 +64,11 @@ class ChainTrace:
 	var junction_angles: PackedFloat32Array = PackedFloat32Array()
 	## The hub socket index reached when solved.
 	var socket: int = -1
+	## Rings crossed by the genuine chain only (decoy segments don't count).
+	## Drives milestones and hints, so red herrings never award progress.
+	var true_depth: int = 0
+	## The chain reached the heart but ended in a sealed lock (index into sealed).
+	var sealed_lock: int = -1
 	## Where the chain breaks (world degrees) and on which element (-1 none).
 	var break_element: int = -1
 	var break_angle: float = 0.0
@@ -126,9 +131,6 @@ static func propagate(layout: CausalClockLayout, engaged: Array[bool], pin_mask:
 	var assigned := PackedByteArray()
 	assigned.resize(n)
 	assigned.fill(0)
-	var via := PackedInt32Array()  # coupling that first drove each element
-	via.resize(n)
-	via.fill(-1)
 	r.deltas[element] = dir
 	r.wave[element] = 0
 	assigned[element] = 1
@@ -155,19 +157,9 @@ static func propagate(layout: CausalClockLayout, engaged: Array[bool], pin_mask:
 				continue
 			var nd := r.deltas[u] * c.ratio
 			if assigned[v] == 1:
-				if r.deltas[v] != nd:
-					r.ok = false
-					r.reason = "jam"
-					r.jam_element = v
-					r.jam_couplings = PackedInt32Array([c.index])
-					if via[v] >= 0:
-						r.jam_couplings.append(via[v])
-					return
-				if not r.transmitted.has(c.index):
-					r.transmitted.append(c.index)
+				# Already driven by an earlier (shorter) path: that drive stands.
 				continue
 			assigned[v] = 1
-			via[v] = c.index
 			r.deltas[v] = nd
 			r.wave[v] = r.wave[u] + 1
 			r.transmitted.append(c.index)
@@ -213,6 +205,8 @@ static func trace_chain(layout: CausalClockLayout, positions: PackedInt32Array) 
 			return t
 		t.links.append(Vector2i(k, found))
 		var seg := e.segments[found]
+		if not seg.decoy and t.true_depth == k:
+			t.true_depth = k + 1
 		if seg.in_slot == CausalClockLayout.NONE:
 			t.break_element = k
 			t.break_angle = turn * 360.0
@@ -226,6 +220,9 @@ static func trace_chain(layout: CausalClockLayout, positions: PackedInt32Array) 
 			t.solved = true
 			t.socket = si
 			return t
+	for si in hub.sealed.size():
+		if _same_turn(float(hub.sealed[si] + positions[layout.hub_index()]) / hub.positions, turn):
+			t.sealed_lock = si
 	t.break_element = layout.hub_index()
 	t.break_angle = turn * 360.0
 	return t

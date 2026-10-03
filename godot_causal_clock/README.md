@@ -14,4 +14,4 @@ content, embedding, and tests.
 | | |
 |---|---|
 | ![Title](docs/title.jpg) | ![Puzzle](docs/puzzle.jpg) |
-| ![Jam feedback](docs/jam.jpg) | ![Memory card](docs/memory_card.jpg) |
+| ![Red herring ending in a sealed lock](docs/red_herring.jpg) | ![Memory card](docs/memory_card.jpg) |

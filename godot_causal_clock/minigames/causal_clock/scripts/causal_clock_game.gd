@@ -296,9 +296,6 @@ func _refuse_message(element: int, reason: String, r: CausalClockMechanism.MoveR
 			hud.set_status("%s is pinned. Remove its pin to turn it." % ring_name, true)
 		"fixed":
 			hud.set_status("%s cannot be turned by hand — something else must drive it." % ring_name, true)
-		"jam":
-			var jam_name: String = layout.elements[r.jam_element].label if r and r.jam_element >= 0 else "a ring"
-			hud.set_status("Jammed: two gear trains fight over %s. Pin a ring to break one of them." % jam_name, true, 5.0)
 		"no_pins_left":
 			hud.set_status("All %d pins are in use. Remove one first." % layout.pin_count, true)
 		"not_pinnable":
@@ -306,6 +303,11 @@ func _refuse_message(element: int, reason: String, r: CausalClockMechanism.MoveR
 
 
 func _on_chain_changed(old_depth: int, new_depth: int, trace: CausalClockMechanism.ChainTrace) -> void:
+	if trace.sealed_lock >= 0:
+		audio.play("chain_break", 0.8, -2.0, 0.3)
+		hud.set_status("The chain reaches the heart — but that lock is sealed.", true, 4.0)
+		view.play_chain_growth(old_depth, trace)
+		return
 	if new_depth > old_depth or trace.solved:
 		view.play_chain_growth(old_depth, trace)
 		# Rising chime: each ring deeper sounds a step higher.

@@ -133,11 +133,6 @@ func play_refusal(result: CausalClockMechanism.MoveResult) -> void:
 	match result.reason:
 		"pinned":
 			rail.flash(result.element)
-		"jam":
-			for ci in result.jam_couplings:
-				couplings[ci].jam = 1.0
-			if result.jam_element >= 0:
-				rings[result.jam_element].shake(0.04)
 
 
 func play_pin_refusal(element: int) -> void:
@@ -175,7 +170,7 @@ func _apply_trace(trace: CausalClockMechanism.ChainTrace) -> void:
 		dist += CausalClockDraw.polyline_length((rings[link.x] as CausalClockRingView).paths[link.y])
 	for i in layout.ring_count:
 		(rings[i] as CausalClockRingView).set_linked(per_ring.get(i, []), offsets.get(i, {}))
-	hub.set_linked_socket(trace.socket if trace.solved else -1)
+	hub.set_linked_socket(trace.socket if trace.solved else -1, trace.sealed_lock)
 	backdrop.set_entry_lit(not trace.links.is_empty())
 	overlay.break_element = trace.break_element
 	overlay.break_angle = trace.break_angle

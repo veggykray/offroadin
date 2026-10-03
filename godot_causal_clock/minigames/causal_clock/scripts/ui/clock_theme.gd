@@ -9,6 +9,17 @@ const BRASS := Color(0.82, 0.66, 0.38)
 const PANEL := Color(0.04, 0.035, 0.04, 0.78)
 
 static var _theme: Theme
+static var _italic: Font
+
+
+## Italic serif for handwritten margin notes.
+static func italic_font() -> Font:
+	if _italic == null:
+		var f := SystemFont.new()
+		f.font_names = PackedStringArray(["Cormorant Garamond", "EB Garamond", "Garamond", "Georgia", "DejaVu Serif", "serif"])
+		f.font_italic = true
+		_italic = f
+	return _italic
 
 
 static func get_theme() -> Theme:

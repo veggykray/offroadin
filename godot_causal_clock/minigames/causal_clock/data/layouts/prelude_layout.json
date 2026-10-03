@@ -14,21 +14,21 @@
 	"rings": [
 		{
 			"id": "A", "label": "Ring A", "positions": 8, "start": 4,
-			"material": "iron", "ornaments": ["rivets", "hammered"], "mass": 1.6,
-			"segments": [ { "out": 0, "in": 2 }, { "out": 4, "in": -1 } ]
+			"material": "navy", "ornaments": ["constellations", "rivets"], "mass": 1.6,
+			"segments": [ { "out": 0, "in": 2, "lane": 0.4 }, { "out": 5, "in": 0, "lane": 0.65, "decoy": true } ]
 		},
 		{
 			"id": "B", "label": "Ring B", "positions": 8, "start": 4,
-			"material": "brass", "ornaments": ["ticks", "numerals"], "mass": 1.2,
+			"material": "brass", "ornaments": ["scrollwork", "numerals"], "mass": 1.2,
 			"segments": [ { "out": 0, "in": 5 } ]
 		},
 		{
 			"id": "C", "label": "Ring C", "positions": 8, "start": 4,
-			"material": "walnut", "ornaments": ["grain", "inlay_dots"], "mass": 0.9,
-			"segments": [ { "out": 0, "in": 1 }, { "out": 6, "in": -1 } ]
+			"material": "copper", "ornaments": ["leaves"], "mass": 0.9,
+			"segments": [ { "out": 0, "in": 1, "lane": 0.4 }, { "out": 6, "in": 0, "lane": 0.65, "decoy": true } ]
 		}
 	],
-	"hub": { "id": "H", "label": "Heart", "positions": 8, "start": 0, "manual": false, "pinnable": false, "material": "gold", "sockets": [0] },
+	"hub": { "id": "H", "label": "Heart", "positions": 8, "start": 0, "manual": false, "pinnable": false, "material": "gold", "sockets": [0], "sealed": [1, 2, 3] },
 	"couplings": [
 		{ "id": "gear_ab", "a": "A", "b": "B", "ratio": -1, "angle_deg": 67.5 },
 		{ "id": "ratchet_bc", "a": "B", "b": "C", "ratio": 1, "one_way": true, "angle_deg": 202.5 }

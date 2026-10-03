@@ -12,61 +12,64 @@
 		"Lead the chain from the crown to the heart."
 	],
 
-	"_comment_rings": "Outermost first. 'start' is the scrambled starting position. Segments use local slots: slot s sits at s * 360/positions degrees in the ring's own frame. out = where the chain meets the ring's outer edge, in = where it leaves through the inner edge (-1 = broken fragment).",
+	"_comment_margin_notes": "Placeholder lines handwritten on the parchment notes beside the clock. Replace or leave empty.",
+	"margin_notes": ["Time folds not in a line, but in a circle.", "Five moments, one consequence."],
+
+	"_comment_rings": "Outermost first. 'start' is the scrambled starting position. Segments use local slots: slot s sits at s * 360/positions degrees in the ring's own frame. out = where the chain meets the ring's outer edge, in = where it leaves through the inner edge. 'decoy': true marks a red herring: it looks and connects like any other chain, but its slot shift (in - out) differs from the genuine one, so with the heart fixed any route through it can only ever arrive at a sealed lock. The validator proves this for every layout.",
 	"rings": [
 		{
-			"id": "A", "label": "Ring A", "positions": 8, "start": 3,
-			"material": "iron", "ornaments": ["rivets", "hammered"], "mass": 1.8,
+			"id": "A", "label": "Ring A", "positions": 8, "start": 5,
+			"material": "navy", "ornaments": ["constellations", "rivets"], "mass": 1.8,
 			"pinnable": true, "pin_angle_deg": 247.5,
 			"segments": [
-				{ "out": 0, "in": 3, "lane": 0.5 },
-				{ "out": 5, "in": -1, "lane": 0.45 }
+				{ "out": 0, "in": 3, "lane": 0.4 },
+				{ "out": 5, "in": 7, "lane": 0.65, "decoy": true }
 			]
 		},
 		{
-			"id": "B", "label": "Ring B", "positions": 8, "start": 6,
-			"material": "brass", "ornaments": ["ticks", "numerals"], "mass": 1.4,
+			"id": "B", "label": "Ring B", "positions": 8, "start": 0,
+			"material": "brass", "ornaments": ["scrollwork", "numerals"], "mass": 1.4,
 			"pinnable": true, "pin_angle_deg": 247.5,
 			"segments": [
 				{ "out": 0, "in": 6, "lane": 0.55, "marker": "moment_1" },
-				{ "out": 3, "in": -1, "lane": 0.5 },
-				{ "out": -1, "in": 2, "lane": 0.4 }
+				{ "out": 3, "in": 0, "lane": 0.35, "decoy": true }
 			]
 		},
 		{
-			"id": "C", "label": "Ring C", "positions": 8, "start": 4,
-			"material": "walnut", "ornaments": ["grain", "inlay_dots"], "mass": 1.1,
+			"id": "C", "label": "Ring C", "positions": 8, "start": 1,
+			"material": "copper", "ornaments": ["leaves"], "mass": 1.1,
 			"pinnable": true, "pin_angle_deg": 247.5,
 			"segments": [
-				{ "out": 0, "in": 1, "lane": 0.5 },
-				{ "out": 4, "in": -1, "lane": 0.55 }
+				{ "out": 0, "in": 1, "lane": 0.4 },
+				{ "out": 4, "in": 4, "lane": 0.62, "decoy": true }
 			]
 		},
 		{
 			"id": "D", "label": "Ring D", "positions": 8, "start": 0,
-			"material": "enamel", "ornaments": ["filigree", "glyphs"], "mass": 0.9,
+			"material": "navy", "ornaments": ["constellations", "moon"], "mass": 0.9,
 			"pinnable": true, "pin_angle_deg": 247.5,
 			"segments": [
-				{ "out": 0, "in": 5, "lane": 0.5, "marker": "moment_2" },
-				{ "out": 2, "in": -1, "lane": 0.5 }
+				{ "out": 0, "in": 5, "lane": 0.38, "marker": "moment_2" },
+				{ "out": 2, "in": 5, "lane": 0.66, "decoy": true }
 			]
 		},
 		{
-			"id": "E", "label": "Ring E", "positions": 8, "start": 3,
-			"material": "silver", "ornaments": ["ticks", "rivets"], "mass": 0.7,
+			"id": "E", "label": "Ring E", "positions": 8, "start": 4,
+			"material": "ivory", "ornaments": ["constellations", "ticks"], "mass": 0.7,
 			"pinnable": true, "pin_angle_deg": 247.5,
 			"segments": [
-				{ "out": 0, "in": 1, "lane": 0.5, "marker": "moment_3" },
-				{ "out": 6, "in": -1, "lane": 0.5 }
+				{ "out": 0, "in": 1, "lane": 0.4, "marker": "moment_3" },
+				{ "out": 6, "in": 5, "lane": 0.65, "decoy": true }
 			]
 		}
 	],
 
-	"_comment_hub": "The heart. Not turnable by hand (manual=false); it is moved only by couplings. The chain must end in one of its sockets.",
+	"_comment_hub": "The heart is fixed. Its one open lock is 'sockets'; 'sealed' locks are where the red-herring routes end.",
 	"hub": {
-		"id": "H", "label": "Heart", "positions": 8, "start": 1,
+		"id": "H", "label": "Heart", "positions": 8, "start": 0,
 		"manual": false, "pinnable": false, "material": "gold",
-		"sockets": [0]
+		"sockets": [0],
+		"sealed": [1, 2, 3, 4, 5, 6, 7]
 	},
 
 	"_comment_couplings": "a turns d steps -> b turns d*ratio. one_way = ratchet (b cannot drive a). cam = only engaged while one of the listed local sectors of the cam ring sits under the gear at angle_deg. Keep gear angles between slot angles (e.g. 22.5, 67.5 ...) so gears never hide a junction.",
@@ -74,19 +77,17 @@
 		{ "id": "gear_ab",   "a": "A", "b": "B", "ratio": -1, "angle_deg": 67.5 },
 		{ "id": "ratchet_bc", "a": "B", "b": "C", "ratio": 1, "one_way": true, "angle_deg": 202.5 },
 		{ "id": "cam_cd",    "a": "C", "b": "D", "ratio": -1, "angle_deg": 337.5, "cam": { "ring": "C", "teeth": [0, 1, 2, 3] } },
-		{ "id": "gear_de",   "a": "D", "b": "E", "ratio": -1, "angle_deg": 112.5 },
-		{ "id": "ratchet_eh", "a": "E", "b": "H", "ratio": 1, "one_way": true, "angle_deg": 22.5 },
-		{ "id": "shaft_bh",  "a": "B", "b": "H", "ratio": -1, "one_way": true, "angle_deg": 157.5, "cam": { "ring": "B", "teeth": [0, 1, 2] } }
+		{ "id": "gear_de",   "a": "D", "b": "E", "ratio": -1, "angle_deg": 112.5 }
 	],
 
 	"_comment_milestones": "trigger.type: chain_depth (value = rings crossed), segment_linked (ring + segment index), complete. presentation: toast | card | silent. memory_id refers to data/memories/*.json.",
 	"milestones": [
 		{ "id": "m_depth_2", "trigger": { "type": "chain_depth", "value": 2 }, "memory_id": "moment_1", "presentation": "toast" },
-		{ "id": "m_depth_4", "trigger": { "type": "chain_depth", "value": 4 }, "memory_id": "moment_2", "presentation": "toast" },
-		{ "id": "m_depth_5", "trigger": { "type": "chain_depth", "value": 5 }, "memory_id": "moment_3", "presentation": "toast" },
+		{ "id": "m_depth_3", "trigger": { "type": "chain_depth", "value": 3 }, "memory_id": "moment_2", "presentation": "toast" },
+		{ "id": "m_depth_4", "trigger": { "type": "chain_depth", "value": 4 }, "memory_id": "moment_3", "presentation": "toast" },
 		{ "id": "m_complete", "trigger": { "type": "complete" }, "memory_id": "moment_4", "presentation": "card" }
 	],
 
-	"_comment_solution": "A known (optimal, 16 moves) solution from the start state. Verified by tests/run_tests.gd.",
-	"reference_solution": ["A+", "A+", "A+", "A+", "A+", "pin:A", "pin:D", "B-", "B-", "B-", "E-", "E-", "unpin:D", "B-", "B-", "B-"]
+	"_comment_solution": "A known (optimal, 13 moves) solution from the start state. Verified by tests/run_tests.gd.",
+	"reference_solution": ["A+", "A+", "A+", "C-", "pin:A", "pin:D", "B-", "B-", "C-", "C-", "E-", "E-", "E-"]
 }

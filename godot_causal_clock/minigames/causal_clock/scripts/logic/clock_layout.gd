@@ -32,6 +32,9 @@ class SegmentDef:
 	var arc_dir: int = 0
 	## Optional memory id: draws a medallion on this fragment (purely visual).
 	var marker: String = ""
+	## A red herring: looks and behaves like any chain, but is not part of the
+	## genuine route. Only used for progress / hints; the player isn't told.
+	var decoy: bool = false
 
 	func is_through() -> bool:
 		return out_slot != NONE and in_slot != NONE
@@ -57,6 +60,8 @@ class ElementDef:
 	var segments: Array[SegmentDef] = []
 	## Hub only: local slots where the chain may terminate.
 	var sockets: PackedInt32Array = PackedInt32Array()
+	## Hub only: sealed locks — the chain can reach them but they never open.
+	var sealed: PackedInt32Array = PackedInt32Array()
 
 	func step_degrees() -> float:
 		return 360.0 / float(positions)
@@ -112,6 +117,9 @@ var result_id: String = "causal_clock_complete"
 var entry_angle_deg: float = 0.0
 var pin_count: int = 2
 var intro_lines: PackedStringArray = PackedStringArray()
+## Up to two short lines handwritten on the parchment notes in the margins
+## (purely decorative, replaceable content).
+var margin_notes: PackedStringArray = PackedStringArray()
 var elements: Array[ElementDef] = []
 var ring_count: int = 0
 var couplings: Array[CouplingDef] = []
@@ -190,6 +198,8 @@ func _parse(d: Dictionary) -> void:
 	pin_count = int(d.get("pin_count", 2))
 	for line in d.get("intro_lines", []):
 		intro_lines.append(str(line))
+	for line in d.get("margin_notes", []):
+		margin_notes.append(str(line))
 	for step in d.get("reference_solution", []):
 		reference_solution.append(str(step))
 
@@ -244,9 +254,12 @@ func _parse_element(rd: Dictionary, hub: bool) -> ElementDef:
 		s.lane = clampf(float(sd.get("lane", 0.5)), 0.15, 0.85)
 		s.arc_dir = int(sd.get("arc_dir", 0))
 		s.marker = str(sd.get("marker", ""))
+		s.decoy = bool(sd.get("decoy", false))
 		e.segments.append(s)
 	for s in rd.get("sockets", []):
 		e.sockets.append(int(s))
+	for s in rd.get("sealed", []):
+		e.sealed.append(int(s))
 	return e
 
 
@@ -344,4 +357,45 @@ func _validate() -> void:
 	if not elements.is_empty() and not elements[hub_index()].manual:
 		var driven := couplings.any(func(c): return c.b == hub_index() or (not c.one_way and c.a == hub_index()))
 		if not driven:
-			warnings.append("The hub is fixed (not manual and not driven). Make sure the chain offsets add up.")
+			_check_fixed_hub_routes()
+
+
+## With a fixed heart, the world angle where the chain arrives depends only on
+## which segment it uses in each ring (each segment shifts it by in - out
+## slots), never on how the rings are turned. So we can prove up front which
+## routes can ever reach an open lock: genuine segments must, decoys must not.
+func _check_fixed_hub_routes() -> void:
+	if elements.size() < 2 or errors.size() > 0:
+		return
+	var hub := elements[hub_index()]
+	# Only uniform slot counts are checked (the common case).
+	for e in elements:
+		if e.positions != hub.positions:
+			return
+	var n := hub.positions
+	var entry := posmod(int(round(entry_angle_deg / 360.0 * n)), n)
+	# Arrival slots reachable using only genuine segments / using any decoy.
+	var genuine := {entry: true}
+	var tainted := {}
+	for k in ring_count:
+		var g2 := {}
+		var t2 := {}
+		for s in elements[k].segments:
+			if not s.is_through():
+				continue
+			var shift := s.in_slot - s.out_slot
+			for slot in genuine.keys():
+				if s.decoy:
+					t2[posmod(slot + shift, n)] = true
+				else:
+					g2[posmod(slot + shift, n)] = true
+			for slot in tainted.keys():
+				t2[posmod(slot + shift, n)] = true
+		genuine = g2
+		tainted = t2
+	var open_at := func(slot: int) -> bool: return hub.sockets.has(posmod(slot - hub.start, n))
+	if not genuine.keys().any(open_at):
+		errors.append("With a fixed heart, the genuine segments must add up to an open lock (they reach slot(s) %s)." % str(genuine.keys()))
+	for slot in tainted.keys():
+		if open_at.call(slot):
+			warnings.append("A route through a decoy can reach an open lock (slot %d), so that decoy is not a real red herring." % slot)

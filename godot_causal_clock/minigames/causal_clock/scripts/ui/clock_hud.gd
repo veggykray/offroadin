@@ -117,6 +117,62 @@ class Medallion extends Button:
 			draw_arc(c, r + 5, 0, TAU, 32, Color(1, 0.9, 0.65, 0.8), 1.5, true)
 
 
+## Aged parchment sheets in the margins with a sketch and a handwritten line.
+class MarginNote extends Control:
+	var text: String = ""
+	var kind: int = 0
+	var tilt: float = 0.0
+
+	func _draw() -> void:
+		var s := size
+		draw_set_transform(s * 0.5, tilt, Vector2.ONE)
+		var r := Rect2(-s * 0.5, s)
+		draw_rect(Rect2(r.position + Vector2(6, 8), r.size), Color(0, 0, 0, 0.45))
+		var paper := Color(0.72, 0.62, 0.45)
+		draw_rect(r, paper)
+		for k in 6:
+			draw_rect(r.grow(-k * 5.0), Color(0.45, 0.33, 0.18, 0.05), false, 5.0)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 3 + kind
+		for i in 40:
+			draw_circle(r.position + Vector2(rng.randf() * s.x, rng.randf() * s.y), rng.randf_range(1, 5), Color(0.4, 0.28, 0.14, 0.08))
+		var ink := Color(0.25, 0.17, 0.08, 0.8)
+		var c := Vector2(0, -s.y * 0.2)
+		if kind == 0:
+			# A tower-and-compass study.
+			draw_arc(c, s.x * 0.22, 0, TAU, 40, ink, 1.0, true)
+			for k in 8:
+				var d := Vector2.from_angle(TAU * k / 8.0)
+				draw_line(c, c + d * s.x * (0.22 if k % 2 == 0 else 0.13), ink, 1.0, true)
+			var t := PackedVector2Array([c + Vector2(-8, 30), c + Vector2(-5, -28), c + Vector2(5, -28), c + Vector2(8, 30)])
+			draw_polyline(t, ink, 1.2, true)
+			draw_line(c + Vector2(-11, -28), c + Vector2(11, -28), ink, 1.2, true)
+		else:
+			# A moon-phase diagram.
+			draw_circle(c, s.x * 0.16, Color(0.45, 0.35, 0.2, 0.5))
+			draw_arc(c, s.x * 0.16, 0, TAU, 40, ink, 1.2, true)
+			for k in 5:
+				var p := c + Vector2.from_angle(PI + k * PI / 4.0) * s.x * 0.33
+				draw_arc(p, 6, 0, TAU, 16, ink, 1.0, true)
+				draw_circle(p + Vector2(2, 0), 5, Color(0.25, 0.17, 0.08, 0.4 + 0.1 * k))
+			draw_line(c + Vector2(-s.x * 0.4, s.y * 0.06), c + Vector2(s.x * 0.4, -s.y * 0.1), ink, 0.8, true)
+		var f := CausalClockTheme.italic_font()
+		var words := text.split(" ")
+		var line := ""
+		var y := s.y * 0.2
+		for w in words:
+			var trial := (line + " " + w).strip_edges()
+			if f.get_string_size(trial, HORIZONTAL_ALIGNMENT_LEFT, -1, 19).x > s.x - 30 and line != "":
+				draw_string(f, Vector2(-s.x * 0.5 + 15, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, 19, ink)
+				y += 24
+				line = w
+			else:
+				line = trial
+		if line != "":
+			draw_string(f, Vector2(-s.x * 0.5 + 15, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, 19, ink)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
 var layout: CausalClockLayout
 var memories: CausalClockMemoryLibrary
 var title_label: Label
@@ -145,7 +201,9 @@ func build(p_layout: CausalClockLayout, p_memories: CausalClockMemoryLibrary) ->
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for ch in get_children():
 		ch.queue_free()
+	_build_notes()
 	_build_title()
+	_build_tab()
 	_build_right()
 	_build_shelf()
 	_build_intro()
@@ -172,7 +230,7 @@ func _build_right() -> void:
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(252, 0)
 	add_child(panel)
-	_place(panel, Vector2(1, 0), Vector2(-48, 36), Control.GROW_DIRECTION_BEGIN, Control.GROW_DIRECTION_END)
+	_place(panel, Vector2(1, 0), Vector2(-48, 92), Control.GROW_DIRECTION_BEGIN, Control.GROW_DIRECTION_END)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 10)
 	panel.add_child(v)
@@ -198,6 +256,30 @@ func _build_right() -> void:
 	hint_button = _button(v, "Hint", "H", hint_pressed)
 	_button(v, "Mechanism notes", "N", notes_pressed)
 	_button(v, "Pause", "Esc", menu_pressed)
+
+
+func _build_notes() -> void:
+	var specs := [[Vector2(0, 1), Vector2(14, -360), -0.06, 0], [Vector2(1, 1), Vector2(-262, -380), 0.05, 1]]
+	for i in specs.size():
+		var note := MarginNote.new()
+		note.kind = specs[i][3]
+		note.tilt = specs[i][2]
+		note.text = layout.margin_notes[i] if i < layout.margin_notes.size() else ""
+		note.custom_minimum_size = Vector2(240, 270)
+		note.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(note)
+		_place(note, specs[i][0], specs[i][1], Control.GROW_DIRECTION_END, Control.GROW_DIRECTION_END)
+
+
+## The "Pause · P" tab at the top right, as on the reference layout.
+func _build_tab() -> void:
+	var b := Button.new()
+	b.text = "Pause  ·  P"
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", 22)
+	b.pressed.connect(func(): menu_pressed.emit())
+	add_child(b)
+	_place(b, Vector2(1, 0), Vector2(-48, 20), Control.GROW_DIRECTION_BEGIN, Control.GROW_DIRECTION_END)
 
 
 func _button(parent: Control, text: String, key: String, sig: Signal) -> Button:

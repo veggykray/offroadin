@@ -58,9 +58,8 @@ To run a scene directly, open `scenes/causal_clock_game.tscn` and press F6.
 | Mute | — | M |
 
 Hovering a ring shows what *would* happen if you turned it clockwise. Blue
-arrows mean that ring would turn clockwise, amber means anticlockwise. A
-red ✕ means the turn would jam. This readout is what makes the mechanism
-learnable without trial and error.
+arrows mean that ring would turn clockwise, amber means anticlockwise. This
+readout is what makes the mechanism learnable without trial and error.
 
 ---
 
@@ -70,19 +69,25 @@ learnable without trial and error.
 
 Each ring carries chain **segments** in local "slots" (a ring with 8
 positions has slots 0–7, 45° apart). A segment enters at the ring's outer
-edge at slot `out` and leaves through the inner edge at slot `in`. Segments
-with `-1` at one end are broken fragments (dead ends and decoys).
+edge at slot `out` and leaves through the inner edge at slot `in`.
+
+Every chain on a ring crosses it completely. Some are **red herrings**
+(`"decoy": true`): they look and connect exactly like the genuine chain and
+light up as you line them up, but they can never lead home (see *Red
+herrings* below). Ends set to `-1` (visibly broken fragments) are still
+supported, but the default layouts no longer use them.
 
 The chain is traced from the **entry** (a fixed angle on the frame) inward.
 At each ring it looks for a segment whose outer port sits at the current
 angle, follows it to its inner port, and continues into the next ring. It
-ends either at a gap (the break is marked by a flickering ember) or in a
-**socket** of the central hub.
+ends at a gap (the break is marked by a flickering ember), at a **sealed
+lock** in the heart (a red herring), or at the heart's one **open lock**.
 
 **Win detection** (`CausalClockMechanism.trace_chain`): the puzzle is solved
-when this trace reaches a hub socket. *Chain depth* is the number of rings
-the trace fully crosses, and drives the HUD gauge, the chimes and the
-milestones.
+when this trace reaches an open lock. *Chain depth* is the number of rings
+the lit chain crosses (it drives the gauge and chimes, so red herrings feel
+like progress). *True depth* counts only genuine segments; it drives
+milestones and hints, so memories are never revealed by a red herring.
 
 ### Ring coupling: the ruleset
 
@@ -106,23 +111,40 @@ explained to players in the in-game Mechanism notes:
 5. **Pins.** A pinned ring never moves. A gear trying to drive it **slips**
    (sparks and a rattle), and motion does not pass through it to rings
    beyond.
-6. **Jams.** If two gear paths try to drive the same element by different
-   amounts, the mechanism jams and refuses the turn (nothing moves). A pin
-   that breaks one of the paths frees it. This is how "ring X can only turn
-   if Y is pinned" arises naturally rather than as a special case.
+6. **One drive per ring.** If two gear paths ever reach the same ring, the
+   shortest path decides how it moves. No turn is ever refused because of
+   it. (The earlier "jam" rule was removed as too confusing. The default
+   layout's gear train has no loops, so this never comes up in play.)
 
 ### Locking pins
 
 `pin_count` reusable pins (2 in the main puzzle). Pins sit in sockets on the
 fixed **lock rail**. Each `pinnable` ring has one at `pin_angle_deg`. Pins
-are what turn a spinning toy into a puzzle: they split gear trains, protect
-work you've already aligned, and resolve jams, and you never have enough of
-them.
+are what turn a spinning toy into a puzzle: they split gear trains and
+protect work you've already aligned, and you never have enough of them.
+
+### Red herrings
+
+The heart is fixed. That means the angle where the chain arrives at the heart
+depends only on *which* chain it takes through each ring: each segment shifts
+the angle by `in − out` slots. How the rings are turned doesn't matter.
+
+Each decoy in the default layout shifts the chain one or two slots *less*
+than the genuine chain on the same ring. All the differences point the same
+way and add up to less than a full turn, so no combination of decoys can
+ever cancel out. Any route that uses a decoy can therefore reach the heart
+only at one of the **sealed locks**. When that happens, the game says so: "The
+chain reaches the heart — but that lock is sealed."
+
+`CausalClockLayout` proves this on load for any layout with a fixed heart. It
+errors if the genuine chains don't reach an open lock, and warns if any decoy
+route could.
 
 ### The default puzzle and its difficulty curve
 
 The main layout (`data/layouts/default_layout.json`) uses 5 rings × 8
-positions, a driven heart, and 6 couplings:
+positions, a fixed heart with one open and seven sealed locks, a decoy chain
+on every ring, and 4 couplings:
 
 | Link | Type | What the player learns |
 |---|---|---|
@@ -130,25 +152,20 @@ positions, a driven heart, and 6 couplings:
 | B → C | ratchet | "C follows B, but I can adjust C freely." |
 | C ⇄ D | two-way, cam on C (half the ring has teeth) | "It only bites on part of the turn; watch the lamp." |
 | D ⇄ E | two-way gear, reverses | "Pin D before working on E." |
-| E → Heart | ratchet | "The heart follows E…" |
-| B → Heart | long shaft, reverses, cam on B | "…and B's shaft also drives the heart. Both at once: a jam." |
 
 Measured with the included solver (`tests/analyze_layout.gd`):
 
-- **Optimal solution: 16 moves** (pins count as moves), proven by
-  exhaustive search over 2.2M states. About 7.6% of random unpinned turns
-  jam.
-- **A methodical player** who extends the chain one ring at a time needs
-  about 19–23 moves. The stages cost 3 / 4 / 1 / 2 / 3 / 6 moves: easy
-  outer rings, a pin lesson at B, and a final stage where the heart only
-  lines up if you either set it early through B's shaft or rock B across
-  its cam. That last stage is the "aha".
-- Starting positions were chosen so the chain is broken at the very first
-  junction, and so every pin-free start position is solvable (checked
-  exhaustively during design).
+- **Optimal solution: 13 moves** (pins count as moves), proven by
+  exhaustive search.
+- **Following the hints** ring by ring takes 15 moves, at 3 / 3 / 3 / 2 / 4
+  moves per ring.
+- **Exactly one arrangement solves it.** Every other route the chain can
+  take ends in a gap or a sealed lock.
+- **The start is fully broken.** The starting position leaves the chain
+  unlit at the very first ring.
 
-There is deliberately **no tension/instability meter**. Jams already
-punish careless turns with clear, local feedback, and undo makes recovery
+There is deliberately **no tension/instability meter**. Slipping gears and
+red herrings already give clear, local feedback, and undo makes recovery
 cheap. A timer-like pressure would push players back towards trial and
 error, which is the opposite of the goal.
 
@@ -216,8 +233,11 @@ Rules of thumb:
   gear never hides a junction. A cam reads the sector under its gear: sector
   `k` spans local slots `k`…`k+1`.
 - Two-way links must have ratio ±1. Larger ratios are allowed one-way.
-- **Cycles** in the coupling graph create jam conditions: two paths into the
-  same ring with different net ratios. Use them on purpose.
+- **Red herrings:** mark decoy segments with `"decoy": true`. Give each one
+  an `in − out` shift that differs from the genuine segment on its ring.
+  Make all the differences the same sign, with a total under one full turn,
+  so that no combination can cancel. List the arrival slots of the decoy
+  routes as `"sealed"` locks on the hub. The loader checks the result.
 - If the hub is fixed (not manual and not driven), the segment offsets must
   add up exactly; the validator warns you.
 - Different rings may have different `positions`. Alignment is compared by
@@ -233,7 +253,8 @@ godot --headless --path . --script res://minigames/causal_clock/tests/analyze_la
 
 It validates the file, replays `reference_solution`, prints the hint route
 stage by stage (your difficulty curve), searches for the optimal solution
-(`--budget=N` states) and reports the jam rate. Aim for a hint route whose
+(`--budget=N` states) and reports how often a random position strands the
+chain in a sealed lock. Aim for a hint route whose
 stages rise gently and end with the hardest one, and an optimal length well
 below the hint route. That gap is where insight pays off.
 
@@ -332,11 +353,11 @@ godot --headless --path . --script res://minigames/causal_clock/tests/smoke_test
 ```
 
 - `run_tests.gd`: 70 logic checks covering parsing and validation, gears,
-  ratchets, cams, pins and slipping, jams, undo/reset, both reference
+  ratchets, cams, pins and slipping, red herrings and sealed locks, undo/reset, both reference
   solutions, milestone order, hint-guided solving and optimality of the
   prelude.
 - `smoke_test.gd`: boots the real title and game scenes. It drags, scrolls
-  and right-clicks with synthetic mouse input, checks hint, undo, jam and
+  and right-clicks with synthetic mouse input, checks hint, undo, a red herring and
   slip, plays the full solution, and asserts the `puzzle_completed`,
   `milestone_reached` and `memory_revealed` signals, the final card and the
   completion panel. With a display, `-- --capture=/some/dir` saves

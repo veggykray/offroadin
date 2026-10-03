@@ -6,7 +6,8 @@ extends SceneTree
 ## Reports: validation problems, whether the reference solution works, the
 ## hint-by-hint route (what a methodical player following hints would do,
 ## stage by stage), the optimal solution length (bounded search), and how
-## often random turns jam. Use it after every edit to a layout.
+## often a random position shows a red-herring chain reaching a sealed lock.
+## Use it after every edit to a layout.
 
 func _initialize() -> void:
 	var path := "res://minigames/causal_clock/data/layouts/default_layout.json"
@@ -74,15 +75,13 @@ func _initialize() -> void:
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
-	var jams := 0
+	var herrings := 0
 	var tries := 4000
 	for i in tries:
-		var st := CausalClockState.new()
+		var pos := PackedInt32Array()
 		for e in l.elements:
-			st.positions.append(rng.randi_range(0, e.positions - 1))
-		var el := rng.randi_range(0, l.ring_count - 1)
-		var r := CausalClockMechanism.simulate_turn(l, st, el, 1 if rng.randf() < 0.5 else -1)
-		if r.reason == "jam":
-			jams += 1
-	print("  jam rate (random unpinned turns): %.1f%%" % (100.0 * jams / tries))
+			pos.append(e.start if e.is_hub else rng.randi_range(0, e.positions - 1))
+		if CausalClockMechanism.trace_chain(l, pos).sealed_lock >= 0:
+			herrings += 1
+	print("  positions where a chain reaches a sealed lock: %.2f%%" % (100.0 * herrings / tries))
 	quit(0)

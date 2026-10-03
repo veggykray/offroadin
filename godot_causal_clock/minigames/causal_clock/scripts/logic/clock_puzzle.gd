@@ -134,8 +134,9 @@ func _push_history() -> void:
 func _refresh_chain() -> void:
 	var old_depth := trace.depth
 	var was_solved := trace.solved
+	var was_sealed := trace.sealed_lock
 	trace = CausalClockMechanism.trace_chain(layout, state.positions)
-	if trace.depth != old_depth or trace.solved != was_solved:
+	if trace.depth != old_depth or trace.solved != was_solved or trace.sealed_lock != was_sealed:
 		chain_changed.emit(old_depth, trace.depth, trace)
 	_check_milestones()
 	if trace.solved and not is_solved:
@@ -150,7 +151,8 @@ func _check_milestones() -> void:
 		var hit := false
 		match m.trigger_type:
 			"chain_depth":
-				hit = trace.depth >= m.value
+				# Only the genuine chain counts: red herrings never reveal memories.
+				hit = trace.true_depth >= m.value or trace.solved
 			"segment_linked":
 				hit = trace.contains(m.element, m.segment) and (trace.depth > m.element or trace.solved)
 			"complete":

@@ -17,7 +17,7 @@ func _init() -> void:
 	_test_coupling_rules()
 	_test_pins_slip_and_block()
 	_test_cam_engagement()
-	_test_jam()
+	_test_red_herrings()
 	_test_undo_reset()
 	_test_reference_solutions()
 	_test_milestones()
@@ -48,7 +48,7 @@ func _test_layouts_valid() -> void:
 	var l2 := _main()
 	check(l2.ring_count == 5, "main layout has 5 rings")
 	check(l2.element_count() == 6, "main layout has 5 rings + hub")
-	check(l2.couplings.size() == 6, "main layout has 6 couplings")
+	check(l2.couplings.size() == 4, "main layout has 4 couplings")
 	# Broken JSON is reported, not crashed on.
 	var bad := CausalClockLayout.from_dict({"rings": [{"id": "A", "segments": [{"out": 9, "in": 0}]}], "hub": {"sockets": []}})
 	check(not bad.is_valid(), "invalid layout is rejected")
@@ -114,21 +114,36 @@ func _test_cam_engagement() -> void:
 	check(r2.ok and r2.deltas[3] == -1, "engaged cam drives D backwards")
 
 
-func _test_jam() -> void:
-	print("- jams")
-	var l := _main()
-	# B drives the heart two ways: directly by the shaft (+1) and via
-	# C -> D -> E -> heart (which reverses twice and nets -1 when C's cam bites).
-	var s := CausalClockState.create(l.start_positions())
-	s.positions[l.index_of("B")] = 2  # shaft cam sector (3 - 2) = 1: engaged
-	s.positions[l.index_of("C")] = 5  # C cam engaged
-	var r := CausalClockMechanism.simulate_turn(l, s, l.index_of("B"), 1)
-	check(not r.ok and r.reason == "jam", "conflicting drives jam: %s" % r.reason)
-	check(r.jam_element == l.hub_index(), "the heart is the jammed element")
-	# Pinning E breaks the second path, so the same turn is allowed.
-	s.pin_mask = 1 << l.index_of("E")
-	var r2 := CausalClockMechanism.simulate_turn(l, s, l.index_of("B"), 1)
-	check(r2.ok, "pin resolves the jam")
+func _test_red_herrings() -> void:
+	print("- red herrings")
+	for f in ["default_layout.json", "prelude_layout.json"]:
+		var l := CausalClockLayout.load_from_file(DIR + "data/layouts/" + f)
+		check(not Array(l.warnings).any(func(w): return w.contains("decoy")), "%s: every decoy is a real red herring" % f)
+		var decoys := 0
+		for e in l.elements:
+			for s in e.segments:
+				check(s.is_through(), "%s: no chain fragment dead-ends inside a ring" % f)
+				decoys += int(s.decoy)
+		check(decoys >= 2, "%s has decoy chains" % f)
+	var l2 := _main()
+	# Some routes through decoys reach the heart, but only ever at a sealed lock.
+	var herring := _find_herring(l2)
+	var t := CausalClockMechanism.trace_chain(l2, herring)
+	check(herring.size() > 0 and t.depth == 5 and not t.solved and t.sealed_lock >= 0, "a herring route ends in a sealed lock: %s" % str(herring))
+	check(t.true_depth < 5, "herring progress is not counted (true depth %d)" % t.true_depth)
+	var t2 := CausalClockMechanism.trace_chain(l2, PackedInt32Array([0, 3, 1, 2, 7, 0]))
+	check(t2.solved and t2.true_depth == 5, "the genuine route opens the heart")
+	# A layout whose decoy could finish is flagged.
+	var bad := CausalClockLayout.from_dict({"pin_count": 0,
+		"rings": [{"id": "A", "segments": [{"out": 0, "in": 0}, {"out": 4, "in": 4, "decoy": true}]}],
+		"hub": {"sockets": [0]}})
+	check(Array(bad.warnings).any(func(w): return w.contains("decoy")), "a decoy that can finish is reported")
+	# No turn is ever refused for conflicting drives any more.
+	var s := CausalClockState.create(l2.start_positions())
+	for el in l2.ring_count:
+		for d in [1, -1]:
+			var r := CausalClockMechanism.simulate_turn(l2, s, el, d)
+			check(r.ok, "turn %s%d allowed" % [l2.elements[el].id, d])
 
 
 func _test_undo_reset() -> void:
@@ -218,3 +233,20 @@ func _test_memory_library() -> void:
 			check(lib.has(m.memory_id), "%s milestone %s has memory %s" % [f, m.id, m.memory_id])
 	var missing := lib.get_memory("does_not_exist")
 	check(missing != null and missing.label != "", "unknown memory id yields a placeholder")
+
+
+## First position (heart at rest) where the chain crosses every ring but
+## stops in a sealed lock.
+static func _find_herring(l: CausalClockLayout) -> PackedInt32Array:
+	var n := l.elements[0].positions
+	var total := int(pow(n, l.ring_count))
+	for code in total:
+		var pos := PackedInt32Array()
+		var c := code
+		for i in l.ring_count:
+			pos.append(c % n)
+			c /= n
+		pos.append(l.elements[l.hub_index()].start)
+		if CausalClockMechanism.trace_chain(l, pos).sealed_lock >= 0:
+			return pos
+	return PackedInt32Array()

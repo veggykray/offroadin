@@ -123,14 +123,15 @@ func successor(key: int, move: int) -> int:
 	return out + pins * _pos_space
 
 
-## Chain depth for a position key (solved = ring_count + 1). Cached.
+## Genuine chain depth for a position key (solved = ring_count + 1). Decoy
+## routes count as no progress, so hints never lead into a red herring. Cached.
 func depth_of(key: int) -> int:
 	var pk := key % _pos_space
 	if _depth_cache.has(pk):
 		return _depth_cache[pk]
 	var s := decode(pk)
 	var t := CausalClockMechanism.trace_chain(layout, s.positions)
-	var d := layout.ring_count + 1 if t.solved else t.depth
+	var d := layout.ring_count + 1 if t.solved else t.true_depth
 	_depth_cache[pk] = d
 	return d
 

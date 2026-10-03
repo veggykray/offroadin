@@ -5,7 +5,7 @@ extends Node2D
 ##    rings sit under a believable, static light,
 ##  * selection / hover outlines,
 ##  * the cause-and-effect readout: curved arrows on every ring that WOULD
-##    move if the hovered ring were turned clockwise, slip and jam markers,
+##    move if the hovered ring were turned clockwise,
 ##  * hint highlight, junction sparks and the ember where the chain breaks.
 
 var layout: CausalClockLayout
@@ -114,11 +114,6 @@ func _draw_preview() -> void:
 			if absi(d) > 1:
 				var lbl_at := CausalClockGeometry.point(layout.elements[e].pin_angle_deg + 34.0, geo.mid(e) + 14)
 				CausalClockDraw.text(self, lbl_at, "×%d" % absi(d), 13, col)
-	elif p.reason == "jam" and p.jam_element >= 0:
-		_arrow(p.element, p.dir, CausalClockPalette.WARN * Color(1, 1, 1, 0.8), 1.1)
-		var at := CausalClockGeometry.point(210.0, geo.mid(p.jam_element)) if p.jam_element == layout.hub_index() else CausalClockGeometry.point(layout.elements[p.jam_element].pin_angle_deg + 34.0, geo.mid(p.jam_element))
-		draw_line(at - Vector2(9, 9), at + Vector2(9, 9), CausalClockPalette.WARN, 4.0, true)
-		draw_line(at - Vector2(9, -9), at + Vector2(9, -9), CausalClockPalette.WARN, 4.0, true)
 
 
 func _draw_hint() -> void:

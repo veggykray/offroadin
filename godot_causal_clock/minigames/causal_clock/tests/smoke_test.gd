@@ -174,24 +174,21 @@ func _run() -> void:
 	await _frames(30)
 	check(game.puzzle.move_count == 1, "undo after restart")
 
-	# Jam: B's shaft and the C->D->E chain both drive the heart, opposite ways.
-	game.puzzle.state.positions[game.layout.index_of("B")] = 2
-	game.puzzle.state.positions[game.layout.index_of("C")] = 5
+	# Red herring: decoy chains lead all the way to the heart, into a sealed lock.
+	var herring: PackedInt32Array = load("res://minigames/causal_clock/tests/run_tests.gd")._find_herring(game.layout)
+	for i in game.layout.element_count():
+		game.puzzle.state.positions[i] = herring[i]
 	game.puzzle._refresh_chain()
 	game.view.show_state(game.puzzle.state, game.puzzle.trace)
-	var mc := game.puzzle.move_count
-	game._on_hover(game.layout.index_of("B"))
-	game.request_turn(game.layout.index_of("B"), 1)
-	check(game.puzzle.move_count == mc, "jam refuses the turn")
+	check(game.puzzle.trace.sealed_lock >= 0 and not game.puzzle.is_solved, "herring route reaches a sealed lock")
 	await _frames(6)
-	await _shot("12_jam")
-	game._on_hover(-1)
+	await _shot("12_herring")
 	# Slip: pin B, turn A — the A/B gear slips against the pin.
 	game.request_pin(game.layout.index_of("B"))
 	game.request_turn(0, 1)
 	await _frames(4)
 	await _shot("13_slip")
-	check(game.puzzle.state.positions[1] == 2, "pinned B held while A turned")
+	check(game.puzzle.state.positions[1] == herring[1], "pinned B held while A turned")
 
 	# Pause menu and notes.
 	game._open_menu("notes")
@@ -214,6 +211,6 @@ func _run() -> void:
 	check(pre.puzzle.is_solved, "prelude solvable in scene")
 	await _frames(20)
 	pre.queue_free()
-	await _frames(5)
+	await create_timer(0.5).timeout
 	print("== smoke: %s ==" % ("PASSED" if _fail == 0 else "%d FAILURES" % _fail))
 	quit(1 if _fail > 0 else 0)

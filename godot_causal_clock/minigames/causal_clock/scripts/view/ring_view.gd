@@ -130,6 +130,12 @@ func _draw_surface(rng: RandomNumberGenerator, ri: float, ro: float) -> void:
 				pts.append(CausalClockGeometry.point(a0 + span * t, r + sin(t * freq * TAU) * wob))
 			var col: Color = mat["dark"] if i % 3 else mat["light"]
 			draw_polyline(pts, col * Color(1, 1, 1, 0.35), rng.randf_range(0.6, 1.6), true)
+	if element.material in ["navy", "ivory"]:
+		# Enamel bands framed by gold cloisonné rims, as on the reference art.
+		for r in [ro - 3.0, ri + 4.0]:
+			draw_arc(Vector2.ZERO, r, 0, TAU, 160, mat["edge"] * Color(1, 1, 1, 0.85), 2.2, true)
+		draw_arc(Vector2.ZERO, ro - 7.0, 0, TAU, 160, mat["edge"] * Color(1, 1, 1, 0.35), 1.0, true)
+		draw_arc(Vector2.ZERO, ri + 8.0, 0, TAU, 160, mat["edge"] * Color(1, 1, 1, 0.35), 1.0, true)
 	if element.material == "enamel":
 		# Glossy enamel with gold cloisonné rims.
 		draw_arc(Vector2.ZERO, ro - 4, 0, TAU, 160, mat["edge"] * Color(1, 1, 1, 0.65), 1.4, true)
@@ -178,10 +184,105 @@ func _draw_ornaments(ri: float, ro: float) -> void:
 					var g := deg_to_rad(a - 90.0)
 					draw_arc(CausalClockGeometry.point(a, ro - 3), 4.5, g - PI * 0.5, g + PI * 0.5, 8, mat["edge"] * Color(1, 1, 1, 0.55), 1.2, true)
 					draw_arc(CausalClockGeometry.point(a, ri + 3), 3.5, g + PI * 0.5, g + PI * 1.5, 8, mat["edge"] * Color(1, 1, 1, 0.45), 1.0, true)
+			"constellations":
+				var crng := RandomNumberGenerator.new()
+				crng.seed = 4099 * (index + 1)
+				_constellations(crng, ri, ro)
+			"moon":
+				for k in n:
+					var a := (k + 0.5) * step
+					var p := CausalClockGeometry.point(a, ri + w * (0.25 if k % 2 == 0 else 0.75))
+					if k % 2 == 0:
+						var d := CausalClockGeometry.dir(a)
+						draw_circle(p, 6.0, mat["edge"])
+						draw_circle(p + d.rotated(-0.9) * 2.6, 5.4, mat["base"])
+					else:
+						draw_circle(p, 3.0, mat["edge"])
+						for j in 8:
+							var dd := Vector2.from_angle(TAU * j / 8.0)
+							draw_line(p + dd * 4.5, p + dd * 7.0, mat["edge"] * Color(1, 1, 1, 0.8), 1.2, true)
+			"scrollwork":
+				_scrollwork(ri, ro)
+			"leaves":
+				_leaf_vine(ri, ro)
 			"glyphs":
 				for k in n:
 					var a := (k + 0.5) * step
 					CausalClockDraw.glyph(self, CausalClockGeometry.point(a, ri + w * 0.24), k, 4.2, mat["edge"] * Color(1, 1, 1, 0.6), deg_to_rad(a))
+
+
+func _star(p: Vector2, r: float, c: Color) -> void:
+	var pts := PackedVector2Array()
+	for k in 8:
+		var a := TAU * k / 8.0 - PI / 2
+		pts.append(p + Vector2.from_angle(a) * (r if k % 2 == 0 else r * 0.3))
+	draw_colored_polygon(pts, c)
+
+
+## Gold star field with a few constellation figures, on enamel rings.
+func _constellations(rng: RandomNumberGenerator, ri: float, ro: float) -> void:
+	var gold: Color = mat["edge"]
+	var count := int((ro + ri) * 0.5 * 0.22)
+	for i in count:
+		var p := CausalClockGeometry.point(rng.randf() * 360.0, rng.randf_range(ri + 9, ro - 9))
+		draw_circle(p, rng.randf_range(0.6, 1.4), gold * Color(1, 1, 1, rng.randf_range(0.35, 0.8)))
+	var figures := maxi(3, int((ro + ri) * 0.5 / 45.0))
+	for f in figures:
+		var a0 := (f + rng.randf_range(0.1, 0.6)) * 360.0 / figures
+		var pts := PackedVector2Array()
+		for k in rng.randi_range(3, 5):
+			pts.append(CausalClockGeometry.point(a0 + k * rng.randf_range(4.0, 9.0) * 60.0 / maxf(30.0, (ro + ri) * 0.25), lerpf(ri + 12, ro - 12, rng.randf())))
+		draw_polyline(pts, gold * Color(1, 1, 1, 0.45), 1.0, true)
+		for p2 in pts:
+			draw_circle(p2, 2.0, gold)
+		_star(pts[0], 6.5, gold)
+
+
+## Engraved acanthus scrolls running round a brass band.
+func _scrollwork(ri: float, ro: float) -> void:
+	var rm := (ri + ro) * 0.5
+	var w := (ro - ri) * 0.32
+	var eng: Color = mat["engrave"] * Color(1, 1, 1, 0.75)
+	var hi: Color = mat["light"] * Color(1, 1, 1, 0.5)
+	var count := int(rm * TAU / 70.0)
+	for k in count:
+		var a0 := 360.0 * k / count
+		var span := 360.0 / count
+		var pts := PackedVector2Array()
+		for i in 21:
+			var t := float(i) / 20.0
+			pts.append(CausalClockGeometry.point(a0 + span * t, rm + sin(t * PI * 2.0) * w * 0.6))
+		draw_polyline(pts, eng, 1.6, true)
+		# A curl at each crest.
+		var crest := CausalClockGeometry.point(a0 + span * 0.25, rm + w * 0.6)
+		var curl := PackedVector2Array()
+		for i in 14:
+			var t2 := float(i) / 13.0
+			curl.append(crest + Vector2.from_angle(t2 * TAU * 0.9 + deg_to_rad(a0)) * (w * 0.55 * (1.0 - t2 * 0.7)))
+		draw_polyline(curl, eng, 1.3, true)
+		draw_polyline(curl, hi, 0.6, true)
+
+
+## A copper vine with alternating engraved leaves.
+func _leaf_vine(ri: float, ro: float) -> void:
+	var rm := (ri + ro) * 0.5
+	var amp := (ro - ri) * 0.18
+	var eng: Color = mat["engrave"] * Color(1, 1, 1, 0.7)
+	var hi: Color = mat["light"] * Color(1, 1, 1, 0.55)
+	var pts := PackedVector2Array()
+	for i in 241:
+		var a := 360.0 * i / 240.0
+		pts.append(CausalClockGeometry.point(a, rm + sin(deg_to_rad(a) * 18.0) * amp))
+	draw_polyline(pts, eng, 1.6, true)
+	for i in range(0, 240, 5):
+		var a2 := 360.0 * i / 240.0
+		var base := CausalClockGeometry.point(a2, rm + sin(deg_to_rad(a2) * 18.0) * amp)
+		var out := CausalClockGeometry.dir(a2) * (1.0 if (i / 5) % 2 == 0 else -1.0)
+		var tan := out.orthogonal()
+		var tip := base + out * (ro - ri) * 0.28 + tan * 5.0
+		var leaf := PackedVector2Array([base, base.lerp(tip, 0.5) + tan * 3.5, tip, base.lerp(tip, 0.5) - tan * 3.5])
+		draw_colored_polygon(leaf, mat["dark"] * Color(1, 1, 1, 0.55))
+		draw_line(base, tip, hi, 0.8, true)
 
 
 ## Fine teeth on any edge that meshes with a coupling gear; bold teeth only on

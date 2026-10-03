@@ -59,6 +59,10 @@ func _process(_dt: float) -> void:
 
 
 func _exit_tree() -> void:
+	for p in _pool:
+		p.stop()
+	if _ambient:
+		_ambient.stop()
 	if _synth_task >= 0:
 		WorkerThreadPool.wait_for_task_completion(_synth_task)
 		_synth_task = -1

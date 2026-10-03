@@ -46,46 +46,61 @@ func _draw() -> void:
 
 func _draw_bezel(bi: float, bo: float) -> void:
 	var brass := CausalClockPalette.material("brass")
-	var dark := CausalClockPalette.material("walnut")
-	# Wooden outer case, brass inner bezel.
-	CausalClockDraw.band(self, bo - 18, bo + 14, dark, 8)
-	CausalClockDraw.band(self, bi, bo - 16, brass, 14)
-	# Rope/bead edge.
-	for k in 180:
-		var a := k * 2.0
-		var p := CausalClockGeometry.point(a, bo - 17)
-		draw_circle(p, 2.3, brass["dark"])
-		draw_circle(p - Vector2(0.6, 0.6), 1.3, brass["light"])
-	# Minute track.
-	var track_r := bi + 12
-	draw_arc(Vector2.ZERO, track_r - 6, 0, TAU, 180, brass["engrave"], 1.0, true)
-	draw_arc(Vector2.ZERO, track_r + 6, 0, TAU, 180, brass["engrave"], 1.0, true)
+	var gold := CausalClockPalette.material("gold")
+	# Heavy gilded case: dark outer lip, broad gold numeral band, fine inner track.
+	CausalClockDraw.band(self, bo - 14, bo + 16, gold, 10)
+	draw_arc(Vector2.ZERO, bo + 16, 0, TAU, 220, Color(0.12, 0.07, 0.02), 3.0, true)
+	CausalClockDraw.band(self, bi, bo - 12, brass, 16)
+	draw_arc(Vector2.ZERO, bo - 13, 0, TAU, 220, brass["engrave"], 2.0, true)
+	# Beaded rim on the outer lip.
+	for k in 200:
+		var p := CausalClockGeometry.point(k * 1.8, bo + 1)
+		draw_circle(p, 2.4, gold["dark"])
+		draw_circle(p - Vector2(0.6, 0.6), 1.4, gold["light"])
+	# Inner track with dots.
+	var track_r := bi + 11
+	draw_arc(Vector2.ZERO, track_r - 6, 0, TAU, 180, brass["engrave"], 1.2, true)
+	draw_arc(Vector2.ZERO, track_r + 6, 0, TAU, 180, brass["engrave"], 1.2, true)
 	for k in 60:
 		var a := k * 6.0
-		var long := k % 5 == 0
-		draw_line(CausalClockGeometry.point(a, track_r - 6), CausalClockGeometry.point(a, track_r + (6.0 if long else 1.0)), brass["engrave"], 2.0 if long else 1.0, true)
-	# Hour numerals (the crown replaces XII).
-	var num_r := (bi + bo - 16) * 0.5 + 9
+		if k % 5 == 0:
+			draw_line(CausalClockGeometry.point(a, track_r - 6), CausalClockGeometry.point(a, track_r + 6), brass["engrave"], 2.0, true)
+		else:
+			draw_circle(CausalClockGeometry.point(a, track_r), 1.4, brass["engrave"])
+	# Large engraved hour numerals (the crown replaces XII).
+	var num_r := (bi + bo - 12) * 0.5 + 8
 	for h in range(1, 12):
 		var a := h * 30.0
-		CausalClockDraw.text(self, CausalClockGeometry.point(a, num_r), CausalClockDraw.roman(h), 24, brass["engrave"], deg_to_rad(a))
-		CausalClockDraw.text(self, CausalClockGeometry.point(a, num_r) + Vector2(-0.8, -0.8), CausalClockDraw.roman(h), 24, brass["light"] * Color(1, 1, 1, 0.35), deg_to_rad(a))
-	# Scrolls between numerals.
+		var p := CausalClockGeometry.point(a, num_r)
+		CausalClockDraw.text(self, p + Vector2(0.8, 1.2), CausalClockDraw.roman(h), 32, brass["light"] * Color(1, 1, 1, 0.5), deg_to_rad(a))
+		CausalClockDraw.text(self, p, CausalClockDraw.roman(h), 32, Color(0.16, 0.09, 0.03), deg_to_rad(a))
+	# Fleuron ornaments between the numerals.
 	for h in 12:
 		var a := h * 30.0 + 15.0
 		var c := CausalClockGeometry.point(a, num_r)
 		var t := CausalClockGeometry.dir(a)
 		var n := Vector2(-t.y, t.x)
-		var lozenge := PackedVector2Array([c - t * 7, c + n * 4, c + t * 7, c - n * 4, c - t * 7])
-		draw_colored_polygon(lozenge, brass["dark"])
-		draw_polyline(lozenge, brass["light"] * Color(1, 1, 1, 0.6), 1.0, true)
+		var lozenge := PackedVector2Array([c - t * 9, c + n * 5, c + t * 9, c - n * 5])
+		draw_colored_polygon(lozenge, Color(0.16, 0.09, 0.03))
+		draw_circle(c, 2.0, brass["light"])
 		for s in [-1.0, 1.0]:
-			draw_circle(c + n * s * 10.0, 1.8, brass["engrave"])
-			draw_circle(c + n * s * 15.0, 1.2, brass["engrave"])
-	# Four bosses.
+			draw_circle(c + n * s * 11.0, 2.2, Color(0.16, 0.09, 0.03))
+			draw_circle(c + n * s * 16.0 + t * 3.0, 1.4, Color(0.16, 0.09, 0.03))
+			draw_circle(c + n * s * 16.0 - t * 3.0, 1.4, Color(0.16, 0.09, 0.03))
+	# Side bosses at three and nine, and small studs on the diagonals.
+	for a2 in [90.0, 270.0]:
+		var p2 := CausalClockGeometry.point(a2, bo + 8)
+		draw_circle(p2 + Vector2(3, 4), 17, Color(0, 0, 0, 0.5))
+		draw_circle(p2, 17, gold["dark"])
+		draw_circle(p2, 13, gold["base"])
+		for k in 12:
+			var d := Vector2.from_angle(TAU * k / 12.0)
+			draw_line(p2 + d * 4, p2 + d * 11, gold["light"], 1.5, true)
+		draw_circle(p2, 4.5, gold["light"])
+		var tip := CausalClockGeometry.point(a2, bo + 34)
+		draw_colored_polygon(PackedVector2Array([p2 + CausalClockGeometry.dir(a2 + 90) * 7, tip, p2 - CausalClockGeometry.dir(a2 + 90) * 7]), gold["base"])
 	for k in 4:
-		var a := 45.0 + k * 90.0
-		CausalClockDraw.rivet(self, CausalClockGeometry.point(a, bo - 2), 6.0, brass)
+		CausalClockDraw.rivet(self, CausalClockGeometry.point(45.0 + k * 90.0, bo + 1), 6.0, gold)
 
 
 ## The entry anchor: a fixed iron crown at the top of the bezel and a length
