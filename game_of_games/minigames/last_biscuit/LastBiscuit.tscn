@@ -1,0 +1,139 @@
+[gd_scene load_steps=12 format=3 uid="uid://bl4stb1scu1t"]
+
+[ext_resource type="Script" path="res://minigames/last_biscuit/LastBiscuitManager.gd" id="1_mgr"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/TableWorld.gd" id="2_world"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/NoiseSystem.gd" id="3_noise"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/AudioBank.gd" id="4_audio"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/visual/DiningRoom.gd" id="5_room"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/visual/CameraRig.gd" id="6_cam"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/actors/PlayerHand.gd" id="7_player"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/actors/DinerController.gd" id="8_diner"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/actors/RivalHand.gd" id="9_rival"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/ComedyEventController.gd" id="10_comedy"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/Hud.gd" id="11_hud"]
+[ext_resource type="Script" path="res://minigames/last_biscuit/systems/DebugOverlay.gd" id="12_debug"]
+
+[node name="LastBiscuit" type="Node3D"]
+script = ExtResource("1_mgr")
+
+[node name="TableWorld" type="Node3D" parent="."]
+script = ExtResource("2_world")
+
+[node name="NoiseSystem" type="Node" parent="."]
+script = ExtResource("3_noise")
+
+[node name="AudioBank" type="Node" parent="."]
+script = ExtResource("4_audio")
+
+[node name="DiningRoom" type="Node3D" parent="."]
+script = ExtResource("5_room")
+
+[node name="CameraRig" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0.6, 0, -0.6, 0.8, 0, 3.55, 7.75)
+current = true
+fov = 44.0
+script = ExtResource("6_cam")
+
+[node name="PlayerHand" type="Node3D" parent="."]
+script = ExtResource("7_player")
+
+[node name="Diners" type="Node3D" parent="."]
+
+[node name="TheSleeper" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 0
+seat = Vector2(-1.48, 2.4)
+display_name = "The Sleeper"
+palette_suit = Color(0.28, 0.2, 0.13, 1)
+palette_skin = Color(0.86, 0.72, 0.68, 1)
+
+[node name="TheGlasses" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 1
+seat = Vector2(-1.48, 0)
+display_name = "The Glasses"
+palette_suit = Color(0.3, 0.12, 0.3, 1)
+palette_skin = Color(0.88, 0.78, 0.74, 1)
+palette_hair = Color(0.72, 0.72, 0.74, 1)
+
+[node name="TheDeafWatcher" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 3
+seat = Vector2(-1.48, -2.4)
+display_name = "The Deaf Watcher"
+palette_suit = Color(0.06, 0.06, 0.07, 1)
+palette_skin = Color(0.9, 0.84, 0.82, 1)
+palette_hair = Color(0.96, 0.96, 0.98, 1)
+
+[node name="TheTwitch" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 2
+seat = Vector2(1.48, 2.4)
+display_name = "The Twitch"
+palette_suit = Color(0.1, 0.22, 0.12, 1)
+palette_skin = Color(0.82, 0.72, 0.66, 1)
+
+[node name="TheBlindListener" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 4
+seat = Vector2(1.48, 0)
+display_name = "The Blind Listener"
+palette_suit = Color(0.42, 0.08, 0.08, 1)
+palette_skin = Color(0.8, 0.68, 0.62, 1)
+
+[node name="TheCheat" type="Node3D" parent="Diners"]
+script = ExtResource("8_diner")
+behaviour = 5
+seat = Vector2(1.48, -2.4)
+display_name = "The Cheat"
+palette_suit = Color(0.3, 0.05, 0.08, 1)
+palette_skin = Color(0.84, 0.74, 0.68, 1)
+
+[node name="Rivals" type="Node3D" parent="."]
+
+[node name="CheatHand" type="Node3D" parent="Rivals"]
+script = ExtResource("9_rival")
+tactic = 0
+activation_phase = 2
+max_speed = 0.75
+freeze_reliability = 0.97
+drags_plate = true
+plants_fake = true
+metadata/owner_behaviour = 5
+
+[node name="TwitchHand" type="Node3D" parent="Rivals"]
+script = ExtResource("9_rival")
+tactic = 1
+activation_phase = 3
+max_speed = 1.5
+accel = 9.0
+freeze_reaction = 0.45
+freeze_reliability = 0.6
+slap_rate = 2.2
+metadata/owner_behaviour = 2
+
+[node name="GlassesHand" type="Node3D" parent="Rivals"]
+script = ExtResource("9_rival")
+tactic = 2
+activation_phase = 4
+max_speed = 0.95
+freeze_reliability = 0.85
+metadata/owner_behaviour = 1
+
+[node name="BlindHand" type="Node3D" parent="Rivals"]
+script = ExtResource("9_rival")
+tactic = 3
+activation_phase = 4
+max_speed = 0.5
+freeze_reliability = 0.0
+slap_rate = 0.6
+metadata/owner_behaviour = 4
+
+[node name="ComedyEventController" type="Node" parent="."]
+script = ExtResource("10_comedy")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("11_hud")
+
+[node name="DebugOverlay" type="MeshInstance3D" parent="."]
+script = ExtResource("12_debug")
