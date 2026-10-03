@@ -138,7 +138,12 @@ func _process(dt: float) -> void:
 			if _report_t > 10.0:
 				_report_t = 0.0
 				var p := game.player
-				print("  t=%.0f pos=(%.2f,%.2f) phase=%d held=%s caught=%d" % [game.play_time, p.plane_pos.x, p.plane_pos.y, game.phase, p.held.name if p.held else "-", bot.stats.caught])
+				var rb := game.real_biscuit()
+				var rinfo := ""
+				for r in game.rivals:
+					rinfo += "%s:%s%s " % [r.name.substr(0, 4), LBRivalHand.St.keys()[r.state].substr(0, 4), "F" if r.frozen else ""]
+				print("  t=%.0f pos=(%.2f,%.2f) phase=%d held=%s caught=%d biscuit=%s %s | %s" % [game.play_time, p.plane_pos.x, p.plane_pos.y, game.phase, p.held.name if p.held else "-", bot.stats.caught,
+						("(%.2f,%.2f)" % [rb.plane_pos.x, rb.plane_pos.y]) if rb else "none", (rb.held_by.name if rb and rb.held_by else ""), rinfo])
 				if "--explain" in OS.get_cmdline_user_args():
 					print("     ", bot.explain(p.plane_pos, bot._goal))
 			if game.play_time > 420.0:
@@ -199,6 +204,40 @@ func _process(dt: float) -> void:
 			if t > 1.0 and int(t) % 6 == 0 and at(t, "s%d" % int(t)) and DisplayServer.get_name() != "headless":
 				shot("t%d" % int(t))
 			if t > 40.0:
+				get_tree().quit()
+		"tug":
+			if at(1.0, "r"):
+				game.debug_jump_return()
+				game.paused_rivals = true
+				for d in game.diners:
+					d.paused = true
+			if at(1.5, "g"):
+				var r: LBRivalHand = game.rivals[1]
+				r.state = LBRivalHand.St.ACTIVE
+				r.active = true
+				r.reach_scale = 1.0
+				r.plane_pos = game.player.plane_pos + Vector2(0.05, -0.05)
+				r.grab(game.player.held)
+				print("contested: ", (game.player.held as LBBiscuit).is_contested())
+			if t > 1.6 and t < 3.5:
+				var bb := game.real_biscuit()
+				if bb and frame % 2 == 0:
+					print("t=%.2f holders=%d strain=%.2f pvel=%.2f rvel=%.2f d=%.2f" % [t, bb.holders.size(), bb.tug_strain, game.player.vel.length(), game.rivals[1].vel.length(), game.player.plane_pos.distance_to(game.rivals[1].plane_pos)])
+				game.player.scripted_target = game.player.plane_pos + Vector2(0, 0.4)
+				game.rivals[1].plane_pos += Vector2(0.004, -0.004)
+			if at(2.4, "a"): shot("a")
+			if at(3.6, "s"):
+				print("state ", LBManager.GS.keys()[game.gs], " biscuits ", game.world.biscuits().map(func(b): return "%.2f %s" % [b.size_fraction, b.held_by.name if b.held_by else "-"]))
+				shot("b")
+			if at(4.0, "brk"):
+				var bb := game.real_biscuit()
+				if bb.size_fraction > 0.9:
+					game.break_biscuit(bb)
+			if at(4.5, "c"):
+				print("state ", LBManager.GS.keys()[game.gs], " biscuits ", game.world.biscuits().map(func(b): return "%.2f %s" % [b.size_fraction, b.held_by.name if b.held_by else "-"]))
+				shot("c")
+			if at(7.0, "q"):
+				print("after beat state ", LBManager.GS.keys()[game.gs])
 				get_tree().quit()
 		"reach":
 			if at(1.0, "1"): game.comedy.trigger("legit_reach")

@@ -157,6 +157,11 @@ func nearest_rival(r: float) -> LBHand:
 
 func _on_grab_pressed() -> void:
 	var rv := nearest_rival(slap_range)
+	# a free biscuit under your fingers always wins over slapping someone
+	var free_b: LBTableObject = world.nearest_grabbable(plane_pos, grab_range, cover) if world else null
+	if free_b != null and free_b.is_biscuit() and free_b.held_by == null:
+		grab_requested.emit(free_b)
+		return
 	if rv != null and _slap_cd <= 0.0 and (rv.stunned_t <= 0.0 or rv.held != null):
 		_slap_cd = slap_cooldown
 		slap_requested.emit(rv)

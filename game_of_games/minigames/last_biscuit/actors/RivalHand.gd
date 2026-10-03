@@ -350,6 +350,9 @@ func _start_pretend(bowl: LBTableObject) -> void:
 func _pretend(dt: float) -> void:
 	if not can_act():
 		return
+	if state_t > 9.0 or (_pretend_obj == null or not is_instance_valid(_pretend_obj)):
+		_end_pretend()
+		return
 	var spd := 0.6
 	match _pretend_stage:
 		0:
@@ -387,6 +390,18 @@ func _pretend(dt: float) -> void:
 	drive(dt, to_g.normalized() * minf(spd, to_g.length() * 4.0), accel, decel, spd)
 
 
+func _end_pretend() -> void:
+	if held and held.kind == LBTableObject.Kind.SUGAR_CUBE:
+		var c := release()
+		if c and manager:
+			manager.world.remove_object(c)
+	lift = 0.0
+	innocent = false
+	_pretend_cd = 22.0
+	state = St.ACTIVE
+	state_t = 0.0
+
+
 func start_shame(plate_pos: Vector2) -> void:
 	state = St.SHAME
 	state_t = 0.0
@@ -396,6 +411,15 @@ func start_shame(plate_pos: Vector2) -> void:
 
 func _shame(dt: float) -> void:
 	var g: Vector2 = get_meta("shame_goal", LBConst.BISCUIT_HOME)
+	# lost the biscuit (slapped?) or can't get there: slink away regardless
+	if (held == null and state_t > 0.2) or state_t > 9.0:
+		if held:
+			release()
+		innocent = false
+		withdraw(true)
+		if manager:
+			manager.on_shame_done(self)
+		return
 	if state_t < 1.6:
 		# guilty pause: biscuit raised halfway to the mouth
 		lift = lerpf(lift, 0.22, LBConst.damp(3.0, dt))
@@ -404,7 +428,7 @@ func _shame(dt: float) -> void:
 	lift = lerpf(lift, 0.0, LBConst.damp(2.0, dt))
 	var to_g := g - plane_pos
 	drive(dt, to_g.normalized() * minf(0.45, to_g.length() * 3.0), accel, decel, 0.45)
-	if to_g.length() < 0.03 and state_t > 2.5:
+	if to_g.length() < 0.08 and state_t > 2.5:
 		var b := release()
 		if b:
 			b.plane_pos = g

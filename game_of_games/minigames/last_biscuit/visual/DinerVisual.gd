@@ -74,8 +74,6 @@ func _build_body() -> void:
 		var fore := LBMesh.add(hands_rest, LBMesh.capsule_mesh(0.05, 0.3, 10), suit, Vector3(0.13 * s, 0.27, -0.25), Vector3(-80, 0, 0) , Vector3.ONE)
 		fore.rotation_degrees = Vector3(-82, -28 * s, 0)
 		LBMesh.add(hands_rest, LBMesh.sphere_mesh(0.042, 10), _skin, Vector3(0.04 * s, 0.27, -0.39), Vector3.ZERO, Vector3(1.0, 0.7, 1.2))
-		if (s > 0.0) == (d.side > 0.0):
-			pass
 		upper.name = "upper_%d" % int(s)
 	# pointing / reaching arm (hidden until needed)
 	point_arm = LBMesh.pivot(torso, Vector3(0.18 * _near_sign(), 0.56, -0.02), "PointArm")

@@ -41,7 +41,9 @@ enum Behaviour { SLEEPER, GLASSES, TWITCH, DEAF_WATCHER, BLIND_LISTENER, CHEAT }
 @export var watch_time := Vector2(5.0, 7.0)
 @export var polish_time := Vector2(4.8, 6.0)
 @export var inspect_time := 1.9
-@export var inspect_sensitivity := 1.5
+@export var inspect_sensitivity := 1.3
+## Readable tell: glasses travel back up to the face before she inspects.
+@export var don_time := 0.55
 
 @export_group("Twitch")
 @export var twitch_cycle := Vector3(2.2, 4.0, 1.3)   # across, own plate, biscuit
@@ -344,13 +346,15 @@ func _wake(look_at_p: Vector2) -> void:
 
 
 func _routine_glasses(dt: float) -> void:
+	if state != "don":
+		head_drop = lerpf(head_drop, 0.0, LBConst.damp(4.0, dt))
 	match state:
 		"watch":
 			glasses_off = lerpf(glasses_off, 0.0, LBConst.damp(8.0, dt))
 			gaze.sight = 1.0
 			sensitivity_mult = 1.0
 			_scan(dt, Vector2(1.4, 2.4), [LBConst.BISCUIT_HOME, opposite_point(), Vector2(0.4, 1.0),
-					Vector2(0.0, -1.2), LBConst.BISCUIT_HOME, Vector2(0.3, -1.8)])
+					Vector2(0.0, -1.2), opposite_point() + Vector2(0.0, -0.8), Vector2(0.3, -1.8)])
 			if state_t > state_dur:
 				_set_state("rub", 0.9)
 		"rub":
@@ -363,6 +367,15 @@ func _routine_glasses(dt: float) -> void:
 			gaze.sight = 0.06
 			lids = 0.35
 			routine_target = own_plate_point()
+			if state_t > state_dur:
+				_set_state("don", don_time)
+		"don":
+			# glasses rise back to the nose: FREEZE NOW
+			glasses_off = lerpf(1.0, 0.0, clampf(state_t / state_dur, 0.0, 1.0))
+			head_drop = lerpf(head_drop, -0.3, LBConst.damp(10.0, dt))   # chin up as they go on
+			gaze.sight = 0.15
+			lids = 0.1
+			routine_target = own_plate_point() + Vector2(0.0, 0.3)
 			if state_t > state_dur:
 				_set_state("inspect", inspect_time)
 		"inspect":
@@ -627,7 +640,7 @@ func on_noise(pos: Vector2, loudness: float, source: LBHand, kind: String) -> vo
 			_wake(pos)
 		return
 	if behaviour == Behaviour.GLASSES and state == "polish":
-		state_dur = minf(state_dur, state_t + 0.8)   # hurries to put them back on
+		state_dur = minf(state_dur, state_t + 0.8)   # hurries to put them back on (still via "don")
 	var delay := reaction_delay * _rng.randf_range(0.7, 1.3)
 	_pending_noise.append([_now + delay, pos, perceived])
 

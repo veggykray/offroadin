@@ -42,7 +42,6 @@ var hop := 0.0
 var hop_vel := 0.0
 var lift := 0.0                   # extra height while carried
 var last_noise_t := -10.0
-var riders: Array = []            # objects resting on top (biscuit on plate)
 var _fall_t := -1.0
 
 
@@ -125,7 +124,6 @@ func reset_to_home() -> void:
 	hop_vel = 0.0
 	lift = 0.0
 	_fall_t = -1.0
-	riders.clear()
 
 
 func bump(impulse_dir: Vector2, strength: float) -> void:

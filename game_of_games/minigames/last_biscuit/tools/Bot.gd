@@ -111,7 +111,8 @@ func step(dt: float) -> void:
 		_goal = b.plane_pos
 	# slap rivals that come close (especially if they hold the biscuit)
 	var rv := p.nearest_rival(p.slap_range * 0.9)
-	if rv and (rv.held != null or holding or rv.plane_pos.distance_to(_goal) < 0.4) and _press_t < 0.0 and _visible_risk(p.plane_pos) < 0.05:
+	if rv and (rv.held != null or (holding and rv.plane_pos.distance_to(p.plane_pos) < 0.22)) and _press_t < 0.0 \
+			and _visible_risk(p.plane_pos) < 0.05 and not Input.is_action_pressed("lb_grab"):
 		Input.action_press("lb_grab")
 		_press_t = 0.05
 		stats.slaps += 1
@@ -120,8 +121,9 @@ func step(dt: float) -> void:
 		if _press_t <= 0.0 and not holding:
 			Input.action_release("lb_grab")
 			_press_t = -1.0
-	# grab the biscuit when on it
-	if not holding and b and b.plane_pos.distance_to(p.plane_pos) < p.grab_range * 0.8 and _press_t < 0.0:
+	# grab the biscuit when on it (a click next to a rival would be a slap)
+	if not holding and b and b.plane_pos.distance_to(p.plane_pos) < p.grab_range * 0.8 and _press_t < 0.0 \
+			and not Input.is_action_pressed("lb_grab") and b.held_by == null:
 		Input.action_press("lb_grab")
 		stats.grabs += 1
 	if not holding and p.held == null and not Input.is_action_pressed("lb_grab"):
@@ -130,7 +132,7 @@ func step(dt: float) -> void:
 		Input.action_release("lb_grab")
 	if holding:
 		Input.action_press("lb_grab")
-	elif _press_t < 0.0 and (b == null or b.plane_pos.distance_to(p.plane_pos) > p.grab_range):
+	elif _press_t < 0.0 and (b == null or b.plane_pos.distance_to(p.plane_pos) > p.grab_range or b.held_by != null):
 		Input.action_release("lb_grab")
 	# movement decisions
 	_decide_t -= dt
@@ -138,7 +140,7 @@ func step(dt: float) -> void:
 	# read the tells a human would: the Twitch's shoulder jerk, a drowsy head
 	var tell := false
 	for d in game.diners:
-		if d.state == "tell" or d.state == "rub" or d.state == "jolt":
+		if d.state == "tell" or d.state == "don" or d.state == "jolt":
 			tell = true
 	if here_risk > risk_tol or tell:
 		_danger_t += dt

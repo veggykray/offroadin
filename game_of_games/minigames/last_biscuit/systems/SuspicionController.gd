@@ -10,14 +10,14 @@ signal level_crossed(hand: LBHand, level: int)
 ## Hand speed (m/s) below which a hand counts as frozen.
 @export var still_speed := 0.14
 ## Suspicion per second per (m/s above still_speed) at full visibility.
-@export var sensitivity := 0.95
+@export var sensitivity := 0.8
 ## While watched AND frozen, suspicion still creeps up this much per second
 ## at full visibility (so you can't sit in plain sight forever).
 @export var still_gain := 0.03
-@export var decay_per_sec := 0.24
+@export var decay_per_sec := 0.3
 @export var decay_delay := 0.7
 ## Extra multiplier while the diner is already focused on that hand.
-@export var focus_bonus := 1.35
+@export var focus_bonus := 1.2
 ## Global multiplier (raised during the run back).
 @export var alertness := 1.0
 

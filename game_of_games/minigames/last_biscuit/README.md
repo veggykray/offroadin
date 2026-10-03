@@ -18,7 +18,7 @@ the host project in `game_of_games/`.
 |---|---|
 | Mouse | Bill's hand moves towards the cursor. It accelerates, has a top speed and a little inertia, and brakes hard so freezing is instant. |
 | Hold left mouse / Space | Grab the biscuit (or a cup, the teapot, the plate...). Let go to drop it. |
-| Quick click near another hand | **Slap.** The other hand recoils, drops what it holds and nearby cutlery jumps. It is loud. |
+| Quick click near another hand | **Slap.** The other hand recoils, drops what it holds and nearby cutlery jumps. It is loud. A free biscuit right under your fingers is grabbed instead. |
 | Keep holding on a slapped hand | **Pin** it. Pinning makes no noise. |
 | Grab a napkin | It drapes over your hand. A hand under a napkin is much harder to see, but it moves slower. Move fast and the napkin comes off. Click on empty table to drop it. |
 | Right mouse / E | Retract the hand quickly towards Bill. |
@@ -55,7 +55,7 @@ Each one's routine can be learned. Their timings are exported on the
 | Diner | Seat | Behaviour | How to read it |
 |---|---|---|---|
 | **The Sleeper** | left, near | Awake, then drowsy (head bobs), then asleep (snores). Sometimes jolts awake without warning. Loud noises wake him. | Eyelids, head drop, snoring |
-| **The Glasses** | left, middle | Scans the table, rubs her eyes (a tell), polishes her glasses (nearly blind), then puts them back on and immediately inspects the table more sharply. Noises make her hurry. | Glasses on the face or in her hands |
+| **The Glasses** | left, middle | Scans the table, rubs her eyes (a tell), polishes her glasses (nearly blind), raises them back to her nose (the tell: freeze now) and immediately inspects the table more sharply. Noises make her hurry. | Glasses on the face or in her hands |
 | **The Deaf Watcher** | left, far | A slow lighthouse with excellent, long-range, narrow sight. She lingers on the far end, then sweeps down to Bill and back. Only very loud noises turn her head. | Huge eyes, head direction |
 | **The Twitch** | right, near | Looks across, then down at his plate, then at the biscuit, in a fixed cycle. Every so often his shoulder jerks (a 0.35 s tell) and he snaps his head to a random spot, often near your hand. | Shoulder tic, then the snap |
 | **The Blind Listener** | right, middle | Cannot see, except that he "feels" anything right in front of him. Hears everything. Noise caused by a hand, or a hand rushing past near him, adds to his suspicion directly. | Head tilts and cups an ear towards sounds |
@@ -219,6 +219,8 @@ godot --path . res://minigames/last_biscuit/tools/Harness.tscn -- --scenario=ove
 * `bot` (works `--headless`) plays the whole game with `tools/Bot.gd`. The bot
   is a careful player that reads where people are looking, learns patterns,
   plans routes through rarely watched cells and freezes on tells. It does not
-  read suspicion. In our runs the bot won in about 60 s of play with around two
-  catches. A human reading faces instead of cones should land in the intended
-  2–4 minutes for a first win.
+  read suspicion. In the final tuning batch it won all four games, in 91 s,
+  91 s, 249 s and 261 s of play, getting caught 1–5 times. Most catches
+  happened on the run back, while it was fighting rival hands. A human reads
+  faces rather than cones, but plans better than the bot, so a first win
+  should take about 2–4 minutes and later runs much less.

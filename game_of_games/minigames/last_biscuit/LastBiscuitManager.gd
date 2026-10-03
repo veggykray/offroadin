@@ -573,6 +573,8 @@ func _tug(dt: float) -> void:
 			b.tug_strain = maxf(b.tug_strain - dt, 0.0)
 		if b.tug_strain > b.tug_crack_time:
 			break_biscuit(b)
+		elif dist > 0.26 and (a.vel - c.vel).length() > 1.1 and _rng.randf() < 0.55:
+			break_biscuit(b)      # a violent yank snaps it
 		elif dist > 0.26:
 			var sa := a.grip * _rng.randf_range(0.7, 1.3) + (0.25 if a.is_player else 0.0)
 			var sc := c.grip * _rng.randf_range(0.7, 1.3) + (0.25 if c.is_player else 0.0)
