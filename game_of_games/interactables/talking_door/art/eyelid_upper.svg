@@ -1,21 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="140" viewBox="0 0 120 140">
-  <defs>
-    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#a88d72"/>
-      <stop offset="0.8" stop-color="#9a7d64"/>
-      <stop offset="1" stop-color="#7d6150"/>
-    </linearGradient>
-    <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1a0f0a" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#1a0f0a" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <!-- soft shadow the lid casts onto the eyeball -->
-  <path d="M0 112 Q60 94 120 112 L120 130 Q60 112 0 130 Z" fill="url(#shadow)"/>
-  <!-- the lid itself; its bottom edge (the lash line) sits at y=106 in the middle -->
-  <path d="M0 0 L120 0 L120 116 Q60 96 0 116 Z" fill="url(#skin)"/>
-  <!-- crease / fold -->
-  <path d="M10 96 Q60 76 110 96" stroke="#5d4434" stroke-opacity="0.5" stroke-width="2" fill="none"/>
-  <!-- lash line -->
-  <path d="M0 116 Q60 96 120 116" stroke="#160d09" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140" viewBox="0 0 100 140">
+  <defs><linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9c873"/><stop offset="0.35" stop-color="#c39a43"/>
+      <stop offset="0.7" stop-color="#9a7128"/><stop offset="1" stop-color="#5e4114"/></linearGradient>
+    <linearGradient id="bronzeV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2bd62"/><stop offset="0.5" stop-color="#b48834"/><stop offset="1" stop-color="#6d4c17"/></linearGradient>
+    <linearGradient id="patina" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6fa596"/><stop offset="0.5" stop-color="#4b7f73"/><stop offset="1" stop-color="#2c524b"/></linearGradient>
+    <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0f04" stop-opacity="0.6"/><stop offset="1" stop-color="#1a0f04" stop-opacity="0"/></linearGradient></defs>
+  <path d="M0 114 Q50 90 100 114 L100 132 Q50 108 0 132 Z" fill="url(#shadow)"/>
+  <path d="M0 0 L100 0 L100 120 Q50 92 0 120 Z" fill="url(#bronzeV)"/>
+  <path d="M0 120 Q50 92 100 120" stroke="#3a2608" stroke-width="4" fill="none"/>
+  <path d="M4 114 Q50 88 96 114" stroke="#f3d88e" stroke-opacity="0.6" stroke-width="2" fill="none"/>
 </svg>

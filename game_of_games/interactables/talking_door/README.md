@@ -114,7 +114,7 @@ All the face art is in `art/` as SVG files. Each part is a separate `Sprite2D` i
 ```
 TalkingDoorFace
 └── Skin                     (breathes)
-    ├── FacePlate            face_plate.svg   – skin, nose shading, cheeks, sockets
+    ├── FacePlate            face_plate.svg   – the bronze plaque: crest, scrolls, patina, cheeks, sockets, chin pendant
     └── Features             (shifts slightly toward where the eyes look)
         ├── LeftEye / RightEye   (FaceEye script)
         │   ├── Socket           eye_socket_shadow.svg
@@ -131,7 +131,7 @@ TalkingDoorFace
         └── Mouth                ProceduralMouth (drawn in code)
 ```
 
-The door-side art is in `TalkingDoor.tscn`: `door_panel.svg`, `door_frame.svg`, `doorway_void.svg`, and `face_rim.svg`. The rim is the torn wood lip drawn over the edge of the face. It is what makes the face look pushed through the door.
+The door-side art is in `TalkingDoor.tscn`: `door_panel.svg` (the navy double door that swings open), `door_frame.svg` (gold jambs and the arched moon-and-stars transom, which stays put), `doorway_void.svg`, and `plaque_shadow.svg` (the soft shadow the bronze face casts on the door).
 
 **To swap a picture:**
 

@@ -31,11 +31,12 @@ texture = ExtResource("t_plate")
 
 [node name="LeftEye" type="Node2D" parent="Skin/Features"]
 script = ExtResource("eye_script")
-position = Vector2(-64, -48)
+position = Vector2(-64, -50)
+scale = Vector2(1.22, 1.22)
 is_right_eye = false
 
 [node name="Socket" type="Sprite2D" parent="Skin/Features/LeftEye"]
-position = Vector2(0, -3)
+position = Vector2(0, 2)
 texture = ExtResource("t_socket")
 
 [node name="Sclera" type="Sprite2D" parent="Skin/Features/LeftEye"]
@@ -44,23 +45,23 @@ texture = ExtResource("t_sclera")
 flip_h = true
 
 [node name="Iris" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
-position = Vector2(0, 1)
+position = Vector2(0, 0)
 texture = ExtResource("t_iris")
 
 [node name="Pupil" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera/Iris"]
 texture = ExtResource("t_pupil")
 
 [node name="Catchlight" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera/Iris"]
-position = Vector2(-5, -6)
+position = Vector2(-4, -5)
 texture = ExtResource("t_catch")
 
 [node name="UpperLid" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
-position = Vector2(0, -14)
+position = Vector2(0, -22)
 offset = Vector2(0, -36)
 texture = ExtResource("t_lidu")
 
 [node name="LowerLid" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
-position = Vector2(0, 19)
+position = Vector2(0, 29)
 offset = Vector2(0, 16)
 texture = ExtResource("t_lidl")
 
@@ -70,11 +71,12 @@ flip_h = true
 
 [node name="RightEye" type="Node2D" parent="Skin/Features"]
 script = ExtResource("eye_script")
-position = Vector2(64, -48)
+position = Vector2(64, -50)
+scale = Vector2(1.22, 1.22)
 is_right_eye = true
 
 [node name="Socket" type="Sprite2D" parent="Skin/Features/RightEye"]
-position = Vector2(0, -3)
+position = Vector2(0, 2)
 texture = ExtResource("t_socket")
 
 [node name="Sclera" type="Sprite2D" parent="Skin/Features/RightEye"]
@@ -83,23 +85,23 @@ texture = ExtResource("t_sclera")
 flip_h = false
 
 [node name="Iris" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
-position = Vector2(0, 1)
+position = Vector2(0, 0)
 texture = ExtResource("t_iris")
 
 [node name="Pupil" type="Sprite2D" parent="Skin/Features/RightEye/Sclera/Iris"]
 texture = ExtResource("t_pupil")
 
 [node name="Catchlight" type="Sprite2D" parent="Skin/Features/RightEye/Sclera/Iris"]
-position = Vector2(-5, -6)
+position = Vector2(-4, -5)
 texture = ExtResource("t_catch")
 
 [node name="UpperLid" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
-position = Vector2(0, -14)
+position = Vector2(0, -22)
 offset = Vector2(0, -36)
 texture = ExtResource("t_lidu")
 
 [node name="LowerLid" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
-position = Vector2(0, 19)
+position = Vector2(0, 29)
 offset = Vector2(0, 16)
 texture = ExtResource("t_lidl")
 
@@ -109,7 +111,7 @@ flip_h = false
 
 [node name="LeftBrow" type="Node2D" parent="Skin/Features"]
 script = ExtResource("brow_script")
-position = Vector2(-64, -97)
+position = Vector2(-68, -116)
 is_right_brow = false
 
 [node name="Art" type="Sprite2D" parent="Skin/Features/LeftBrow"]
@@ -117,22 +119,22 @@ texture = ExtResource("t_brow")
 
 [node name="RightBrow" type="Node2D" parent="Skin/Features"]
 script = ExtResource("brow_script")
-position = Vector2(64, -97)
+position = Vector2(68, -116)
 is_right_brow = true
 
 [node name="Art" type="Sprite2D" parent="Skin/Features/RightBrow"]
 texture = ExtResource("t_brow")
 
 [node name="Nose" type="Sprite2D" parent="Skin/Features"]
-position = Vector2(0, 3)
+position = Vector2(0, -2)
 texture = ExtResource("t_nose")
 
 [node name="Jaw" type="Node2D" parent="Skin/Features"]
 
 [node name="Chin" type="Sprite2D" parent="Skin/Features/Jaw"]
-position = Vector2(0, 136)
+position = Vector2(0, 140)
 texture = ExtResource("t_chin")
 
 [node name="Mouth" type="Node2D" parent="Skin/Features"]
 script = ExtResource("mouth_script")
-position = Vector2(0, 92)
+position = Vector2(0, 102)

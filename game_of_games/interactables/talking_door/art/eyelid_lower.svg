@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60">
-  <defs>
-    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#8f735d"/>
-      <stop offset="0.3" stop-color="#a88c71"/>
-      <stop offset="1" stop-color="#ad9277"/>
-    </linearGradient>
-  </defs>
-  <!-- top edge (lower lid margin) sits at y=14 in the middle -->
-  <path d="M0 6 Q60 22 120 6 L120 60 L0 60 Z" fill="url(#skin)"/>
-  <path d="M0 6 Q60 22 120 6" stroke="#5a3d31" stroke-width="2" fill="none" stroke-opacity="0.85"/>
-  <path d="M8 13 Q60 28 112 13" stroke="#e6c7b0" stroke-opacity="0.35" stroke-width="1.2" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="60" viewBox="0 0 100 60">
+  <defs><linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9c873"/><stop offset="0.35" stop-color="#c39a43"/>
+      <stop offset="0.7" stop-color="#9a7128"/><stop offset="1" stop-color="#5e4114"/></linearGradient>
+    <linearGradient id="bronzeV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2bd62"/><stop offset="0.5" stop-color="#b48834"/><stop offset="1" stop-color="#6d4c17"/></linearGradient>
+    <linearGradient id="patina" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6fa596"/><stop offset="0.5" stop-color="#4b7f73"/><stop offset="1" stop-color="#2c524b"/></linearGradient></defs>
+  <path d="M0 4 Q50 24 100 4 L100 60 L0 60 Z" fill="url(#bronzeV)"/>
+  <path d="M0 4 Q50 24 100 4" stroke="#3a2608" stroke-width="3" fill="none"/>
+  <path d="M6 10 Q50 28 94 10" stroke="#f3d88e" stroke-opacity="0.45" stroke-width="1.5" fill="none"/>
 </svg>

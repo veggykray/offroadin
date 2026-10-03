@@ -1,30 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="90" height="110" viewBox="0 0 90 110">
-  <defs>
-    <linearGradient id="bridgeL" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#4f3628" stop-opacity="0"/>
-      <stop offset="1" stop-color="#4f3628" stop-opacity="0.45"/>
-    </linearGradient>
-    <radialGradient id="tip" cx="0.5" cy="0.45" r="0.5">
-      <stop offset="0" stop-color="#e2cdb2" stop-opacity="0.9"/>
-      <stop offset="1" stop-color="#c9ad90" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="under" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#3a241b" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#3a241b" stop-opacity="0"/>
-    </radialGradient>
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="160" viewBox="0 0 120 160">
+  <defs><linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9c873"/><stop offset="0.35" stop-color="#c39a43"/>
+      <stop offset="0.7" stop-color="#9a7128"/><stop offset="1" stop-color="#5e4114"/></linearGradient>
+    <linearGradient id="bronzeV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2bd62"/><stop offset="0.5" stop-color="#b48834"/><stop offset="1" stop-color="#6d4c17"/></linearGradient>
+    <linearGradient id="patina" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6fa596"/><stop offset="0.5" stop-color="#4b7f73"/><stop offset="1" stop-color="#2c524b"/></linearGradient>
+    <radialGradient id="bulb" cx="0.4" cy="0.35" r="0.65"><stop offset="0" stop-color="#f4d98c"/><stop offset="0.5" stop-color="#c39a43"/><stop offset="1" stop-color="#6d4c17"/></radialGradient>
+    <radialGradient id="wing" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#d9b25a"/><stop offset="1" stop-color="#6d4c17"/></radialGradient>
+    <radialGradient id="drop" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2a1a05" stop-opacity="0.6"/><stop offset="1" stop-color="#2a1a05" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bridge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6d4c17"/><stop offset="0.45" stop-color="#e6c46a"/><stop offset="0.6" stop-color="#c39a43"/><stop offset="1" stop-color="#5e4114"/></linearGradient>
   </defs>
-  <!-- shadow cast under the nose -->
-  <ellipse cx="45" cy="98" rx="34" ry="10" fill="url(#under)"/>
-  <!-- bridge side shading -->
-  <path d="M30 6 Q28 46 18 74 L28 74 Q36 44 38 6 Z" fill="url(#bridgeL)"/>
-  <path d="M60 6 Q62 46 72 74 L62 74 Q54 44 52 6 Z" fill="#4f3628" fill-opacity="0.18"/>
-  <!-- alar wings -->
-  <path d="M20 80 Q8 88 18 96 Q26 100 32 94" stroke="#3e281e" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M70 80 Q82 88 72 96 Q64 100 58 94" stroke="#3e281e" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- tip -->
-  <ellipse cx="45" cy="80" rx="20" ry="16" fill="url(#tip)"/>
-  <!-- nostrils -->
-  <ellipse cx="34" cy="94" rx="7" ry="3.6" fill="#22140f" transform="rotate(18 34 94)"/>
-  <ellipse cx="56" cy="94" rx="7" ry="3.6" fill="#22140f" transform="rotate(-18 56 94)"/>
-  <ellipse cx="44" cy="62" rx="5" ry="12" fill="#f0e2cb" fill-opacity="0.25"/>
+  <ellipse cx="62" cy="146" rx="48" ry="12" fill="url(#drop)"/>
+  <path d="M48 4 Q52 0 60 0 Q68 0 72 4 Q78 60 88 100 L32 100 Q42 60 48 4 Z" fill="url(#bridge)"/>
+  <ellipse cx="26" cy="118" rx="22" ry="19" fill="url(#wing)" stroke="#3a2608" stroke-width="2.5"/>
+  <ellipse cx="94" cy="118" rx="22" ry="19" fill="url(#wing)" stroke="#3a2608" stroke-width="2.5"/>
+  <ellipse cx="45" cy="132" rx="11" ry="6" fill="#1a0f04"/>
+  <ellipse cx="75" cy="132" rx="11" ry="6" fill="#1a0f04"/>
+  <path d="M30 112 C30 86 44 78 60 78 C76 78 90 86 90 112 C90 130 76 136 60 136 C44 136 30 130 30 112 Z" fill="url(#bulb)" stroke="#3a2608" stroke-width="2"/>
+  <ellipse cx="52" cy="98" rx="9" ry="6" fill="#fff3c8" fill-opacity="0.55"/>
 </svg>

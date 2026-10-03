@@ -8,24 +8,24 @@ extends MouthRig
 ## a SpriteMouth (or your own MouthRig) named "Mouth" in the same place.
 
 @export_group("Size")
-@export var half_width := 50.0
+@export var half_width := 70.0
 @export var max_open := 40.0
-@export var upper_lip_thickness := 8.0
-@export var lower_lip_thickness := 11.0
-@export var smile_height := 12.0
+@export var upper_lip_thickness := 9.0
+@export var lower_lip_thickness := 15.0
+@export var smile_height := 17.0
 
 @export_group("Colours")
-@export var lip_color := Color(0.56, 0.33, 0.32)
-@export var lip_shadow_color := Color(0.33, 0.17, 0.16)
-@export var cavity_color := Color(0.1, 0.025, 0.03)
-@export var teeth_color := Color(0.84, 0.8, 0.68)
-@export var tongue_color := Color(0.42, 0.12, 0.13)
-@export var crease_color := Color(0.22, 0.12, 0.09)
+@export var lip_color := Color(0.74, 0.55, 0.22)
+@export var lip_shadow_color := Color(0.3, 0.19, 0.05)
+@export var cavity_color := Color(0.09, 0.05, 0.02)
+@export var teeth_color := Color(0.62, 0.47, 0.2)
+@export var tongue_color := Color(0.24, 0.13, 0.04)
+@export var crease_color := Color(0.2, 0.12, 0.02)
 
 @export_group("Cheek folds")
 @export var draw_folds := true
 ## Where the smile lines start, relative to the mouth centre (the left one; mirrored).
-@export var fold_top := Vector2(-38, -58)
+@export var fold_top := Vector2(-52, -64)
 
 ## Preview pose in the editor.
 @export_group("Editor preview")
@@ -93,8 +93,9 @@ func _draw() -> void:
 			for i in 9:
 				var t := float(i) / 8.0
 				fold.append(top.lerp(mid, t).lerp(mid.lerp(corner_pt, t), t))
-			var a := clampf(0.22 + 0.3 * p.smile + 0.1 * p.press, 0.08, 0.6)
-			draw_polyline(fold, Color(crease_color, a), 3.0, true)
+			var a := clampf(0.4 + 0.35 * p.smile + 0.1 * p.press, 0.15, 0.85)
+			draw_polyline(fold, Color(crease_color, a), 4.0, true)
+			draw_polyline(fold, Color(1.0, 0.88, 0.55, a * 0.35), 1.5, true)
 
 	# Shadow under the lower lip.
 	var shadow := PackedVector2Array()
@@ -156,6 +157,10 @@ func _draw() -> void:
 	lower.append_array(lo_rev)
 	_poly(lower, lip_color)
 
+	# Sculpted outer edges of the lips.
+	draw_polyline(upper_outer, Color(crease_color, 0.75), 2.0, true)
+	draw_polyline(lower_outer, Color(crease_color, 0.6), 2.5, true)
+
 	# Lip line / inner edges.
 	if is_open:
 		draw_polyline(upper_inner, lip_shadow_color, 1.6, true)
@@ -166,7 +171,7 @@ func _draw() -> void:
 	var hl := PackedVector2Array()
 	for i in range(int(SAMPLES * 0.3), int(SAMPLES * 0.7) + 1):
 		hl.append(lower_inner[i].lerp(lower_outer[i], 0.45))
-	draw_polyline(hl, Color(1, 0.9, 0.85, 0.18), 2.0, true)
+	draw_polyline(hl, Color(1, 0.92, 0.65, 0.4), 2.5, true)
 	# Corner creases.
 	for side in [0, SAMPLES]:
 		var c := upper_inner[side]

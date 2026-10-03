@@ -46,7 +46,7 @@ enum Mood { IDLE, NOTICING, WATCHING, WATCHING_LEAVE, ASLEEP }
 @export var show_interact_prompt := true
 @export var interact_prompt_text := "E  Talk"
 ## Used when the player has no get_look_target_position() method.
-@export var player_look_offset := Vector2(0, -190)
+@export var player_look_offset := Vector2(0, -250)
 
 @export_group("Face Tuning")
 ## How far the eyes turn towards the player (1 = natural).
@@ -72,7 +72,7 @@ enum Mood { IDLE, NOTICING, WATCHING, WATCHING_LEAVE, ASLEEP }
 
 @export_group("Door")
 ## Small sign above the door ("" hides it).
-@export var plaque_text := "1"
+@export var plaque_text := ""
 @export var open_duration := 1.3
 ## How narrow the door looks when fully open (fake perspective).
 @export_range(0.05, 1.0) var open_amount := 0.16
@@ -141,6 +141,9 @@ func _ready() -> void:
 	_apply_character()
 	_plaque.text = plaque_text
 	_plaque.visible = plaque_text != ""
+	var plaque_back := get_node_or_null("PlaqueBack") as CanvasItem
+	if plaque_back:
+		plaque_back.visible = _plaque.visible
 	_prompt.text = interact_prompt_text
 	_subtitle.modulate.a = 0.0
 	_prompt.modulate.a = 0.0
@@ -544,10 +547,12 @@ func _apply_open(t: float) -> void:
 
 func _update_edge() -> void:
 	# Fake door thickness visible on the swinging edge.
-	var x := _panel.position.x + 400.0 * _panel.scale.x
+	var art := _panel.get_node_or_null("PanelArt") as Sprite2D
+	var size := art.texture.get_size() if art and art.texture else Vector2(480, 660)
+	var x := _panel.position.x + size.x * _panel.scale.x
 	var w := 16.0 * _open_t
 	_panel_edge.polygon = PackedVector2Array([
-		Vector2(x, -800), Vector2(x + w, -790), Vector2(x + w, -6), Vector2(x, 0)])
+		Vector2(x, -size.y), Vector2(x + w, -size.y + 10), Vector2(x + w, -6), Vector2(x, 0)])
 
 
 # --------------------------------------------------------------------------

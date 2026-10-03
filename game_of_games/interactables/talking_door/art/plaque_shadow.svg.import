@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3ckxwa4k8e0n"
-path="res://.godot/imported/face_rim.svg-625f1371232c85446d4107292746f2f5.ctex"
+uid="uid://drviihstgpoi"
+path="res://.godot/imported/plaque_shadow.svg-255f19b21a432ddabddaca52e74830dc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://interactables/talking_door/art/face_rim.svg"
-dest_files=["res://.godot/imported/face_rim.svg-625f1371232c85446d4107292746f2f5.ctex"]
+source_file="res://interactables/talking_door/art/plaque_shadow.svg"
+dest_files=["res://.godot/imported/plaque_shadow.svg-255f19b21a432ddabddaca52e74830dc.ctex"]
 
 [params]
 

@@ -45,9 +45,9 @@ script = ExtResource("backdrop_script")
 position = Vector2(960, 990)
 
 [node name="LampGlow" type="Sprite2D" parent="."]
-modulate = Color(1, 1, 1, 0.22)
+modulate = Color(0.6, 0.72, 1, 0.2)
 material = SubResource("additive")
-position = Vector2(960, 420)
+position = Vector2(960, 400)
 scale = Vector2(3.6, 4.2)
 texture = SubResource("glow_texture")
 

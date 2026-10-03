@@ -1,6 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="104" height="60" viewBox="0 0 104 60">
-  <!-- drawn on top of the eye, matches eye_sclera.svg offset by (4,4) -->
-  <path d="M5 32 C 20 8, 74 2, 99 28" stroke="#1a0f0a" stroke-width="3" fill="none" stroke-linecap="round" stroke-opacity="0.9"/>
-  <path d="M99 28 C 80 54, 26 56, 5 32" stroke="#4d3226" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-opacity="0.7"/>
-  <path d="M2 33 L8 31" stroke="#1a0f0a" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="92" height="86" viewBox="0 0 92 86">
+  <defs><linearGradient id="bronze" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9c873"/><stop offset="0.35" stop-color="#c39a43"/>
+      <stop offset="0.7" stop-color="#9a7128"/><stop offset="1" stop-color="#5e4114"/></linearGradient>
+    <linearGradient id="bronzeV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2bd62"/><stop offset="0.5" stop-color="#b48834"/><stop offset="1" stop-color="#6d4c17"/></linearGradient>
+    <linearGradient id="patina" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6fa596"/><stop offset="0.5" stop-color="#4b7f73"/><stop offset="1" stop-color="#2c524b"/></linearGradient></defs>
+  <ellipse cx="46" cy="43" rx="39" ry="36" fill="none" stroke="#3a2608" stroke-width="12"/>
+  <ellipse cx="46" cy="43" rx="39" ry="36" fill="none" stroke="url(#bronze)" stroke-width="8"/>
+  <ellipse cx="45" cy="42" rx="41" ry="38" fill="none" stroke="#f6dd95" stroke-opacity="0.4" stroke-width="1.5"/>
+  <ellipse cx="46" cy="43" rx="35" ry="32" fill="none" stroke="#2a1a05" stroke-width="1.5"/>
 </svg>

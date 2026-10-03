@@ -19,23 +19,23 @@ extends Node2D
 
 @export_group("Iris / pupil")
 ## Furthest the iris can travel from the centre of the eye (pixels).
-@export var pupil_range := Vector2(17, 8)
+@export var pupil_range := Vector2(14, 12)
 ## Where the iris sits when looking straight ahead.
-@export var iris_center := Vector2(0, 1)
+@export var iris_center := Vector2(0, 0)
 
 @export_group("Upper lid")
 ## Y position (eye pixels) of the lid's lash line when the eye is fully closed.
-@export var upper_lid_closed_y := 20.0
+@export var upper_lid_closed_y := 27.0
 ## Y position of the lash line when the eye is open = 1.0.
-@export var upper_lid_open_y := -21.0
+@export var upper_lid_open_y := -30.0
 ## Distance from the UpperLid sprite's centre to its lash line (art dependent).
 @export var upper_lid_margin_offset := 36.0
 ## Lids flatten as they close. 0 = no flattening.
 @export_range(0, 1) var upper_lid_flatten := 0.45
 
 @export_group("Lower lid")
-@export var lower_lid_rest_y := 19.0
-@export var lower_lid_raised_y := 3.0
+@export var lower_lid_rest_y := 29.0
+@export var lower_lid_raised_y := 8.0
 @export var lower_lid_margin_offset := -16.0
 
 @export_group("Node paths")
