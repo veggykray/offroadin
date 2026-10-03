@@ -1,0 +1,146 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/polarity_machine.gd" id="1_root"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/room_backdrop.gd" id="2_room"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/water_tank.gd" id="3_tank"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/plant_chamber.gd" id="4_chamber"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/spray_fx.gd" id="5_spray"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/atmosphere.gd" id="6_atmo"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/machine_panel.gd" id="7_machine"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/age_dial.gd" id="8_age"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/light_dial.gd" id="9_light"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/temperature_lever.gd" id="10_temp"]
+[ext_resource type="Script" path="res://minigames/polarity_machine/scripts/water_button.gd" id="11_button"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_hint"]
+font_size = 34
+font_color = Color(0.95, 0.9, 0.78, 1)
+outline_size = 10
+outline_color = Color(0.04, 0.02, 0.05, 0.9)
+shadow_size = 12
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="LabelSettings" id="LabelSettings_debug"]
+font_size = 18
+font_color = Color(0.7, 1, 0.75, 1)
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[node name="PolarityMachine" type="Node2D"]
+script = ExtResource("1_root")
+
+[node name="Stage" type="Node2D" parent="."]
+
+[node name="Room" type="Node2D" parent="Stage"]
+script = ExtResource("2_room")
+
+[node name="WaterTank" type="Node2D" parent="Stage"]
+script = ExtResource("3_tank")
+
+[node name="PlantChamber" type="Node2D" parent="Stage"]
+script = ExtResource("4_chamber")
+
+[node name="SprayFX" type="Node2D" parent="Stage"]
+script = ExtResource("5_spray")
+
+[node name="Atmosphere" type="Node2D" parent="Stage"]
+script = ExtResource("6_atmo")
+
+[node name="Machine" type="Node2D" parent="Stage"]
+script = ExtResource("7_machine")
+
+[node name="AgeDial" type="Node2D" parent="Stage/Machine"]
+position = Vector2(1492, 300)
+script = ExtResource("8_age")
+
+[node name="LightDial" type="Node2D" parent="Stage/Machine"]
+position = Vector2(1360, 560)
+script = ExtResource("9_light")
+
+[node name="TemperatureLever" type="Node2D" parent="Stage/Machine"]
+position = Vector2(1495, 925)
+script = ExtResource("10_temp")
+
+[node name="WaterButton" type="Node2D" parent="Stage/Machine"]
+position = Vector2(1748, 668)
+script = ExtResource("11_button")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Hint" type="Label" parent="UI"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -150.0
+offset_right = -40.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+label_settings = SubResource("LabelSettings_hint")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="DebugLabel" type="Label" parent="UI"]
+visible = false
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 1400.0
+offset_bottom = 70.0
+mouse_filter = 2
+label_settings = SubResource("LabelSettings_debug")
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="LeverClick" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -8.0
+
+[node name="MachineHum" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -24.0
+
+[node name="TemperatureShift" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -12.0
+
+[node name="LightShift" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -14.0
+
+[node name="AgeShift" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -10.0
+
+[node name="ButtonPress" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -8.0
+
+[node name="WaterSpray" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -10.0
+
+[node name="Sputter" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -10.0
+
+[node name="Drip" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -14.0
+
+[node name="PlantGrow" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -12.0
+
+[node name="PlantSick" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -12.0
+
+[node name="PlantRecover" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -12.0
+
+[node name="BudForm" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -10.0
+
+[node name="FlowerOpen" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -8.0
+
+[node name="FruitAppear" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -8.0
+
+[node name="PuzzleSuccess" type="AudioStreamPlayer" parent="Audio"]
+volume_db = -6.0
