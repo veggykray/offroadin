@@ -1,0 +1,104 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://interactables/talking_door/TalkingDoor.gd" id="door_script"]
+[ext_resource type="PackedScene" path="res://interactables/talking_door/TalkingDoorFace.tscn" id="face_scene"]
+[ext_resource type="Resource" path="res://interactables/talking_door/characters/weary_door.tres" id="char"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/door_panel.svg" id="t_panel"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/door_frame.svg" id="t_frame"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/doorway_void.svg" id="t_void"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/face_rim.svg" id="t_rim"]
+
+[sub_resource type="LabelSettings" id="subtitle_settings"]
+font_size = 30
+font_color = Color(0.93, 0.88, 0.78, 1)
+outline_size = 10
+outline_color = Color(0.03, 0.02, 0.02, 0.85)
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 0.5)
+
+[sub_resource type="LabelSettings" id="prompt_settings"]
+font_size = 24
+font_color = Color(0.95, 0.85, 0.55, 1)
+outline_size = 8
+outline_color = Color(0.05, 0.03, 0.02, 0.9)
+
+[sub_resource type="LabelSettings" id="plaque_settings"]
+font_size = 22
+font_color = Color(0.14, 0.09, 0.03, 1)
+
+[node name="TalkingDoor" type="Node2D"]
+script = ExtResource("door_script")
+character = ExtResource("char")
+
+[node name="Doorway" type="Sprite2D" parent="."]
+position = Vector2(0, -400)
+texture = ExtResource("t_void")
+
+[node name="Panel" type="Node2D" parent="."]
+position = Vector2(-200, 0)
+
+[node name="PanelArt" type="Sprite2D" parent="Panel"]
+texture = ExtResource("t_panel")
+centered = false
+position = Vector2(0, -800)
+
+[node name="Face" parent="Panel" instance=ExtResource("face_scene")]
+position = Vector2(200, -518)
+scale = Vector2(0.94, 0.94)
+
+[node name="FaceRim" type="Sprite2D" parent="Panel"]
+position = Vector2(200, -518)
+texture = ExtResource("t_rim")
+
+[node name="PanelEdge" type="Polygon2D" parent="."]
+visible = false
+color = Color(0.09, 0.07, 0.05, 1)
+
+[node name="Frame" type="Sprite2D" parent="."]
+position = Vector2(0, -423)
+texture = ExtResource("t_frame")
+
+[node name="PlaqueBack" type="ColorRect" parent="."]
+offset_left = -30.0
+offset_top = -838.0
+offset_right = 30.0
+offset_bottom = -808.0
+color = Color(0.62, 0.48, 0.22, 1)
+mouse_filter = 2
+
+[node name="Plaque" type="Label" parent="."]
+offset_left = -30.0
+offset_top = -840.0
+offset_right = 30.0
+offset_bottom = -806.0
+text = "1"
+label_settings = SubResource("plaque_settings")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VoicePlayer" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(0, -518)
+max_distance = 4000.0
+attenuation = 0.5
+
+[node name="Subtitle" type="Label" parent="."]
+z_index = 20
+offset_left = -420.0
+offset_top = -985.0
+offset_right = 420.0
+offset_bottom = -905.0
+label_settings = SubResource("subtitle_settings")
+horizontal_alignment = 1
+vertical_alignment = 2
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="Prompt" type="Label" parent="."]
+z_index = 20
+offset_left = 250.0
+offset_top = -400.0
+offset_right = 450.0
+offset_bottom = -360.0
+text = "E  Talk"
+label_settings = SubResource("prompt_settings")
+mouse_filter = 2

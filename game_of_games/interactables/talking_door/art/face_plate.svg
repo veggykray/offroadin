@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="400" viewBox="0 0 320 400">
+  <defs>
+    <radialGradient id="skin" cx="160" cy="185" r="200" gradientUnits="userSpaceOnUse" gradientTransform="translate(160 185) scale(0.82 1) translate(-160 -185)">
+      <stop offset="0" stop-color="#cdb79c"/>
+      <stop offset="0.45" stop-color="#bba183"/>
+      <stop offset="0.68" stop-color="#957a61"/>
+      <stop offset="0.82" stop-color="#5e4a3b" stop-opacity="0.92"/>
+      <stop offset="0.93" stop-color="#2b211b" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#1a1411" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="socket" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3a281f" stop-opacity="0.75"/>
+      <stop offset="0.55" stop-color="#5a3f30" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#6b4d3a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cheek" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#b8746a" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#b8746a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="hi" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#efe2cc" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#efe2cc" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mouthshade" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4a2e26" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4a2e26" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="160" cy="200" rx="160" ry="200" fill="url(#skin)"/>
+  <!-- forehead highlight and brow ridge -->
+  <ellipse cx="160" cy="80" rx="90" ry="45" fill="url(#hi)"/>
+  <ellipse cx="96" cy="122" rx="46" ry="16" fill="url(#hi)"/>
+  <ellipse cx="224" cy="122" rx="46" ry="16" fill="url(#hi)"/>
+  <!-- eye sockets -->
+  <ellipse cx="96" cy="152" rx="62" ry="44" fill="url(#socket)"/>
+  <ellipse cx="224" cy="152" rx="62" ry="44" fill="url(#socket)"/>
+  <!-- under-eye bags -->
+  <path d="M58 172 Q96 196 132 174" stroke="#4b342a" stroke-opacity="0.35" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M188 174 Q224 196 262 172" stroke="#4b342a" stroke-opacity="0.35" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M66 184 Q96 204 126 186" stroke="#4b342a" stroke-opacity="0.18" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M194 186 Q224 204 254 184" stroke="#4b342a" stroke-opacity="0.18" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- cheeks -->
+  <ellipse cx="72" cy="238" rx="44" ry="34" fill="url(#cheek)"/>
+  <ellipse cx="248" cy="238" rx="44" ry="34" fill="url(#cheek)"/>
+  <!-- forehead wrinkles -->
+  <path d="M100 60 Q160 48 220 60" stroke="#4b342a" stroke-opacity="0.22" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M112 76 Q160 66 208 76" stroke="#4b342a" stroke-opacity="0.16" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- around the mouth -->
+  <ellipse cx="160" cy="292" rx="70" ry="34" fill="url(#mouthshade)"/>
+  <!-- stretched-membrane seam -->
+  <ellipse cx="160" cy="200" rx="146" ry="186" fill="none" stroke="#1d1612" stroke-opacity="0.35" stroke-width="3" stroke-dasharray="40 14 70 9 30 18"/>
+</svg>

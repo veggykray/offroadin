@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="DoorCharacterData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://interactables/talking_door/dialogue/DialogueLine.gd" id="1_wpdtv"]
+[ext_resource type="Script" path="res://interactables/talking_door/DoorCharacterData.gd" id="2_u6e1u"]
+
+[sub_resource type="Resource" id="Resource_seuf7"]
+script = ExtResource("1_wpdtv")
+text = "Okay. [slow_blink]Okay. [open_door]Be careful in there."
+expression = &"sad"
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_g45ys"]
+script = ExtResource("1_wpdtv")
+text = "Oh! [recoil]Oh, hello. Hello. [glance_away]Sorry."
+expression = &"surprised"
+hold_after = 0.4
+text_speed = 1.3
+
+[sub_resource type="Resource" id="Resource_i7mbv"]
+script = ExtResource("1_wpdtv")
+text = "[double_blink]Are you... [look_at_player]are you going to open me?"
+expression = &"sad"
+hold_after = 0.5
+text_speed = 1.2
+
+[sub_resource type="Resource" id="Resource_ucwg8"]
+script = ExtResource("1_wpdtv")
+text = "[widen]Please be gentle with the handle."
+expression = &"surprised"
+expression_intensity = 0.6
+hold_after = 0.4
+text_speed = 1.3
+
+[sub_resource type="Resource" id="Resource_7oaae"]
+script = ExtResource("1_wpdtv")
+text = "[glance:down]It's just that nobody ever comes back out."
+expression = &"sad"
+hold_after = 0.5
+text_speed = 1.1
+
+[resource]
+script = ExtResource("2_u6e1u")
+display_name = "Door No. 2 (Nervous)"
+notes = "Example of a second personality using the same face. No audio files yet, so its mouth is driven from the text."
+idle_expression = &"sad"
+noticed_expression = &"surprised"
+left_alone_expression = &"sad"
+notice_delay = 0.15
+watch_leave_time = 4.0
+shiftiness = 2.6
+blink_rate = 1.8
+expressiveness = 1.6
+eye_speed = 1.6
+fidget = 0.35
+voice_pitch = 1.15
+greeting = Array[ExtResource("1_wpdtv")]([SubResource("Resource_g45ys"), SubResource("Resource_i7mbv")])
+interact_responses = Array[ExtResource("1_wpdtv")]([SubResource("Resource_ucwg8"), SubResource("Resource_7oaae")])
+open_after_interactions = 3
+before_opening = Array[ExtResource("1_wpdtv")]([SubResource("Resource_seuf7")])

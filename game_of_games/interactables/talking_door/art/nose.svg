@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="110" viewBox="0 0 90 110">
+  <defs>
+    <linearGradient id="bridgeL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4f3628" stop-opacity="0"/>
+      <stop offset="1" stop-color="#4f3628" stop-opacity="0.45"/>
+    </linearGradient>
+    <radialGradient id="tip" cx="0.5" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#e2cdb2" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#c9ad90" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="under" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3a241b" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#3a241b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- shadow cast under the nose -->
+  <ellipse cx="45" cy="98" rx="34" ry="10" fill="url(#under)"/>
+  <!-- bridge side shading -->
+  <path d="M30 6 Q28 46 18 74 L28 74 Q36 44 38 6 Z" fill="url(#bridgeL)"/>
+  <path d="M60 6 Q62 46 72 74 L62 74 Q54 44 52 6 Z" fill="#4f3628" fill-opacity="0.18"/>
+  <!-- alar wings -->
+  <path d="M20 80 Q8 88 18 96 Q26 100 32 94" stroke="#3e281e" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M70 80 Q82 88 72 96 Q64 100 58 94" stroke="#3e281e" stroke-opacity="0.6" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- tip -->
+  <ellipse cx="45" cy="80" rx="20" ry="16" fill="url(#tip)"/>
+  <!-- nostrils -->
+  <ellipse cx="34" cy="94" rx="7" ry="3.6" fill="#22140f" transform="rotate(18 34 94)"/>
+  <ellipse cx="56" cy="94" rx="7" ry="3.6" fill="#22140f" transform="rotate(-18 56 94)"/>
+  <ellipse cx="44" cy="62" rx="5" ry="12" fill="#f0e2cb" fill-opacity="0.25"/>
+</svg>

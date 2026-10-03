@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="80" viewBox="0 0 150 80">
+  <defs>
+    <radialGradient id="hi" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#e5d2b8" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#e5d2b8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sh" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3c261d" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#3c261d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- crease under the lower lip, chin ball, shadow under the jaw -->
+  <ellipse cx="75" cy="14" rx="34" ry="8" fill="url(#sh)"/>
+  <ellipse cx="75" cy="40" rx="38" ry="22" fill="url(#hi)"/>
+  <path d="M30 66 Q75 82 120 66" stroke="#2c1c15" stroke-opacity="0.35" stroke-width="5" fill="none" stroke-linecap="round"/>
+</svg>

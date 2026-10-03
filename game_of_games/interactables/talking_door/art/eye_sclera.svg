@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="52" viewBox="0 0 96 52">
+  <defs>
+    <radialGradient id="w" cx="48" cy="28" r="50" gradientUnits="userSpaceOnUse" gradientTransform="translate(48 28) scale(1 0.62) translate(-48 -28)">
+      <stop offset="0" stop-color="#f1ebdd"/>
+      <stop offset="0.55" stop-color="#e2d6c3"/>
+      <stop offset="0.85" stop-color="#bfa894"/>
+      <stop offset="1" stop-color="#9c7f6c"/>
+    </radialGradient>
+    <radialGradient id="pink" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#c46a62" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#c46a62" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M1 28 C 16 4, 70 -2, 95 24 C 76 50, 22 52, 1 28 Z" fill="url(#w)"/>
+  <ellipse cx="6" cy="28" rx="9" ry="7" fill="url(#pink)"/>
+  <ellipse cx="91" cy="24" rx="7" ry="6" fill="url(#pink)" opacity="0.6"/>
+</svg>

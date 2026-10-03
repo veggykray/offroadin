@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="140" viewBox="0 0 120 140">
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a88d72"/>
+      <stop offset="0.8" stop-color="#9a7d64"/>
+      <stop offset="1" stop-color="#7d6150"/>
+    </linearGradient>
+    <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a0f0a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#1a0f0a" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- soft shadow the lid casts onto the eyeball -->
+  <path d="M0 112 Q60 94 120 112 L120 130 Q60 112 0 130 Z" fill="url(#shadow)"/>
+  <!-- the lid itself; its bottom edge (the lash line) sits at y=106 in the middle -->
+  <path d="M0 0 L120 0 L120 116 Q60 96 0 116 Z" fill="url(#skin)"/>
+  <!-- crease / fold -->
+  <path d="M10 96 Q60 76 110 96" stroke="#5d4434" stroke-opacity="0.5" stroke-width="2" fill="none"/>
+  <!-- lash line -->
+  <path d="M0 116 Q60 96 120 116" stroke="#160d09" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+</svg>

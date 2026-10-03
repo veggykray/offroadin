@@ -1,0 +1,156 @@
+[gd_resource type="Resource" script_class="FaceExpressionSet" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://interactables/talking_door/face/FaceExpression.gd" id="1_f15xx"]
+[ext_resource type="Script" path="res://interactables/talking_door/face/FaceExpressionSet.gd" id="2_3oabp"]
+
+[sub_resource type="Resource" id="Resource_1f68y"]
+resource_name = "idle"
+script = ExtResource("1_f15xx")
+upper_lid = 0.86
+
+[sub_resource type="Resource" id="Resource_ju4mx"]
+resource_name = "curious"
+script = ExtResource("1_f15xx")
+name = &"curious"
+brow_height = 8.0
+brow_angle = 5.0
+brow_asymmetry = 8.0
+upper_lid = 0.93
+pupil_size = 1.12
+glance_rate = 0.7
+mouth_smile = 0.05
+mouth_width = 0.95
+mouth_open = 0.04
+mouth_pucker = 0.12
+face_offset = Vector2(0, -2)
+face_tilt = 2.5
+
+[sub_resource type="Resource" id="Resource_0o1to"]
+resource_name = "happy"
+script = ExtResource("1_f15xx")
+name = &"happy"
+brow_height = 6.0
+brow_angle = 5.0
+upper_lid = 0.72
+lower_lid = 0.6
+pupil_size = 1.1
+tracking = 0.9
+blink_rate = 1.1
+mouth_smile = 0.9
+mouth_width = 1.15
+mouth_open = 0.1
+mouth_teeth = 0.5
+face_offset = Vector2(0, -2)
+
+[sub_resource type="Resource" id="Resource_o2vno"]
+resource_name = "annoyed"
+script = ExtResource("1_f15xx")
+name = &"annoyed"
+brow_height = -6.0
+brow_angle = -22.0
+brow_squeeze = 7.0
+upper_lid = 0.62
+lower_lid = 0.3
+lid_tilt = 15.0
+pupil_size = 0.85
+glance_rate = 0.8
+blink_rate = 1.2
+mouth_smile = -0.35
+mouth_width = 0.92
+mouth_press = 0.6
+mouth_asymmetry = -0.1
+face_offset = Vector2(0, 1)
+breath_amount = 1.15
+breath_rate = 1.15
+
+[sub_resource type="Resource" id="Resource_wjwv8"]
+resource_name = "suspicious"
+script = ExtResource("1_f15xx")
+name = &"suspicious"
+brow_height = -3.0
+brow_angle = -10.0
+brow_squeeze = 4.0
+brow_asymmetry = 13.0
+upper_lid = 0.55
+lower_lid = 0.4
+lid_tilt = 8.0
+lid_asymmetry = 0.18
+pupil_size = 0.8
+glance_rate = 1.7
+blink_rate = 0.6
+mouth_smile = -0.1
+mouth_width = 0.9
+mouth_pucker = 0.15
+mouth_press = 0.4
+mouth_asymmetry = 0.45
+face_offset = Vector2(0, 1)
+face_tilt = -1.5
+breath_amount = 0.8
+breath_rate = 0.9
+
+[sub_resource type="Resource" id="Resource_57sqi"]
+resource_name = "sad"
+script = ExtResource("1_f15xx")
+name = &"sad"
+brow_height = 4.0
+brow_angle = 22.0
+brow_squeeze = 4.0
+upper_lid = 0.58
+lid_tilt = -16.0
+pupil_size = 1.05
+tracking = 0.55
+gaze_bias = Vector2(0, 0.4)
+glance_rate = 0.6
+blink_rate = 0.8
+mouth_smile = -0.6
+mouth_width = 0.95
+mouth_open = 0.02
+mouth_press = 0.2
+face_offset = Vector2(0, 4)
+face_tilt = -1.5
+breath_amount = 1.25
+breath_rate = 0.8
+
+[sub_resource type="Resource" id="Resource_d8tcn"]
+resource_name = "surprised"
+script = ExtResource("1_f15xx")
+name = &"surprised"
+brow_height = 17.0
+brow_angle = 3.0
+brow_squeeze = -2.0
+upper_lid = 1.18
+lower_lid = 0.0
+pupil_size = 1.3
+glance_rate = 0.3
+blink_rate = 0.3
+mouth_width = 0.75
+mouth_open = 0.45
+mouth_pucker = 0.55
+face_offset = Vector2(0, -5)
+face_scale = 1.02
+breath_amount = 1.4
+breath_rate = 1.3
+
+[sub_resource type="Resource" id="Resource_dxx5g"]
+resource_name = "asleep"
+script = ExtResource("1_f15xx")
+name = &"asleep"
+brow_height = -3.0
+upper_lid = 0.0
+lower_lid = 0.0
+tracking = 0.0
+gaze_bias = Vector2(0, 0.5)
+glance_rate = 0.0
+blink_rate = 0.0
+mouth_smile = -0.1
+mouth_width = 0.95
+mouth_open = 0.12
+face_offset = Vector2(0, 5)
+face_tilt = 3.0
+face_scale = 0.985
+breath_amount = 2.2
+breath_rate = 0.55
+
+[resource]
+script = ExtResource("2_3oabp")
+expressions = Array[ExtResource("1_f15xx")]([SubResource("Resource_1f68y"), SubResource("Resource_ju4mx"), SubResource("Resource_0o1to"), SubResource("Resource_o2vno"), SubResource("Resource_wjwv8"), SubResource("Resource_57sqi"), SubResource("Resource_d8tcn"), SubResource("Resource_dxx5g")])

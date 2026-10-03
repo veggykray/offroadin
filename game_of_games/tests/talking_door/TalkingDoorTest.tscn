@@ -1,0 +1,90 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://tests/talking_door/TalkingDoorTest.gd" id="test_script"]
+[ext_resource type="Script" path="res://tests/talking_door/WaitingRoomBackdrop.gd" id="backdrop_script"]
+[ext_resource type="PackedScene" path="res://interactables/talking_door/TalkingDoor.tscn" id="door_scene"]
+[ext_resource type="Script" path="res://tests/talking_door/PlaceholderBill.gd" id="bill_script"]
+
+[sub_resource type="Gradient" id="glow_gradient"]
+colors = PackedColorArray(1, 0.88, 0.62, 1, 1, 0.88, 0.62, 0)
+
+[sub_resource type="GradientTexture2D" id="glow_texture"]
+gradient = SubResource("glow_gradient")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="additive"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="vignette_gradient"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.35, 0, 0, 0, 0.92)
+
+[sub_resource type="GradientTexture2D" id="vignette_texture"]
+gradient = SubResource("vignette_gradient")
+width = 512
+height = 288
+fill = 1
+fill_from = Vector2(0.5, 0.45)
+fill_to = Vector2(1.05, 1.05)
+
+[sub_resource type="Gradient" id="dust_gradient"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 0.9, 0.7, 0, 1, 0.9, 0.7, 0.5, 1, 0.9, 0.7, 0)
+
+[node name="TalkingDoorTest" type="Node2D"]
+script = ExtResource("test_script")
+
+[node name="Backdrop" type="Node2D" parent="."]
+script = ExtResource("backdrop_script")
+
+[node name="TalkingDoor" parent="." instance=ExtResource("door_scene")]
+position = Vector2(960, 990)
+
+[node name="LampGlow" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.22)
+material = SubResource("additive")
+position = Vector2(960, 420)
+scale = Vector2(3.6, 4.2)
+texture = SubResource("glow_texture")
+
+[node name="Dust" type="CPUParticles2D" parent="."]
+material = SubResource("additive")
+position = Vector2(960, 520)
+amount = 40
+lifetime = 9.0
+preprocess = 9.0
+emission_shape = 3
+emission_rect_extents = Vector2(380, 420)
+direction = Vector2(0.3, 1)
+spread = 60.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 14.0
+scale_amount_min = 1.0
+scale_amount_max = 2.5
+color = Color(1, 0.92, 0.75, 0.35)
+color_ramp = SubResource("dust_gradient")
+
+[node name="Bill" type="Node2D" parent="."]
+position = Vector2(250, 990)
+script = ExtResource("bill_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+
+[node name="Vignette" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Shade" type="TextureRect" parent="Vignette"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("vignette_texture")
+expand_mode = 1

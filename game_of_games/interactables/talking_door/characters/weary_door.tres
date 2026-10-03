@@ -1,0 +1,135 @@
+[gd_resource type="Resource" script_class="DoorCharacterData" load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://interactables/talking_door/dialogue/DialogueLine.gd" id="1_sp4sw"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/open_01.wav" id="2_u7mt7"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/open_02.wav" id="3_qlvxg"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/farewell_01.wav" id="4_nfm7t"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/greet_01.wav" id="5_ccuy2"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/greet_02.wav" id="6_8cal8"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/greet_03.wav" id="7_j3l54"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/interact_01.wav" id="8_w32nr"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/interact_02.wav" id="9_ml2mg"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/interact_03.wav" id="10_g00kd"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/return_01.wav" id="11_qhg4x"]
+[ext_resource type="Script" path="res://interactables/talking_door/DoorCharacterData.gd" id="12_npt1b"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/while_open_01.wav" id="13_stjxw"]
+[ext_resource type="AudioStream" path="res://interactables/talking_door/audio/weary_door/while_open_02.wav" id="14_aoh8o"]
+
+[sub_resource type="Resource" id="Resource_15t11"]
+script = ExtResource("1_sp4sw")
+text = "Fine. [slow_blink]Fine! In you go, then."
+audio = ExtResource("2_u7mt7")
+expression = &"annoyed"
+hold_after = 0.2
+
+[sub_resource type="Resource" id="Resource_hnyqs"]
+script = ExtResource("1_sp4sw")
+text = "[open_door]Mind the step. [glance_away]There isn't one."
+audio = ExtResource("3_qlvxg")
+expression = &"happy"
+expression_intensity = 0.5
+hold_after = 0.5
+
+[sub_resource type="Resource" id="Resource_1ir3t"]
+script = ExtResource("1_sp4sw")
+text = "[glance_away]Rude."
+audio = ExtResource("4_nfm7t")
+expression = &"annoyed"
+expression_intensity = 0.5
+delay_before = 0.4
+hold_after = 0.3
+
+[sub_resource type="Resource" id="Resource_0huup"]
+script = ExtResource("1_sp4sw")
+expression = &"curious"
+delay_before = 0.5
+hold_after = 0.7
+
+[sub_resource type="Resource" id="Resource_yasou"]
+script = ExtResource("1_sp4sw")
+text = "Oh. [brow_raise]You're back."
+audio = ExtResource("5_ccuy2")
+hold_after = 0.5
+
+[sub_resource type="Resource" id="Resource_xensh"]
+script = ExtResource("1_sp4sw")
+text = "[look_up_down]"
+hold_after = 2.2
+
+[sub_resource type="Resource" id="Resource_fayul"]
+script = ExtResource("1_sp4sw")
+text = "At least... [glance_away]I think [look_at_player]you're back."
+audio = ExtResource("6_8cal8")
+hold_after = 0.8
+
+[sub_resource type="Resource" id="Resource_hpydv"]
+script = ExtResource("1_sp4sw")
+expression = &"suspicious"
+expression_intensity = 0.6
+
+[sub_resource type="Resource" id="Resource_5uogd"]
+script = ExtResource("1_sp4sw")
+text = "You [squint]are Bill, aren't you?"
+audio = ExtResource("7_j3l54")
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_vck8e"]
+script = ExtResource("1_sp4sw")
+text = "You've already [brow_furrow]pressed me once."
+audio = ExtResource("8_w32nr")
+expression = &"annoyed"
+expression_intensity = 0.45
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_7ljk5"]
+script = ExtResource("1_sp4sw")
+text = "I am a door, Bill. [squint]Not a lift button."
+audio = ExtResource("9_ml2mg")
+expression = &"annoyed"
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_t5f5i"]
+script = ExtResource("1_sp4sw")
+text = "What, exactly, [glance_away]are you hoping [look_at_player]will happen?"
+audio = ExtResource("10_g00kd")
+expression = &"suspicious"
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_yq4sl"]
+script = ExtResource("1_sp4sw")
+text = "[expr:suspicious:0.7]Oh. You again."
+audio = ExtResource("11_qhg4x")
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_06vyo"]
+script = ExtResource("1_sp4sw")
+text = "Well? [nod]Go on."
+audio = ExtResource("13_stjxw")
+expression = &"curious"
+hold_after = 0.4
+
+[sub_resource type="Resource" id="Resource_v8u5m"]
+script = ExtResource("1_sp4sw")
+text = "You're letting the draught in, Bill."
+audio = ExtResource("14_aoh8o")
+expression = &"annoyed"
+expression_intensity = 0.6
+hold_after = 0.4
+
+[resource]
+script = ExtResource("12_npt1b")
+display_name = "Door No. 1 (Weary)"
+notes = "Tired, dry, faintly suspicious. Has seen Bill before. Possibly many times."
+noticed_expression = &"suspicious"
+falls_asleep = true
+fall_asleep_after = 30.0
+notice_delay = 0.5
+watch_leave_time = 2.8
+shiftiness = 0.8
+greeting = Array[ExtResource("1_sp4sw")]([SubResource("Resource_0huup"), SubResource("Resource_yasou"), SubResource("Resource_xensh"), SubResource("Resource_fayul"), SubResource("Resource_hpydv"), SubResource("Resource_5uogd")])
+return_greeting = Array[ExtResource("1_sp4sw")]([SubResource("Resource_yq4sl")])
+interact_responses = Array[ExtResource("1_sp4sw")]([SubResource("Resource_vck8e"), SubResource("Resource_7ljk5"), SubResource("Resource_t5f5i")])
+farewell = Array[ExtResource("1_sp4sw")]([SubResource("Resource_1ir3t")])
+open_after_interactions = 4
+before_opening = Array[ExtResource("1_sp4sw")]([SubResource("Resource_15t11"), SubResource("Resource_hnyqs")])
+while_open = Array[ExtResource("1_sp4sw")]([SubResource("Resource_06vyo"), SubResource("Resource_v8u5m")])

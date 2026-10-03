@@ -1,0 +1,138 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://interactables/talking_door/TalkingDoorFace.gd" id="face_script"]
+[ext_resource type="Resource" path="res://interactables/talking_door/face/default_expressions.tres" id="exprs"]
+[ext_resource type="Script" path="res://interactables/talking_door/face/FaceEye.gd" id="eye_script"]
+[ext_resource type="Script" path="res://interactables/talking_door/face/FaceBrow.gd" id="brow_script"]
+[ext_resource type="Script" path="res://interactables/talking_door/face/ProceduralMouth.gd" id="mouth_script"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/face_plate.svg" id="t_plate"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_socket_shadow.svg" id="t_socket"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_sclera.svg" id="t_sclera"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_iris.svg" id="t_iris"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_pupil.svg" id="t_pupil"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_catchlight.svg" id="t_catch"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eyelid_upper.svg" id="t_lidu"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eyelid_lower.svg" id="t_lidl"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/eye_outline.svg" id="t_outline"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/brow.svg" id="t_brow"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/nose.svg" id="t_nose"]
+[ext_resource type="Texture2D" path="res://interactables/talking_door/art/chin.svg" id="t_chin"]
+
+[node name="TalkingDoorFace" type="Node2D"]
+script = ExtResource("face_script")
+expression_set = ExtResource("exprs")
+
+[node name="Skin" type="Node2D" parent="."]
+
+[node name="FacePlate" type="Sprite2D" parent="Skin"]
+texture = ExtResource("t_plate")
+
+[node name="Features" type="Node2D" parent="Skin"]
+
+[node name="LeftEye" type="Node2D" parent="Skin/Features"]
+script = ExtResource("eye_script")
+position = Vector2(-64, -48)
+is_right_eye = false
+
+[node name="Socket" type="Sprite2D" parent="Skin/Features/LeftEye"]
+position = Vector2(0, -3)
+texture = ExtResource("t_socket")
+
+[node name="Sclera" type="Sprite2D" parent="Skin/Features/LeftEye"]
+clip_children = 2
+texture = ExtResource("t_sclera")
+flip_h = true
+
+[node name="Iris" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
+position = Vector2(0, 1)
+texture = ExtResource("t_iris")
+
+[node name="Pupil" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera/Iris"]
+texture = ExtResource("t_pupil")
+
+[node name="Catchlight" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera/Iris"]
+position = Vector2(-5, -6)
+texture = ExtResource("t_catch")
+
+[node name="UpperLid" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
+position = Vector2(0, -14)
+offset = Vector2(0, -36)
+texture = ExtResource("t_lidu")
+
+[node name="LowerLid" type="Sprite2D" parent="Skin/Features/LeftEye/Sclera"]
+position = Vector2(0, 19)
+offset = Vector2(0, 16)
+texture = ExtResource("t_lidl")
+
+[node name="Outline" type="Sprite2D" parent="Skin/Features/LeftEye"]
+texture = ExtResource("t_outline")
+flip_h = true
+
+[node name="RightEye" type="Node2D" parent="Skin/Features"]
+script = ExtResource("eye_script")
+position = Vector2(64, -48)
+is_right_eye = true
+
+[node name="Socket" type="Sprite2D" parent="Skin/Features/RightEye"]
+position = Vector2(0, -3)
+texture = ExtResource("t_socket")
+
+[node name="Sclera" type="Sprite2D" parent="Skin/Features/RightEye"]
+clip_children = 2
+texture = ExtResource("t_sclera")
+flip_h = false
+
+[node name="Iris" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
+position = Vector2(0, 1)
+texture = ExtResource("t_iris")
+
+[node name="Pupil" type="Sprite2D" parent="Skin/Features/RightEye/Sclera/Iris"]
+texture = ExtResource("t_pupil")
+
+[node name="Catchlight" type="Sprite2D" parent="Skin/Features/RightEye/Sclera/Iris"]
+position = Vector2(-5, -6)
+texture = ExtResource("t_catch")
+
+[node name="UpperLid" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
+position = Vector2(0, -14)
+offset = Vector2(0, -36)
+texture = ExtResource("t_lidu")
+
+[node name="LowerLid" type="Sprite2D" parent="Skin/Features/RightEye/Sclera"]
+position = Vector2(0, 19)
+offset = Vector2(0, 16)
+texture = ExtResource("t_lidl")
+
+[node name="Outline" type="Sprite2D" parent="Skin/Features/RightEye"]
+texture = ExtResource("t_outline")
+flip_h = false
+
+[node name="LeftBrow" type="Node2D" parent="Skin/Features"]
+script = ExtResource("brow_script")
+position = Vector2(-64, -97)
+is_right_brow = false
+
+[node name="Art" type="Sprite2D" parent="Skin/Features/LeftBrow"]
+texture = ExtResource("t_brow")
+
+[node name="RightBrow" type="Node2D" parent="Skin/Features"]
+script = ExtResource("brow_script")
+position = Vector2(64, -97)
+is_right_brow = true
+
+[node name="Art" type="Sprite2D" parent="Skin/Features/RightBrow"]
+texture = ExtResource("t_brow")
+
+[node name="Nose" type="Sprite2D" parent="Skin/Features"]
+position = Vector2(0, 3)
+texture = ExtResource("t_nose")
+
+[node name="Jaw" type="Node2D" parent="Skin/Features"]
+
+[node name="Chin" type="Sprite2D" parent="Skin/Features/Jaw"]
+position = Vector2(0, 136)
+texture = ExtResource("t_chin")
+
+[node name="Mouth" type="Node2D" parent="Skin/Features"]
+script = ExtResource("mouth_script")
+position = Vector2(0, 92)
