@@ -853,14 +853,17 @@ func _ending(b: LBBiscuit) -> void:
 	# CHOMP
 	var dog := bill.dog
 	dog.visible = true
-	dog.scale = Vector3.ONE * 1.5
 	var palm := player.palm_world()
 	var side := Vector3(0.28, 0.0, -0.55)
-	dog.global_position = palm + side + Vector3(0, -1.2, 0)
-	dog.look_at(palm + Vector3(0, -0.05, 0), Vector3.UP)
+	var top := palm + side * 0.45 + Vector3(0, -0.05, 0)
+	# aim from where the jaws will snap shut, then drop below the table to erupt
+	dog.global_position = top
+	dog.look_at(palm + Vector3(0, 0.02, 0) + (palm - top).normalized() * 0.3, Vector3.UP)
+	dog.scale = Vector3.ONE * 1.5
+	dog.global_position = top + Vector3(0, -1.2, 0)
 	bill.dog_jaw.rotation.x = 0.8
 	var up := create_tween()
-	up.tween_property(dog, "global_position", palm + side * 0.45 + Vector3(0, -0.05, 0), 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	up.tween_property(dog, "global_position", top, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	await up.finished
 	audio.play_at("chomp", palm, 4.0)
 	bill.dog_jaw.rotation.x = 0.0
