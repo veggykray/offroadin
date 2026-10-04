@@ -28,6 +28,7 @@ var _hint_point := Vector2.ZERO
 var _nudge_memory: Node2D = null
 var _nudge_chute: Node2D = null
 var _nudge_phase := 0
+var _target_natural := false
 var _retreating := false
 var _home := Vector2.ZERO
 
@@ -71,6 +72,7 @@ func on_stimulus(stim) -> bool:
 			if d > tap_attention_radius or state == "nudge":
 				return false
 			_pending_target = stim.position
+			_target_natural = stim.natural
 			_pending_timer = reaction_delay * (0.6 if state == "approach" else 1.0)
 			notice(stim.position, 0.4)
 			_hint_mode = ""
@@ -217,6 +219,11 @@ func bite_priority() -> float:
 
 func bite_point() -> Vector2:
 	return position + Vector2(randf_range(-0.6, 0.6), randf_range(-0.5, 0.5)) * body_radius
+
+
+## True while the Blimp is moving because of a hint/natural event rather than the player.
+func is_natural_push() -> bool:
+	return state == "hint" or (state == "approach" and _target_natural)
 
 
 func is_pushing_purposefully() -> bool:

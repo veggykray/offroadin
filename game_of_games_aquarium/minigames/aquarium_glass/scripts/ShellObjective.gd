@@ -132,6 +132,10 @@ func inv_mass_for(other) -> float:
 	# so the puzzle cannot quietly undo itself.
 	if other.has_method("is_pushing_purposefully") and not other.is_pushing_purposefully():
 		return 0.0
+	# Hint demonstrations may nudge the shell, but never finish the job for the player.
+	if other.has_method("is_natural_push") and other.is_natural_push() and exposed_amount() > 0.4 \
+			and other.position.x < position.x:
+		return 0.0
 	return 1.0 / body_mass
 
 
@@ -167,6 +171,8 @@ func on_coward_hit(speed: float, _dir: Vector2) -> void:
 		activity.audio.play("coward_impact", -6.0, 1.1)
 		return
 	var dmg := clampf((speed - min_crack_speed) / 700.0, 0.12, 1.2) * crack_max_hp
+	if activity.coward.get("_bolt_natural") == true:
+		dmg = minf(dmg, maxf(0.0, crack_hp - 30.0))   # a hint may crack it, never open it
 	crack_hp -= dmg
 	activity.audio.play("shell_crack", 0.0, randf_range(0.9, 1.05))
 	activity.audio.play("coward_impact", 0.0)

@@ -12,11 +12,11 @@ extends Node2D
 @export var body_radius := 16.0
 @export var body_mass := 0.8
 ## Sinking acceleration in water (px/s^2).
-@export var sink_gravity := 95.0
+@export var sink_gravity := 170.0
 ## Gentle roll towards the chute along the floor (px/s^2).
-@export var floor_roll_force := 70.0
+@export var floor_roll_force := 110.0
 ## A slow current near the floor carries the sinking memory towards the chute (px/s).
-@export var chute_current := 120.0
+@export var chute_current := 180.0
 ## Seconds resting on the floor before the Blimp comes to help.
 @export var blimp_assist_delay := 2.5
 
@@ -35,6 +35,9 @@ var _assist_started := false
 var _stuck_time := 0.0
 var _last_dist_to_chute := INF
 var _spin := 0.0
+var _wedged := 0.0
+var _lift := 0.0
+var _loose_time := 0.0
 
 
 func setup(p_activity: Node) -> void:
@@ -71,6 +74,9 @@ func drop(pos: Vector2, vel: Vector2) -> void:
 	velocity = vel
 	mem_state = "falling"
 	body_enabled = true
+	_loose_time = 0.0
+	_wedged = 0.0
+	_lift = 0.0
 	_rest_time = 0.0
 	_stuck_time = 0.0
 	_assist_started = false
@@ -120,11 +126,29 @@ func _physics(delta: float) -> void:
 	var floor_y: float = activity.get_floor_y() - body_radius
 	velocity.y += sink_gravity * delta
 	velocity *= exp(-1.6 * delta)
+	# Wedged against a rock or the shell (on the floor or mid-way down)?
+	# An upwelling lifts it up and over.
+	if _lift <= 0.0 and velocity.length() < 12.0:
+		_wedged += delta
+		if _wedged > 0.7:
+			_wedged = 0.0
+			_lift = 1.3
+			position.y -= 2.0
+			activity.water_fx.spawn_bubbles(position + Vector2(0, 10), 5, 0.6)
+	else:
+		_wedged = 0.0
+	if _lift > 0.0:
+		# An upwelling carries it up and over whatever it was stuck behind.
+		_lift -= delta
+		velocity.y = -150.0
+		velocity.x = move_toward(velocity.x, signf(activity.chute.position.x - position.x) * 90.0, 250.0 * delta)
+		if randf() < delta * 10.0:
+			activity.water_fx.spawn_bubbles(position + Vector2(0, 12), 1, 0.5)
 	if activity.chute:
 		# The current gets stronger closer to the floor.
 		var depth_k := clampf((position.y - activity.aquarium_bounds.position.y) / activity.aquarium_bounds.size.y, 0.0, 1.0)
 		var want := signf(activity.chute.position.x - position.x) * chute_current * depth_k
-		velocity.x = move_toward(velocity.x, want, 60.0 * delta)
+		velocity.x = move_toward(velocity.x, want, 140.0 * delta)
 		if randf() < delta * 3.0:
 			activity.water_fx.spawn_bubbles(position + Vector2(randf_range(-10, 10), 6), 1, 0.4)
 	if activity.chute:
@@ -153,6 +177,10 @@ func _physics(delta: float) -> void:
 func assist_delivery(delta: float, blimp: Node2D, chute: Node2D) -> void:
 	if not is_loose():
 		return
+	_loose_time += delta
+	if _loose_time > 18.0:
+		chute.force_receive(self)   # absolute safety net; should never be needed
+		return
 	var d := position.distance_to(chute.position)
 	if d > _last_dist_to_chute - 0.3:
 		_stuck_time += delta
@@ -167,6 +195,16 @@ func assist_delivery(delta: float, blimp: Node2D, chute: Node2D) -> void:
 		_stuck_time = 3.0
 	if _stuck_time > 20.0:
 		chute.force_receive(self)
+
+
+## While loose, the memory only bumps into the shell, pebbles and a Blimp that is
+## deliberately shoving it - so well-meaning creatures can't knock it backwards.
+func ignores_body(b) -> bool:
+	if b == activity.shell or b.get("is_pebble") == true:
+		return false
+	if b == activity.blimp and b.state == "nudge" and b.get("_nudge_phase") == 1:
+		return false
+	return true
 
 
 func on_body_collision(other, _normal: Vector2, rel_speed: float) -> void:

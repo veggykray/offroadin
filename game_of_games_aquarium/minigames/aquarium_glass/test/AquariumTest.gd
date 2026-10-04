@@ -41,6 +41,10 @@ func _ready() -> void:
 		bot.fast = "--fast" in args
 		bot.idle_mode = "--idle" in args
 		bot.chase_only = "--chase" in args
+		if "--sloppy" in args:   # a first-time player: imprecise and slow to react
+			bot.aim_error = 160.0
+			bot.think_time = 0.9
+			bot.max_knocks = 1
 		add_child(bot)
 
 

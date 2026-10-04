@@ -35,21 +35,21 @@ signal memory_spat(pos: Vector2, vel: Vector2)
 ## Normal fleeing speed (px/s).
 @export var chase_cruise_speed := 230.0
 ## Dash speed when something is close (px/s).
-@export var chase_dash_speed := 350.0
+@export var chase_dash_speed := 385.0
 ## Length of the "is this direction blocked?" probes (px).
-@export var trap_probe_length := 170.0
+@export var trap_probe_length := 150.0
 ## Out of 12 probe directions, this many blocked = boxed in (panic).
-@export var trap_blocked_needed := 8
+@export var trap_blocked_needed := 9
 ## Pressure per second while boxed in (1.0 = spits memory).
-@export var trap_pressure_rate := 0.42
+@export var trap_pressure_rate := 0.2
 ## Pressure per Bastard bite.
-@export var bite_pressure := 0.03
+@export var bite_pressure := 0.014
 ## Pressure from a Coward hit (also stuns it).
 @export var coward_hit_pressure := 0.45
 ## Pressure lost per second when it is free.
-@export var pressure_decay := 0.09
+@export var pressure_decay := 0.14
 ## No pressure at all for the first seconds of the chase (it has just escaped).
-@export var chase_grace_time := 3.0
+@export var chase_grace_time := 4.0
 ## After this many seconds of chase it starts tiring (slower, panics easier).
 @export var tire_after := 35.0
 
@@ -57,6 +57,9 @@ var pressure := 0.0
 ## Where the pressure came from (for tuning / debug).
 var pressure_sources := {}
 var blocked_count := 0
+var creature_blocked_count := 0
+## Probes that must be blocked by creatures (not just walls/rocks) for a trap.
+@export var trap_creature_probes_needed := 2
 var chase_goal := Vector2.ZERO
 var _decision_timer := 0.0
 var _carrying = null
@@ -202,6 +205,10 @@ func _think(delta: float) -> void:
 		body_enabled = true
 		z_index = 3
 
+	# The theft must always complete, whatever bumped into it on the way.
+	if activity.stage == activity.Stage.IDIOT_THEFT and _carrying == null and _theft_memory != null \
+			and state != "theft_approach" and state != "dazed":
+		set_state("theft_approach")
 	match state:
 		"idle":
 			_idle(delta)
@@ -377,7 +384,7 @@ func _theft_approach(delta: float) -> void:
 	# Swim in fast, around the shell if needed.
 	var d := steer_to(mp + Vector2(-facing * 8.0, 0), delta, 3.0, 2.0)
 	look_at_point(mp, 0.2)
-	if d < 28.0:
+	if d < 28.0 or (state_time > 10.0 and d < 120.0):
 		_carrying = _theft_memory
 		_theft_memory.attach_to(self)
 		_noise(0.0, 1.0)
@@ -436,7 +443,10 @@ func _chase_think(delta: float) -> void:
 
 	# --- pressure ---
 	var gain := 0.0
-	if blocked_count >= trap_blocked_needed:
+	var boxed_by_creatures := creature_blocked_count >= trap_creature_probes_needed
+	if not boxed_by_creatures:
+		pass
+	elif blocked_count >= trap_blocked_needed:
 		gain += trap_pressure_rate * (1.0 + 0.25 * (blocked_count - trap_blocked_needed))
 	elif blocked_count >= trap_blocked_needed - 2:
 		gain += trap_pressure_rate * 0.25
@@ -470,12 +480,13 @@ func _chase_think(delta: float) -> void:
 				_decision_timer = 0.0
 			return
 		"panic":
-			# Frantic darting in place.
-			if randf() < delta * 6.0:
-				velocity = Vector2.from_angle(randf() * TAU) * chase_dash_speed * 0.8
+			# Frantic darting, mostly towards whatever gap is left.
+			if randf() < delta * 5.0:
+				var d := _escape_dir() if randf() < 0.75 else Vector2.from_angle(randf() * TAU)
+				velocity = d * chase_dash_speed * 0.9
 			if randf() < delta * 2.0:
 				_noise(-4.0, 1.6)
-			if blocked_count < trap_blocked_needed - 1 and state_time > 0.6:
+			if (blocked_count < trap_blocked_needed - 1 or creature_blocked_count < trap_creature_probes_needed) and state_time > 0.6:
 				set_state("flee")
 				_decision_timer = 0.0
 			return
@@ -515,7 +526,7 @@ func _chase_think(delta: float) -> void:
 				_decision_timer = 0.0
 			return
 
-	if blocked_count >= trap_blocked_needed:
+	if blocked_count >= trap_blocked_needed and creature_blocked_count >= trap_creature_probes_needed:
 		set_state("panic")
 		_noise(-2.0, 1.7)
 		return
@@ -567,28 +578,40 @@ func _nearest_threat(threats: Array) -> Dictionary:
 	return best
 
 
+## Casts 12 probes. Returns how many are blocked; also fills creature_blocked_count
+## (probes blocked by a CREATURE rather than walls/rocks). Scenery alone never
+## counts as a trap - the player has to bring the creatures in.
 func _count_blocked() -> int:
 	var count := 0
+	creature_blocked_count = 0
 	_probe_hits.clear()
 	var r := swim_rect()
 	var probe := trap_probe_length
-	var blockers: Array = []
+	var scenery: Array = []
 	for o in activity.obstacles:
-		blockers.append([o.pos, o.r])
-	for cr in [activity.blimp, activity.sucker, activity.coward]:
-		blockers.append([cr.position, cr.body_radius + 6.0])
+		scenery.append([o.pos, o.r])
 	if activity.shell:
-		blockers.append([activity.shell.position, activity.shell.body_radius])
+		scenery.append([activity.shell.position, activity.shell.body_radius])
+	var living: Array = []
+	for cr in [activity.blimp, activity.sucker, activity.coward]:
+		living.append([cr.position, cr.body_radius + 6.0])
 	# The swarm blocks one side (as one blob), not every direction at once.
 	var sw: Node2D = activity.bastards
 	if sw.excitement > 0.15:
-		blockers.append([sw.swarm_center(), 55.0])
+		living.append([sw.swarm_center(), 55.0])
 	for i in 12:
 		var dir := Vector2.from_angle(TAU * i / 12.0)
 		var end := position + dir * probe
-		var hit := not r.grow(6.0).has_point(end)
+		var hit := false
+		for bl in living:
+			if _seg_circle(position, end, bl[0], bl[1] + body_radius * 0.4):
+				hit = true
+				creature_blocked_count += 1
+				break
 		if not hit:
-			for bl in blockers:
+			hit = not r.grow(6.0).has_point(end)
+		if not hit:
+			for bl in scenery:
 				if _seg_circle(position, end, bl[0], bl[1] + body_radius * 0.4):
 					hit = true
 					break
@@ -596,6 +619,24 @@ func _count_blocked() -> int:
 		if hit:
 			count += 1
 	return count
+
+
+## Direction of the widest gap (for panicked escapes).
+func _escape_dir() -> Vector2:
+	var best := -1
+	var best_run := 0
+	for i in 12:
+		if _probe_hits.size() < 12 or _probe_hits[i]:
+			continue
+		var run := 1
+		if not _probe_hits[(i + 1) % 12]: run += 1
+		if not _probe_hits[(i + 11) % 12]: run += 1
+		if run > best_run:
+			best_run = run
+			best = i
+	if best < 0:
+		return Vector2.from_angle(randf() * TAU)
+	return Vector2.from_angle(TAU * best / 12.0)
 
 
 static func _seg_circle(a: Vector2, b: Vector2, c: Vector2, r: float) -> bool:
@@ -638,6 +679,9 @@ func _decide(threats: Array, nearest: Dictionary) -> void:
 				score -= 1.5
 		if c.hide:
 			score += 0.35 + randf() * 0.4
+		# Restless: it doesn't like staying where it already is.
+		if p.distance_to(position) < 160.0:
+			score -= 0.7
 		score += randf() * 0.35
 		if score > best_score:
 			best_score = score
@@ -745,7 +789,7 @@ func take_bite(_from, _amount: float) -> bool:
 	impact(Vector2(randf_range(-1, 1), randf_range(-1, 1)), 0.15)
 	surprise = 1.0
 	if is_chasing():
-		if _bite_pressure_window < 0.4:
+		if _bite_pressure_window < 0.25:
 			_add_pressure(bite_pressure, "bites")
 			_bite_pressure_window += bite_pressure
 		if state == "flee" and randf() < 0.15:

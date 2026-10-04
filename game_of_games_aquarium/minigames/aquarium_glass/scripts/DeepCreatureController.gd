@@ -60,9 +60,16 @@ var _rumble_cd := 0.0
 var _sighed := false
 
 
+var _canvas: Node2D
+
+
 func setup(p_activity: Node) -> void:
 	activity = p_activity
 	z_index = -90
+	clip_children = CanvasItem.CLIP_CHILDREN_ONLY
+	_canvas = Node2D.new()
+	add_child(_canvas)
+	_canvas.draw.connect(_draw_body)
 
 
 func reset_deep(origin: Vector2) -> void:
@@ -173,8 +180,8 @@ func tick(delta: float) -> void:
 			var k2 := mode_t / 11.0
 			head_pos = _from.lerp(_to, k2)
 			dist = 0.72
-			body_alpha = 0.6 * sin(clampf(k2, 0, 1) * PI)
-			eyes_alpha = 0.35 * sin(clampf(k2, 0, 1) * PI)
+			body_alpha = 0.38 * sin(clampf(k2, 0, 1) * PI)
+			eyes_alpha = 0.12 * sin(clampf(k2, 0, 1) * PI)
 			_event_nervous = maxf(_event_nervous, 0.35)
 			activity.environment.ghost_sway(head_pos.x, delta * 3.0)
 			activity.water_fx.push(head_pos, 260.0, delta * 3.0)
@@ -236,7 +243,7 @@ func tick(delta: float) -> void:
 				attention = 0.0
 				_event_timer = 9999.0
 				finale_finished.emit()
-	queue_redraw()
+	_canvas.queue_redraw()
 
 
 func _start_event() -> void:
@@ -388,7 +395,13 @@ func _eye_offset(i: int) -> Vector2:
 	return Vector2(-260, -90) if i == 0 else Vector2(240, -70)
 
 
+## Mask: everything the giant draws is clipped to the water (CLIP_CHILDREN_ONLY).
 func _draw() -> void:
+	draw_rect(activity.aquarium_bounds, Color.WHITE)
+
+
+func _draw_body() -> void:
+	var ci := _canvas
 	if body_alpha <= 0.005 and eyes_alpha <= 0.005 and tentacle <= 0.0:
 		return
 	var s := _scale()
@@ -408,11 +421,11 @@ func _draw() -> void:
 			if sin(a) > 0.0:
 				ry *= 1.15
 			head.append(xf * Vector2(cos(a) * rx, sin(a) * ry - 120.0))
-		AqDraw.poly(self, head, Color(skin, body_alpha))
+		AqDraw.poly(ci, head, Color(skin, body_alpha))
 		# Mottling.
 		for k in 22:
 			var mp := Vector2(sin(k * 12.9898) * 900.0, cos(k * 78.233) * 500.0 - 150.0)
-			draw_circle(xf * mp, (40.0 + 30.0 * absf(sin(k * 3.1))) * s, Color(skin_light, body_alpha * 0.5))
+			ci.draw_circle(xf * mp, (40.0 + 30.0 * absf(sin(k * 3.1))) * s, Color(skin_light, body_alpha * 0.5))
 		# Brow ridges over the eyes.
 		for i in 2:
 			var eo := _eye_offset(i)
@@ -420,32 +433,32 @@ func _draw() -> void:
 			for k in 13:
 				var a2 := PI + PI * float(k) / 12.0
 				brow.append(xf * (eo + Vector2(cos(a2) * 190.0, sin(a2) * 130.0 - 20.0)))
-			draw_polyline(brow, Color(skin_light, body_alpha * 0.8), 30.0 * s)
+			ci.draw_polyline(brow, Color(skin_light, body_alpha * 0.8), 30.0 * s)
 		# Jaw line and teeth (low on the face; usually off-screen in the finale).
 		var jaw := PackedVector2Array()
 		for k in 21:
 			var x := lerpf(-900.0, 900.0, float(k) / 20.0)
 			jaw.append(xf * Vector2(x, 330.0 + pow(absf(x) / 900.0, 2.0) * -150.0))
-		draw_polyline(jaw, Color(0.01, 0.02, 0.03, body_alpha), 18.0 * s)
-		for k in 14:
+		ci.draw_polyline(jaw, Color(0.01, 0.02, 0.03, body_alpha), 18.0 * s)
+		for k in (14 if dist < 0.45 else 0):
 			var x2 := lerpf(-760.0, 760.0, float(k) / 13.0)
 			var y2 := 330.0 + pow(absf(x2) / 900.0, 2.0) * -150.0
-			AqDraw.poly(self, PackedVector2Array([xf * Vector2(x2 - 18, y2), xf * Vector2(x2, y2 + 60 + 20 * sin(k * 2.0)), xf * Vector2(x2 + 18, y2)]), Color(0.75, 0.75, 0.65, body_alpha * (1.0 - f)))
+			AqDraw.poly(ci, PackedVector2Array([xf * Vector2(x2 - 18, y2), xf * Vector2(x2, y2 + 60 + 20 * sin(k * 2.0)), xf * Vector2(x2 + 18, y2)]), Color(0.75, 0.75, 0.65, body_alpha * (1.0 - f)))
 		# Bioluminescent freckles.
 		for k in 30:
 			var fp := Vector2(sin(k * 4.7) * 1000.0, cos(k * 2.3) * 520.0 - 160.0)
 			var g := 0.5 + 0.5 * sin(_t * 1.3 + k)
-			draw_circle(xf * fp, 9.0 * s + 1.0, Color(0.4, 1.0, 0.9, body_alpha * 0.35 * g))
+			ci.draw_circle(xf * fp, 9.0 * s + 1.0, Color(0.4, 1.0, 0.9, body_alpha * 0.35 * g))
 		# Lure on a stalk.
 		var stalk := PackedVector2Array()
 		for k in 10:
 			var tt := float(k) / 9.0
 			stalk.append(xf * Vector2(-60.0 - tt * 260.0 + sin(_t * 0.8 + tt * 2.0) * 30.0 * tt, -760.0 - sin(tt * PI * 0.8) * 260.0))
-		draw_polyline(stalk, Color(skin_light, body_alpha), 22.0 * s + 1.0)
+		ci.draw_polyline(stalk, Color(skin_light, body_alpha), 22.0 * s + 1.0)
 		var lure := stalk[stalk.size() - 1]
 		var lg := 0.6 + 0.4 * sin(_t * 2.1)
-		draw_circle(lure, 90.0 * s, Color(0.5, 1.0, 0.85, body_alpha * 0.12 * lg))
-		draw_circle(lure, 38.0 * s, Color(0.7, 1.0, 0.9, body_alpha * 0.7 * lg))
+		ci.draw_circle(lure, 90.0 * s, Color(0.5, 1.0, 0.85, body_alpha * 0.12 * lg))
+		ci.draw_circle(lure, 38.0 * s, Color(0.7, 1.0, 0.9, body_alpha * 0.7 * lg))
 
 	# Eyes.
 	if eyes_alpha > 0.005:
@@ -454,9 +467,9 @@ func _draw() -> void:
 			var er := (115.0 if i == 0 else 98.0)
 			var ec := xf * eo2
 			var ers := er * s
-			draw_circle(ec, ers * 1.6, Color(0.7, 0.9, 0.5, eyes_alpha * 0.08))
-			draw_circle(ec, ers, Color(0.82, 0.88, 0.55, eyes_alpha))
-			draw_circle(ec, ers * 0.82, Color(0.95, 0.85, 0.35, eyes_alpha))
+			ci.draw_circle(ec, ers * 1.6, Color(0.7, 0.9, 0.5, eyes_alpha * 0.08))
+			ci.draw_circle(ec, ers, Color(0.82, 0.88, 0.55, eyes_alpha))
+			ci.draw_circle(ec, ers * 0.82, Color(0.95, 0.85, 0.35, eyes_alpha))
 			var look_dir := (look_at - ec)
 			var off := look_dir.normalized() * ers * 0.3 if look_dir.length() > 1.0 else Vector2.ZERO
 			# Vertical slit pupil.
@@ -464,8 +477,8 @@ func _draw() -> void:
 			for k in 16:
 				var a3 := TAU * float(k) / 16.0
 				slit.append(ec + off + Vector2(cos(a3) * ers * 0.16, sin(a3) * ers * 0.7))
-			AqDraw.poly(self, slit, Color(0.02, 0.02, 0.03, eyes_alpha))
-			draw_circle(ec + Vector2(-ers * 0.35, -ers * 0.4), ers * 0.12, Color(1, 1, 1, eyes_alpha * 0.7))
+			AqDraw.poly(ci, slit, Color(0.02, 0.02, 0.03, eyes_alpha))
+			ci.draw_circle(ec + Vector2(-ers * 0.35, -ers * 0.4), ers * 0.12, Color(1, 1, 1, eyes_alpha * 0.7))
 			var l := clampf(maxf(lid, _blink), 0.0, 1.0)
 			if l > 0.01:
 				var lid_pts := PackedVector2Array()
@@ -475,7 +488,7 @@ func _draw() -> void:
 				var cover := lerpf(-ers, ers, l)
 				lid_pts.append(ec + Vector2(ers * 1.06, cover))
 				lid_pts.append(ec + Vector2(-ers * 1.06, cover))
-				AqDraw.poly(self, lid_pts, Color(skin_light, maxf(eyes_alpha, body_alpha)))
+				AqDraw.poly(ci, lid_pts, Color(skin_light, maxf(eyes_alpha, body_alpha)))
 
 	# The appendage (finale): rises from below and taps the glass from inside.
 	if tentacle > 0.0:
@@ -493,17 +506,17 @@ func _draw() -> void:
 		for k in range(pts.size() - 1):
 			var tt2 := float(k) / pts.size()
 			var w := lerpf(130.0, 34.0, tt2)
-			draw_line(pts[k], pts[k + 1], Color(0.1, 0.13, 0.15), w)
+			ci.draw_line(pts[k], pts[k + 1], Color(0.1, 0.13, 0.15), w)
 			if k % 2 == 0:
 				var sp: Vector2 = pts[k] + (pts[k + 1] - pts[k]).orthogonal().normalized() * w * 0.32
-				draw_circle(sp, w * 0.16, Color(0.6, 0.55, 0.5, 0.8))
+				ci.draw_circle(sp, w * 0.16, Color(0.6, 0.55, 0.5, 0.8))
 		var tip_r := lerpf(26.0, 66.0, tip_press)
-		AqDraw.poly(self, _flat_disc(tip, tip_r, 1.0 - tip_press * 0.25), Color(0.16, 0.2, 0.22))
+		AqDraw.poly(ci, _flat_disc(tip, tip_r, 1.0 - tip_press * 0.25), Color(0.16, 0.2, 0.22))
 		if tip_press > 0.1:
 			for k in 8:
 				var a5 := TAU * k / 8.0
-				draw_circle(tip + Vector2(cos(a5), sin(a5) * 0.75) * tip_r * 0.62, 7.0 * tip_press, Color(0.9, 0.85, 0.8, tip_press))
-			draw_circle(tip, tip_r * 0.3, Color(0.85, 0.8, 0.75, 0.7 * tip_press))
+				ci.draw_circle(tip + Vector2(cos(a5), sin(a5) * 0.75) * tip_r * 0.62, 7.0 * tip_press, Color(0.9, 0.85, 0.8, tip_press))
+			ci.draw_circle(tip, tip_r * 0.3, Color(0.85, 0.8, 0.75, 0.7 * tip_press))
 
 
 func _flat_disc(c: Vector2, r: float, sy: float) -> PackedVector2Array:

@@ -434,7 +434,7 @@ func _update_stage(delta: float) -> void:
 			else:
 				_shell_exposed_time = 0.0
 			var e: float = shell.exposure_progress()
-			if e > _best_exposure + 35.0:
+			if e > _best_exposure + 35.0 and not blimp.is_natural_push():
 				_best_exposure = e
 				hints.notify_progress("shell_pushed", false)
 		Stage.SHELL_OPENED:
@@ -775,6 +775,8 @@ func _resolve_collisions() -> void:
 			if not b.body_enabled:
 				continue
 			if a.collision_group != "" and a.collision_group == b.collision_group:
+				continue
+			if (a.has_method("ignores_body") and a.ignores_body(b)) or (b.has_method("ignores_body") and b.ignores_body(a)):
 				continue
 			var d: Vector2 = b.position - a.position
 			var rr: float = a.body_radius + b.body_radius
