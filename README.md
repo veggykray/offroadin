@@ -4,6 +4,10 @@ Arcade four-racer off-road racing in the spirit of *Super Off Road*, in 3D.
 Three.js rendering, Rapier physics, TypeScript, Vite. See `DESIGN.md` for the game
 rules and `PROJECT_PLAN.md` / `PROGRESS.md` for architecture and status.
 
+> **Also in this repo:** `godot/` holds a separate Godot 4 project with the
+> *Game of Games* "Shroom Mart Trolley Chaos" mini-game module. See
+> [`godot/minigames/shroom_trolley/README.md`](godot/minigames/shroom_trolley/README.md).
+
 ## Run it
 
 ```bash

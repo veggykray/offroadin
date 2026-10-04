@@ -55,6 +55,20 @@ func _ready() -> void:
 			var parts := spec.split("@")
 			var id := StringName(parts[0])
 			get_tree().create_timer(float(parts[1]) if parts.size() > 1 else 5.0).timeout.connect(func(): activity.events.trigger(id))
+	if _args.has("droptest"):
+		# stationary trolley, a few cargo, then one of each type dropped in
+		activity.start_activity(bill)
+		activity.audio.muted = true
+		get_tree().create_timer(1.0).timeout.connect(func():
+			activity.spawner.stop()
+			activity.debug_fill(5))
+		var marker: Node2D = activity.get_spawn_markers()[0]
+		var i := 0
+		for id in [&"normal", &"golden", &"rotten", &"bouncy"]:
+			get_tree().create_timer(1.6 + i * 2.2).timeout.connect(func():
+				activity.spawner.queue_launch(id, 0.0, marker, activity.trolley.global_position.x))
+			i += 1
+		return
 	if _args.has("apitest"):
 		_run_api_test.call_deferred()
 		return
