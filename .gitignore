@@ -2,3 +2,6 @@ node_modules
 dist
 *.log
 tools/out
+
+# Godot
+godot/.godot/

@@ -93,3 +93,9 @@ src/
 tools/                    headless tests & debug renders (Node / Playwright)
 models/                   drop-in vehicle GLBs
 ```
+
+## Godot module: Human Zoo
+
+`godot/` holds a separate Godot 4.3+ project: the **GAME OF GAMES — Human Zoo
+("The Exhibit")** gameplay module under `godot/minigames/human_zoo/`, with a
+playable test scene. See [`godot/minigames/human_zoo/README.md`](godot/minigames/human_zoo/README.md).

@@ -1,0 +1,26 @@
+; Standalone test harness for the Human Zoo module.
+; The module itself lives entirely under res://minigames/human_zoo/ and does not
+; depend on anything in this file — copy that folder into the real project.
+
+config_version=5
+
+[application]
+
+config/name="Game of Games - Human Zoo (module test harness)"
+run/main_scene="res://minigames/human_zoo/scenes/HumanZooTest.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.05, 0.045, 0.04, 1)

@@ -1,0 +1,3120 @@
+{
+ "meta": {
+  "title": "GAME OF GAMES — HUMAN ZOO — \"THE EXHIBIT\"",
+  "version": 1,
+  "notes": "All puzzle content lives here. Conditions: \"fact\", \"!fact\", [all], {all/any/none}. Effects: unlock (topics), set (flags), consume (messages). See README.md."
+ },
+ "initial_topics": [
+  "the_machine",
+  "the_bells"
+ ],
+ "misleading": {
+  "liar_order": "order_confirmed"
+ },
+ "topics": {
+  "the_machine": {
+   "label": "Ask about the machine",
+   "ledger": "THE MACHINE",
+   "noun": "the machine"
+  },
+  "the_bells": {
+   "label": "Ask about the bells",
+   "ledger": "BELLS",
+   "noun": "the bells"
+  },
+  "third_bell": {
+   "label": "Ask about the third bell",
+   "ledger": "THIRD BELL",
+   "noun": "the third bell"
+  },
+  "king_lights": {
+   "label": "Ask about the King's lights",
+   "ledger": "KING'S LIGHTS GO OUT",
+   "noun": "the King's lights"
+  },
+  "the_bird": {
+   "label": "Ask about the bird",
+   "ledger": "THE BIRD",
+   "noun": "the bird",
+   "symbols": [
+    "BIRD"
+   ]
+  },
+  "child_blocks": {
+   "label": "Mention the blocks: bird, moon, hand",
+   "ledger": "BLOCKS:",
+   "noun": "the blocks",
+   "symbols": [
+    "BIRD",
+    "MOON",
+    "HAND"
+   ],
+   "kind": "claim",
+   "confirmed_when": "order_confirmed"
+  },
+  "liar_order": {
+   "label": "Mention Sully's version: moon, bird, hand",
+   "ledger": "SULLY SAYS:",
+   "noun": "moon, bird, hand",
+   "symbols": [
+    "MOON",
+    "BIRD",
+    "HAND"
+   ],
+   "kind": "claim"
+  },
+  "symbol_order": {
+   "label": "Ask about bird, moon, hand",
+   "ledger": "COUNTED:",
+   "noun": "the sequence",
+   "symbols": [
+    "BIRD",
+    "MOON",
+    "HAND"
+   ]
+  },
+  "liar_tree": {
+   "label": "Ask about the tree",
+   "ledger": "\"THE MACHINE GREW A TREE\"",
+   "noun": "the tree",
+   "symbols": [
+    "TREE"
+   ],
+   "kind": "claim",
+   "confirmed_when": "tree_corroborated"
+  },
+  "edith_message": {
+   "label": "Pass on Edith's message",
+   "ledger": "EDITH: \"TELL THE KING HE'S A PRICK\"",
+   "noun": "Edith's message",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "king"
+  },
+  "edith_dead": {
+   "label": "Pass on the King's reply",
+   "ledger": "KING: \"EDITH'S BEEN DEAD 17 YEARS\"",
+   "noun": "the King's reply",
+   "kind": "message",
+   "from": "king",
+   "to": "old_woman"
+  },
+  "cup_final": {
+   "label": "Ask who won the cup final",
+   "ledger": "\"WHO WON THE CUP FINAL?\"",
+   "noun": "the cup final",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "king"
+  },
+  "king_cup": {
+   "label": "Tell her: Hartlepool, last spring",
+   "ledger": "KING: \"HARTLEPOOL. LAST SPRING.\"",
+   "noun": "Hartlepool",
+   "kind": "message",
+   "from": "king",
+   "to": "old_woman"
+  },
+  "how_long": {
+   "label": "Ask: how long have you been here?",
+   "ledger": "HOW LONG HAS EVERYONE BEEN HERE?",
+   "noun": "how long you've been here",
+   "kind": "question"
+  },
+  "time_discrepancy": {
+   "label": "Talk about the numbers not adding up",
+   "ledger": "TIME DOESN'T ADD UP",
+   "noun": "the numbers"
+  },
+  "seven": {
+   "label": "Mention the seventh inhabitant",
+   "ledger": "SEVEN TRAYS. FIVE PEOPLE.",
+   "noun": "the seventh tray"
+  },
+  "king_remembers": {
+   "label": "",
+   "ledger": "KING: \"SOMEONE SANG FLAT\"",
+   "kind": "note"
+  },
+  "edith_neighbour": {
+   "label": "",
+   "ledger": "EDITH: \"ALWAYS BEEN ANOTHER\"",
+   "kind": "note"
+  },
+  "child_remembers": {
+   "label": "",
+   "ledger": "CHILD: \"A LADY WHO DID VOICES\"",
+   "kind": "note"
+  },
+  "empty_talks": {
+   "label": "Say the empty cage talks at night",
+   "ledger": "SULLY: \"THE EMPTY CAGE TALKS\"",
+   "noun": "the talking cage",
+   "kind": "claim",
+   "confirmed_when": "voice_tuned"
+  },
+  "voice": {
+   "label": "Ask about the voice",
+   "ledger": "THE VOICE KNOWS MY NAME",
+   "noun": "the voice"
+  },
+  "what_want": {
+   "label": "Ask: what do you want?",
+   "ledger": "NOT WHAT THE SYMBOLS MEAN — WHAT THEY WANT",
+   "noun": "what you want",
+   "kind": "question"
+  },
+  "desire_king": {
+   "label": "",
+   "ledger": "KING: \"EYES ON ME\"",
+   "kind": "note"
+  },
+  "desire_child": {
+   "label": "",
+   "ledger": "CHILD: \"WHAT'S BEHIND THE DOOR\"",
+   "kind": "note"
+  },
+  "desire_accountant": {
+   "label": "",
+   "ledger": "ACCOUNTANT: \"ONE NUMBER THAT STAYS\"",
+   "kind": "note"
+  },
+  "desire_liar": {
+   "label": "",
+   "ledger": "SULLY: \"BELIEVE ME ONCE\"",
+   "kind": "note"
+  },
+  "desire_old_woman": {
+   "label": "",
+   "ledger": "EDITH: \"SIT. STAY. HOLD MY HAND.\"",
+   "kind": "note"
+  },
+  "desire_empty": {
+   "label": "",
+   "ledger": "VOICE: \"REMEMBER I WAS HERE\"",
+   "kind": "note"
+  },
+  "spoon": {
+   "label": "Ask where Edith's spoon is",
+   "ledger": "EDITH'S SPOON?",
+   "noun": "the spoon",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "king",
+   "optional": true
+  },
+  "spoon_confiscated": {
+   "label": "Tell her: confiscated",
+   "ledger": "SPOON: CONFISCATED",
+   "noun": "the spoon",
+   "kind": "message",
+   "from": "king",
+   "to": "old_woman",
+   "optional": true
+  },
+  "spoon_why": {
+   "label": "Ask why he took the spoon",
+   "ledger": "SPOON: WHY?",
+   "noun": "the spoon",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "king",
+   "optional": true
+  },
+  "spoon_reason": {
+   "label": "Tell her why",
+   "ledger": "SPOON: TAPPING DURING ADDRESS",
+   "noun": "the spoon",
+   "kind": "message",
+   "from": "king",
+   "to": "old_woman",
+   "optional": true
+  },
+  "liar_claim_king": {
+   "label": "Tell him Sully says he's the real king",
+   "ledger": "SULLY: \"I'M THE REAL KING\"",
+   "noun": "Sully's claim",
+   "kind": "message",
+   "from": "liar",
+   "to": "king",
+   "optional": true
+  },
+  "king_threat": {
+   "label": "Tell Sully about the knighthood",
+   "ledger": "KING: \"KNIGHTED, THEN BEHEADED\"",
+   "noun": "the knighthood",
+   "kind": "message",
+   "from": "king",
+   "to": "liar",
+   "optional": true
+  },
+  "humming": {
+   "label": "Ask her to stop humming in three-four",
+   "ledger": "STOP HUMMING IN 3/4",
+   "noun": "the humming",
+   "kind": "message",
+   "from": "accountant",
+   "to": "old_woman",
+   "optional": true
+  },
+  "humming_reply": {
+   "label": "Tell him it's a waltz",
+   "ledger": "\"IT'S A WALTZ. COUNT IT.\"",
+   "noun": "the waltz",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "accountant",
+   "optional": true
+  },
+  "king_census": {
+   "label": "Ask him to count the King's subjects",
+   "ledger": "COUNT THE KING'S SUBJECTS",
+   "noun": "the census",
+   "kind": "message",
+   "from": "king",
+   "to": "accountant",
+   "optional": true
+  },
+  "census_result": {
+   "label": "Give the King the census result",
+   "ledger": "SUBJECTS: NOUGHT",
+   "noun": "the census",
+   "kind": "message",
+   "from": "accountant",
+   "to": "king",
+   "optional": true
+  },
+  "child_drawing": {
+   "label": "Show her the child's block-picture",
+   "ledger": "A BLOCK-PICTURE FOR EDITH",
+   "noun": "the picture",
+   "kind": "message",
+   "from": "child",
+   "to": "old_woman",
+   "optional": true
+  },
+  "drawing_question": {
+   "label": "Ask what the picture is",
+   "ledger": "\"WHAT IS IT?\"",
+   "noun": "the picture",
+   "kind": "message",
+   "from": "old_woman",
+   "to": "child",
+   "optional": true
+  },
+  "drawing_is_edith": {
+   "label": "Tell her who the picture is",
+   "ledger": "IT'S HER",
+   "noun": "the picture",
+   "kind": "message",
+   "from": "child",
+   "to": "old_woman",
+   "optional": true
+  }
+ },
+ "characters": {
+  "king": {
+   "name": "THE KING",
+   "plaque": "THE KING",
+   "short": "the King",
+   "personality": "Imperious, petty, self-important, frequently wrong. Observant, because he assumes everything that happens is about him.",
+   "voice_pitch": 0.72,
+   "color": "#6b3a7a",
+   "chat_label": "Bow (slightly)",
+   "idle": [
+    "adjust_crown",
+    "pace",
+    "pose",
+    "address"
+   ],
+   "attention_behaviour": "bang_mic",
+   "desire_concept": "RECOGNITION",
+   "greeting": [
+    {
+     "lines": [
+      "Finally. Staff.",
+      {
+       "bill": "I'm not staff."
+      },
+      "Nobody's staff until they're asked. I'm asking.",
+      {
+       "pause": 1.0
+      },
+      "The lights failed again during the third bell. I assume heads will roll."
+     ],
+     "do": {
+      "set": [
+       "met_king"
+      ],
+      "unlock": [
+       "third_bell"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     "You may approach.",
+     {
+      "pause": 0.6
+     },
+     "No, that's too close. There."
+    ],
+    [
+     "I've drafted a constitution. It's mostly about me.",
+     {
+      "pause": 1.0
+     },
+     "Chapter Four is about the hat."
+    ],
+    [
+     "The woman at the end has been spreading rumours that I'm not royal.",
+     {
+      "pause": 1.0
+     },
+     "She's right about the crown. That's ALL she's right about."
+    ],
+    [
+     "Do you know how hard it is to rule from inside a box?",
+     {
+      "pause": 1.0
+     },
+     "Very. I'm the only one who's tried."
+    ]
+   ],
+   "responses": {
+    "chat": [
+     {
+      "if": "met_accountant",
+      "optional": true,
+      "lines": [
+       "You. Messenger. Instruct the counting man to take a census of my subjects.",
+       "Accurately. I'll know."
+      ],
+      "do": {
+       "unlock": [
+        "king_census"
+       ]
+      }
+     }
+    ],
+    "the_machine": [
+     "My throne room's centrepiece. Ugly, but loyal.",
+     "One day it will do something magnificent and I shall take the credit."
+    ],
+    "the_bells": [
+     "The bells mark my official engagements.",
+     {
+      "pause": 1.0
+     },
+     "I have a great many engagements. I simply don't attend them."
+    ],
+    "third_bell": [
+     "I told you. The lights failed.",
+     "I've written a strongly-worded memo.",
+     {
+      "pause": 1.0
+     },
+     "To myself. I'm the only one with the authority."
+    ],
+    "king_lights": {
+     "lines": [
+      "Of course they go out.",
+      {
+       "pause": 0.8
+      },
+      "That's when the bird comes.",
+      "Lands on the bars. Looks at me with one eye.",
+      "A true subject."
+     ],
+     "do": {
+      "unlock": [
+       "the_bird"
+      ]
+     }
+    },
+    "the_bird": [
+     "My bird. Don't look at it.",
+     {
+      "pause": 0.6
+     },
+     "Well — look at it. Appreciatively."
+    ],
+    "child_blocks": [
+     "I don't involve myself in construction."
+    ],
+    "liar_order": [
+     "Whoever told you that is a liar. I can always tell.",
+     "It's a royal gift. Like gout."
+    ],
+    "symbol_order": [
+     "Bird, moon, hand. Yes. It's my processional order.",
+     {
+      "pause": 1.0
+     },
+     "I made it up just now, but it's been my processional order for years."
+    ],
+    "liar_tree": [
+     "A tree? In MY machine?",
+     "I'd have been informed. In writing. On a cushion."
+    ],
+    "edith_message": [
+     {
+      "if": "stage_1",
+      "lines": [
+       "Did she.",
+       {
+        "pause": 1.2
+       },
+       "Tell Edith she's been dead for seventeen years.",
+       "Tell her I went to the funeral and it was poorly catered."
+      ],
+      "do": {
+       "unlock": [
+        "edith_dead"
+       ]
+      }
+     }
+    ],
+    "cup_final": {
+     "lines": [
+      "Hartlepool. Four–nil.",
+      "Last spring. I was there. I had a pie.",
+      {
+       "pause": 1.0
+      },
+      "Why on earth does a dead woman want to know about football?"
+     ],
+     "do": {
+      "unlock": [
+       "king_cup"
+      ]
+     }
+    },
+    "how_long": [
+     "Eleven days.",
+     {
+      "pause": 1.0
+     },
+     "Twelve, if you count the day I arrived. Which I don't. I wasn't ready."
+    ],
+    "time_discrepancy": [
+     "Time is whatever I say it is.",
+     "Currently it's Tuesday."
+    ],
+    "seven": {
+     "lines": [
+      "There was another one. A fellow. Or a lady. Sang flat. At night.",
+      "I had them removed.",
+      {
+       "pause": 1.0
+      },
+      "No I didn't. I'd remember. I enjoy removing people."
+     ],
+     "do": {
+      "set": [
+       "king_remembers"
+      ],
+      "unlock": [
+       "king_remembers"
+      ]
+     }
+    },
+    "empty_talks": [
+     "Petitioners. They can wait. They've waited this long."
+    ],
+    "voice": [
+     "A voice in the empty cage? Probably a petitioner.",
+     "They can wait."
+    ],
+    "what_want": [
+     {
+      "if": "reframe",
+      "lines": [
+       "I want them to acknowledge the obvious.",
+       {
+        "pause": 1.0
+       },
+       "Look at me.",
+       {
+        "pause": 0.6
+       },
+       "No — properly. Eyes on me.",
+       "A king nobody looks at is just a man in a hat."
+      ],
+      "do": {
+       "unlock": [
+        "desire_king"
+       ]
+      }
+     }
+    ],
+    "spoon": {
+     "lines": [
+      "I confiscated it."
+     ],
+     "do": {
+      "unlock": [
+       "spoon_confiscated"
+      ]
+     }
+    },
+    "spoon_why": {
+     "lines": [
+      "She was tapping it on the glass during my address.",
+      "Every address. Ting ting ting. Like a tiny, disloyal bell."
+     ],
+     "do": {
+      "unlock": [
+       "spoon_reason"
+      ]
+     }
+    },
+    "liar_claim_king": {
+     "lines": [
+      "HE said —",
+      {
+       "pause": 1.0
+      },
+      "Tell that man he will be knighted.",
+      {
+       "pause": 0.8
+      },
+      "And then beheaded. In that order. I'm not a monster."
+     ],
+     "do": {
+      "unlock": [
+       "king_threat"
+      ]
+     }
+    },
+    "census_result": {
+     "lines": [
+      "Nought.",
+      {
+       "pause": 1.0
+      },
+      "Nought is a very regal number. It's round. Like a crown.",
+      "Have it engraved."
+     ],
+     "do": {
+      "set": [
+       "census_done"
+      ]
+     }
+    }
+   },
+   "fallback": [
+    [
+     "I don't involve myself in {topic}."
+    ],
+    [
+     "Is this about me? It sounds like it should be about me."
+    ],
+    [
+     "Put {topic} in writing. Then eat the writing. I'm busy."
+    ],
+    [
+     "Fascinating.",
+     {
+      "pause": 0.8
+     },
+     "Next."
+    ],
+    [
+     "My advisors will look into {topic}.",
+     {
+      "pause": 1.0
+     },
+     "I'll appoint some advisors."
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "You there! STAFF!",
+     "I am waiting to be consulted!",
+     "Ahem. AHEM."
+    ],
+    "notice": [
+     "Hm?",
+     "Was that about me?"
+    ],
+    "idle": [
+     "Peasants.",
+     "Is it Tuesday?",
+     "Where's my bird?",
+     "Kneel. Optional. Encouraged."
+    ]
+   }
+  },
+  "child": {
+   "name": "THE CHILD",
+   "plaque": "THE CHILD",
+   "short": "the child",
+   "personality": "Quiet, playful, extremely observant. Shows rather than explains. Not spooky — just a kid who notices things.",
+   "voice_pitch": 1.55,
+   "color": "#c9a227",
+   "chat_label": "Wave",
+   "idle": [
+    "build",
+    "knock_over",
+    "look_up",
+    "stack"
+   ],
+   "attention_behaviour": "hold_up",
+   "desire_concept": "FREEDOM / DISCOVERY",
+   "greeting": [
+    {
+     "lines": [
+      {
+       "do": "(The child looks up from a tower of blocks. Looks at Bill. Looks at the microphone.)"
+      },
+      "Your hat's wonky.",
+      {
+       "do": "(They go back to building.)"
+      }
+     ],
+     "do": {
+      "set": [
+       "met_child"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     {
+      "do": "(The child adds a block. The tower leans. They add another to make it lean more, on purpose.)"
+     }
+    ],
+    [
+     "Do you want to see a castle?",
+     {
+      "do": "(It's a single block.)"
+     },
+     "It's a small castle."
+    ],
+    [
+     "The man with the crown talks to himself.",
+     {
+      "pause": 1.0
+     },
+     "So do you, though."
+    ],
+    [
+     "Are you a grown-up?",
+     {
+      "pause": 0.6
+     },
+     "You don't really look like one."
+    ]
+   ],
+   "responses": {
+    "chat": [
+     {
+      "if": "met_old_woman",
+      "optional": true,
+      "lines": [
+       {
+        "do": "(The child holds a block construction up to the glass, pointing it down the gallery toward Edith's end.)"
+       },
+       "For the lady with the tea.",
+       "Don't drop it."
+      ],
+      "do": {
+       "unlock": [
+        "child_drawing"
+       ]
+      }
+     }
+    ],
+    "the_machine": [
+     "It's asleep.",
+     {
+      "do": "(They lay a block flat. Then stand it up again.)"
+     },
+     "It wakes up sometimes."
+    ],
+    "the_bells": {
+     "lines": [
+      {
+       "do": "(The child taps a block on the floor. Tap. Tap.)"
+      },
+      {
+       "pause": 0.6
+      },
+      {
+       "do": "(TAP. The third one much harder.)"
+      },
+      "That one's the loud one."
+     ],
+     "do": {
+      "unlock": [
+       "third_bell"
+      ]
+     }
+    },
+    "third_bell": [
+     "The dark one.",
+     {
+      "do": "(The child puts their hands over their eyes, then takes them away.)"
+     }
+    ],
+    "king_lights": [
+     "He gets scared in the dark.",
+     "He pretends he's not. He does a speech."
+    ],
+    "the_bird": {
+     "lines": [
+      {
+       "do": "(The child stops building.)"
+      },
+      {
+       "pause": 1.0
+      },
+      {
+       "do": "(They push the tower over, very deliberately, and start again.)"
+      },
+      {
+       "action": "child_blocks",
+       "args": [
+        "BIRD",
+        "MOON",
+        "HAND"
+       ]
+      },
+      {
+       "do": "(Three blocks, in a row. A bird. A moon. A hand.)"
+      },
+      "That's what it does."
+     ],
+     "do": {
+      "unlock": [
+       "child_blocks"
+      ],
+      "set": [
+       "child_order_seen"
+      ]
+     }
+    },
+    "child_blocks": [
+     "I already did it.",
+     {
+      "do": "(They tap the blocks one by one. Bird. Moon. Hand. Obviously.)"
+     }
+    ],
+    "liar_order": {
+     "lines": [
+      {
+       "do": "(The child picks up the moon block and moves it AFTER the bird block. Firmly.)"
+      },
+      {
+       "action": "child_blocks",
+       "args": [
+        "BIRD",
+        "MOON",
+        "HAND"
+       ]
+      },
+      "No."
+     ],
+     "do": {
+      "unlock": [
+       "child_blocks"
+      ],
+      "set": [
+       "child_order_seen"
+      ]
+     }
+    },
+    "symbol_order": [
+     "Told you.",
+     {
+      "do": "(The child does a small, private victory dance.)"
+     }
+    ],
+    "liar_tree": [
+     "A tree?",
+     {
+      "do": "(The child builds a very tall, very thin tower and puts a green block on top.)"
+     },
+     "Like that?"
+    ],
+    "how_long": [
+     {
+      "do": "(The child holds up four fingers. Thinks. Adds a thumb. Takes it away again.)"
+     },
+     "Four.",
+     {
+      "pause": 1.0
+     },
+     "Or a lot."
+    ],
+    "time_discrepancy": [
+     "Numbers are boring.",
+     "Except seven. Seven's got a hat."
+    ],
+    "seven": {
+     "lines": [
+      "There was a lady who did voices.",
+      "For my stories. Scary ones and silly ones.",
+      {
+       "pause": 1.2
+      },
+      "I forgot her name.",
+      {
+       "pause": 1.0
+      },
+      "That's sad, isn't it."
+     ],
+     "do": {
+      "set": [
+       "child_remembers"
+      ],
+      "unlock": [
+       "child_remembers"
+      ]
+     }
+    },
+    "empty_talks": [
+     "It does.",
+     "When everyone's asleep it does the end of stories."
+    ],
+    "voice": [
+     "It knows the end of stories.",
+     "Ask it how the one with the wolf ends. It's not how you think."
+    ],
+    "what_want": [
+     {
+      "if": "reframe",
+      "lines": [
+       "I want to see what's behind that door.",
+       {
+        "action": "child_key",
+        "args": []
+       },
+       {
+        "do": "(The child holds up a block shaped like a KEY and points it at the little painted door at the back of the enclosure.)"
+       },
+       "It's not a real door.",
+       {
+        "pause": 0.8
+       },
+       "Yet."
+      ],
+      "do": {
+       "unlock": [
+        "desire_child"
+       ]
+      }
+     }
+    ],
+    "drawing_question": {
+     "lines": [
+      {
+       "action": "child_blocks_edith",
+       "args": []
+      },
+      {
+       "do": "(The child rearranges the blocks into a lumpy little figure holding a cup.)"
+      },
+      "It's her."
+     ],
+     "do": {
+      "unlock": [
+       "drawing_is_edith"
+      ]
+     }
+    }
+   },
+   "fallback": [
+    [
+     {
+      "do": "(The child considers this. Then puts a block on their head.)"
+     }
+    ],
+    [
+     "What's {topic}?",
+     {
+      "pause": 0.8
+     },
+     "Is it a kind of dog?"
+    ],
+    [
+     {
+      "do": "(The child shrugs with their entire body.)"
+     }
+    ],
+    [
+     "I'm busy.",
+     {
+      "do": "(They aren't.)"
+     }
+    ],
+    [
+     {
+      "do": "(The child builds a small wall between themselves and the microphone.)"
+     }
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "Psst.",
+     "Hey. HEY.",
+     "Look!"
+    ],
+    "notice": [
+     "Oh!",
+     "..."
+    ],
+    "idle": [
+     "Wonky hat.",
+     "Boom.",
+     "Again!"
+    ]
+   }
+  },
+  "accountant": {
+   "name": "THE ACCOUNTANT",
+   "plaque": "THE ACCOUNTANT",
+   "short": "the Accountant",
+   "personality": "Obsessed with counting. Dry, pedantic, oddly vulnerable about anything that won't stay counted.",
+   "voice_pitch": 1.0,
+   "color": "#3f6b5a",
+   "chat_label": "Say hello",
+   "idle": [
+    "write_wall",
+    "count_nod",
+    "check_watch",
+    "tap_chart"
+   ],
+   "attention_behaviour": "tap_chart",
+   "desire_concept": "CERTAINTY",
+   "greeting": [
+    {
+     "lines": [
+      "Visitor. Number...",
+      {
+       "pause": 0.8
+      },
+      "One.",
+      "You're the first.",
+      {
+       "pause": 0.6
+      },
+      "Today.",
+      {
+       "pause": 0.6
+      },
+      "Possibly ever. I don't know what today is.",
+      "Mind the chalk."
+     ],
+     "do": {
+      "set": [
+       "met_accountant"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     "I have counted the tiles in here four hundred times.",
+     "Three hundred and twelve.",
+     {
+      "pause": 1.0
+     },
+     "Except once it was three hundred and thirteen. I don't talk about that."
+    ],
+    [
+     "You've blinked eleven times since you got here.",
+     {
+      "pause": 1.0
+     },
+     "Twelve."
+    ],
+    [
+     "The man in the crown says 'I' two hundred and six times an hour.",
+     "I've started a second wall for him."
+    ]
+   ],
+   "responses": {
+    "chat": [
+     {
+      "if": "met_old_woman",
+      "optional": true,
+      "lines": [
+       "If you're passing the woman at the end —",
+       "Ask her to stop humming in three-four time. It's ruining my sevens."
+      ],
+      "do": {
+       "unlock": [
+        "humming"
+       ]
+      }
+     }
+    ],
+    "the_bells": {
+     "lines": [
+      "The bell rings every forty-seven seconds.",
+      {
+       "pause": 1.0
+      },
+      "Except Tuesdays.",
+      {
+       "pause": 1.0
+      },
+      "I don't know if today is Tuesday.",
+      "Every third bell is lower. I mark those separately."
+     ],
+     "do": {
+      "unlock": [
+       "third_bell"
+      ]
+     }
+    },
+    "third_bell": [
+     "Two thousand, two hundred and six third bells.",
+     "Each one, something happens three doors down. I can't see it from here.",
+     {
+      "pause": 1.0
+     },
+     "I just hear the complaining."
+    ],
+    "the_machine": [
+     "Since I arrived it has made one thousand, nine hundred and four noises.",
+     {
+      "pause": 1.0
+     },
+     "Mostly snoring."
+    ],
+    "the_bird": [
+     "One.",
+     {
+      "do": "(Bill waits.)"
+     },
+     "You asked about bird. There is one."
+    ],
+    "king_lights": [
+     "I don't count him. He makes it difficult."
+    ],
+    "child_blocks": {
+     "lines": [
+      "Bird, moon, hand?",
+      {
+       "do": "(He flips back through the chalk tallies on the wall.)"
+      },
+      "Third bell. Lights out. Bird.",
+      "Twelve seconds: the moon lamp.",
+      "Nine seconds: the feeding hand.",
+      "Bird. Moon. Hand. Two thousand, two hundred and six times out of two thousand, two hundred and six.",
+      {
+       "pause": 1.0
+      },
+      "The child's right. That's unsettling."
+     ],
+     "do": {
+      "unlock": [
+       "symbol_order"
+      ],
+      "set": [
+       "order_confirmed"
+      ]
+     }
+    },
+    "liar_order": {
+     "lines": [
+      "Moon, bird, hand?",
+      {
+       "pause": 0.6
+      },
+      "No.",
+      "Bird, moon, hand. I have it two thousand, two hundred and six times.",
+      "Whoever told you that is lying.",
+      {
+       "pause": 1.0
+      },
+      "Which narrows it down."
+     ],
+     "do": {
+      "unlock": [
+       "symbol_order"
+      ],
+      "set": [
+       "order_confirmed"
+      ]
+     }
+    },
+    "symbol_order": [
+     "The moon lamp is the only thing in here that has never once been late.",
+     {
+      "pause": 1.0
+     },
+     "I find that very comforting. Don't tell anyone."
+    ],
+    "liar_tree": [
+     "Trees: nought.",
+     "I'd have counted the leaves. I'd have enjoyed that."
+    ],
+    "how_long": {
+     "lines": [
+      "Two thousand, two hundred and six third bells. Three bells each. Forty-seven seconds a bell —",
+      {
+       "pause": 1.0
+      },
+      "Eighty-six hours.",
+      {
+       "do": "(He looks around. Every inch of every wall is covered in chalk.)"
+      },
+      "I have forty-one years of tallies.",
+      {
+       "pause": 1.4
+      },
+      "Those can't both be true."
+     ],
+     "do": {
+      "unlock": [
+       "time_discrepancy"
+      ]
+     }
+    },
+    "time_discrepancy": {
+     "lines": [
+      "Recounting.",
+      {
+       "do": "(Chalk squeaks for quite a long time.)"
+      },
+      "Everything's off. Even the bell. I've just timed it. It isn't forty-seven seconds. It never was.",
+      "And the meals.",
+      {
+       "pause": 1.0
+      },
+      "Seven trays. Every day. Seven.",
+      "There are five of us.",
+      "I've counted the empty one twice, in case it was being shy."
+     ],
+     "do": {
+      "unlock": [
+       "seven"
+      ]
+     }
+    },
+    "seven": [
+     "Seven trays. Five people. One empty cage. And you.",
+     {
+      "pause": 1.0
+     },
+     "You don't eat. I'd have noticed."
+    ],
+    "empty_talks": [
+     "You can't count something that isn't there.",
+     {
+      "pause": 1.0
+     },
+     "...I've just realised how many things that rules out."
+    ],
+    "voice": [
+     "I've never counted it. You can't count something that isn't there.",
+     {
+      "pause": 1.0
+     },
+     "...I've just realised how many things that rules out."
+    ],
+    "what_want": [
+     {
+      "if": "reframe",
+      "lines": [
+       "I want one number that stays the same.",
+       {
+        "pause": 1.2
+       },
+       "The moon lamp. Twelve seconds after the bird. Every time.",
+       "It's the only thing in here I'd swear on."
+      ],
+      "do": {
+       "unlock": [
+        "desire_accountant"
+       ]
+      }
+     }
+    ],
+    "humming_reply": {
+     "lines": [
+      "Count it?",
+      {
+       "pause": 1.0
+      },
+      "One two three. One two three.",
+      {
+       "pause": 1.2
+      },
+      "...Oh.",
+      "Oh, that's rather lovely."
+     ],
+     "do": {
+      "set": [
+       "waltz_done"
+      ]
+     }
+    },
+    "king_census": {
+     "lines": [
+      "Subjects.",
+      {
+       "do": "(He counts. Carefully. Twice.)"
+      },
+      "Nought.",
+      {
+       "pause": 1.0
+      },
+      "Tell him nought. I've double-checked."
+     ],
+     "do": {
+      "unlock": [
+       "census_result"
+      ]
+     }
+    }
+   },
+   "fallback": [
+    [
+     "{topic}. One.",
+     {
+      "pause": 0.6
+     },
+     "I've noted it."
+    ],
+    [
+     "I don't have a column for that."
+    ],
+    [
+     "That's not a number. Come back with a number."
+    ],
+    [
+     "Hm.",
+     {
+      "do": "(He makes a tally mark. You're not sure what for.)"
+     }
+    ],
+    [
+     "I'll add {topic} to the list of things I haven't counted.",
+     "It's a short list. You've made it longer."
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "Four hundred and— ahem.",
+     "Excuse me. EXCUSE me.",
+     "I have figures."
+    ],
+    "notice": [
+     "Hm. Noted.",
+     "Interesting. Tallying."
+    ],
+    "idle": [
+     "...forty-five, forty-six...",
+     "Seven. Again.",
+     "Tuesday?"
+    ]
+   }
+  },
+  "liar": {
+   "name": "SULLY",
+   "plaque": "THE LIAR",
+   "short": "Sully",
+   "personality": "Charismatic, confident, tells elaborate nonsense. Mostly unreliable, sometimes exaggerating, occasionally — infuriatingly — telling the absolute truth.",
+   "voice_pitch": 1.12,
+   "color": "#a33b2a",
+   "chat_label": "Ask how he's doing",
+   "idle": [
+    "mirror",
+    "finger_guns",
+    "lean",
+    "flex"
+   ],
+   "attention_behaviour": "finger_guns",
+   "desire_concept": "BELIEF",
+   "greeting": [
+    {
+     "lines": [
+      "Ah! An audience! Finally, someone with taste.",
+      "Sullivan Marchbanks. Explorer. Surgeon. Former lion.",
+      {
+       "bill": "Former lion?"
+      },
+      "Long story. Ends badly for a zebra."
+     ],
+     "do": {
+      "set": [
+       "met_liar"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     "Did I tell you I built this place?",
+     "Brick by brick. With my teeth."
+    ],
+    [
+     "I once ate an entire swan.",
+     {
+      "pause": 1.0
+     },
+     "Not on purpose. It was in a pie. I was distracted. It was a big pie."
+    ],
+    [
+     "I'm doing wonderfully. Never better. Ask anyone.",
+     {
+      "pause": 1.0
+     },
+     "Don't ask anyone."
+    ]
+   ],
+   "responses": {
+    "chat": [
+     {
+      "if": "met_king",
+      "optional": true,
+      "lines": [
+       "Do me a favour.",
+       "Tell the chap in the crown that I'm the real king.",
+       {
+        "pause": 1.0
+       },
+       "He goes a lovely colour."
+      ],
+      "do": {
+       "unlock": [
+        "liar_claim_king"
+       ]
+      }
+     }
+    ],
+    "the_machine": {
+     "lines": [
+      "The machine? It grew a tree once.",
+      {
+       "pause": 1.0
+      },
+      "A real one. Leaves. Birds. The lot. I was there.",
+      {
+       "bill": "..."
+      },
+      "You don't believe me. Nobody believes me.",
+      "That's fine. It's a burden I carry. Along with this jawline."
+     ],
+     "do": {
+      "unlock": [
+       "liar_tree"
+      ]
+     }
+    },
+    "the_bells": [
+     "I installed the bells. They're tuned to my heartbeat.",
+     "Every third one, my heart skips. I'm very romantic."
+    ],
+    "third_bell": [
+     "Ah, the third bell. That's when the ghosts change shifts.",
+     {
+      "pause": 1.0
+     },
+     "Union rules."
+    ],
+    "king_lights": [
+     "I turn them off. With my mind.",
+     {
+      "pause": 1.0
+     },
+     "No, but imagine."
+    ],
+    "the_bird": {
+     "lines": [
+      "The bird? Comes after the moon, everyone knows that.",
+      "Moon, bird, hand. I designed the sequence.",
+      {
+       "pause": 1.0
+      },
+      "On a napkin."
+     ],
+     "do": {
+      "unlock": [
+       "liar_order"
+      ]
+     }
+    },
+    "child_blocks": {
+     "lines": [
+      "The kid's got it backwards. Moon, bird, hand. Trust me.",
+      {
+       "pause": 1.0
+      },
+      "Why is everyone always making that face?"
+     ],
+     "do": {
+      "unlock": [
+       "liar_order"
+      ]
+     }
+    },
+    "liar_order": [
+     "Moon, bird, hand. Gospel.",
+     {
+      "do": "(He puts a hand on his heart. The wrong side.)"
+     }
+    ],
+    "symbol_order": [
+     "Bird, moon, hand? That's what I said.",
+     {
+      "pause": 1.0
+     },
+     "Spiritually."
+    ],
+    "liar_tree": [
+     "Absolutely true. Hand on heart.",
+     {
+      "do": "(He puts his hand on the wrong side of his chest again.)"
+     },
+     "...It IS true, though."
+    ],
+    "how_long": [
+     "Three hundred years.",
+     "I was here before the glass. They built it round me. I was asleep."
+    ],
+    "time_discrepancy": [
+     "Time's a construct. I constructed it. Nineteen-oh-six. Lovely summer."
+    ],
+    "seven": {
+     "lines": [
+      "Oh, the empty one? It talks. At night.",
+      "Tells me I'm handsome.",
+      {
+       "pause": 1.2
+      },
+      "The first part's true."
+     ],
+     "do": {
+      "set": [
+       "liar_empty_talks"
+      ],
+      "unlock": [
+       "empty_talks"
+      ]
+     }
+    },
+    "empty_talks": [
+     "I TOLD you. It talks. Nobody listens to me. It's like shouting into a cupboard. A handsome cupboard."
+    ],
+    "voice": [
+     "See? SEE? Talking cage. I'm vindicated.",
+     {
+      "pause": 1.0
+     },
+     "Write that down somewhere. In stone, ideally."
+    ],
+    "what_want": [
+     {
+      "if": "reframe",
+      "lines": [
+       "I want someone to believe me.",
+       {
+        "pause": 1.0
+       },
+       "Once.",
+       "The tree. The machine grew a tree. I'm not lying.",
+       {
+        "pause": 1.0
+       },
+       "I know exactly how that sounds coming from me."
+      ],
+      "do": {
+       "unlock": [
+        "desire_liar"
+       ]
+      }
+     }
+    ],
+    "king_threat": {
+     "lines": [
+      "Knighted? Me?",
+      {
+       "pause": 1.0
+      },
+      "Tell him I accept.",
+      "And I'd like to skip the second part."
+     ],
+     "do": {
+      "set": [
+       "knighthood_done"
+      ]
+     }
+    }
+   },
+   "fallback": [
+    [
+     "{topic}? Funny you should mention it. I invented {topic}."
+    ],
+    [
+     "I wrestled {topic} once. In Belgium. It was a draw."
+    ],
+    [
+     "Ah, {topic}. Did I ever tell you about the time I —",
+     {
+      "pause": 1.0
+     },
+     "No. Actually that one's true and it's very upsetting."
+    ],
+    [
+     "I'll tell you everything about {topic} for a biscuit."
+    ],
+    [
+     "Can't talk about {topic}. Legal reasons. I'm a lawyer.",
+     {
+      "pause": 1.0
+     },
+     "Also a duck."
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "Psst! Handsome!",
+     "Over here! Exclusive story!",
+     "You'll want to hear this one!"
+    ],
+    "notice": [
+     "Ooh.",
+     "I KNEW that would come up."
+    ],
+    "idle": [
+     "Still got it.",
+     "I've been to the moon. Twice.",
+     "Hello, gorgeous. (The mirror.)"
+    ]
+   }
+  },
+  "old_woman": {
+   "name": "EDITH",
+   "plaque": "THE OLD WOMAN",
+   "short": "Edith",
+   "personality": "Has been here forever. Sharp, cynical, uninterested in escape. Treats the Zoo like a terrible neighbourhood and Bill like a postman.",
+   "voice_pitch": 0.9,
+   "color": "#7a5a3a",
+   "chat_label": "Pass the time of day",
+   "idle": [
+    "sip_tea",
+    "knit",
+    "glare",
+    "doze"
+   ],
+   "attention_behaviour": "wave",
+   "desire_concept": "COMPANY",
+   "greeting": [
+    {
+     "lines": [
+      "Oh. A new one.",
+      "Edith. Don't wear it out.",
+      "You'll want the gossip. Everybody wants the gossip. Nobody wants to sit down."
+     ],
+     "do": {
+      "set": [
+       "met_old_woman"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     "I've seen them come and go.",
+     {
+      "pause": 1.0
+     },
+     "Mostly go."
+    ],
+    [
+     "Your hat's nice. My Harold had a hat.",
+     "He lost it in the war.",
+     {
+      "pause": 1.0
+     },
+     "Not a war. A kitchen."
+    ],
+    [
+     "Don't stand there looking at me like I'm an exhibit.",
+     {
+      "pause": 1.0
+     },
+     "...Fair enough."
+    ]
+   ],
+   "responses": {
+    "chat": [
+     {
+      "if": "stage_1",
+      "lines": [
+       "Tell the King he's a prick.",
+       {
+        "pause": 1.0
+       },
+       "Go on. I'll wait. I've got nothing but time."
+      ],
+      "do": {
+       "unlock": [
+        "edith_message"
+       ]
+      }
+     },
+     {
+      "optional": true,
+      "lines": [
+       "While you're stood there doing nothing:",
+       "ask His Majesty where my spoon is."
+      ],
+      "do": {
+       "unlock": [
+        "spoon"
+       ]
+      }
+     }
+    ],
+    "the_machine": [
+     "Never does anything. Like my late husband, God rest him.",
+     {
+      "pause": 1.0
+     },
+     "Except once.",
+     {
+      "pause": 1.0
+     },
+     "Never mind."
+    ],
+    "the_bells": [
+     "Bells, bells, bells. You get used to them.",
+     "Like tinnitus. Or the King."
+    ],
+    "third_bell": {
+     "lines": [
+      "That's when His Majesty's lights go out.",
+      "Every third bell. Regular as his bowels.",
+      "You can hear him complaining from here."
+     ],
+     "do": {
+      "unlock": [
+       "king_lights"
+      ]
+     }
+    },
+    "king_lights": [
+     "Ask him yourself, love. He'll tell you it's about him.",
+     "Everything is."
+    ],
+    "the_bird": [
+     "Lovely little thing. Comes for the King, every third bell.",
+     {
+      "pause": 1.0
+     },
+     "Used to come for someone else."
+    ],
+    "child_blocks": [
+     "The little one's cleverer than all of us put together.",
+     "Don't tell her. She'll want a raise."
+    ],
+    "liar_order": [
+     "If Sully said it, turn it upside down and give it a shake.",
+     "Something true might fall out. Usually doesn't."
+    ],
+    "symbol_order": [
+     "Bird, moon, hand. Then the tray. Then nothing till tomorrow.",
+     "Welcome to the neighbourhood."
+    ],
+    "liar_tree": [
+     {
+      "if": "reframe",
+      "lines": [
+       "...He's right, you know.",
+       {
+        "pause": 1.2
+       },
+       "Don't tell him. He'd be unbearable."
+      ],
+      "do": {
+       "set": [
+        "tree_corroborated"
+       ]
+      }
+     },
+     {
+      "lines": [
+       "Sully says a lot of things.",
+       {
+        "pause": 1.0
+       },
+       "Ask me again when I've had a sit-down."
+      ]
+     }
+    ],
+    "edith_dead": {
+     "lines": [
+      {
+       "pause": 1.6
+      },
+      "Seventeen years.",
+      {
+       "pause": 1.2
+      },
+      "Ask him who won the cup final."
+     ],
+     "do": {
+      "unlock": [
+       "cup_final"
+      ]
+     }
+    },
+    "king_cup": {
+     "lines": [
+      "Hartlepool.",
+      {
+       "pause": 1.0
+      },
+      "Four–nil. That was the year my Harold died.",
+      "That was sixty years ago, love.",
+      {
+       "pause": 1.2
+      },
+      "He thinks it was last spring. And he thinks I'm dead.",
+      {
+       "pause": 1.0
+      },
+      "One of us has got the date wrong.",
+      "And I've been here a very long time."
+     ],
+     "do": {
+      "unlock": [
+       "how_long"
+      ],
+      "set": [
+       "time_seen"
+      ]
+     }
+    },
+    "how_long": [
+     "Since before the paint.",
+     "Since before he had the crown. It was a saucepan then."
+    ],
+    "time_discrepancy": [
+     "Numbers don't add up in here, love. Neither does the King. Join the club."
+    ],
+    "seven": {
+     "lines": [
+      "There's always been another one.",
+      "Next door to me. Never any trouble.",
+      {
+       "pause": 1.0
+      },
+      "Which is suspicious.",
+      "Used to hear them sing."
+     ],
+     "do": {
+      "set": [
+       "edith_remembers"
+      ],
+      "unlock": [
+       "edith_neighbour"
+      ]
+     }
+    },
+    "empty_talks": [
+     "Course it talks. Everything in here talks.",
+     "Most of it should stop."
+    ],
+    "voice": [
+     "So it's talking to you now.",
+     {
+      "pause": 1.0
+     },
+     "Don't let it get its hopes up."
+    ],
+    "what_want": [
+     {
+      "if": "reframe",
+      "lines": [
+       "I'd like somebody to sit down and stay for five bloody minutes.",
+       {
+        "pause": 1.2
+       },
+       "Hold an old woman's hand and not look at the door.",
+       "Harold could do that."
+      ],
+      "do": {
+       "unlock": [
+        "desire_old_woman"
+       ]
+      }
+     }
+    ],
+    "spoon_confiscated": {
+     "lines": [
+      "Confiscated.",
+      {
+       "pause": 1.0
+      },
+      "Ask him why."
+     ],
+     "do": {
+      "unlock": [
+       "spoon_why"
+      ]
+     }
+    },
+    "spoon_reason": {
+     "lines": [
+      "I was tapping it on the glass BECAUSE of his address.",
+      "Tell him to keep it.",
+      "He'll need something to eat his words with."
+     ],
+     "do": {
+      "set": [
+       "spoon_done"
+      ]
+     }
+    },
+    "humming": {
+     "lines": [
+      "It's a waltz.",
+      "Tell him he can count it."
+     ],
+     "do": {
+      "unlock": [
+       "humming_reply"
+      ]
+     }
+    },
+    "child_drawing": {
+     "lines": [
+      "For me?",
+      {
+       "do": "(Edith peers down the gallery.)"
+      },
+      "Lovely.",
+      {
+       "pause": 1.0
+      },
+      "What is it?",
+      "Ask her. Don't tell her I asked."
+     ],
+     "do": {
+      "unlock": [
+       "drawing_question"
+      ]
+     }
+    },
+    "drawing_is_edith": {
+     "lines": [
+      "...Oh.",
+      {
+       "pause": 1.6
+      },
+      "Well.",
+      "Tell her the nose is wrong.",
+      {
+       "pause": 1.2
+      },
+      "Don't tell her that."
+     ],
+     "do": {
+      "set": [
+       "drawing_done"
+      ]
+     }
+    }
+   },
+   "fallback": [
+    [
+     "{topic}.",
+     "Oh, I've heard all about {topic}. Wasn't interested then either."
+    ],
+    [
+     "Is that what they're calling it now."
+    ],
+    [
+     "Love, I'm eighty-something. Pick your topics."
+    ],
+    [
+     "You sound like my Harold. He also didn't know what he was on about."
+    ],
+    [
+     "Ask the Accountant. He'll count it at you."
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "Oi! Postman!",
+     "Yoo-hoo. You.",
+     "Come here, I've a job for you."
+    ],
+    "notice": [
+     "Hm.",
+     "Well, well."
+    ],
+    "idle": [
+     "Bloody bells.",
+     "Mm.",
+     "Nobody visits."
+    ]
+   }
+  },
+  "empty": {
+   "name": "VOICE",
+   "plaque": "",
+   "short": "the empty cage",
+   "personality": "Nobody. Then a voice that knows Bill. Calm, tired, fond, and never fully explained.",
+   "voice_pitch": 0.6,
+   "color": "#3a4a5a",
+   "chat_label": "Listen",
+   "idle": [
+    "dust",
+    "flicker"
+   ],
+   "attention_behaviour": "static_flicker",
+   "desire_concept": "MEMORY",
+   "awake_when": {
+    "all": [
+     "seven"
+    ],
+    "any": [
+     "liar_empty_talks",
+     "edith_remembers",
+     "king_remembers",
+     "child_remembers"
+    ]
+   },
+   "tuned_flag": "voice_tuned",
+   "static": [
+    [
+     {
+      "do": "(Static.)"
+     }
+    ],
+    [
+     {
+      "do": "(Static. It sounds a bit like the sea. Or someone breathing out very slowly.)"
+     }
+    ],
+    [
+     {
+      "do": "(The pressure gauge twitches, then thinks better of it.)"
+     }
+    ],
+    [
+     {
+      "do": "(Static, with opinions.)"
+     }
+    ],
+    [
+     {
+      "do": "(Nothing. A very attentive kind of nothing.)"
+     }
+    ]
+   ],
+   "greeting": [
+    {
+     "lines": [
+      "Hello, Bill.",
+      {
+       "pause": 1.8
+      },
+      {
+       "bill": "...How do you know my name?"
+      },
+      "You took your time.",
+      {
+       "pause": 1.4
+      },
+      "No — don't. It's all right.",
+      "Nobody here remembers either."
+     ],
+     "do": {
+      "set": [
+       "met_empty",
+       "voice_contact"
+      ],
+      "unlock": [
+       "voice"
+      ]
+     }
+    }
+   ],
+   "chatter": [
+    [
+     {
+      "do": "(A long breath of static. Almost a laugh.)"
+     }
+    ],
+    [
+     "You always stood just there.",
+     {
+      "pause": 1.0
+     },
+     "A bit to the left."
+    ],
+    [
+     "The bell's early today. It's always early."
+    ]
+   ],
+   "responses": {
+    "the_machine,symbol_order,child_blocks,the_bird,voice": [
+     {
+      "if": "!reframe",
+      "lines": [
+       "The symbols.",
+       {
+        "pause": 1.2
+       },
+       "They aren't telling you what the symbols mean.",
+       {
+        "pause": 1.8
+       },
+       "They're telling you what they want."
+      ],
+      "do": {
+       "unlock": [
+        "what_want"
+       ],
+       "set": [
+        "reframe"
+       ]
+      }
+     }
+    ],
+    "the_bird": [
+     "Does it still come? Every third bell?",
+     {
+      "pause": 1.2
+     },
+     "Birds remember where they were fed."
+    ],
+    "voice": [
+     "Someone who stood where you're standing.",
+     {
+      "pause": 1.2
+     },
+     "Ask me again later.",
+     {
+      "pause": 1.0
+     },
+     "You won't."
+    ],
+    "seven": [
+     "Seven trays.",
+     {
+      "pause": 1.0
+     },
+     "I still get one. I don't eat it. The King does."
+    ],
+    "liar_tree": {
+     "lines": [
+      "It's true.",
+      {
+       "pause": 1.0
+      },
+      "It was beautiful.",
+      {
+       "pause": 1.0
+      },
+      "You'll see."
+     ],
+     "do": {
+      "set": [
+       "tree_corroborated"
+      ]
+     }
+    },
+    "how_long": [
+     "Longer than you'd like.",
+     "Less than she thinks."
+    ],
+    "empty_talks": [
+     "Only to people who listen.",
+     {
+      "pause": 1.0
+     },
+     "So, mostly Sully. Don't tell him."
+    ],
+    "what_want": [
+     {
+      "lines": [
+       "I want you to remember I was here.",
+       {
+        "pause": 1.6
+       },
+       "The bird still comes back.",
+       {
+        "pause": 1.0
+       },
+       "Doesn't it."
+      ],
+      "do": {
+       "unlock": [
+        "desire_empty"
+       ]
+      }
+     }
+    ]
+   },
+   "fallback": [
+    [
+     {
+      "do": "(Static swallows the question.)"
+     }
+    ],
+    [
+     "Bill.",
+     {
+      "pause": 1.0
+     },
+     "Not that."
+    ],
+    [
+     "You always asked about {topic}.",
+     {
+      "pause": 1.0
+     },
+     "Every time."
+    ],
+    [
+     {
+      "do": "(A long breath of static, almost a laugh.)"
+     }
+    ]
+   ],
+   "barks": {
+    "attention": [
+     "...ill...",
+     "...shhhk...Bill...",
+     "...hhhh..."
+    ],
+    "notice": [
+     "...shhk...",
+     "..."
+    ],
+    "idle": []
+   }
+  }
+ },
+ "stages": [
+  {
+   "id": "something_is_connected",
+   "name": "Something Is Connected",
+   "complete_when": "the_bird",
+   "machine": {
+    "level": 1,
+    "symbols": [
+     "BIRD"
+    ],
+    "pipes": {
+     "king": 0.55,
+     "old_woman": 0.25,
+     "accountant": 0.25
+    }
+   },
+   "bill_thought": "...The conversations matter.",
+   "leads": [
+    {
+     "id": "l1_bells",
+     "when": "!third_bell",
+     "until": "third_bell",
+     "who": "accountant",
+     "behaviour": "tap_chart",
+     "thought": "The Accountant was counting something. Bells, possibly. Everything, probably.",
+     "nudge": "Somebody in here counts everything. Including bells."
+    },
+    {
+     "id": "l1_lights",
+     "when": "third_bell",
+     "until": "king_lights",
+     "who": "old_woman",
+     "behaviour": "wave",
+     "thought": "The third bell. Edith looks like she knows everybody's business.",
+     "nudge": "Someone who knows all the neighbours' habits might know what happens on the third bell.",
+     "nudge2": "Ask Edith about the third bell. Or watch the King's cage when it rings."
+    },
+    {
+     "id": "l1_bird",
+     "when": "king_lights",
+     "until": "the_bird",
+     "who": "king",
+     "behaviour": "bang_mic",
+     "thought": "Edith mentioned the King's lights.",
+     "nudge": "Ask the King himself about his lights. He'll make it about him."
+    }
+   ]
+  },
+  {
+   "id": "symbol_relationships",
+   "name": "Symbol Relationships",
+   "complete_when": "order_confirmed",
+   "machine": {
+    "level": 2,
+    "symbols": [
+     "MOON",
+     "HAND"
+    ],
+    "pipes": {
+     "child": 0.4,
+     "accountant": 0.45,
+     "liar": 0.2
+    }
+   },
+   "bill_thought": "Bird, moon, hand. I'm getting somewhere.",
+   "leads": [
+    {
+     "id": "l2_child",
+     "when": "the_bird",
+     "until": "child_order_seen",
+     "who": "child",
+     "behaviour": "hold_up",
+     "thought": "The child had a bird on those blocks.",
+     "nudge": "Perhaps the child has seen the bird.",
+     "nudge2": "Ask the child about the bird."
+    },
+    {
+     "id": "l2_confirm",
+     "when": {
+      "any": [
+       "child_blocks",
+       "liar_order"
+      ]
+     },
+     "until": "order_confirmed",
+     "who": "accountant",
+     "behaviour": "tap_chart",
+     "thought": "Bird, moon, hand... or moon, bird, hand. Somebody here would have counted it.",
+     "nudge": "The Accountant keeps records of everything that happens on the third bell.",
+     "nudge2": "Tell the Accountant about the child's blocks."
+    }
+   ]
+  },
+  {
+   "id": "people_not_symbols",
+   "name": "People, Not Symbols",
+   "complete_when": "time_discrepancy",
+   "machine": {
+    "level": 3,
+    "symbols": [
+     "EYE"
+    ],
+    "pipes": {
+     "old_woman": 0.5,
+     "king": 0.65
+    }
+   },
+   "bill_thought": "Sixty years. Seventeen years. Eleven days. Nobody in here agrees what time it is.",
+   "leads": [
+    {
+     "id": "l3_edith",
+     "until": "edith_message",
+     "who": "old_woman",
+     "behaviour": "wave",
+     "thought": "Edith keeps trying to make me her postman.",
+     "nudge": "Edith wants to send someone a message. Let her."
+    },
+    {
+     "id": "l3_king",
+     "when": "edith_message",
+     "until": "edith_dead",
+     "who": "king",
+     "behaviour": "bang_mic",
+     "thought": "I'm still carrying a very rude message for the King.",
+     "nudge": "Deliver Edith's message to the King."
+    },
+    {
+     "id": "l3_back",
+     "when": "edith_dead",
+     "until": "cup_final",
+     "who": "old_woman",
+     "behaviour": "wave",
+     "thought": "The King says Edith's been dead for seventeen years. She'll want to hear that.",
+     "nudge": "Take the King's reply back to Edith."
+    },
+    {
+     "id": "l3_cup",
+     "when": "cup_final",
+     "until": "king_cup",
+     "who": "king",
+     "behaviour": "bang_mic",
+     "thought": "Edith wants to know who won the cup final. Odd question.",
+     "nudge": "Ask the King about the cup final."
+    },
+    {
+     "id": "l3_cup_back",
+     "when": "king_cup",
+     "until": "how_long",
+     "who": "old_woman",
+     "behaviour": "wave",
+     "thought": "Hartlepool, last spring. Edith will have something to say about that.",
+     "nudge": "Tell Edith what the King said about the cup final."
+    },
+    {
+     "id": "l3_count",
+     "when": "how_long",
+     "until": "time_discrepancy",
+     "who": "accountant",
+     "behaviour": "tap_chart",
+     "thought": "How long has everyone been here? The Accountant was counting bells.",
+     "nudge": "Somebody here keeps tallies of everything. Ask them how long they've been here."
+    }
+   ]
+  },
+  {
+   "id": "the_missing_person",
+   "name": "The Missing Person",
+   "complete_when": "reframe",
+   "machine": {
+    "level": 4,
+    "symbols": [
+     "KEY"
+    ],
+    "pipes": {
+     "empty": 0.5,
+     "liar": 0.4,
+     "child": 0.5
+    }
+   },
+   "bill_thought": "They're not symbols. They're wishes.",
+   "leads": [
+    {
+     "id": "l4_recount",
+     "until": "seven",
+     "who": "accountant",
+     "behaviour": "tap_chart",
+     "thought": "The Accountant's numbers don't add up. Maybe he should recount.",
+     "nudge": "Talk to the Accountant about the numbers not adding up."
+    },
+    {
+     "id": "l4_who",
+     "when": "seven",
+     "until": {
+      "any": [
+       "liar_empty_talks",
+       "edith_remembers",
+       "king_remembers",
+       "child_remembers"
+      ]
+     },
+     "who": "old_woman",
+     "behaviour": "wave",
+     "thought": "Seven trays. Five people. Edith's been here the longest.",
+     "nudge": "Ask around about a seventh inhabitant. Start with whoever lives next to the empty cage."
+    },
+    {
+     "id": "l4_empty",
+     "when": "voice_awake",
+     "until": "voice_tuned",
+     "who": "empty",
+     "behaviour": "static_flicker",
+     "ignore_availability": true,
+     "thought": "I haven't tried the empty microphone. Not properly.",
+     "nudge": "The empty cage's microphone has a tuning dial. Listen for something under the static."
+    },
+    {
+     "id": "l4_voice",
+     "when": "voice_tuned",
+     "until": "reframe",
+     "who": "empty",
+     "behaviour": "static_flicker",
+     "thought": "The voice knew my name. Maybe it knows what the machine is for.",
+     "nudge": "Ask the voice about the machine."
+    }
+   ]
+  },
+  {
+   "id": "what_they_want",
+   "name": "What They Want",
+   "complete_when": [
+    "desire_king",
+    "desire_child",
+    "desire_accountant",
+    "desire_liar",
+    "desire_old_woman",
+    "desire_empty"
+   ],
+   "machine": {
+    "level": 5,
+    "symbols": [
+     "TREE"
+    ],
+    "pipes": {}
+   },
+   "bill_thought": "Six dials. Six pipes. Six people who finally said what they want.",
+   "leads": [
+    {
+     "id": "l5_king",
+     "when": "reframe",
+     "until": "desire_king",
+     "who": "king",
+     "thought": "What does the King actually want? Apart from everything.",
+     "nudge": "Ask the King what they want."
+    },
+    {
+     "id": "l5_child",
+     "when": "reframe",
+     "until": "desire_child",
+     "who": "child",
+     "thought": "The child keeps looking at that little door.",
+     "nudge": "Ask the child what they want."
+    },
+    {
+     "id": "l5_accountant",
+     "when": "reframe",
+     "until": "desire_accountant",
+     "who": "accountant",
+     "thought": "What would a man like the Accountant want?",
+     "nudge": "Ask the Accountant what they want."
+    },
+    {
+     "id": "l5_liar",
+     "when": "reframe",
+     "until": "desire_liar",
+     "who": "liar",
+     "thought": "Sully must want something. Other than a biscuit.",
+     "nudge": "Ask Sully what they want."
+    },
+    {
+     "id": "l5_old_woman",
+     "when": "reframe",
+     "until": "desire_old_woman",
+     "who": "old_woman",
+     "thought": "I've never actually asked Edith what she wants.",
+     "nudge": "Ask Edith what they want."
+    },
+    {
+     "id": "l5_empty",
+     "when": "reframe",
+     "until": "desire_empty",
+     "who": "empty",
+     "thought": "The voice. What does it want?",
+     "nudge": "Ask the voice what they want."
+    }
+   ]
+  }
+ ],
+ "puzzle": {
+  "symbols": [
+   "MOON",
+   "EYE",
+   "BIRD",
+   "KEY",
+   "TREE",
+   "HAND"
+  ],
+  "selectors": [
+   "king",
+   "child",
+   "accountant",
+   "liar",
+   "old_woman",
+   "empty"
+  ],
+  "selector_names": {
+   "king": "the King",
+   "child": "the child",
+   "accountant": "the Accountant",
+   "liar": "Sully",
+   "old_woman": "Edith",
+   "empty": "the empty cage"
+  },
+  "solution": {
+   "king": "EYE",
+   "child": "KEY",
+   "accountant": "MOON",
+   "liar": "TREE",
+   "old_woman": "HAND",
+   "empty": "BIRD"
+  },
+  "solution_notes": {
+   "king": "RECOGNITION -> EYE. 'Eyes on me.' The bird 'looks at me with one eye.'",
+   "child": "DISCOVERY -> KEY. Holds up the key block at the painted door.",
+   "accountant": "CERTAINTY -> MOON. 'The moon lamp has never once been late.'",
+   "liar": "BELIEF -> TREE. 'The machine grew a tree once.' (True.)",
+   "old_woman": "COMPANY -> HAND. 'Hold an old woman's hand.'",
+   "empty": "MEMORY -> BIRD. 'Birds remember where they were fed.'"
+  },
+  "initial": {
+   "king": "MOON",
+   "child": "MOON",
+   "accountant": "MOON",
+   "liar": "MOON",
+   "old_woman": "MOON",
+   "empty": "MOON"
+  },
+  "unlock_when": "stage_5",
+  "extra_facts": [
+   "attempt_1",
+   "attempt_3",
+   "puzzle_solved",
+   "voice_awake",
+   "voice_tuned"
+  ],
+  "wrong_events": [
+   {
+    "id": "bubbles",
+    "target": "king",
+    "effect": "bubbles",
+    "lines": [
+     {
+      "do": "(The King's enclosure fills, gently and completely, with soap bubbles.)"
+     },
+     {
+      "as": "king",
+      "say": "I am NOT amused."
+     },
+     {
+      "pause": 1.0
+     },
+     {
+      "as": "king",
+      "say": "...They're quite nice, actually."
+     }
+    ]
+   },
+   {
+    "id": "chair_spin",
+    "target": "old_woman",
+    "effect": "chair_spin",
+    "lines": [
+     {
+      "do": "(Edith's armchair rotates slowly through a full circle. She does not put down her tea.)"
+     },
+     {
+      "as": "old_woman",
+      "say": "Very good. Now do the kettle."
+     }
+    ]
+   },
+   {
+    "id": "nightclub",
+    "target": "accountant",
+    "effect": "nightclub",
+    "lines": [
+     {
+      "do": "(The Accountant's lights begin to strobe in seven colours.)"
+     },
+     {
+      "as": "accountant",
+      "say": "One, two, three, four, five, six, sev— I can't count in this."
+     }
+    ]
+   },
+   {
+    "id": "pingpong",
+    "target": "child",
+    "effect": "pingpong",
+    "lines": [
+     {
+      "do": "(Several hundred ping-pong balls pour into the child's enclosure.)"
+     },
+     {
+      "as": "child",
+      "say": "BEST. MACHINE."
+     }
+    ]
+   },
+   {
+    "id": "loud_mic",
+    "target": "liar",
+    "effect": "loud_mic",
+    "lines": [
+     {
+      "as": "liar",
+      "say": "IS THIS THING ON? OH NO. OH GOD. I SOUND INCREDIBLE."
+     },
+     {
+      "pause": 0.6
+     },
+     {
+      "as": "liar",
+      "say": "(whispering) ...it's off now."
+     }
+    ]
+   },
+   {
+    "id": "biscuit",
+    "target": "liar",
+    "effect": "biscuit",
+    "lines": [
+     {
+      "do": "(A mechanical arm unfolds from the ceiling, presents Sully with a single biscuit, and withdraws.)"
+     },
+     {
+      "as": "liar",
+      "say": "A BISCUIT. I said I'd get a biscuit. Nobody believed me."
+     }
+    ]
+   },
+   {
+    "id": "steam_hat",
+    "target": "bill",
+    "effect": "steam_hat",
+    "lines": [
+     {
+      "do": "(A jet of steam blows Bill's hat clean off.)"
+     },
+     {
+      "bill": "..."
+     },
+     {
+      "as": "king",
+      "say": "Ha."
+     }
+    ]
+   },
+   {
+    "id": "waltz",
+    "target": "empty",
+    "effect": "waltz",
+    "lines": [
+     {
+      "do": "(The empty cage's speaking-trumpet plays four bars of a waltz. Badly.)"
+     },
+     {
+      "as": "old_woman",
+      "say": "...That's my song."
+     }
+    ]
+   }
+  ],
+  "feedback": [
+   {
+    "who": "accountant",
+    "type": "count",
+    "always": true,
+    "lines": [
+     "{n} were correct."
+    ],
+    "lines_by_count": {
+     "0": [
+      [
+       "Nought were correct.",
+       "That's still a number. I like that it's a number."
+      ]
+     ],
+     "1": [
+      [
+       "One was correct.",
+       "One. Out of six. I'm not judging. I'm counting."
+      ]
+     ],
+     "2": [
+      [
+       "Two were correct."
+      ]
+     ],
+     "3": [
+      [
+       "Three were correct.",
+       "Half. I hate halves."
+      ]
+     ],
+     "4": [
+      [
+       "Four were correct."
+      ],
+      [
+       "Four were correct.",
+       "Don't touch the ones that are right. Obviously. I'm not saying which."
+      ]
+     ],
+     "5": [
+      [
+       "Five were correct.",
+       "Five. So close it's statistically rude."
+      ]
+     ]
+    }
+   },
+   {
+    "who": "child",
+    "type": "point_wrong",
+    "lines": [
+     [
+      {
+       "do": "(The child points at {name}'s dial — the {symbol} — and shakes their head.)"
+      }
+     ],
+     [
+      {
+       "do": "(The child holds up the {symbol} block, looks at {name}'s dial, and puts the block firmly behind their back.)"
+      },
+      "Not that one."
+     ]
+    ]
+   },
+   {
+    "who": "king",
+    "type": "claim_right",
+    "reliability": 0.7,
+    "lines": [
+     "Obviously the {symbol} was right. On {name}'s dial. I said so.",
+     "The {symbol}. {name}'s. Correct. I'd stake my hat on it."
+    ]
+   },
+   {
+    "who": "old_woman",
+    "type": "own",
+    "selector": "old_woman",
+    "lines_right": [
+     "Mine was right, love. Leave mine alone.",
+     "Mine's fine. It's everybody else."
+    ],
+    "lines_wrong": [
+     "Mine's wrong. I'd know. Nobody ever gets mine right.",
+     "Not mine. A {symbol}? Have you met me?"
+    ]
+   },
+   {
+    "who": "liar",
+    "type": "nonsense",
+    "truth_chance": 0.4,
+    "lines": [
+     "They were all right. The machine's just shy.",
+     "I'd have got it first time. I designed it. On a napkin."
+    ],
+    "truth_lines": [
+     [
+      "Look — and I can't believe I'm the honest one here —",
+      "the {symbol} on {name}'s dial is wrong."
+     ]
+    ]
+   },
+   {
+    "who": "empty",
+    "type": "own",
+    "selector": "empty",
+    "if": "voice_tuned",
+    "lines_right": [
+     [
+      {
+       "do": "(Static.)"
+      },
+      "That one's mine. That's right, Bill."
+     ]
+    ],
+    "lines_wrong": [
+     [
+      {
+       "do": "(Static.)"
+      },
+      "Not mine.",
+      "You've forgotten."
+     ]
+    ]
+   }
+  ],
+  "leads": [
+   {
+    "id": "p_start",
+    "until": "attempt_1",
+    "who": "",
+    "thought": "Six dials. Each pipe runs back to one cage.",
+    "nudge": "Each dial's pipe runs back to one person. Set it to what that person wants.",
+    "nudge2": "The King wants eyes on him. The Accountant trusts the moon lamp. Start there."
+   },
+   {
+    "id": "p_feedback",
+    "when": "attempt_1",
+    "who": "accountant",
+    "behaviour": "tap_chart",
+    "thought": "The Accountant counted how many were right. Change one dial at a time.",
+    "nudge": "Change one dial, pull the lever, and listen to the Accountant's count.",
+    "nudge2": "Wishes: eyes, a door, a lamp that's never late, a tree nobody believed, a hand to hold, a bird that comes back."
+   }
+  ]
+ },
+ "observations": [
+  {
+   "id": "obs_lights",
+   "event": "third_bell",
+   "near": "king",
+   "radius": 650,
+   "if": [
+    "third_bell",
+    "!king_lights"
+   ],
+   "thought": "The King's lights just went out. On the third bell.",
+   "do": {
+    "unlock": [
+     "king_lights"
+    ]
+   }
+  },
+  {
+   "id": "obs_lights_early",
+   "event": "third_bell",
+   "near": "king",
+   "radius": 650,
+   "once": true,
+   "if": [
+    "!third_bell"
+   ],
+   "thought": "That bell sounded lower. And the King's lights went out.",
+   "do": {}
+  }
+ ],
+ "world": {
+  "bell_interval": 15.0,
+  "third_bell": {
+   "lights_out": 4.5,
+   "bird_delay": 0.6,
+   "moon_delay": 3.2,
+   "hand_delay": 5.4
+  },
+  "tuning": {
+   "target": 0.73,
+   "tolerance": 0.035,
+   "hold_seconds": 1.2,
+   "fragments": [
+    "...",
+    "...l...",
+    "...ll...",
+    "...ill...",
+    "...o, Bi...",
+    "Hello, Bill."
+   ]
+  }
+ },
+ "bill": {
+  "intro_thought": "Six cages. Six speaking-trumpets. One enormous machine nobody has dusted.",
+  "lever_locked": [
+   "The lever won't budge. Something's still missing.",
+   "Locked. The machine isn't ready. Or I'm not."
+  ],
+  "selectors_hint": "Six dials. Each one has a pipe running back to a cage.",
+  "empty_awake_thought": "Something just hissed from the empty cage's trumpet.",
+  "dial_hint": "There's a tuning dial on this one."
+ },
+ "finale": {
+  "lines": [
+   {
+    "do": "(Something rises from the centre of the machine. Slowly. Unmistakably.)"
+   },
+   {
+    "do": "(A tree. Brass roots, glass bark, and leaves made of light.)"
+   },
+   {
+    "pause": 1.2
+   },
+   {
+    "as": "liar",
+    "say": "...TOLD you."
+   },
+   {
+    "pause": 0.6
+   },
+   {
+    "as": "king",
+    "say": "I knew it. I knew it was about me."
+   },
+   {
+    "as": "accountant",
+    "say": "Leaves: one thousand and— no."
+   },
+   {
+    "as": "accountant",
+    "say": "No. I'm just going to look at it."
+   },
+   {
+    "as": "child",
+    "say": "The door's open."
+   },
+   {
+    "as": "old_woman",
+    "say": "Well."
+   },
+   {
+    "as": "old_woman",
+    "say": "Sit down, then. Five minutes."
+   },
+   {
+    "pause": 1.2
+   },
+   {
+    "as": "empty",
+    "say": "Remember, Bill."
+   }
+  ],
+  "title": "THE EXHIBIT",
+  "subtitle": "Something beautiful happened in the Human Zoo. Nobody will believe you."
+ },
+ "ledger": {
+  "columns": [
+   {
+    "title": "BELLS",
+    "nodes": [
+     "the_bells",
+     "third_bell",
+     "king_lights",
+     "the_bird"
+    ]
+   },
+   {
+    "title": "SYMBOLS",
+    "nodes": [
+     "child_blocks",
+     "liar_order",
+     "symbol_order",
+     "liar_tree"
+    ]
+   },
+   {
+    "title": "PEOPLE",
+    "nodes": [
+     "edith_message",
+     "edith_dead",
+     "cup_final",
+     "king_cup",
+     "how_long",
+     "time_discrepancy"
+    ]
+   },
+   {
+    "title": "THE MISSING",
+    "nodes": [
+     "seven",
+     "king_remembers",
+     "edith_neighbour",
+     "child_remembers",
+     "empty_talks",
+     "voice",
+     "what_want"
+    ]
+   }
+  ],
+  "links": [
+   {
+    "from": "the_bells",
+    "to": "third_bell"
+   },
+   {
+    "from": "third_bell",
+    "to": "king_lights"
+   },
+   {
+    "from": "king_lights",
+    "to": "the_bird"
+   },
+   {
+    "from": "the_bird",
+    "to": "child_blocks",
+    "solid_when": "order_confirmed"
+   },
+   {
+    "from": "child_blocks",
+    "to": "symbol_order"
+   },
+   {
+    "from": "liar_order",
+    "to": "symbol_order",
+    "broken_when": "order_confirmed"
+   },
+   {
+    "from": "edith_message",
+    "to": "edith_dead"
+   },
+   {
+    "from": "edith_dead",
+    "to": "cup_final"
+   },
+   {
+    "from": "cup_final",
+    "to": "king_cup"
+   },
+   {
+    "from": "king_cup",
+    "to": "how_long"
+   },
+   {
+    "from": "how_long",
+    "to": "time_discrepancy"
+   },
+   {
+    "from": "time_discrepancy",
+    "to": "seven"
+   },
+   {
+    "from": "seven",
+    "to": "king_remembers",
+    "solid_when": "voice_tuned"
+   },
+   {
+    "from": "seven",
+    "to": "edith_neighbour",
+    "solid_when": "voice_tuned"
+   },
+   {
+    "from": "seven",
+    "to": "child_remembers",
+    "solid_when": "voice_tuned"
+   },
+   {
+    "from": "seven",
+    "to": "empty_talks",
+    "solid_when": "voice_tuned"
+   },
+   {
+    "from": "empty_talks",
+    "to": "voice"
+   },
+   {
+    "from": "voice",
+    "to": "what_want"
+   }
+  ],
+  "wants": [
+   "desire_king",
+   "desire_child",
+   "desire_accountant",
+   "desire_liar",
+   "desire_old_woman",
+   "desire_empty"
+  ],
+  "errands": [
+   "spoon",
+   "spoon_confiscated",
+   "spoon_why",
+   "spoon_reason",
+   "liar_claim_king",
+   "king_threat",
+   "humming",
+   "humming_reply",
+   "king_census",
+   "census_result",
+   "child_drawing",
+   "drawing_question",
+   "drawing_is_edith"
+  ],
+  "frontier": {
+   "the_bird": {
+    "when": "the_bird",
+    "until": "child_order_seen"
+   },
+   "child_blocks": {
+    "when": "child_blocks",
+    "until": "order_confirmed"
+   },
+   "liar_order": {
+    "when": "liar_order",
+    "until": "order_confirmed"
+   },
+   "time_discrepancy": {
+    "when": "time_discrepancy",
+    "until": "seven"
+   },
+   "seven": {
+    "when": "seven",
+    "until": "voice_tuned"
+   },
+   "voice": {
+    "when": "voice",
+    "until": "reframe"
+   }
+  }
+ }
+}
