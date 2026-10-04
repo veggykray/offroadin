@@ -21,7 +21,11 @@ func _ready() -> void:
 			scenario = a.split("=")[1]
 		elif a.begins_with("--out="):
 			out_dir = a.split("=")[1]
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out_dir) if out_dir.begins_with("res://") else out_dir)
+	var abs_dir := ProjectSettings.globalize_path(out_dir) if out_dir.begins_with("res://") else out_dir
+	DirAccess.make_dir_recursive_absolute(abs_dir)
+	# keep the editor from importing screenshots
+	if not FileAccess.file_exists(abs_dir.path_join(".gdignore")):
+		FileAccess.open(abs_dir.path_join(".gdignore"), FileAccess.WRITE).store_string("")
 	game = load("res://minigames/last_biscuit/LastBiscuit.tscn").instantiate()
 	add_child(game)
 	game.last_biscuit_completed.connect(func(id): print("COMPLETED ", id))
