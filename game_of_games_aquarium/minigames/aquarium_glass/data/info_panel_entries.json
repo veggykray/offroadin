@@ -1,0 +1,37 @@
+{
+	"_readme": "Entries shown on the aquarium information panel. Edit freely. Each entry: name, latin, lines (array of paragraphs). Keep them funny but genuinely useful - they are hint level 3.",
+	"title": "RESIDENTS OF THE DEEP TANK",
+	"footer": "Please do not tap the glass.",
+	"entries": [
+		{
+			"name": "GREATER BLIMP",
+			"latin": "Pinguis enormis",
+			"lines": ["Docile. Curious. Attracted to small vibrations.", "Capable of moving objects several times its own weight, although apparently unaware of this."]
+		},
+		{
+			"name": "LESSER BASTARDS",
+			"latin": "Malevolus minimus",
+			"lines": ["Highly social.", "Highly territorial.", "Highly unpleasant.", "Will chew anything near a commotion. Do not encourage."]
+		},
+		{
+			"name": "PANIC EEL (\"THE COWARD\")",
+			"latin": "Anguilla timidissima",
+			"lines": ["Extremely sensitive to sudden vibration.", "When alarmed, travels rapidly and in a perfectly straight line AWAY from the source.", "Frequently concussed."]
+		},
+		{
+			"name": "GLASS SUCKER",
+			"latin": "Osculator vitreus",
+			"lines": ["Strongly attracted to movement along transparent surfaces.", "Staff are advised not to clean the glass during feeding."]
+		},
+		{
+			"name": "THE IDIOT",
+			"latin": "Imitator ridiculus",
+			"lines": ["Intelligence assessment inconclusive.", "Testing abandoned after specimen repeatedly copied the researcher.", "Becomes distressed when cornered."]
+		},
+		{
+			"name": "UNLISTED",
+			"latin": "",
+			"lines": ["This entry has been removed at the request of the night staff."]
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"_readme": "Direct hints (level 4, only after the player accepts 'Need a hint?'). Keys are the hint controller's diagnoses. Never give away the whole sequence.",
+	"blimp_attract": "The big one seems interested in vibrations.",
+	"blimp_position": "To push something, the big one has to be behind it first.",
+	"bastards_attract": "The little ones seem to enjoy chewing things.",
+	"bastards_target": "The little ones bite whatever is near the commotion.",
+	"coward_startle": "That nervous creature always flees AWAY from the noise.",
+	"coward_direction": "Perhaps frightening it from the other side would help.",
+	"coward_timing": "Wait until it lines up with the shell. Then startle it from directly behind.",
+	"chase_box": "It panics when it has nowhere left to go."
+}
