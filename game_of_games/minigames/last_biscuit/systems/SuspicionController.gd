@@ -47,11 +47,11 @@ func add(h: LBHand, amount: float) -> void:
 
 
 ## vis: 0..1 visibility, focused: whether the diner is already staring at it.
-func observe(h: LBHand, vis: float, dt: float, focused: bool) -> void:
+func observe(h: LBHand, vis: float, dt: float, focused: bool, speed_override := -1.0) -> void:
 	var v: float = values.get(h, 0.0)
 	var gain := 0.0
 	if vis > 0.0:
-		var spd := h.speed()
+		var spd := h.speed() if speed_override < 0.0 else speed_override
 		var motion := maxf(0.0, spd - still_speed)
 		gain = vis * motion * sensitivity
 		if focused:

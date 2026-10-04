@@ -15,6 +15,7 @@ var fork_node: Node3D
 var shadow_blob: MeshInstance3D
 var sleeve_mat: Material
 var cuff_mat: Material
+var skin_mat: Material
 var _t := 0.0
 
 
@@ -30,9 +31,10 @@ func refresh_colors() -> void:
 
 func setup(h: LBHand) -> void:
 	hand = h
-	sleeve_mat = LBMat.cloth(h.sleeve_color, 0.9)
+	sleeve_mat = h.sleeve_material if h.sleeve_material else LBMat.cloth(h.sleeve_color, 0.9)
 	cuff_mat = LBMat.cloth(h.cuff_color, 0.7)
 	var skin := LBMat.skin(h.skin_color, float(h.get_instance_id() % 97))
+	skin_mat = skin
 	arm_mi.mesh = arm_im
 	arm_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	arm_mi.top_level = true
@@ -61,9 +63,14 @@ func setup(h: LBHand) -> void:
 	LBMesh.add(thumb, LBMesh.capsule_mesh(0.012, 0.05, 8), skin, Vector3(-0.012, 0, -0.022), Vector3(-90, 0, -35))
 	# wrist + cuff
 	LBMesh.add(hand_root, LBMesh.capsule_mesh(0.03, 0.07, 10), skin, Vector3(0, 0.004, 0.055), Vector3(90, 0, 0), Vector3(1.0, 0.75, 1.0))
-	LBMesh.add(hand_root, LBMesh.cyl_mesh(0.039, 0.041, 0.035, 16), cuff_mat, Vector3(0, 0.006, 0.095), Vector3(90, 0, 0), Vector3(1.0, 0.8, 1.0))
-	# cufflink
-	LBMesh.add(hand_root, LBMesh.sphere_mesh(0.008, 8), LBMat.gold(), Vector3(0.036, 0.012, 0.095))
+	if not h.bare_arm:
+		LBMesh.add(hand_root, LBMesh.cyl_mesh(0.039, 0.041, 0.035, 16), cuff_mat, Vector3(0, 0.006, 0.095), Vector3(90, 0, 0), Vector3(1.0, 0.8, 1.0))
+		# cufflink
+		LBMesh.add(hand_root, LBMesh.sphere_mesh(0.008, 8), LBMat.gold(), Vector3(0.036, 0.012, 0.095))
+	else:
+		# knobbly old wrist bone and a hospital wristband
+		LBMesh.add(hand_root, LBMesh.sphere_mesh(0.012, 8), skin, Vector3(0.026, 0.012, 0.075))
+		LBMesh.add(hand_root, LBMesh.torus_mesh(0.026, 0.034, 14, 4), LBMat.std("wristband", Color(0.92, 0.94, 0.98), 0.0, 0.4), Vector3(0, 0.004, 0.1), Vector3(90, 0, 0), Vector3(1.0, 1.0, 0.8))
 	# fork prop for the fork-wielding rival
 	fork_node = LBMesh.pivot(hand_root, Vector3(0.0, 0.01, -0.03))
 	LBMesh.add(fork_node, LBMesh.box_mesh(Vector3(0.012, 0.006, 0.17)), LBMat.silver(), Vector3(0, 0, -0.1))
@@ -186,5 +193,28 @@ func _draw_arm(wrist_target: Vector3, away: Vector3) -> void:
 		# a few fabric wrinkles
 		r *= 1.0 + 0.06 * sin(t * length * 22.0)
 		radii.append(r)
-	LBMesh.tube(arm_im, pts, radii, sleeve_mat, 10)
+	if hand.bare_arm:
+		# short floppy gown sleeve, then a long, thin, bare old arm
+		var split := 1
+		var acc := 0.0
+		for i in range(1, n):
+			acc += pts[i].distance_to(pts[i - 1])
+			split = i
+			if acc > 0.32:
+				break
+		var s_pts := pts.slice(0, split + 1)
+		var s_rad := PackedFloat32Array()
+		for i in s_pts.size():
+			s_rad.append(hand.sleeve_radius * lerpf(1.35, 1.15, float(i) / maxf(s_pts.size() - 1, 1)))
+		LBMesh.tube(arm_im, s_pts, s_rad, sleeve_mat, 12)
+		var a_pts := pts.slice(maxi(split - 1, 0))
+		var a_rad := PackedFloat32Array()
+		for i in a_pts.size():
+			var t2 := float(i) / maxf(a_pts.size() - 1, 1)
+			var r2 := hand.sleeve_radius * lerpf(0.62, 0.42, t2) * lerpf(1.0, thin, sin(t2 * PI))
+			r2 *= 1.0 + 0.12 * exp(-pow((t2 - 0.45) * 8.0, 2.0))   # a knobbly elbow
+			a_rad.append(r2)
+		LBMesh.tube(arm_im, a_pts, a_rad, skin_mat, 10)
+	else:
+		LBMesh.tube(arm_im, pts, radii, sleeve_mat, 10)
 	arm_mi.global_transform = Transform3D.IDENTITY

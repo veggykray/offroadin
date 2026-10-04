@@ -30,6 +30,8 @@ static func build(o: LBTableObject) -> Node3D:
 		LBTableObject.Kind.TEETH: _teeth(root)
 		LBTableObject.Kind.SUGAR_CUBE: LBMesh.add(root, LBMesh.box_mesh(Vector3(0.022, 0.022, 0.022)), LBMat.std("sugar", Color(0.97, 0.96, 0.93), 0.0, 0.9), Vector3(0, 0.011, 0))
 		LBTableObject.Kind.BISCUIT, LBTableObject.Kind.FAKE_BISCUIT: _biscuit(root, o as LBBiscuit)
+		LBTableObject.Kind.PLATTER: _platter(root)
+		LBTableObject.Kind.CAKE_STAND: _cake_stand(root)
 	return root
 
 
@@ -241,14 +243,93 @@ static func _teeth(r: Node3D) -> void:
 
 
 static func _biscuit(r: Node3D, b: LBBiscuit) -> void:
-	var mat := LBMat.shader_unique("biscuit.gdshader", {"fake": 1.0 if b.is_fake else 0.0})
-	var mi := MeshInstance3D.new()
-	mi.mesh = biscuit_mesh(b.size_fraction, b.crumbs_seed, b.is_fake)
-	mi.material_override = mat
-	mi.position = Vector3(0, 0.046, 0)   # resting on the plate
-	mi.scale = Vector3.ONE * 1.6         # the star of the show must read from the far camera
-	mi.name = "BiscuitMesh"
-	r.add_child(mi)
+	# every food sits under one "BiscuitMesh" pivot so Biscuit.gd can lift
+	# it onto plates and make it tremble during a tug of war
+	var pivot := Node3D.new()
+	pivot.name = "BiscuitMesh"
+	pivot.position = Vector3(0, 0.046, 0)
+	pivot.scale = Vector3.ONE * 1.6 * (sqrt(b.size_fraction) if b.food_type != "biscuit" and b.food_type != "guest" else 1.0)
+	r.add_child(pivot)
+	match b.food_type:
+		"biscuit", "guest":
+			var mat := LBMat.shader_unique("biscuit.gdshader", {"fake": 1.0 if b.is_fake else 0.0})
+			var mi := MeshInstance3D.new()
+			mi.mesh = biscuit_mesh(b.size_fraction, b.crumbs_seed, b.is_fake)
+			mi.material_override = mat
+			pivot.add_child(mi)
+			if b.food_type == "guest" and not b.is_fake:
+				# a glacé cherry on top: clearly the special one
+				LBMesh.add(pivot, LBMesh.sphere_mesh(0.012, 12), LBMat.std("cherry", Color(0.75, 0.04, 0.08), 0.0, 0.15, {"clearcoat_enabled": true}), Vector3(0, 0.011, 0))
+		"cake":
+			# a wedge of Victoria sponge
+			var sponge := LBMat.std("sponge", Color(0.93, 0.78, 0.48), 0.0, 0.8)
+			var jam := LBMat.std("jam", Color(0.7, 0.07, 0.12), 0.0, 0.3)
+			var cream := LBMat.std("cream", Color(0.98, 0.95, 0.88), 0.0, 0.5)
+			LBMesh.add(pivot, LBMesh.prism_mesh(Vector3(0.07, 0.016, 0.06)), sponge, Vector3(0, 0.0, 0), Vector3(-90, 0, 0))
+			LBMesh.add(pivot, LBMesh.prism_mesh(Vector3(0.068, 0.006, 0.06)), jam, Vector3(0, 0.0, 0.011), Vector3(-90, 0, 0), Vector3(1, 1, 0.3))
+			LBMesh.add(pivot, LBMesh.prism_mesh(Vector3(0.07, 0.016, 0.06)), sponge, Vector3(0, 0.0, 0.02), Vector3(-90, 0, 0))
+			LBMesh.add(pivot, LBMesh.sphere_mesh(0.007, 8), cream, Vector3(0, 0.032, 0.012))
+			LBMesh.add(pivot, LBMesh.sphere_mesh(0.006, 8), jam, Vector3(0, 0.038, 0.012))
+		"sandwich":
+			var bread := LBMat.std("bread", Color(0.95, 0.9, 0.78), 0.0, 0.85)
+			var filling := LBMat.std("cucumber", Color(0.45, 0.65, 0.3), 0.0, 0.5)
+			for i in 2:
+				LBMesh.add(pivot, LBMesh.prism_mesh(Vector3(0.07, 0.008, 0.05)), bread, Vector3(0, 0.0, i * 0.016), Vector3(-90, 0, 0))
+			LBMesh.add(pivot, LBMesh.prism_mesh(Vector3(0.066, 0.006, 0.05)), filling, Vector3(0, 0.0, 0.008), Vector3(-90, 0, 0), Vector3(1, 1, 0.4))
+		"eclair":
+			var pastry := LBMat.std("choux", Color(0.82, 0.58, 0.28), 0.0, 0.7)
+			var choc := LBMat.std("choc", Color(0.22, 0.1, 0.05), 0.0, 0.2, {"clearcoat_enabled": true})
+			LBMesh.add(pivot, LBMesh.capsule_mesh(0.012, 0.075, 10), pastry, Vector3(0, 0.006, 0), Vector3(0, 0, 90))
+			LBMesh.add(pivot, LBMesh.capsule_mesh(0.0115, 0.07, 10), choc, Vector3(0, 0.011, 0), Vector3(0, 0, 90), Vector3(1, 0.7, 1))
+		"grapes":
+			var grape := LBMat.std("grape", Color(0.32, 0.08, 0.3), 0.0, 0.2, {"clearcoat_enabled": true, "rim_enabled": true})
+			var rng := RandomNumberGenerator.new()
+			rng.seed = int(b.crumbs_seed * 100.0)
+			for i in 11:
+				var a := rng.randf() * TAU
+				var rr := rng.randf() * 0.022
+				LBMesh.add(pivot, LBMesh.sphere_mesh(0.009, 10), grape, Vector3(cos(a) * rr, 0.006 + rng.randf() * 0.012, sin(a) * rr + (i * 0.0035 - 0.02)))
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.0015, 0.0015, 0.03, 4), LBMat.std("stalk", Color(0.3, 0.25, 0.1)), Vector3(0, 0.02, -0.03), Vector3(70, 0, 0))
+		"tart":
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.03, 0.025, 0.012, 16), LBMat.std("pastry", Color(0.86, 0.66, 0.38), 0.0, 0.8), Vector3(0, 0.006, 0))
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.025, 0.025, 0.004, 16), LBMat.std("lemon", Color(0.98, 0.85, 0.25), 0.0, 0.25, {"clearcoat_enabled": true}), Vector3(0, 0.012, 0))
+		"sausage_roll":
+			LBMesh.add(pivot, LBMesh.capsule_mesh(0.014, 0.07, 10), LBMat.std("puff", Color(0.88, 0.62, 0.3), 0.0, 0.6), Vector3(0, 0.008, 0), Vector3(0, 0, 90), Vector3(1, 0.85, 1))
+			for x in [-0.034, 0.034]:
+				LBMesh.add(pivot, LBMesh.cyl_mesh(0.009, 0.009, 0.002, 10), LBMat.std("meat", Color(0.6, 0.35, 0.3)), Vector3(x, 0.008, 0), Vector3(0, 0, 90))
+		"macaron":
+			var col := Color.from_hsv(fmod(b.crumbs_seed * 0.37, 1.0), 0.35, 0.95)
+			var shell := LBMat.std("mac_%s" % col.to_html(), col, 0.0, 0.6)
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.02, 0.021, 0.008, 16), shell, Vector3(0, 0.004, 0))
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.018, 0.018, 0.005, 16), LBMat.std("ganache", Color(0.97, 0.94, 0.88)), Vector3(0, 0.01, 0))
+			LBMesh.add(pivot, LBMesh.cyl_mesh(0.021, 0.02, 0.008, 16), shell, Vector3(0, 0.016, 0))
+
+
+static func _platter(r: Node3D) -> void:
+	# a long silver tray with a gadrooned rim
+	var s := LBMat.silver()
+	LBMesh.add(r, LBMesh.cyl_mesh(0.21, 0.19, 0.012, 40), s, Vector3(0, 0.006, 0), Vector3.ZERO, Vector3(1, 1, 0.75))
+	LBMesh.add(r, LBMesh.torus_mesh(0.2, 0.215, 40, 6), s, Vector3(0, 0.013, 0), Vector3.ZERO, Vector3(1, 1, 0.75))
+	LBMesh.add(r, LBMesh.quad_mesh(Vector2(0.3, 0.22)), LBMat.shader("doily", "doily.gdshader"), Vector3(0, 0.0135, 0), Vector3(-90, 0, 0), Vector3.ONE, false)
+
+
+static func _cake_stand(r: Node3D) -> void:
+	# three-tier cake stand, decorated with untouchable display cakes (cover!)
+	var g := LBMat.gold()
+	var p := LBMat.porcelain()
+	LBMesh.add(r, LBMesh.cyl_mesh(0.006, 0.006, 0.42, 8), g, Vector3(0, 0.21, 0))
+	var tiers := [[0.15, 0.02], [0.11, 0.17], [0.075, 0.31]]
+	var icing := [Color(0.95, 0.75, 0.82), Color(0.98, 0.96, 0.9), Color(0.75, 0.88, 0.7)]
+	for i in tiers.size():
+		var rad: float = tiers[i][0]
+		var y: float = tiers[i][1]
+		LBMesh.add(r, LBMesh.cyl_mesh(rad, rad * 0.8, 0.01, 32), p, Vector3(0, y, 0))
+		LBMesh.add(r, LBMesh.torus_mesh(rad - 0.005, rad + 0.004, 32, 4), g, Vector3(0, y + 0.005, 0))
+		for k in 6 - i:
+			var a := TAU * k / (6 - i)
+			var c: Color = icing[(k + i) % 3]
+			LBMesh.add(r, LBMesh.cyl_mesh(0.022, 0.024, 0.03, 12), LBMat.std("fancy_%s" % c.to_html(), c, 0.0, 0.5), Vector3(cos(a) * rad * 0.62, y + 0.02, sin(a) * rad * 0.62))
+	LBMesh.add(r, LBMesh.torus_mesh(0.012, 0.022, 12, 6), g, Vector3(0, 0.44, 0), Vector3(90, 0, 0))
 
 
 ## Fluted round biscuit, or a jagged broken piece of one.

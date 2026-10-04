@@ -56,6 +56,21 @@ func _process(dt: float) -> void:
 	if scenario != "approach" and scenario != "bot" and scenario != "heatmap" and game.player.scripted_target == null:
 		game.player.use_mouse = false
 	match scenario:
+		"play":
+			# a short scripted reach for the sandwiches, to see lights react
+			var p := game.player
+			if t > 2.0 and t < 6.0:
+				p.scripted_target = LBConst.BILL_HAND_HOME.lerp(Vector2(-0.3, 3.0), clampf((t - 2.0) / 2.0, 0.0, 1.0))
+			if t > 3.5:
+				# show the suspicion read-outs at different levels
+				for d in game.diners:
+					d.paused = true
+				game.diners[0].suspicion.values[p] = 0.3
+				game.diners[3].suspicion.values[p] = 0.6
+				game.diners[1].suspicion.values[p] = 0.9
+			if at(3.0, "a"): shot("a")
+			if at(5.0, "b"): shot("b")
+			if at(5.5, "q"): get_tree().quit()
 		"overview":
 			if at(3.4, "dbg"):
 				var h: Label = game.hud.hint
@@ -94,7 +109,7 @@ func _process(dt: float) -> void:
 			if at(12.5, "q"): get_tree().quit()
 		"slap":
 			if at(1.5, "p"):
-				game.debug_jump_return()
+				game.debug_jump_home_stretch()
 			if at(4.5, "s"):
 				var r: LBRivalHand = game.rivals[0]
 				r.plane_pos = game.player.plane_pos + Vector2(0.18, -0.05)
@@ -107,17 +122,11 @@ func _process(dt: float) -> void:
 			if at(6.0, "c"): shot("c")
 			if at(6.5, "q"): get_tree().quit()
 		"ending":
-			if game.bill.dog.visible and not _done.has("dog"):
-				_done["dog"] = true
-				shot("dog")
 			if at(1.5, "e"): game.debug_jump_ending()
-			if at(2.3, "a"): shot("a")
-			if at(3.2, "b"): shot("b")
-			if at(3.95, "c"): shot("c")
-			if at(4.15, "d"): shot("d")
-			if at(7.0, "e2"): shot("e")
-			if at(13.0, "f"): shot("f")
-			if at(13.5, "q"): get_tree().quit()
+			for k in [4.0, 6.5, 8.5, 10.5, 12.5, 15.0, 18.0]:
+				if at(k, "s%.1f" % k):
+					shot("t%02d" % int(k))
+			if at(19.0, "q"): get_tree().quit()
 		"bot":
 			if bot == null:
 				var greed := 0.0
@@ -129,7 +138,7 @@ func _process(dt: float) -> void:
 				Engine.time_scale = 3.0 if DisplayServer.get_name() == "headless" else 1.0
 				game.player_caught.connect(func(_b, _n): bot.stats.caught += 1)
 				game.last_biscuit_completed.connect(func(_i):
-					print("BOT WON in %.1fs play time, attempts %d, stats %s" % [game.play_time, game.attempt, bot.stats])
+					print("BOT DINNER OVER at %.1fs: hunger %.0f/%.0f, %d mouthfuls, %d breaches, food left %d, stats %s" % [game.play_time, game.hunger, game.hunger_goal, game.eaten, game.breaches, game.foods().size(), bot.stats])
 					get_tree().quit())
 				game.phase_changed.connect(func(ph): print("  phase -> %d at %.1fs" % [ph, game.play_time]))
 			bot.step(dt)
@@ -150,7 +159,7 @@ func _process(dt: float) -> void:
 						("(%.2f,%.2f)" % [rb.plane_pos.x, rb.plane_pos.y]) if rb else "none", (rb.held_by.name if rb and rb.held_by else ""), rinfo])
 				if "--explain" in OS.get_cmdline_user_args():
 					print("     ", bot.explain(p.plane_pos, bot._goal))
-			if game.play_time > 420.0:
+			if game.play_time > game.guest_time + 30.0:
 				print("BOT TIMEOUT stats %s" % [bot.stats])
 				get_tree().quit()
 		"heatmap":
@@ -211,7 +220,7 @@ func _process(dt: float) -> void:
 				get_tree().quit()
 		"tug":
 			if at(1.0, "r"):
-				game.debug_jump_return()
+				game.debug_jump_home_stretch()
 				game.paused_rivals = true
 				for d in game.diners:
 					d.paused = true
@@ -261,6 +270,9 @@ func _process(dt: float) -> void:
 				["glasses", Vector3(-0.2, 1.4, 1.0), Vector3(-1.48, 1.25, 0.0)],
 				["plate", Vector3(0.0, 1.3, 0.9), Vector3(0.0, 0.76, 0.0)],
 				["hand", Vector3(0.6, 1.5, 5.6), Vector3(0.18, 0.8, 4.4)],
+				["bill_back", Vector3(0.5, 2.0, 7.1), Vector3(0.0, 1.3, 5.8)],
+				["bill_front", Vector3(-0.6, 1.5, 4.6), Vector3(0.0, 1.35, 5.75)],
+				["food", Vector3(-0.1, 1.4, 1.6), Vector3(-0.35, 0.76, 0.5)],
 			]
 			if t > 2.0:
 				cam.set_process(false)

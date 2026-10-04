@@ -5,7 +5,7 @@ extends LBHand
 ## pinned, and it fights Bill (and the other rivals) for the biscuit.
 
 enum Tactic { SNEAK, DARTER, FORK_BLOCKER, NAPKIN_CREEPER }
-enum St { HIDDEN, EMERGING, ACTIVE, PRETEND, WITHDRAWING, OUT, SHAME }
+enum St { HIDDEN, EMERGING, ACTIVE, PRETEND, WITHDRAWING, OUT, SHAME, EATING }
 
 @export var tactic: Tactic = Tactic.SNEAK
 @export var activation_phase := 2
@@ -29,6 +29,8 @@ enum St { HIDDEN, EMERGING, ACTIVE, PRETEND, WITHDRAWING, OUT, SHAME }
 @export var drags_plate := false
 @export var plants_fake := false
 @export var emerge_time := 1.4
+## Extra time a rival stays away after successfully eating something.
+@export var digest_time := 10.0
 @export var out_time := 12.0
 
 var state: St = St.HIDDEN
@@ -97,7 +99,7 @@ func reset_rival() -> void:
 
 
 func is_out() -> bool:
-	return state == St.HIDDEN or state == St.OUT or state == St.WITHDRAWING
+	return state == St.HIDDEN or state == St.OUT or state == St.WITHDRAWING or state == St.EATING
 
 
 func emerge() -> void:
@@ -159,7 +161,10 @@ func think(dt: float) -> void:
 				state_t = 0.0
 		St.OUT:
 			active = false
-			if state_t > out_time and manager and manager.phase >= activation_phase and manager.rivals_allowed():
+			var wait := out_time + (digest_time if get_meta("digest", false) else 0.0)
+			if state_t > wait and get_meta("digest", false):
+				set_meta("digest", false)
+			if state_t > wait and manager and manager.phase >= activation_phase and manager.rivals_allowed():
 				emerge()
 		St.ACTIVE:
 			_active(dt)
@@ -167,6 +172,8 @@ func think(dt: float) -> void:
 			_pretend(dt)
 		St.SHAME:
 			_shame(dt)
+		St.EATING:
+			_eating(dt)
 
 
 func _compute_watched() -> float:
@@ -231,27 +238,70 @@ func _active(dt: float) -> void:
 	_act_at_goal(dt)
 
 
+var _target: LBBiscuit = null
+var _retarget_t := 0.0
+
+
+## The food this hand is after. Sticky (re-thought every couple of seconds)
+## so the hands commit to a plan instead of dithering.
 func _target_biscuit() -> LBBiscuit:
 	if manager == null:
 		return null
+	_retarget_t -= get_physics_process_delta_time()
+	if _target != null and is_instance_valid(_target) and _target.on_table and _retarget_t > 0.0 \
+			and (_target.held_by == null or _target.held_by == self or _target.held_by.plane_pos.distance_to(plane_pos) < 1.2):
+		return _target
+	_retarget_t = _rng.randf_range(1.5, 3.0)
 	var best: LBBiscuit = null
-	var best_size := -1.0
+	var best_score := -INF
 	for b in manager.world.biscuits():
 		var bb := b as LBBiscuit
 		if bb.is_fake and (_fake_planted or bb.has_meta("planted_by") and bb.get_meta("planted_by") == self):
 			continue
-		var s := bb.size_fraction - bb.plane_pos.distance_to(plane_pos) * 0.05
-		if s > best_size:
-			best_size = s
+		if not bb.is_fake and not bb.is_real_prize():
+			continue
+		var held_by_other: bool = bb.held_by != null and bb.held_by != self
+		var sc := bb.value() * 0.35 - bb.plane_pos.distance_to(plane_pos) * 0.6
+		if held_by_other:
+			sc -= 0.6 if bb.held_by.plane_pos.distance_to(plane_pos) < 0.8 else 9.0
+		if bb.is_guest() and tactic == Tactic.SNEAK:
+			sc += 1.2              # the Cheat has eyes only for the guest's biscuit
+		# don't all pile onto the same plate: prefer food other rivals aren't after
+		for r in manager.rivals:
+			if r != self and r._target == bb:
+				sc -= 0.5
+		if sc > best_score:
+			best_score = sc
 			best = bb
+	_target = best
 	return best
+
+
+func start_eating(_mouth: Vector3) -> void:
+	state = St.EATING
+	state_t = 0.0
+	innocent = true
+	ai_note = "eating"
+
+
+func _eating(dt: float) -> void:
+	# hand up to the mouth, a bite, then back down looking innocent
+	vel = Vector2.ZERO
+	lift = lerpf(lift, 0.42 if state_t < 0.9 else 0.0, LBConst.damp(6.0, dt))
+	if state_t > 2.2:
+		lift = 0.0
+		innocent = false
+		_target = null
+		# a moment to digest (and look innocent) before the next raid
+		withdraw(true)
+		set_meta("digest", true)
 
 
 func _choose_goal() -> void:
 	var b := _target_biscuit()
 	if held is LBBiscuit:
 		goal = home
-		ai_note = "escape home"
+		ai_note = "carry home to eat"
 		var p: LBHand = manager.player if manager else null
 		if p and p.plane_pos.distance_to(plane_pos) < 0.45:
 			goal += (plane_pos - p.plane_pos).normalized() * 0.3
@@ -276,21 +326,21 @@ func _choose_goal() -> void:
 			goal = b.plane_pos + (p.plane_pos - b.plane_pos).normalized() * 0.2
 			ai_note = "fork block"
 			return
-	if drags_plate and not _plate_dragged and manager:
+	if drags_plate and not _plate_dragged and manager and b.is_guest():
 		var plate: LBTableObject = manager.plate
 		if plate and plate.plane_pos.distance_to(b.plane_pos) < 0.1 and plate.plane_pos.distance_to(home) > 1.0:
 			goal = plate.plane_pos + (home - plate.plane_pos).normalized() * 0.13
 			ai_note = "grab plate rim"
 			return
 	goal = b.plane_pos
-	ai_note = "go biscuit"
+	ai_note = "go " + b.food_type
 
 
 func _act_at_goal(dt: float) -> void:
 	if frozen or manager == null:
 		return
 	var b := _target_biscuit()
-	# escaped with the biscuit
+	# made it home with food
 	if held is LBBiscuit and plane_pos.distance_to(home) < 0.14:
 		manager.on_rival_escaped(self, held)
 		return

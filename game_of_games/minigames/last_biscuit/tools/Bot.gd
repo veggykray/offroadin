@@ -52,6 +52,30 @@ func _init(g: LBManager, greed_ := 0.0) -> void:
 	greed = greed_
 
 
+var _food: LBBiscuit = null
+var _food_t := 0.0
+
+
+## Pick a target: close, rarely-watched, filling food nobody else holds.
+func _pick_food() -> LBBiscuit:
+	_food_t -= 0.016
+	if _food and is_instance_valid(_food) and _food.on_table and _food.held_by == null and _food_t > 0.0:
+		return _food
+	_food_t = 3.0
+	var best: LBBiscuit = null
+	var bs := INF
+	for f in game.foods():
+		if f.held_by != null:
+			continue
+		var sc := f.plane_pos.distance_to(game.player.plane_pos) * 0.5 + f.plane_pos.distance_to(LBConst.BILL_HAND_HOME) * 0.3 \
+				+ watched_fraction(f.plane_pos) * 2.0 - f.value() * 0.4
+		if sc < bs:
+			bs = sc
+			best = f
+	_food = best
+	return best
+
+
 func _visible_risk(p: Vector2) -> float:
 	var r := 0.0
 	for d in game.diners:
@@ -103,12 +127,14 @@ func step(dt: float) -> void:
 		Input.action_release("lb_grab")
 		_press_t = -1.0
 		return
-	var b := game.real_biscuit()
+	var b := _pick_food()
 	var holding := p.held is LBBiscuit and (p.held as LBBiscuit).is_real_prize()
 	if holding:
 		_goal = Vector2(0.12, LBConst.HOME_ZONE_Z + 0.25)
 	elif b:
 		_goal = b.plane_pos
+	else:
+		_goal = LBConst.BILL_HAND_HOME
 	# slap rivals that come close (especially if they hold the biscuit)
 	var rv := p.nearest_rival(p.slap_range * 0.9)
 	if rv and (rv.held != null or (holding and rv.plane_pos.distance_to(p.plane_pos) < 0.22)) and _press_t < 0.0 \

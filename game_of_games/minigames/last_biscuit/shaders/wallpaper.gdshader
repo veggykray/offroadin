@@ -1,7 +1,7 @@
 shader_type spatial;
 // Decaying damask wallpaper with peeling stains and gilded motif.
-uniform vec3 paper : source_color = vec3(0.10, 0.16, 0.12);
-uniform vec3 motif : source_color = vec3(0.36, 0.28, 0.12);
+uniform vec3 paper : source_color = vec3(0.2, 0.3, 0.22);
+uniform vec3 motif : source_color = vec3(0.55, 0.42, 0.18);
 uniform float scale = 1.6;
 varying vec3 wpos;
 varying vec3 wnrm;
@@ -28,8 +28,8 @@ void fragment() {
 	vec3 col = mix(paper, motif, m * 0.85);
 	float dirt = fbm(p * 0.8);
 	float peel = smoothstep(0.62, 0.66, fbm(p * 1.3 + 11.0));
-	col *= mix(0.6, 1.05, dirt);
-	col = mix(col, vec3(0.20, 0.17, 0.12) * dirt, peel);
+	col *= mix(0.8, 1.05, dirt);
+	col = mix(col, vec3(0.42, 0.36, 0.26) * (0.7 + dirt * 0.4), peel * 0.6);
 	float drip = smoothstep(0.7, 1.0, noise(vec2(p.x * 6.0, p.y * 0.4))) * smoothstep(3.0, 1.0, p.y);
 	col *= 1.0 - drip * 0.35;
 	ALBEDO = col;

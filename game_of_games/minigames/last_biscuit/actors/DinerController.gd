@@ -69,12 +69,19 @@ enum Behaviour { SLEEPER, GLASSES, TWITCH, DEAF_WATCHER, BLIND_LISTENER, CHEAT }
 @export var mirror_range := 2.7
 @export var mirror_half_angle := 15.0
 
+@export_group("Etiquette")
+## How visible chewing is (treated like the hand moving at this speed).
+@export var chew_speed := 0.7
+
 @export_group("Look")
 @export var palette_suit := Color(0.12, 0.12, 0.14)
 @export var palette_skin := Color(0.84, 0.74, 0.7)
 @export var palette_hair := Color(0.9, 0.9, 0.88)
 
+const CHEW_POINT := Vector2(0.05, 5.25)   # Bill's mouth, seen from the table
+
 var index := 0
+var chew_t := 0.0                 # mouth animation after a furtive bite
 var side := -1.0                  # -1 left of Bill, +1 right
 var gaze: LBGaze
 var mirror_gaze: LBGaze           # Cheat only: the teapot reflection
@@ -159,6 +166,16 @@ func setup(i: int, w: LBTableWorld, m: Node) -> void:
 	visual.name = "Visual"
 	add_child(visual)
 	visual.setup(self)
+	# make the gaze visible: searchlight fans + eye lasers
+	var gv := LBGazeVisual.new()
+	gv.name = "GazeLight"
+	add_child(gv)
+	gv.setup(self, gaze)
+	if mirror_gaze:
+		var mv := LBGazeVisual.new()
+		mv.name = "MirrorLight"
+		add_child(mv)
+		mv.setup(self, mirror_gaze, true)
 	_enter_default_state()
 
 
@@ -569,6 +586,12 @@ func _judge(hands: Array, dt: float) -> void:
 			continue
 		var vis := gaze_visibility(h)
 		var focused := focus_hand == h
+		# chewing is movement too: anyone looking at Bill's face sees his jaw going
+		if h.chewing_t > 0.0:
+			var face := gaze.visibility_of(CHEW_POINT, 0.55)
+			if face > vis:
+				suspicion.observe(h, face, dt, focused, chew_speed)
+				continue
 		suspicion.observe(h, vis, dt, focused)
 		if behaviour == Behaviour.BLIND_LISTENER:
 			var d := h.plane_pos.distance_to(eye_plane())
@@ -613,6 +636,11 @@ func _express(dt: float) -> void:
 		target_brow = maxf(target_brow, glare * 0.6)
 	if behaviour == Behaviour.SLEEPER and state == "jolt":
 		target_brow = 1.0
+	if chew_t > 0.0:
+		chew_t -= dt
+		mouth_open = 0.35 + 0.35 * sin(chew_t * 22.0)
+		if chew_t <= 0.0:
+			mouth_open = 0.0
 	brow = lerpf(brow, target_brow, LBConst.damp(6.0, dt))
 	lean = lerpf(lean, target_lean, LBConst.damp(3.0, dt))
 	narrow = lerpf(narrow, target_narrow, LBConst.damp(5.0, dt))

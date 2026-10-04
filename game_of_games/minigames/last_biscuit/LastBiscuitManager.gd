@@ -1,8 +1,11 @@
 class_name LBManager
 extends Node3D
 ## THE LAST BISCUIT - orchestrator.
+## An etiquette game: everyone is waiting for the guest of honour, so nobody
+## may eat - but everyone is starving. Bill steals food, gets it to his mouth
+## and chews it while nobody is looking. Rival hands do the same.
 ## Wires the table world, diners, hands, noise, comedy events and the ending,
-## runs the escalation phases, the caught sequence and the dog finale.
+## runs the time-based escalation, the caught sequence and the guest's arrival.
 ##
 ## Emits last_biscuit_completed("empty_biscuit_plate") when done. Bill
 ## "receives" the EMPTY_BISCUIT_PLATE item id.
@@ -19,14 +22,22 @@ enum GS { INTRO, PLAY, CAUGHT, BREAK_BEAT, ENDING, DONE }
 ## When embedded in Game of Games set false: no replay prompt, no restart key.
 @export var standalone := true
 @export var start_debug := false
+@export_group("Dinner")
+## Seconds until the guest of honour arrives (the dinner ends).
+@export var guest_time := 240.0
+## Hunger points Bill needs to feel full (food is worth 1-3).
+@export var hunger_goal := 10.0
+## Seconds Bill chews after each mouthful (visible to anyone looking at him).
+@export var chew_time := 2.2
 @export_group("Escalation")
-## Approach progress (0 = Bill's end, 1 = biscuit) that summons the 2nd hand.
-@export var second_hand_progress := 0.45
-@export var third_hand_progress := 0.8
-@export var phase2_max_time := 28.0
-@export var phase3_max_time := 30.0
+## Play time (s) at which phases 2, 3 and 4 begin.
+@export var phase_times := Vector3(25.0, 65.0, 105.0)
+## The last stretch before the guest arrives: everyone is grabbier.
+@export var rush_time := 45.0
 @export var return_alertness := 1.15
 @export var rival_out_time_return := 6.0
+## Every breach of etiquette makes the table permanently more alert.
+@export var alertness_per_breach := 0.06
 @export_group("Juice")
 @export var slap_loudness := 0.6
 @export var hitstop_time := 0.06
@@ -37,6 +48,10 @@ var phase := 1
 var phase_time := 0.0
 var play_time := 0.0
 var attempt := 1
+var breaches := 0
+var hunger := 0.0
+var eaten := 0
+var eating := false
 var alertness := 1.0
 var debug := false
 var paused_rivals := false
@@ -65,6 +80,9 @@ var _tense_cd := 0.0
 var _hitstop := 0.0
 var _saved_time_scale := 1.0
 var _target_ring: MeshInstance3D
+var _expose_ring: MeshInstance3D
+var _expose_mat: StandardMaterial3D
+var _ripples: Array = []          # [MeshInstance3D, age, max_radius]
 var _phase_stagger := 0.0
 var _sugar_cubes: Array = []
 var _teeth: Array = []
@@ -85,7 +103,6 @@ func _ready() -> void:
 	plate = spawned["plate"]
 	cheat_teapot = spawned["cheat_teapot"]
 	rival_napkin = spawned["rival_napkin"]
-	_spawn_biscuit(LBConst.BISCUIT_HOME)
 	_empty_chairs()
 	for d in diners:
 		if d.behaviour == LBDiner.Behaviour.CHEAT:
@@ -165,14 +182,7 @@ func _default_diners(container: Node) -> void:
 
 
 func _empty_chairs() -> void:
-	# empty places at the far end (and the head of the table) for gloom
-	for p in [Vector3(-1.48, 0, -4.3), Vector3(1.48, 0, -4.3)]:
-		var c := LBMesh.pivot(self, p, "EmptyChair")
-		c.rotation.y = -PI * 0.5 if p.x < 0.0 else PI * 0.5
-		var wood := LBMat.dark_wood()
-		LBMesh.add(c, LBMesh.box_mesh(Vector3(0.5, 0.06, 0.48)), wood, Vector3(0, 0.46, 0.12))
-		LBMesh.add(c, LBMesh.box_mesh(Vector3(0.5, 1.15, 0.05)), wood, Vector3(0, 1.05, 0.35))
-		LBMesh.add(c, LBMesh.box_mesh(Vector3(0.38, 0.85, 0.02)), LBMat.velvet(), Vector3(0, 1.02, 0.32))
+	# the guest of honour's chair at the head of the table, conspicuously empty
 	var head := LBMesh.pivot(self, Vector3(0, 0, -5.55), "HeadChair")
 	LBMesh.add(head, LBMesh.box_mesh(Vector3(0.7, 0.06, 0.55)), LBMat.dark_wood(), Vector3(0, 0.46, 0))
 	LBMesh.add(head, LBMesh.box_mesh(Vector3(0.75, 1.9, 0.08)), LBMat.dark_wood(), Vector3(0, 1.3, -0.3))
@@ -269,9 +279,9 @@ func _diner_by_name(nm: String) -> LBDiner:
 	return null
 
 
-func _spawn_biscuit(pos: Vector2, fraction := 1.0, fake := false) -> LBBiscuit:
+func _spawn_biscuit(pos: Vector2, fraction := 1.0, fake := false, type := "biscuit") -> LBBiscuit:
 	var b := LBBiscuit.new()
-	b.setup(pos, fraction, fake)
+	b.setup(pos, fraction, fake, type)
 	world.add_object(b)
 	return b
 
@@ -286,18 +296,71 @@ func _make_target_ring() -> void:
 	_target_ring.material_override = m
 	_target_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_target_ring)
+	# glowing ring under Bill's hand whenever someone's light is on it
+	_expose_ring = MeshInstance3D.new()
+	_expose_ring.mesh = LBMesh.torus_mesh(0.13, 0.155, 32, 4)
+	_expose_mat = StandardMaterial3D.new()
+	_expose_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_expose_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_expose_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	_expose_mat.albedo_color = Color(1, 1, 1, 0)
+	_expose_ring.material_override = _expose_mat
+	_expose_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_expose_ring.scale = Vector3(1, 0.2, 1)
+	add_child(_expose_ring)
+
+
+## An expanding ring on the table: you can SEE how far a noise carries.
+func _ripple(pos: Vector2, loudness: float) -> void:
+	var mi := MeshInstance3D.new()
+	mi.mesh = LBMesh.torus_mesh(0.96, 1.0, 48, 3)
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	m.albedo_color = Color(1.0, 0.95, 0.8, 0.6)
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.position = LBConst.p2w(pos, LBConst.TABLE_Y + 0.02)
+	mi.scale = Vector3(0.01, 0.01, 0.01)
+	add_child(mi)
+	_ripples.append([mi, 0.0, LBNoiseSystem.audible_radius(loudness) * 0.6, clampf(loudness, 0.2, 1.0)])
 
 
 # ================================================================ helpers
 
-func real_biscuit() -> LBBiscuit:
-	var best: LBBiscuit = null
+## All edible food still on the table (held or not).
+func foods() -> Array[LBBiscuit]:
+	var out: Array[LBBiscuit] = []
 	for b in world.biscuits():
-		if b.is_fake:
-			continue
-		if best == null or b.size_fraction > best.size_fraction:
-			best = b
-	return best
+		if b.is_real_prize():
+			out.append(b)
+	return out
+
+
+func guest_food() -> LBBiscuit:
+	for b in world.biscuits():
+		if b.is_guest() and not b.is_fake:
+			return b
+	return null
+
+
+## The most coveted food left: the guest's biscuit, else anything edible.
+func real_biscuit() -> LBBiscuit:
+	var g := guest_food()
+	if g:
+		return g
+	var f := foods()
+	return f[0] if f.size() > 0 else null
+
+
+func random_free_food() -> LBBiscuit:
+	var pool := foods().filter(func(b): return b.held_by == null)
+	return pool[_rng.randi() % pool.size()] if pool.size() > 0 else null
+
+
+func time_left() -> float:
+	return maxf(guest_time - play_time, 0.0)
 
 
 func rivals_allowed() -> bool:
@@ -360,7 +423,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_2: debug_jump_phase(2)
 			KEY_3: debug_jump_phase(3)
 			KEY_4: debug_jump_phase(4)
-			KEY_5: debug_jump_return()
+			KEY_5: debug_jump_rush()
 			KEY_6: debug_jump_ending()
 			KEY_7:
 				if comedy:
@@ -403,23 +466,24 @@ func _physics_process(dt: float) -> void:
 	# 4) rules
 	if gs == GS.PLAY:
 		_update_phase(dt)
-		_check_win()
+		_check_eat()
+		if time_left() <= 0.0:
+			_guest_arrives()
+	if hud:
+		hud.set_status(hunger, hunger_goal, time_left(), breaches)
 	_juice(dt)
 
 
 func _update_phase(dt: float) -> void:
-	var prog := LBConst.approach_progress(player.plane_pos)
-	var b := real_biscuit()
-	var want := phase
-	if b and b.held_by == player:
+	var want := 1
+	if play_time > phase_times.x:
+		want = 2
+	if play_time > phase_times.y:
+		want = 3
+	if play_time > phase_times.z:
+		want = 4
+	if time_left() < rush_time:
 		want = LBConst.Phase.RETURN
-	elif phase < LBConst.Phase.RETURN:
-		if phase < 2 and prog >= second_hand_progress:
-			want = 2
-		if phase == 2 and (prog >= third_hand_progress or phase_time > phase2_max_time):
-			want = 3
-		if phase == 3 and (phase_time > phase3_max_time or (b and b.held_by != null)):
-			want = 4
 	if want > phase:
 		set_phase(want)
 	# staggered emergence of rivals that are due
@@ -435,7 +499,7 @@ func _update_phase(dt: float) -> void:
 func set_phase(p: int) -> void:
 	phase = p
 	phase_time = 0.0
-	alertness = return_alertness if p >= LBConst.Phase.RETURN else 1.0
+	alertness = (return_alertness if p >= LBConst.Phase.RETURN else 1.0) + breaches * alertness_per_breach
 	if p >= LBConst.Phase.RETURN:
 		for r in rivals:
 			r.out_time = rival_out_time_return
@@ -444,12 +508,48 @@ func set_phase(p: int) -> void:
 	phase_changed.emit(p)
 
 
-func _check_win() -> void:
+func _check_eat() -> void:
 	var b := player.held as LBBiscuit
-	if b == null or not b.is_real_prize() or b.is_contested():
+	if eating or b == null or not b.is_real_prize() or b.is_contested():
 		return
 	if player.plane_pos.y > LBConst.HOME_ZONE_Z:
-		_ending(b)
+		_player_eat(b)
+
+
+## Hand to mouth, a guilty bite, then chewing that anyone glancing at Bill sees.
+func _player_eat(b: LBBiscuit) -> void:
+	eating = true
+	player.input_enabled = false
+	var back := player.plane_pos
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(player, "lift", 0.5, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(player, "plane_pos", Vector2(0.08, 5.25), 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await tw.finished
+	if gs != GS.PLAY or player.held != b:
+		player.lift = 0.0
+		eating = false
+		player.input_enabled = gs == GS.PLAY
+		return
+	audio.play_at("crunch", bill.head.global_position, -4.0, 1.25)
+	audio.play_at("gulp", bill.head.global_position, -10.0, 1.1)
+	hunger += b.value()
+	eaten += 1
+	player.release()
+	world.remove_object(b)
+	player.chewing_t = chew_time
+	bill.chew_t = chew_time
+	if hud:
+		hud.pulse_hunger()
+	var tw2 := create_tween().set_parallel(true)
+	tw2.tween_property(player, "lift", 0.0, 0.3)
+	tw2.tween_property(player, "plane_pos", Vector2(back.x, LBConst.HOME_ZONE_Z + 0.15), 0.3)
+	await tw2.finished
+	player.snap_cursor_to_hand()
+	eating = false
+	if gs == GS.PLAY:
+		player.input_enabled = true
+		if hunger >= hunger_goal:
+			_guest_arrives()
 
 
 # ================================================================== hands
@@ -583,14 +683,16 @@ func _tug(dt: float) -> void:
 
 
 func break_biscuit(b: LBBiscuit) -> void:
-	if b.size_fraction < 0.99 or b.is_fake or not is_instance_valid(b):
+	if not is_instance_valid(b) or not b.can_break():
 		return
 	var holders := b.holders.duplicate()
 	for h in holders:
 		(h as LBHand).release()
 	var dir := Vector2.from_angle(_rng.randf() * TAU)
-	var big := _spawn_biscuit(b.plane_pos + dir * 0.03, 0.62)
-	var small := _spawn_biscuit(b.plane_pos - dir * 0.03, 0.38)
+	var big := _spawn_biscuit(b.plane_pos + dir * 0.03, 0.62, false, b.food_type)
+	var small := _spawn_biscuit(b.plane_pos - dir * 0.03, 0.38, false, b.food_type)
+	big.home_pos = b.home_pos
+	small.home_pos = b.home_pos
 	big.vel = dir * 0.25
 	small.vel = -dir * 0.25
 	if holders.size() >= 2:
@@ -641,6 +743,8 @@ func _on_impact(pos: Vector2, loudness: float, source: LBHand, obj: LBTableObjec
 
 
 func _on_noise(pos: Vector2, loudness: float, source: LBHand, kind: String) -> void:
+	if loudness > 0.12 and kind != "swish":
+		_ripple(pos, loudness)
 	for d in diners:
 		d.on_noise(pos, loudness, source, kind)
 
@@ -687,12 +791,16 @@ func _player_caught(d: LBDiner) -> void:
 	player.input_enabled = false
 	player.vel = Vector2.ZERO
 	var held_b := player.held as LBBiscuit
+	var was_chewing := player.chewing_t > 0.0
+	breaches += 1
 	audio.play_flat("pluck", -4.0)
 	audio.set_duck(0.0)
 	audio.set_tension(0.0)
 	for r in rivals:
 		r.forced_freeze = true
 	var hand_at := player.palm_world()
+	if was_chewing and held_b == null:
+		hand_at = bill.head.global_position          # caught with his mouth full
 	d.start_pointing(hand_at)
 	d.look_at_world(hand_at, -1, 4.0)
 	bill.look_target = d.head_world()
@@ -708,7 +816,13 @@ func _player_caught(d: LBDiner) -> void:
 		await get_tree().create_timer(0.32).timeout
 	d.paused = true
 	# absolute silence. hold it.
-	await get_tree().create_timer(2.4).timeout
+	if was_chewing:
+		await get_tree().create_timer(1.0).timeout
+		audio.play_at("gulp", bill.head.global_position, 0.0, 0.8)   # the loudest swallow in history
+		bill.chew_t = 0.0
+		await get_tree().create_timer(1.4).timeout
+	else:
+		await get_tree().create_timer(2.4).timeout
 	# Bill withdraws, deflated
 	player.force_release_all()
 	if held_b:
@@ -721,61 +835,58 @@ func _player_caught(d: LBDiner) -> void:
 	tw.tween_callback(player.snap_cursor_to_hand)
 	d.stop_pointing()
 	await get_tree().create_timer(0.8).timeout
-	# someone calmly restores the biscuit with serving tongs
-	await _tongs_restore(d)
+	# someone calmly puts the food back where it belongs with serving tongs
+	if held_b and is_instance_valid(held_b):
+		await _tongs_restore(d, held_b)
 	for o in diners:
 		o.reset_state()
 	attempt += 1
-	set_phase(1)
+	set_phase(phase)
 	for r in rivals:
-		r.reset_rival()
-		_tune_rival_out(r)
+		if r.state == LBRivalHand.St.HIDDEN and r.activation_phase <= phase:
+			r.state = LBRivalHand.St.OUT
+			r.state_t = 0.0
+			_tune_rival_out(r)
 	player.vel = Vector2.ZERO
 	player.input_enabled = true
 	audio.set_duck(1.0)
 	bill.look_target = LBConst.p2w(LBConst.BISCUIT_HOME, 1.0)
+	player.chewing_t = 0.0
 	gs = GS.PLAY
 
 
 func _tune_rival_out(r: LBRivalHand) -> void:
-	r.out_time = 12.0
+	r.out_time = 8.0 if phase >= LBConst.Phase.RETURN else 12.0
 
 
-func _tongs_restore(by: LBDiner) -> void:
+func _tongs_restore(by: LBDiner, item: LBBiscuit) -> void:
 	var tongs := _make_tongs()
 	var start := by.head_world() + Vector3(-by.side * 0.2, -0.3, 0)
 	tongs.global_position = start
-	# put the plate back first, perfectly centred
-	if plate:
+	# the guest's plate goes back too, perfectly centred
+	if item.is_guest() and plate:
 		var pt := create_tween()
 		pt.tween_property(plate, "plane_pos", LBConst.BISCUIT_HOME, 0.8).set_trans(Tween.TRANS_SINE)
-	var pieces := world.biscuits()
-	var target := LBConst.p2w(LBConst.BISCUIT_HOME, LBConst.TABLE_Y + 0.12)
-	var src := target
-	var b := real_biscuit()
-	if b:
-		src = LBConst.p2w(b.plane_pos, LBConst.TABLE_Y + 0.08)
+	var src := LBConst.p2w(item.plane_pos, LBConst.TABLE_Y + 0.08)
+	var dest := LBConst.p2w(item.home_pos, LBConst.TABLE_Y + 0.08)
 	var t1 := create_tween()
-	t1.tween_property(tongs, "global_position", src + Vector3(0, 0.05, 0), 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	t1.tween_property(tongs, "global_position", src + Vector3(0, 0.05, 0), 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await t1.finished
 	audio.play_at("tongs", src, -6.0)
-	tongs.set_meta("closed", true)
-	for p in pieces:
-		p.visible = false
-	var carry := LBMesh.add(tongs, LBProps.biscuit_mesh(1.0, 1.0), LBMat.shader_unique("biscuit.gdshader"), Vector3(0, -0.04, -0.26))
-	var t2 := create_tween()
-	t2.tween_property(tongs, "global_position", target + Vector3(0, 0.12, 0), 1.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	await t2.finished
-	var t3 := create_tween()
-	t3.tween_property(tongs, "global_position", target + Vector3(0, -0.02, 0), 0.5)
-	await t3.finished
-	for p in pieces:
-		world.remove_object(p)
-	_spawn_biscuit(LBConst.BISCUIT_HOME)
-	carry.queue_free()
-	audio.play_at("clink", target, -10.0, 1.3)
+	if not is_instance_valid(item):
+		tongs.queue_free()
+		return
+	item.held_by = null
+	item.vel = Vector2.ZERO
+	var carry := create_tween().set_parallel(true)
+	carry.tween_property(tongs, "global_position", dest + Vector3(0, 0.05, 0), 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	carry.tween_property(item, "plane_pos", item.home_pos, 1.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	carry.tween_property(item, "lift", 0.08, 0.3)
+	await carry.finished
+	item.lift = 0.0
+	audio.play_at("clink", dest, -10.0, 1.3)
 	var t4 := create_tween()
-	t4.tween_property(tongs, "global_position", start, 0.9).set_trans(Tween.TRANS_SINE)
+	t4.tween_property(tongs, "global_position", start, 0.8).set_trans(Tween.TRANS_SINE)
 	await t4.finished
 	tongs.queue_free()
 	for c in _sugar_cubes:
@@ -801,19 +912,15 @@ func _make_tongs() -> Node3D:
 func on_rival_escaped(r: LBRivalHand, b: LBTableObject) -> void:
 	if gs != GS.PLAY:
 		return
-	# Everyone saw THAT. Glares. The biscuit is slowly put back.
+	# they made it: a furtive bite behind a napkin, a long innocent chew
 	var owner_d := diners[r.owner_index]
-	r.start_shame(plate.plane_pos if plate else LBConst.BISCUIT_HOME)
-	audio.play_at("gulp", owner_d.head_world(), -2.0)
-	for d in diners:
-		if d == owner_d:
-			d.look_at_world(LBConst.p2w(r.plane_pos, 1.0), 4.0, 2.0)
-			continue
-		d.glare = 1.0
-		d.look_at_world(owner_d.head_world(), 4.5, 2.5)
-	await get_tree().create_timer(4.5).timeout
-	for d in diners:
-		d.glare = 0.0
+	r.start_eating(owner_d.head_world() + Vector3(0, -0.12, 0))
+	await get_tree().create_timer(0.5).timeout
+	if is_instance_valid(b) and r.held == b:
+		r.release()
+		world.remove_object(b)
+		audio.play_at("crunch", owner_d.head_world(), -10.0, 1.3)
+		owner_d.chew_t = 2.4
 
 
 func on_shame_done(_r: LBRivalHand) -> void:
@@ -822,86 +929,106 @@ func on_shame_done(_r: LBRivalHand) -> void:
 
 # ================================================================= ending
 
-func _ending(b: LBBiscuit) -> void:
+## Time's up (or Bill is full): three knocks, and the guest of honour takes
+## the head chair. It is the dog. It wanted the biscuit.
+func _guest_arrives() -> void:
+	if gs != GS.PLAY and gs != GS.BREAK_BEAT:
+		return
 	gs = GS.ENDING
+	if hud:
+		hud.hide_status()
 	player.input_enabled = false
-	player.vel = Vector2.ZERO
-	for r in rivals:
-		r.forced_freeze = true
+	player.force_release_all()
+	player.chewing_t = 0.0
 	audio.set_tension(0.0)
-	audio.play_flat("sting", -3.0)
-	bill.look_target = player.palm_world()
-	# rivals slink away
 	for r in rivals:
 		if not r.is_out():
 			r.forced_freeze = false
 			r.withdraw(false)
 	for d in diners:
 		d.paused = true
-	# Bill raises it in triumph
-	var tw := create_tween().set_parallel(true)
-	tw.tween_property(player, "lift", 0.62, 0.9).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(player, "plane_pos", Vector2(0.2, 4.95), 0.9).set_trans(Tween.TRANS_SINE)
-	await tw.finished
-	bill.look_target = player.palm_world() + Vector3(0, 0.1, 0)
-	# a tiny, proud wiggle
-	var wig := create_tween()
+	var back := create_tween()
+	back.tween_property(player, "plane_pos", LBConst.BILL_HAND_HOME, 1.0).set_trans(Tween.TRANS_SINE)
+	# three slow knocks from the far end
+	var head_chair := Vector3(0.0, 1.3, -5.5)
 	for i in 3:
-		wig.tween_property(player, "palm_up", 0.12, 0.08)
-		wig.tween_property(player, "palm_up", 0.0, 0.08)
-	await get_tree().create_timer(0.8).timeout
-	# CHOMP
-	var dog := bill.dog
+		audio.play_at("thud", Vector3(0, 1.2, -9.5), 4.0, 0.7)
+		await get_tree().create_timer(0.55).timeout
+	audio.set_duck(0.0)
+	for d in diners:
+		d.neutral_lock = false
+		d.look_at_world(head_chair, -1, 1.6)
+	bill.look_target = head_chair
+	# the camera leans in down the table
+	var cam_tw := create_tween().set_parallel(true)
+	cam_tw.tween_property(camera, "base_position", Vector3(0.0, 2.6, 4.6), 3.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	cam_tw.tween_property(camera, "look_target", Vector3(0.0, 1.0, -3.6), 3.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await get_tree().create_timer(1.2).timeout
+	# the guest rises into its seat
+	var dog: Node3D = bill.guest_dog
 	dog.visible = true
-	var palm := player.palm_world()
-	var side := Vector3(0.28, 0.0, -0.55)
-	var top := palm + side * 0.45 + Vector3(0, -0.05, 0)
-	# aim from where the jaws will snap shut, then drop below the table to erupt
-	dog.global_position = top
-	dog.look_at(palm + Vector3(0, 0.02, 0) + (palm - top).normalized() * 0.3, Vector3.UP)
-	dog.scale = Vector3.ONE * 1.5
-	dog.global_position = top + Vector3(0, -1.2, 0)
-	bill.dog_jaw.rotation.x = 0.8
-	var up := create_tween()
-	up.tween_property(dog, "global_position", top, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	await up.finished
-	audio.play_at("chomp", palm, 4.0)
-	bill.dog_jaw.rotation.x = 0.0
-	camera.bump(Vector3(0.5, -1.0, 0.0), 0.09)
-	camera.shake(0.6)
-	player.release()
-	world.remove_object(b)
+	var seat := Vector3(0.0, 0.42, -5.42)
+	dog.global_position = seat + Vector3(0, -1.6, 0)
+	var rise := create_tween()
+	rise.tween_property(dog, "global_position", seat, 1.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	await rise.finished
+	audio.play_flat("sting", -6.0, 0.8)
+	await get_tree().create_timer(1.2).timeout
+	# is its biscuit still there?
+	var g := guest_food()
+	var g_plate := plate
+	if g and g.held_by == null and g_plate:
+		# the centrepiece glides up the table to its rightful owner...
+		var slide := create_tween()
+		slide.tween_property(g_plate, "plane_pos", Vector2(0.0, -4.55), 1.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		await slide.finished
+		await get_tree().create_timer(0.4).timeout
+		# CHOMP
+		var dhead: Node3D = bill.guest_head
+		var lunge := create_tween()
+		lunge.tween_property(dhead, "rotation:x", -0.7, 0.12)
+		lunge.parallel().tween_property(bill.guest_jaw, "rotation:x", 0.8, 0.12)
+		await lunge.finished
+		audio.play_at("chomp", Vector3(0, 1.0, -4.6), 6.0)
+		bill.guest_jaw.rotation.x = 0.0
+		if is_instance_valid(g):
+			world.remove_object(g)
+		camera.shake(0.4)
+		var settle := create_tween()
+		settle.tween_property(dhead, "rotation:x", 0.0, 0.3)
+		await get_tree().create_timer(1.4).timeout
+	else:
+		# it looks at its empty plate... then, very slowly, at Bill
+		await get_tree().create_timer(1.6).timeout
+		var turn := create_tween()
+		turn.tween_property(bill.guest_head, "rotation:x", -0.25, 1.5)
+		for d in diners:
+			d.look_at_world(bill.head.global_position, -1, 0.6)
+		await get_tree().create_timer(2.6).timeout
+	# ...and the empty plate is sent all the way down the table to Bill
+	audio.set_duck(0.4)
+	if g_plate:
+		var path := create_tween()
+		path.tween_property(g_plate, "plane_pos", Vector2(0.15, 4.45), 2.6).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+		for i in 4:
+			get_tree().create_timer(0.3 + i * 0.45).timeout.connect(func(): audio.play_at("clink", LBConst.p2w(g_plate.plane_pos), -14.0, 0.9))
+		await path.finished
+		var hand := create_tween()
+		hand.tween_property(player, "plane_pos", Vector2(0.15, 4.5), 0.6).set_trans(Tween.TRANS_SINE)
+		await hand.finished
 	for d in diners:
 		d.neutral_lock = true
-	for o in world.objects:
-		if o.on_table and o.plane_pos.distance_to(player.plane_pos) < 0.9:
-			o.bump(o.plane_pos - player.plane_pos, 0.4)
-			if o.mass < 0.4:
-				o.jump(0.5)
-	# a satisfied chew
-	var chew := create_tween()
-	for i in 2:
-		chew.tween_property(bill.dog_jaw, "rotation:x", 0.25, 0.09)
-		chew.tween_property(bill.dog_jaw, "rotation:x", 0.0, 0.09)
-	await get_tree().create_timer(0.42).timeout
-	var down := create_tween()
-	down.tween_property(dog, "global_position", dog.global_position + Vector3(0.15, -1.4, 0.15), 0.24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	await down.finished
-	dog.visible = false
-	# silence. Bill looks at his empty hand.
-	audio.set_duck(0.0)
-	await get_tree().create_timer(1.4).timeout
-	var look := create_tween().set_parallel(true)
-	look.tween_property(player, "lift", 0.3, 1.2).set_trans(Tween.TRANS_SINE)
-	look.tween_property(player, "palm_up", 1.0, 1.2).set_trans(Tween.TRANS_SINE)
-	bill.look_target = player.palm_world() + Vector3(0, -0.1, 0)
-	await look.finished
-	await get_tree().create_timer(2.2).timeout
+	bill.look_target = LBConst.p2w(Vector2(0.15, 4.45), LBConst.TABLE_Y)
+	# Bill looks down at what he has been given
+	audio.play_at("gulp" if hunger >= hunger_goal else "thud", bill.head.global_position, -8.0, 0.6)
+	var back_cam := create_tween().set_parallel(true)
+	back_cam.tween_property(camera, "base_position", Vector3(0.0, 3.35, 8.45), 3.0).set_trans(Tween.TRANS_SINE)
+	back_cam.tween_property(camera, "look_target", Vector3(0.0, 0.62, 1.3), 3.0).set_trans(Tween.TRANS_SINE)
+	await get_tree().create_timer(2.0).timeout
 	gs = GS.DONE
 	set_meta("done_at", _now)
-	audio.set_duck(0.6)
 	if hud:
-		hud.show_item("Empty Biscuit Plate", play_time, attempt)
+		hud.show_item("Empty Biscuit Plate", play_time, attempt, hunger, hunger_goal, eaten, breaches)
 	last_biscuit_completed.emit(ITEM_ID)
 	await get_tree().create_timer(4.0).timeout
 	if hud and standalone:
@@ -955,6 +1082,33 @@ func _juice(dt: float) -> void:
 		_near_miss = 0.0
 	else:
 		_near_miss = maxf(_near_miss - dt, 0.0)
+	# exposure ring: lit = amber, lit AND moving = pulsing red
+	var expose := 0.0
+	for d in diners:
+		expose = maxf(expose, d.gaze_visibility(player))
+	if _expose_ring:
+		var moving := player.speed() > 0.14 or player.chewing_t > 0.0
+		var c := Color(1.0, 0.8, 0.3) if not moving else Color(1.0, 0.15, 0.05)
+		var a := clampf(expose * 1.6, 0.0, 0.9) if gs == GS.PLAY else 0.0
+		if moving:
+			a *= 0.65 + 0.35 * sin(_now * 30.0)
+		_expose_mat.albedo_color = Color(c.r, c.g, c.b, a)
+		_expose_ring.visible = a > 0.02
+		_expose_ring.global_position = LBConst.p2w(player.plane_pos, LBConst.TABLE_Y + 0.01)
+	var i := 0
+	while i < _ripples.size():
+		var rp: Array = _ripples[i]
+		rp[1] += dt
+		var k: float = rp[1] / 0.7
+		var mi: MeshInstance3D = rp[0]
+		if k >= 1.0:
+			mi.queue_free()
+			_ripples.remove_at(i)
+			continue
+		var r: float = rp[2] * (1.0 - pow(1.0 - k, 3.0))
+		mi.scale = Vector3(r, 0.02, r)
+		(mi.material_override as StandardMaterial3D).albedo_color.a = (1.0 - k) * 0.7 * float(rp[3])
+		i += 1
 	# cursor target ring
 	if _target_ring:
 		_target_ring.visible = gs == GS.PLAY and player.use_mouse and player.target.distance_to(player.plane_pos) > 0.05
@@ -964,10 +1118,7 @@ func _juice(dt: float) -> void:
 	if room:
 		room.portraits_look_at(player.palm_world())
 	if gs == GS.PLAY or gs == GS.BREAK_BEAT:
-		var b := real_biscuit()
 		var look := player.palm_world()
-		if b and b.held_by != player and player.plane_pos.y > 2.5:
-			look = look.lerp(LBConst.p2w(b.plane_pos), 0.5)
 		bill.look_target = bill.look_target.lerp(look, LBConst.damp(2.0, dt))
 
 
@@ -975,41 +1126,39 @@ func _juice(dt: float) -> void:
 
 func debug_jump_phase(p: int) -> void:
 	_debug_reset_rivals()
-	var z := lerpf(LBConst.BILL_HAND_HOME.y, LBConst.BISCUIT_HOME.y, [0.0, 0.0, 0.5, 0.82, 0.9][p])
-	player.plane_pos = Vector2(0.1, z)
-	player.snap_cursor_to_hand()
+	play_time = [0.0, 0.0, phase_times.x, phase_times.y, phase_times.z][p] + 0.5
 	set_phase(p)
 	for r in rivals:
 		if r.activation_phase <= p:
 			r.emerge()
 
 
-func debug_jump_return() -> void:
+## The last stretch: the guest is almost here.
+func debug_jump_rush() -> void:
 	_debug_reset_rivals()
-	var b := real_biscuit()
-	if b == null:
-		b = _spawn_biscuit(LBConst.BISCUIT_HOME)
-	player.force_release_all()
-	player.plane_pos = b.plane_pos + Vector2(0, 0.05)
-	player.snap_cursor_to_hand()
-	player.grab(b)
+	play_time = guest_time - rush_time + 1.0
 	set_phase(LBConst.Phase.RETURN)
 	for r in rivals:
 		r.emerge()
 
 
+## Bill's hand right by his mouth with food in it.
 func debug_jump_home_stretch() -> void:
-	debug_jump_return()
-	player.plane_pos = Vector2(0.1, 3.9)
+	_debug_reset_rivals()
+	var f := random_free_food()
+	if f == null:
+		return
+	player.force_release_all()
+	player.plane_pos = Vector2(0.15, 3.9)
+	f.plane_pos = player.plane_pos
 	player.snap_cursor_to_hand()
+	player.grab(f)
 
 
 func debug_jump_ending() -> void:
-	debug_jump_return()
-	player.plane_pos = Vector2(0.1, LBConst.HOME_ZONE_Z + 0.1)
-	player.snap_cursor_to_hand()
-	for r in rivals:
-		r.reset_rival()
+	_debug_reset_rivals()
+	hunger = hunger_goal
+	_guest_arrives()
 
 
 func _debug_reset_rivals() -> void:

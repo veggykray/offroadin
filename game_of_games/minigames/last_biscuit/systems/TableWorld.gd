@@ -46,7 +46,7 @@ func add_hand(h: LBHand) -> void:
 
 static func is_surface(o: LBTableObject) -> bool:
 	return o.kind == LBTableObject.Kind.DINNER_PLATE or o.kind == LBTableObject.Kind.BISCUIT_PLATE \
-			or o.kind == LBTableObject.Kind.NAPKIN
+			or o.kind == LBTableObject.Kind.NAPKIN or o.kind == LBTableObject.Kind.PLATTER
 
 
 static func is_small_flat(o: LBTableObject) -> bool:
@@ -54,7 +54,14 @@ static func is_small_flat(o: LBTableObject) -> bool:
 			or o.kind == LBTableObject.Kind.KNIFE or o.kind == LBTableObject.Kind.SPOON
 
 
+var occluders: Array[LBTableObject] = []
+
+
 func step(dt: float) -> void:
+	occluders.clear()
+	for o in objects:
+		if o.occludes and o.on_table:
+			occluders.append(o)
 	_move_objects(dt)
 	_carry_riders()
 	for _i in 2:
@@ -321,8 +328,8 @@ func sight_blocked(eye: Vector2, eye_h: float, target: Vector2, target_h: float,
 	if L < 0.001:
 		return false
 	var dir := seg / L
-	for o in objects:
-		if not o.occludes or not o.on_table or o == ignore:
+	for o in occluders:
+		if o == ignore:
 			continue
 		var to := o.plane_pos - target
 		var u := clampf(to.dot(dir), 0.0, L)

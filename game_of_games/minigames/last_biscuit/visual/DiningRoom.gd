@@ -4,8 +4,8 @@ extends Node3D
 ## long table, chandeliers, windows with cold light shafts, portraits, a
 ## grandfather clock and drifting dust. Pure set dressing - no gameplay.
 
-@export var window_light_energy := 0.55
-@export var chandelier_energy := 2.6
+@export var window_light_energy := 0.9
+@export var chandelier_energy := 3.6
 @export var volumetric_fog := true
 
 var portrait_mats: Array[ShaderMaterial] = []
@@ -23,6 +23,9 @@ func build() -> void:
 	_portraits()
 	_clock()
 	_sideboard()
+	_sconces()
+	_fireplace()
+	_extras()
 	_dust()
 
 
@@ -37,11 +40,11 @@ func _environment() -> void:
 	sky.sky_material = sm
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.32, 0.24, 0.2)
-	env.ambient_light_energy = 0.32
+	env.ambient_light_color = Color(0.5, 0.4, 0.33)
+	env.ambient_light_energy = 0.75
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.05
+	env.tonemap_exposure = 1.25
 	env.tonemap_white = 6.0
 	env.glow_enabled = true
 	env.glow_intensity = 0.55
@@ -53,11 +56,11 @@ func _environment() -> void:
 	env.ssao_intensity = 1.6
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.05, 0.045, 0.05)
-	env.fog_density = 0.018
+	env.fog_density = 0.008
 	env.fog_aerial_perspective = 0.2
 	if volumetric_fog:
 		env.volumetric_fog_enabled = true
-		env.volumetric_fog_density = 0.012
+		env.volumetric_fog_density = 0.008
 		env.volumetric_fog_albedo = Color(0.9, 0.85, 0.8)
 		env.volumetric_fog_length = 24.0
 		env.volumetric_fog_anisotropy = 0.5
@@ -232,7 +235,7 @@ func _windows() -> void:
 func _portraits() -> void:
 	var specs := [
 		[Vector3(4.18, 2.5, -1.0), Color(0.12, 0.06, 0.05), Color(0.62, 0.48, 0.36), 0.17, 0.24],
-		[Vector3(4.18, 2.6, 2.6), Color(0.05, 0.08, 0.06), Color(0.7, 0.55, 0.45), 0.2, 0.2],
+		[Vector3(4.18, 2.6, 4.6), Color(0.05, 0.08, 0.06), Color(0.7, 0.55, 0.45), 0.2, 0.2],
 		[Vector3(4.18, 2.4, -4.8), Color(0.1, 0.04, 0.08), Color(0.55, 0.45, 0.38), 0.14, 0.26],
 		[Vector3(-1.9, 2.7, -9.85), Color(0.06, 0.05, 0.1), Color(0.6, 0.5, 0.42), 0.18, 0.22],
 		[Vector3(1.9, 2.7, -9.85), Color(0.1, 0.07, 0.03), Color(0.66, 0.5, 0.4), 0.16, 0.2],
@@ -291,6 +294,113 @@ func _sideboard() -> void:
 	LBProps._flame(cand, Vector3(0, 0.58, 0), 7.0, true, 0.5)
 	for i in 4:
 		LBMesh.add(s, LBMesh.cyl_mesh(0.035, 0.03, 0.22 + i * 0.03, 12), LBMat.glass(Color(0.3, 0.2, 0.1, 0.7)), Vector3(0, 1.05 + i * 0.015, -1.0 + i * 0.12))
+
+
+## Pairs of brass wall sconces along both walls: warm pools of light so the
+## room reads clearly instead of disappearing into darkness.
+func _sconces() -> void:
+	var brass := LBMat.gold()
+	var shade := StandardMaterial3D.new()
+	shade.albedo_color = Color(0.98, 0.85, 0.6)
+	shade.emission_enabled = true
+	shade.emission = Color(1.0, 0.7, 0.35)
+	shade.emission_energy_multiplier = 2.2
+	for x in [-4.17, 4.17]:
+		for z in [3.6, 0.8, -2.0, -4.8, -7.4]:
+			var sc := LBMesh.pivot(self, Vector3(x, 2.0, z), "Sconce")
+			sc.rotation.y = PI * 0.5 if x < 0.0 else -PI * 0.5
+			LBMesh.add(sc, LBMesh.cyl_mesh(0.06, 0.08, 0.02, 16), brass, Vector3(0, 0, 0.0), Vector3(90, 0, 0))
+			for s2 in [-1.0, 1.0]:
+				LBMesh.add(sc, LBMesh.capsule_mesh(0.012, 0.3, 6), brass, Vector3(0.1 * s2, 0.06, 0.12), Vector3(60, 0, 40 * s2))
+				LBMesh.add(sc, LBMesh.cyl_mesh(0.05, 0.08, 0.1, 14), shade, Vector3(0.18 * s2, 0.18, 0.2))
+			var l := OmniLight3D.new()
+			l.light_color = Color(1.0, 0.72, 0.42)
+			l.light_energy = 1.4
+			l.omni_range = 3.6
+			l.omni_attenuation = 1.2
+			l.position = Vector3(0, 0.15, 0.35)
+			l.shadow_enabled = false
+			l.set_script(load("res://minigames/last_biscuit/visual/Flicker.gd"))
+			sc.add_child(l)
+
+
+## A big marble fireplace on the right wall, fire crackling, throwing warm
+## moving light across the diners.
+func _fireplace() -> void:
+	var f := LBMesh.pivot(self, Vector3(4.1, 0, 1.9), "Fireplace")
+	f.rotation.y = -PI * 0.5
+	var marble := LBMat.std("marble", Color(0.85, 0.82, 0.76), 0.0, 0.25, {"clearcoat_enabled": true})
+	var soot := LBMat.std("soot", Color(0.04, 0.03, 0.03), 0.0, 0.9)
+	LBMesh.add(f, LBMesh.box_mesh(Vector3(1.8, 0.12, 0.5)), marble, Vector3(0, 1.3, 0.15))
+	for s2 in [-1.0, 1.0]:
+		LBMesh.add(f, LBMesh.box_mesh(Vector3(0.22, 1.25, 0.4)), marble, Vector3(0.75 * s2, 0.62, 0.12))
+	LBMesh.add(f, LBMesh.box_mesh(Vector3(1.3, 1.1, 0.3)), soot, Vector3(0, 0.55, 0.0))
+	# logs and flames
+	var log_mat := LBMat.std("log", Color(0.2, 0.1, 0.05), 0.0, 0.9)
+	for i in 3:
+		LBMesh.add(f, LBMesh.capsule_mesh(0.06, 0.6, 8), log_mat, Vector3(-0.1 + i * 0.1, 0.12 + (i % 2) * 0.07, 0.15), Vector3(0, 20 - i * 20, 90))
+	for i in 7:
+		var fl := LBMesh.add(f, LBMesh.quad_mesh(Vector2(0.16, 0.36)), LBMat.flame(float(i) * 3.1), Vector3(-0.3 + i * 0.1, 0.3, 0.2), Vector3.ZERO, Vector3.ONE * (0.8 + 0.4 * float(i % 3)), false)
+		fl.name = "Fire%d" % i
+	var fire := OmniLight3D.new()
+	fire.light_color = Color(1.0, 0.5, 0.2)
+	fire.light_energy = 2.4
+	fire.omni_range = 5.5
+	fire.position = Vector3(0, 0.5, 0.7)
+	fire.shadow_enabled = true
+	fire.set_script(load("res://minigames/last_biscuit/visual/Flicker.gd"))
+	f.add_child(fire)
+	# mantel clutter: a gilt mirror, candlesticks, a stuffed owl
+	LBMesh.add(f, LBMesh.box_mesh(Vector3(1.2, 1.0, 0.04)), LBMat.std("mirror", Color(0.6, 0.62, 0.6), 1.0, 0.08), Vector3(0, 2.0, -0.02))
+	for e in [[Vector3(0, 2.52, 0), Vector3(1.32, 0.08, 0.08)], [Vector3(0, 1.48, 0), Vector3(1.32, 0.08, 0.08)],
+			[Vector3(0.64, 2.0, 0), Vector3(0.08, 1.12, 0.08)], [Vector3(-0.64, 2.0, 0), Vector3(0.08, 1.12, 0.08)]]:
+		LBMesh.add(f, LBMesh.box_mesh(e[1]), LBMat.gold(), e[0])
+	for x in [-0.6, 0.6]:
+		LBMesh.add(f, LBMesh.cyl_mesh(0.02, 0.05, 0.25, 12), LBMat.silver(), Vector3(x, 1.48, 0.2))
+		LBMesh.add(f, LBMesh.cyl_mesh(0.014, 0.014, 0.16, 8), LBMat.wax(), Vector3(x, 1.69, 0.2))
+		LBProps._flame(f, Vector3(x, 1.78, 0.2), x * 7.0)
+	var owl := LBMesh.pivot(f, Vector3(0.25, 1.36, 0.22))
+	var feathers := LBMat.std("owl", Color(0.45, 0.35, 0.25), 0.0, 0.9)
+	LBMesh.add(owl, LBMesh.sphere_mesh(0.09, 12), feathers, Vector3(0, 0.1, 0), Vector3.ZERO, Vector3(0.9, 1.2, 0.9))
+	LBMesh.add(owl, LBMesh.sphere_mesh(0.07, 12), feathers, Vector3(0, 0.25, 0))
+	for s2 in [-1.0, 1.0]:
+		LBMesh.add(owl, LBMesh.sphere_mesh(0.022, 8), LBMat.std("owleye", Color(1.0, 0.7, 0.1), 0.0, 0.1), Vector3(0.028 * s2, 0.26, 0.06))
+
+
+## Corner palms, standing candelabra, heavy curtain swags, a ceiling rose.
+func _extras() -> void:
+	var leaf := LBMat.std("palm", Color(0.16, 0.3, 0.12), 0.0, 0.6)
+	var pot := LBMat.std("pot", Color(0.45, 0.2, 0.12), 0.0, 0.5)
+	for p in [Vector3(-3.6, 0, 5.5), Vector3(3.6, 0, -8.6), Vector3(-3.6, 0, -4.2)]:
+		var palm := LBMesh.pivot(self, p, "Palm")
+		LBMesh.add(palm, LBMesh.cyl_mesh(0.22, 0.16, 0.45, 16), pot, Vector3(0, 0.22, 0))
+		for i in 9:
+			var a := TAU * i / 9.0
+			var fr := LBMesh.pivot(palm, Vector3(0, 0.5, 0))
+			fr.rotation = Vector3(0.0, a, 0.0)
+			LBMesh.add(fr, LBMesh.capsule_mesh(0.05, 0.9, 6), leaf, Vector3(0, 0.38, 0.28), Vector3(48, 0, 0), Vector3(1.6, 1.0, 0.25))
+	# standing candelabra in the near corners
+	for x in [-3.2, 3.2]:
+		var c := LBMesh.pivot(self, Vector3(x, 0, 6.6), "StandingCandelabra")
+		LBMesh.add(c, LBMesh.cyl_mesh(0.03, 0.18, 1.6, 12), LBMat.gold(), Vector3(0, 0.8, 0))
+		for i in 3:
+			var cx := -0.15 + i * 0.15
+			LBMesh.add(c, LBMesh.cyl_mesh(0.016, 0.016, 0.2, 8), LBMat.wax(), Vector3(cx, 1.7, 0))
+			LBProps._flame(c, Vector3(cx, 1.82, 0), float(i) + x, i == 1, 1.2)
+	# ceiling rose above the chandelier
+	LBMesh.add(self, LBMesh.cyl_mesh(0.7, 0.5, 0.06, 32), LBMat.std("plaster", Color(0.85, 0.82, 0.74), 0.0, 0.8), Vector3(0, 5.07, 0.4))
+	for i in 12:
+		var a := TAU * i / 12.0
+		LBMesh.add(self, LBMesh.sphere_mesh(0.07, 8), LBMat.gold(), Vector3(cos(a) * 0.55, 5.04, 0.4 + sin(a) * 0.55), Vector3.ZERO, Vector3(1, 0.4, 1))
+	# warm fill over the whole table so food and faces read clearly
+	for z in [3.0, -0.5, -3.5]:
+		var fill := OmniLight3D.new()
+		fill.light_color = Color(1.0, 0.8, 0.6)
+		fill.light_energy = 1.1
+		fill.omni_range = 4.5
+		fill.position = Vector3(0, 2.4, z)
+		fill.shadow_enabled = false
+		add_child(fill)
 
 
 func _dust() -> void:

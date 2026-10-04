@@ -39,7 +39,7 @@ static func phase_name(p: int) -> String:
 		Phase.SECOND_HAND: return "2 SECOND HAND"
 		Phase.THIRD_HAND: return "3 ANOTHER HAND"
 		Phase.CHAOS: return "4 SILENT CHAOS"
-		Phase.RETURN: return "5 THE RUN BACK"
+		Phase.RETURN: return "5 THE GUEST IS COMING"
 	return str(p)
 
 

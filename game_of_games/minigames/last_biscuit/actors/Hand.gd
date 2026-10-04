@@ -20,6 +20,10 @@ signal dropped(obj: LBTableObject)
 @export var skin_color := Color(0.88, 0.7, 0.6)
 @export var cuff_color := Color(0.92, 0.9, 0.84)
 @export var sleeve_radius := 0.07
+## Bare arm with a short sleeve (Bill's hospital gown) instead of a full sleeve.
+@export var bare_arm := false
+## Optional material for the sleeve (overrides sleeve_color).
+var sleeve_material: Material
 ## Cartoon scale of the hand mesh (readability from the far camera).
 @export var visual_scale := 1.9
 
@@ -45,6 +49,7 @@ var world                        # LBTableWorld
 var visual: Node3D
 var held_fork: bool = false      # the Glasses rival wields a fork
 var innocent := false            # pretending / shamed: diners stop judging it
+var chewing_t := 0.0             # >0 while chewing a stolen mouthful (Bill)
 
 
 func _ready() -> void:
@@ -91,6 +96,7 @@ func step_motion(dt: float) -> void:
 	plane_pos += vel * dt
 	if slap_t > 0.0:
 		slap_t = maxf(slap_t - dt, 0.0)
+	chewing_t = maxf(chewing_t - dt, 0.0)
 	var target_grip := 1.0 if held != null else 0.0
 	if pinning != null:
 		target_grip = 0.8

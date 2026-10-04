@@ -21,6 +21,8 @@ var rest_arm_near: Node3D
 var ear_hand: Node3D
 var hands_rest: Node3D
 var shoulder_l: Node3D
+var sus_icon: MeshInstance3D
+var sus_mat: ShaderMaterial
 var reflection: MeshInstance3D
 var reflection_mat: ShaderMaterial
 var _t := 0.0
@@ -36,6 +38,13 @@ func setup(diner: LBDiner) -> void:
 	_build_body()
 	_build_head()
 	_build_costume()
+	sus_icon = MeshInstance3D.new()
+	sus_icon.mesh = LBMesh.quad_mesh(Vector2(0.46, 0.27))
+	sus_mat = LBMat.shader_unique("suspicion_eye.gdshader")
+	sus_icon.material_override = sus_mat
+	sus_icon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	sus_icon.top_level = true
+	add_child(sus_icon)
 
 
 # ------------------------------------------------------------ construction
@@ -287,6 +296,12 @@ func _process(dt: float) -> void:
 			glasses.rotation.z = sin(_t * 9.0) * 0.3
 	_update_arms(dt)
 	_update_reflection()
+	# floating suspicion eye above the head (Bill's suspicion only)
+	var sv: float = d.suspicion.get_value(d.manager.player) if d.manager else 0.0
+	sus_icon.global_position = head.global_position + Vector3(0, 0.62, 0)
+	sus_mat.set_shader_parameter("amount", sv)
+	sus_mat.set_shader_parameter("pulse", (0.5 + 0.5 * sin(_t * 14.0)) * smoothstep(0.6, 0.9, sv))
+	sus_icon.scale = Vector3.ONE * (1.0 + sv * 0.6)
 
 
 func _update_arms(_dt: float) -> void:

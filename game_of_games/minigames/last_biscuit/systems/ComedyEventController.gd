@@ -110,7 +110,7 @@ func _sneeze() -> void:
 # -------------------------------------------------------------------- fly
 ## A fly lands on the biscuit. Every hand stops. It cleans itself. Leaves.
 func _fly() -> void:
-	var b := manager.real_biscuit()
+	var b := manager.random_free_food()
 	if b == null or b.held_by != null:
 		return
 	var fly := _make_fly()
@@ -174,7 +174,7 @@ func _make_fly() -> Node3D:
 # ------------------------------------------------------------ legit reach
 ## One diner openly reaches for the biscuit. Everyone glares. They withdraw.
 func _legit_reach() -> void:
-	var b := manager.real_biscuit()
+	var b := manager.random_free_food()
 	if b == null or b.held_by != null:
 		return
 	var d := _pick_diner(func(x: LBDiner):

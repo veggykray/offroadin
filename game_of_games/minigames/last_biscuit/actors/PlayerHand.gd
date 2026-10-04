@@ -47,8 +47,10 @@ var scripted_target: Variant = null
 func _init() -> void:
 	is_player = true
 	owner_index = -1
-	sleeve_color = Color(0.3, 0.24, 0.16)
-	skin_color = Color(0.9, 0.73, 0.63)
+	sleeve_color = Color(0.86, 0.83, 0.74)
+	skin_color = Color(0.9, 0.8, 0.77)
+	bare_arm = true
+	sleeve_material = LBBillVisual.gown_material()
 	radius = 0.1
 	push_mass = 1.7
 

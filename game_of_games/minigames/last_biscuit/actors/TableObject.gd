@@ -8,6 +8,7 @@ enum Kind {
 	CUP, DINNER_PLATE, BISCUIT_PLATE, CANDLESTICK, CANDELABRA, FORK, KNIFE, SPOON,
 	TEAPOT_SILVER, TEAPOT_CHINA, FLOWERS, SUGAR_BOWL, SERVING_DISH, PLATE_STACK,
 	NAPKIN, BOTTLE, CREAM_JUG, SALT, WINE_GLASS, TEETH, SUGAR_CUBE, BISCUIT, FAKE_BISCUIT,
+	PLATTER, CAKE_STAND,
 }
 
 @export var kind: Kind = Kind.CUP
@@ -69,6 +70,8 @@ static func defaults(k: Kind) -> Dictionary:
 		Kind.WINE_GLASS: return {"r": 0.045, "m": 0.2, "h": 0.18, "n": 1.3, "hc": true, "g": false, "o": false, "f": 8.0, "s": "glass"}
 		Kind.TEETH: return {"r": 0.05, "m": 0.15, "h": 0.03, "n": 1.0, "hc": true, "g": true, "o": false, "f": 4.0, "s": "clack"}
 		Kind.SUGAR_CUBE: return {"r": 0.018, "m": 0.02, "h": 0.0, "n": 0.2, "hc": false, "g": true, "o": false, "f": 6.0, "s": "clink"}
+		Kind.PLATTER: return {"r": 0.21, "m": 1.3, "h": 0.0, "n": 0.8, "hc": false, "g": true, "o": false, "f": 9.0, "s": "clink"}
+		Kind.CAKE_STAND: return {"r": 0.15, "m": 2.4, "h": 0.42, "n": 1.4, "hc": true, "g": false, "o": true, "f": 11.0, "s": "clatter"}
 		Kind.BISCUIT, Kind.FAKE_BISCUIT: return {"r": 0.055, "m": 0.05, "h": 0.0, "n": 0.15, "hc": false, "g": true, "o": false, "f": 5.0, "s": "clink"}
 	return {"r": 0.05, "m": 0.3, "h": 0.0, "n": 1.0, "hc": true, "g": false, "o": false, "f": 6.0, "s": "clink"}
 
