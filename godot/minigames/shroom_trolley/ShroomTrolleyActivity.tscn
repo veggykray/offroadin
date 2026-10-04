@@ -1,0 +1,92 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomTrolleyActivity.gd" id="1_activity"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomPlayAreaGizmo.gd" id="2_gizmo"]
+[ext_resource type="PackedScene" path="res://minigames/shroom_trolley/Checkout.tscn" id="3_checkout"]
+[ext_resource type="PackedScene" path="res://minigames/shroom_trolley/Trolley.tscn" id="4_trolley"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomFX.gd" id="5_fx"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/TrolleyCargoController.gd" id="6_cargo"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/TrolleyPlayerAdapter.gd" id="7_adapter"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomAudio.gd" id="8_audio"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomSpawner.gd" id="9_spawner"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomEvents.gd" id="10_events"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomOrderController.gd" id="11_order"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/ShroomHUD.gd" id="12_hud"]
+
+[node name="ShroomTrolleyActivity" type="Node2D"]
+script = ExtResource("1_activity")
+
+[node name="PlayArea" type="Node2D" parent="."]
+script = ExtResource("2_gizmo")
+
+[node name="LeftBound" type="Marker2D" parent="PlayArea"]
+position = Vector2(60, 640)
+gizmo_extents = 40.0
+
+[node name="RightBound" type="Marker2D" parent="PlayArea"]
+position = Vector2(1060, 640)
+gizmo_extents = 40.0
+
+[node name="TrolleyStart" type="Marker2D" parent="PlayArea"]
+position = Vector2(330, 640)
+gizmo_extents = 30.0
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Spawn_LeftHigh" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(30, 210)
+
+[node name="Spawn_LeftLow" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(30, 430)
+
+[node name="Spawn_Centre" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(640, 40)
+
+[node name="Spawn_RightHigh" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(1250, 160)
+
+[node name="Spawn_RightLow" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(1250, 330)
+
+[node name="Checkout" parent="." instance=ExtResource("3_checkout")]
+position = Vector2(1150, 640)
+
+[node name="Trolley" parent="." instance=ExtResource("4_trolley")]
+position = Vector2(330, 640)
+
+[node name="Mushrooms" type="Node2D" parent="."]
+
+[node name="FX" type="Node2D" parent="."]
+z_index = 6
+script = ExtResource("5_fx")
+
+[node name="CargoController" type="Node" parent="."]
+script = ExtResource("6_cargo")
+
+[node name="PlayerAdapter" type="Node" parent="."]
+script = ExtResource("7_adapter")
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("8_audio")
+
+[node name="Spawner" type="Node" parent="."]
+script = ExtResource("9_spawner")
+
+[node name="Events" type="Node" parent="."]
+script = ExtResource("10_events")
+
+[node name="Order" type="Node" parent="."]
+script = ExtResource("11_order")
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("12_hud")

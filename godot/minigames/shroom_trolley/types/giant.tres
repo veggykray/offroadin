@@ -1,0 +1,23 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/MushroomData.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+type_id = &"giant"
+scan_id = &"mushroom_giant"
+display_name = "GIANT Shroom"
+role = 3
+radius = 64.0
+mass = 12.0
+bounce = 0.72
+friction = 0.6
+gravity_multiplier = 0.8
+max_speed = 900.0
+cargo_weight = 10.0
+catch_thump = 3.0
+cap_color = Color(0.7, 0.35, 0.75, 1)
+cap_shade = Color(0.45, 0.2, 0.5, 1)
+spot_color = Color(1, 0.9, 1, 1)
+stem_color = Color(0.95, 0.9, 0.85, 1)
+points = 0

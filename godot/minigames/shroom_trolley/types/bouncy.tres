@@ -1,0 +1,27 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/MushroomData.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+type_id = &"bouncy"
+scan_id = &"mushroom_bouncy"
+display_name = "Bouncy Shroom"
+role = 0
+radius = 17.5
+mass = 0.7
+bounce = 0.86
+friction = 0.25
+gravity_multiplier = 0.95
+flight_time = Vector2(1.3, 1.8)
+launch_jitter = 35.0
+launch_spin = 8.0
+cargo_weight = 0.8
+must_settle_to_catch = true
+catch_thump = 0.7
+cap_color = Color(0.3, 0.72, 0.95, 1)
+cap_shade = Color(0.16, 0.42, 0.75, 1)
+spot_color = Color(0.85, 1, 1, 1)
+stem_color = Color(0.9, 0.95, 1, 1)
+glossy = true
+points = 120

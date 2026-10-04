@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/Checkout.gd" id="1_checkout"]
+[ext_resource type="Script" path="res://minigames/shroom_trolley/Scanner.gd" id="2_scanner"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_beam"]
+size = Vector2(150, 46)
+
+[node name="Checkout" type="Node2D"]
+script = ExtResource("1_checkout")
+
+[node name="Scanner" type="Area2D" parent="."]
+collision_layer = 0
+monitorable = false
+script = ExtResource("2_scanner")
+
+[node name="Beam" type="CollisionShape2D" parent="Scanner"]
+position = Vector2(0, -160)
+shape = SubResource("RectangleShape2D_beam")
+
+[node name="DockPoint" type="Marker2D" parent="."]
+position = Vector2(-185, 0)
+gizmo_extents = 30.0
+
+[node name="HopperTarget" type="Marker2D" parent="."]
+position = Vector2(4, -165)
+gizmo_extents = 20.0
+
+[node name="SpitPoint" type="Marker2D" parent="."]
+position = Vector2(-40, -215)

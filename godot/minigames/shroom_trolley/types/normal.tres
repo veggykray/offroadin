@@ -1,0 +1,24 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/MushroomData.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+type_id = &"normal"
+scan_id = &"mushroom_normal"
+display_name = "Shroom"
+role = 0
+radius = 19.0
+mass = 1.0
+bounce = 0.32
+friction = 0.7
+gravity_multiplier = 1.0
+flight_time = Vector2(1.6, 2.0)
+launch_jitter = 20.0
+cargo_weight = 1.0
+catch_thump = 1.0
+cap_color = Color(0.86, 0.24, 0.18, 1)
+cap_shade = Color(0.6, 0.13, 0.1, 1)
+spot_color = Color(1, 0.96, 0.88, 1)
+stem_color = Color(0.97, 0.92, 0.8, 1)
+points = 100

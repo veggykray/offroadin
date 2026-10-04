@@ -1,0 +1,26 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/shroom_trolley/MushroomData.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+type_id = &"rotten"
+scan_id = &"mushroom_rotten"
+display_name = "Rotten Shroom"
+role = 1
+radius = 19.5
+mass = 1.3
+bounce = 0.08
+friction = 0.9
+gravity_multiplier = 1.05
+flight_time = Vector2(1.5, 1.9)
+launch_jitter = 25.0
+launch_spin = 2.0
+cargo_weight = 1.4
+catch_thump = 1.3
+cap_color = Color(0.42, 0.5, 0.2, 1)
+cap_shade = Color(0.25, 0.3, 0.12, 1)
+spot_color = Color(0.25, 0.16, 0.1, 1)
+stem_color = Color(0.6, 0.58, 0.4, 1)
+stinky = true
+points = -150
