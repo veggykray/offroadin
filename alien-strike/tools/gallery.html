@@ -1,5 +1,5 @@
-<!doctype html><html><head><meta charset="utf-8"><style>body{background:#1d1a17;margin:0}canvas{image-rendering:pixelated}</style></head><body>
-<canvas id="c" width="720" height="405" style="width:1440px;height:810px"></canvas>
+<!doctype html><html><head><meta charset="utf-8"><style>body{background:#1d1a17;margin:0}canvas{}</style></head><body>
+<canvas id="c" width="1440" height="810" style="width:1440px;height:810px"></canvas>
 <script src="../src/core/util.js"></script>
 <script src="../src/gfx/forge.js"></script>
 <script src="../src/gfx/models.js"></script>
@@ -7,7 +7,7 @@
 <script src="../src/gfx/models3.js"></script>
 <script src="../src/gfx/models4.js"></script>
 <script>
-const c=document.getElementById('c').getContext('2d');c.imageSmoothingEnabled=false;
+const c=document.getElementById('c').getContext('2d');c.scale(2,2);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';
 c.fillStyle='#8a6a44';c.fillRect(0,0,720,405);
 for(let i=0;i<9000;i++){c.fillStyle=Math.random()<.5?'#7d5f3c':'#977650';c.fillRect(Math.random()*720|0,Math.random()*405|0,1,1);}
 const M=AS.Models, F=AS.Forge;
@@ -15,7 +15,7 @@ const choir={a:'#a59e8c',b:'#d8d0bc',t:'#5a4f7a',g:'#b07cff',d:'#34303e'};
 const beast={a:'#7a4a2e',b:'#b0754a',t:'#e8c890',g:'#ffcf4a',d:'#3a2214'};
 const colony={a:'#7d8288',b:'#b9bec4',t:'#d08a2a',g:'#7fe8ff',d:'#33363a'};
 let x=30,y=60;
-function put(key,fn,ang,anim,dirs,anims){const sh=F.sheet(key,fn,dirs||16,anims||1);const di=F.frameIndex(sh,ang||0);c.globalAlpha=.3;c.drawImage(sh.shadows[di],x-sh.ax+3,y-sh.ay+2);c.globalAlpha=1;c.drawImage(sh.frames[anim||0][di],x-sh.ax,y-sh.ay);x+=Math.max(30,sh.w*0.8+6);if(x>680){x=30;y+=70;}}
+function put(key,fn,ang,anim,dirs,anims){const sh=F.sheet(key,fn,dirs||16,anims||1);const di=F.frameIndex(sh,ang||0);c.globalAlpha=.3;c.drawImage(sh.shadows[di],x-sh.ax+3,y-sh.ay+2,sh.w,sh.h);c.globalAlpha=1;c.drawImage(sh.frames[anim||0][di],x-sh.ax,y-sh.ay,sh.w,sh.h);x+=Math.max(30,sh.w*0.8+6);if(x>680){x=30;y+=70;}}
 put('craft',()=>M.craft({}),-0.5,0,32);
 put('craft2',()=>M.craft({armor:4,speed:3,scanner:2,fuelCap:2,shield:3}),-0.5,0,32);
 put('tank',()=>M.hovertank(choir,{style:'shard'}),0.6);
@@ -42,7 +42,7 @@ put('lurk',()=>M.lurker({a:'#3a6a2a',b:'#6aa040',d:'#2a1a1a',g:'#ff4a6a'}),0,2,1
 put('amph',()=>M.amphibian({a:'#2a6a6a',b:'#4aa0a0',t:'#e0a040',g:'#ffef6a'}),0.6,0,16,4);
 put('puff',()=>M.puff({a:'#8a5a9a',b:'#d0a0e0',g:'#fff0a0'}),0,0,1,4);
 x=30;y+=90;
-const S1=(k,fn,an)=>{const sh=F.sheet(k,fn,1,an||1);c.drawImage(sh.frames[0][0],x-sh.ax,y-sh.ay);x+=sh.w*0.85+4;if(x>680){x=30;y+=85;}};
+const S1=(k,fn,an)=>{const sh=F.sheet(k,fn,1,an||1);c.drawImage(sh.frames[0][0],x-sh.ax,y-sh.ay,sh.w,sh.h);x+=sh.w*0.85+4;if(x>680){x=30;y+=85;}};
 S1('tb',()=>M.turretBase(choir,{style:'needle'}));
 S1('radar',()=>M.radar(colony),8);
 S1('comms',()=>M.comms(choir),2);

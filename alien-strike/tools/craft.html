@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Craft preview</title><style>body{background:#1d1a17;margin:0}</style></head><body>
+<canvas id="c" width="1440" height="810"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script>
+// Hero-craft preview: large + in-game scale, several headings, upgrades and damage.
+const c = document.getElementById('c').getContext('2d');
+const g = c.createLinearGradient(0, 0, 0, 810); g.addColorStop(0, '#a37a52'); g.addColorStop(1, '#8a6542'); c.fillStyle = g; c.fillRect(0, 0, 1440, 810);
+for (let i = 0; i < 4000; i++) { c.fillStyle = Math.random() < .5 ? 'rgba(80,55,35,.25)' : 'rgba(200,170,120,.18)'; c.fillRect(Math.random() * 1440, Math.random() * 810, 2, 2); }
+const F = AS.Forge, M = AS.Models;
+function put(sh, ang, x, y, sc) {
+  const di = F.frameIndex(sh, ang);
+  c.globalAlpha = .35; c.drawImage(sh.shadows[di], x - sh.ax * sc + 10 * sc, y - sh.ay * sc + 18 * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[0][di], x - sh.ax * sc, y - sh.ay * sc - 20 * sc, sh.w * sc, sh.h * sc);
+}
+const base = F.sheet('cp0', () => M.craft({}), 64, 1);
+const up = F.sheet('cp1', () => M.craft({ armor: 4, speed: 3, scanner: 2, fuelCap: 2, shield: 3, cargo: 2 }), 64, 1);
+const dm = F.sheet('cp2', () => M.craft({}, { damage: 1 }), 64, 1);
+const pod = F.sheet('pod0', () => M.pod({}, 'pulse'), 32, 1);
+put(base, -Math.PI / 2, 260, 330, 4.2);
+put(base, -0.6, 640, 330, 3.2);
+put(up, -2.4, 1000, 330, 3.2);
+put(dm, 0.5, 1300, 300, 2.6);
+const angs = [0, 0.8, 1.6, 2.4, 3.2, 4.0, 4.8, 5.6];
+angs.forEach((a, i) => put(base, a, 120 + i * 90, 640, 1.7));
+angs.forEach((a, i) => put(up, a, 860 + i * 70, 620, 1.2));
+put(pod, -0.4, 860, 760, 3);
+c.fillStyle = '#fff'; c.font = '14px monospace'; c.fillText('base · upgraded · damaged · 1.7x (in-game ≈1.7–2.2 px/unit)', 20, 790);
+</script></body></html>

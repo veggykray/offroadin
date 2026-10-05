@@ -31,10 +31,15 @@
       this.onPad = null; this.padT = 0;
       this.warnT = {}; this.recoil = 0; this.bob = 0;
       this.tractor = 0; this.tractorTarget = null;
-      this.sheet = AS.Forge.sheet('craft:' + JSON.stringify(profile.upgrades), () => AS.Models.craft(profile.upgrades), 48, 1);
+      const ukey = JSON.stringify(profile.upgrades || {});
+      this.sheet = AS.Forge.sheet('craft2:' + ukey, () => AS.Models.craft(profile.upgrades), 64, 1);
+      this.sheetDamaged = AS.Forge.sheet('craft2d:' + ukey, () => AS.Models.craft(profile.upgrades, { damage: 1 }), 64, 1);
       this.model = this.sheet.model;
-      this.podSheet = AS.Forge.sheet('pod:' + (profile.upgrades.pSpread || 0) + ':' + stats.primary.id, () => AS.Models.pod(profile.upgrades, stats.primary.id), 32, 1);
+      this.podSheet = AS.Forge.sheet('pod2:' + (profile.upgrades.pSpread || 0) + ':' + stats.primary.id, () => AS.Models.pod(profile.upgrades, stats.primary.id), 32, 1);
       this.drones = [];
+      this.retrieval = new AS.Retrieval(this);
+      // flight feel: smoothed body attitude from acceleration (bank = roll, pitch = nose)
+      this.bank = 0; this.pitch = 0; this.accF = 0; this.accL = 0; this.moveX = 0; this.moveY = 0; this.navT = Math.random() * 2;
     }
     get py() { return this.y - this.z - this.hc; }
     get speed() { return Math.hypot(this.vx, this.vy); }
@@ -55,18 +60,19 @@
       if (!this.alive) return;
 
       /* ---------- controls ---------- */
-      const mode = AS.Settings.controlMode;
+      this.updateAim();
+      const mode = AS.Settings.controlMode || 'twinstick';
       let thrust = (I.down('forward') ? 1 : 0) - (I.down('back') ? 1 : 0);
       let turn = 0, strafe = 0;
+      // twin-stick: a screen-space movement vector, the body turns to face the aim
+      let twin = mode === 'twinstick' || (I.usingPad && I.pad);
+      let mvx = 0, mvy = 0;
       if (I.usingPad && I.pad) {
         const mx = I.padState.moveX || 0, my = I.padState.moveY || 0;
-        if (Math.abs(mx) + Math.abs(my) > 0.2) {
-          // left stick = desired direction; steer nose toward it
-          const want = Math.atan2(my, mx);
-          const d = U.wrapAngle(want - this.angle);
-          turn = U.clamp(d * 2.5, -1, 1);
-          thrust = Math.min(1, Math.hypot(mx, my)) * (Math.abs(d) < 1.6 ? 1 : 0.3);
-        }
+        if (Math.abs(mx) + Math.abs(my) > 0.2) { mvx = mx; mvy = my; }
+      } else if (twin) {
+        mvx = (I.down('right') ? 1 : 0) - (I.down('left') ? 1 : 0);
+        mvy = (I.down('back') ? 1 : 0) - (I.down('forward') ? 1 : 0);
       } else if (mode === 'assault') {
         strafe = (I.down('right') ? 1 : 0) - (I.down('left') ? 1 : 0);
         const want = Math.atan2(this.aimY - this.py, this.aimX - this.x);
@@ -77,18 +83,27 @@
         strafe = (I.down('strafeRight') ? 1 : 0) - (I.down('strafeLeft') ? 1 : 0);
       }
       const hz = g.hazards;
+      let mlen = Math.hypot(mvx, mvy);
+      if (mlen > 1) { mvx /= mlen; mvy /= mlen; mlen = 1; }
       if (hz && hz.scramble > 0) {
         // spore contamination: controls drift and invert intermittently
         const k = Math.sin(g.time * 3.1) > 0.2 ? -1 : 1;
         turn = turn * k + Math.sin(g.time * 7.3) * 0.5;
         strafe += Math.cos(g.time * 5.1) * 0.6;
+        if (twin) { mvx = mvx * k + Math.cos(g.time * 5.1) * 0.5; mvy = mvy * k + Math.sin(g.time * 6.3) * 0.5; mlen = Math.min(1, Math.hypot(mvx, mvy)); }
       }
-      let boost = I.down('boost') && thrust > 0 && this.fuel > 0;
+      if (twin) {
+        // express the movement vector in the craft frame for fuel, FX and attitude
+        const fx0 = Math.cos(this.angle), fy0 = Math.sin(this.angle);
+        thrust = mvx * fx0 + mvy * fy0; strafe = -mvx * fy0 + mvy * fx0;
+      }
+      let boost = I.down('boost') && (twin ? mlen > 0.2 : thrust > 0) && this.fuel > 0;
       this.thrust = thrust; this.turnIn = turn; this.strafeIn = strafe; this.boosting = boost;
+      this.moveX = mvx; this.moveY = mvy;
 
       /* ---------- fuel ---------- */
       const lowG = hz && hz.lowGrav;
-      let burn = 0.085 + 0.36 * Math.abs(thrust) + 0.18 * Math.abs(strafe) + (boost ? 0.95 : 0);
+      let burn = 0.085 + (twin ? 0.4 * mlen : 0.36 * Math.abs(thrust) + 0.18 * Math.abs(strafe)) + (boost ? 0.95 : 0);
       if (lowG) burn *= 0.85;
       if (hz && hz.heat > 0) burn *= 1 + hz.heat * 1.2;
       burn *= s.fuelBurn;
@@ -111,29 +126,72 @@
       /* ---------- flight model ---------- */
       const maxSp = s.maxSpeed * (boost ? 1.45 : 1) * (noFuel ? 0.38 : 1) * (this.kitT > 0 ? 0.6 : 1);
       const acc = s.accel * (boost ? 1.5 : 1) * (noFuel ? 0.45 : 1);
-      // rotation with a little angular inertia
-      const turnRate = s.turnRate * (mode === 'assault' ? 1.3 : 1);
-      this.angVel = U.approach(this.angVel, turn * turnRate, 16 * dt);
-      this.angle = U.wrapAngle(this.angle + this.angVel * dt);
+      const vx0 = this.vx, vy0 = this.vy;
+      if (twin) {
+        // the body swings to face the aim point (or the stick direction on a pad)
+        let want = this.aimAngle;
+        if (I.usingPad && I.pad && !I.padAim.active && mlen > 0.2) want = Math.atan2(mvy, mvx);
+        const d = U.wrapAngle(want - this.angle);
+        const tr = Math.max(5.5, s.turnRate * 2.1);
+        this.angVel = U.approach(this.angVel, U.clamp(d * 10, -tr, tr), 40 * dt);
+        if (Math.abs(d) < 0.002 && Math.abs(this.angVel) < 0.05) this.angVel = 0;
+        this.angle = U.wrapAngle(this.angle + this.angVel * dt);
+      } else {
+        // rotation with a little angular inertia
+        const turnRate = s.turnRate * (mode === 'assault' ? 1.3 : 1);
+        this.angVel = U.approach(this.angVel, turn * turnRate, 16 * dt);
+        this.angle = U.wrapAngle(this.angle + this.angVel * dt);
+      }
       const fx = Math.cos(this.angle), fy = Math.sin(this.angle);
       const rx = -fy, ry = fx;
-      const tAcc = thrust > 0 ? acc : acc * 0.7;
-      this.vx += (fx * thrust * tAcc + rx * strafe * acc * s.strafe) * dt;
-      this.vy += (fy * thrust * tAcc + ry * strafe * acc * s.strafe) * dt;
+      let twinMax = 1;
+      if (twin) {
+        if (mlen > 0.01) {
+          // full authority ahead, a little less sideways (strafe) and backwards
+          const along = (mvx * fx + mvy * fy) / mlen;
+          const authority = along >= 0 ? U.lerp(0.86 + 0.14 * Math.min(1, s.strafe / 0.72), 1, along) : U.lerp(0.86, 0.72, -along);
+          twinMax = along >= 0 ? U.lerp(0.93, 1, along) : U.lerp(0.93, 0.8, -along);
+          this.vx += mvx * acc * authority * dt;
+          this.vy += mvy * acc * authority * dt;
+        }
+      } else {
+        const tAcc = thrust > 0 ? acc : acc * 0.7;
+        this.vx += (fx * thrust * tAcc + rx * strafe * acc * s.strafe) * dt;
+        this.vy += (fy * thrust * tAcc + ry * strafe * acc * s.strafe) * dt;
+      }
       if (hz && hz.windX !== undefined) {
         // landing clamps: pads and the LZ shelter the craft from the worst of the wind
         const ex = g.extraction, sheltered = g.padAt(this.x, this.y) || (ex && Math.hypot(this.x - ex.x, this.y - ex.y) < ex.r + 20);
         const wk = sheltered && !thrust && !strafe ? 0.15 : 1;
         this.vx += hz.windX * dt * wk; this.vy += hz.windY * dt * wk;
       }
-      // anisotropic drag: forward bleeds slowly, lateral faster (mild drift)
-      let vf = this.vx * fx + this.vy * fy, vl = this.vx * rx + this.vy * ry;
-      const kf = thrust !== 0 ? 0.55 : 1.5, kl = strafe !== 0 ? 0.8 : 2.4;
       const dragMul = lowG ? 0.45 : 1;
-      vf *= Math.exp(-kf * dragMul * dt); vl *= Math.exp(-kl * dragMul * dt);
-      this.vx = fx * vf + rx * vl; this.vy = fy * vf + ry * vl;
-      const sp = Math.hypot(this.vx, this.vy);
-      if (sp > maxSp) { const k = U.lerp(maxSp / sp, 1, Math.exp(-6 * dt)); this.vx *= k; this.vy *= k; }
+      if (twin) {
+        // drift that still turns crisply: velocity across the stick bleeds fast,
+        // velocity along it slowly; with no input the craft glides to a halt
+        if (mlen > 0.01) {
+          const ux = mvx / mlen, uy = mvy / mlen;
+          let va = this.vx * ux + this.vy * uy, vc = -this.vx * uy + this.vy * ux;
+          va *= Math.exp(-0.5 * dragMul * dt); vc *= Math.exp(-3.2 * dragMul * dt);
+          this.vx = ux * va - uy * vc; this.vy = uy * va + ux * vc;
+        } else {
+          const k = Math.exp(-1.9 * dragMul * dt); this.vx *= k; this.vy *= k;
+        }
+      } else {
+        // anisotropic drag: forward bleeds slowly, lateral faster (mild drift)
+        let vf = this.vx * fx + this.vy * fy, vl = this.vx * rx + this.vy * ry;
+        const kf = thrust !== 0 ? 0.55 : 1.5, kl = strafe !== 0 ? 0.8 : 2.4;
+        vf *= Math.exp(-kf * dragMul * dt); vl *= Math.exp(-kl * dragMul * dt);
+        this.vx = fx * vf + rx * vl; this.vy = fy * vf + ry * vl;
+      }
+      const sp = Math.hypot(this.vx, this.vy), cap = maxSp * twinMax;
+      if (sp > cap) { const k = U.lerp(cap / sp, 1, Math.exp(-6 * dt)); this.vx *= k; this.vy *= k; }
+      // body attitude follows the acceleration actually felt, in the craft frame
+      const ax = (this.vx - vx0) / Math.max(dt, 1e-4), ay = (this.vy - vy0) / Math.max(dt, 1e-4);
+      this.accF = U.damp(this.accF, ax * fx + ay * fy, 10, dt);
+      this.accL = U.damp(this.accL, ax * rx + ay * ry, 10, dt);
+      this.bank = U.damp(this.bank, U.clamp(this.accL / 520, -1, 1) * 0.42 + U.clamp(this.angVel / 9, -1, 1) * 0.12, 7, dt);
+      this.pitch = U.damp(this.pitch, U.clamp(this.accF / 520, -1, 1) * 0.3, 7, dt);
       this.x += this.vx * dt; this.y += this.vy * dt;
       // recoil
       this.recoil = Math.max(0, this.recoil - dt * 8);
@@ -143,7 +201,7 @@
 
       this.collide(dt);
 
-      /* ---------- aim ---------- */
+      /* ---------- aim (re-evaluated after moving) ---------- */
       this.updateAim();
 
       /* ---------- weapons ---------- */
@@ -167,7 +225,8 @@
         if (this.kitT <= 0) g.say('repair_complete');
       }
 
-      /* ---------- interaction ---------- */
+      /* ---------- retrieval beam + interaction ---------- */
+      this.retrieval.update(dt);
       this.updateInteract(dt);
       this.updatePad(dt);
 
@@ -182,9 +241,12 @@
       if (I.usingPad && I.padAim.active) {
         const a = Math.atan2(I.padAim.y, I.padAim.x);
         this.aimX = this.x + Math.cos(a) * 200; this.aimY = this.py + Math.sin(a) * 200;
+      } else if (I.usingPad) {
+        // no right-stick input: aim where the nose points
+        this.aimX = this.x + Math.cos(this.angle) * 200; this.aimY = this.py + Math.sin(this.angle) * 200;
       } else {
-        const b = AS.Renderer.screenToBuf(I.mouse.x, I.mouse.y);
-        this.aimX = cam.x + b.x / cam.zoom; this.aimY = cam.y + b.y / cam.zoom;
+        const w = AS.Renderer.screenToWorld(I.mouse.x, I.mouse.y, cam);
+        this.aimX = w.x; this.aimY = w.y;
       }
       this.aimAngle = Math.atan2(this.aimY - this.py, this.aimX - this.x);
     }
@@ -237,7 +299,9 @@
     /* ---------- interaction: survivors, cargo, consoles ---------- */
     updateInteract(dt) {
       const g = this.g, I = AS.Input;
-      const cand = g.findInteractable(this);
+      // the retrieval beam owns the interact key while it has something to lift
+      const R = this.retrieval;
+      const cand = R && (R.active || R.candidate) ? null : g.findInteractable(this);
       this.interactTarget = cand;
       this.interactLabel = cand ? cand.interactLabel(this) : '';
       if (!cand) { this.interactT = 0; this.tractor = Math.max(0, this.tractor - dt * 3); return; }
@@ -350,45 +414,90 @@
     }
 
     /* ---------- visual effects ---------- */
-    fx(dt) {
-      const m = this.model, g = this.g;
+    // object-space point (ox along the nose, oy to starboard) → world ground position
+    local(px, py) {
       const ca = Math.cos(this.angle), sa = Math.sin(this.angle);
-      const thrustK = Math.max(Math.abs(this.thrust), Math.abs(this.strafeIn) * 0.6);
+      return { x: this.x + px * ca - py * sa, y: this.y + px * sa + py * ca };
+    }
+    fx(dt) {
+      const m = this.model, g = this.g, P = AS.Particles;
+      const ca = Math.cos(this.angle), sa = Math.sin(this.angle);
       const noFuel = this.fuel <= 0;
+      const sp = this.speed;
+      const drive = Math.min(1, Math.hypot(this.thrust, this.strafeIn) + sp / 600);
+      // propulsion rings: light the ground under them
       for (const rp of m.ringPts) {
-        const wx = this.x + rp[0] * ca - rp[1] * sa, wy = this.y + rp[0] * sa + rp[1] * ca;
+        const q = this.local(rp[0], rp[1]);
         const flick = noFuel ? (Math.random() < 0.4 ? 0.2 : 0.8) : 1;
-        AS.Renderer.light(wx, wy - this.z - 4, (16 + thrustK * 8 + (this.boosting ? 10 : 0)) * flick, m.glow, 0.5 * flick);
-        if (Math.random() < 0.25 + thrustK * 0.5) {
-          AS.Particles.spawn({ x: wx - ca * 3, y: wy - sa * 3, z: this.z + 2, vx: -ca * 40 + this.vx * 0.3, vy: -sa * 40 + this.vy * 0.3, vz: -10, shape: AS.Particles.CIRCLE, col: this.boosting ? '#ffffff' : m.glow, col2: '#2a6aff', size: this.boosting ? 2.4 : 1.6, size2: 0.3, life: 0.25, add: true });
+        AS.Renderer.light(q.x, q.y - this.z - 4, (15 + drive * 9 + (this.boosting ? 10 : 0)) * flick, m.glow, 0.45 * flick);
+      }
+      // main engines: exhaust plume streams behind, longer and hotter with speed / boost
+      const fwdPush = Math.max(0, this.accF) / 520 + (this.boosting ? 1 : 0) + Math.max(0, this.thrust) * 0.6;
+      for (const e of m.exhaust) {
+        const q = this.local(e[0], e[1]);
+        const z = this.z + e[2];
+        AS.Renderer.light(q.x, q.y - z, 10 + fwdPush * 8, this.boosting ? '#cfe8ff' : m.glow, 0.35 + fwdPush * 0.2);
+        if (Math.random() < 0.35 + fwdPush * 0.6 && !noFuel) {
+          const v = 50 + fwdPush * 140;
+          P.spawn({ x: q.x - ca * 2, y: q.y - sa * 2, z, vx: -ca * v + this.vx * 0.4, vy: -sa * v + this.vy * 0.4, vz: 0, shape: P.CIRCLE, col: this.boosting ? '#ffffff' : '#bff4ff', col2: this.boosting ? '#5a8aff' : '#2a7aff', size: 1.3 + fwdPush * 0.8, size2: 0.25, life: 0.16 + fwdPush * 0.08, add: true });
         }
       }
-      // downwash dust when low / over ground
-      if (Math.random() < 0.08 + this.speed / 1600) {
-        const k = g.terrain.kindFast(this.x, this.y);
-        const col = k === 1 ? '#cfeee8' : k === 3 ? '#c0c8e8' : g.world.terrain.ramp[2];
+      // retro thrusters fire forward when braking hard / reversing
+      if (this.accF < -260 && sp > 40 && !noFuel) {
+        for (const r of m.retro) if (Math.random() < 0.55) {
+          const q = this.local(r[0], r[1]);
+          P.spawn({ x: q.x, y: q.y, z: this.z + r[2], vx: ca * 90 + this.vx * 0.5, vy: sa * 90 + this.vy * 0.5, shape: P.SMOKE, col: '#e8f4ff', col2: '#8aa0b0', size: 1, size2: 4, life: 0.22, alpha: 0.65 });
+        }
+      }
+      // lateral thrusters puff opposite to the sideways acceleration
+      if (Math.abs(this.accL) > 160 && !noFuel) {
+        const side = this.accL > 0 ? -1 : 1;
+        for (const l of m.lateral) if (Math.random() < 0.5) {
+          const q = this.local(l[0], l[1] * side);
+          P.spawn({ x: q.x, y: q.y, z: this.z + l[2], vx: -sa * side * 80 + this.vx * 0.5, vy: ca * side * 80 + this.vy * 0.5, shape: P.SMOKE, col: '#d8e8ff', col2: '#8090a0', size: 0.9, size2: 3.6, life: 0.22, alpha: 0.6 });
+        }
+      }
+      // downwash: dust and grit kicked up under the craft, stronger when moving
+      const k = g.terrain.kindFast(this.x, this.y);
+      if (Math.random() < 0.1 + sp / 900) {
+        const col = k === 1 ? '#cfeee8' : k === 3 ? '#c0c8e8' : k === 2 ? '#ffb070' : g.world.terrain.ramp[2];
         const a = Math.random() * TAU;
-        AS.Particles.spawn({ x: this.x + Math.cos(a) * 10, y: this.y + Math.sin(a) * 7 + 3, z: 1, vx: Math.cos(a) * 60, vy: Math.sin(a) * 40, shape: AS.Particles.SMOKE, col, size: 2, size2: 7, life: 0.55, alpha: 0.22, drag: 3, layer: 0 });
+        P.spawn({ x: this.x + Math.cos(a) * 12, y: this.y + Math.sin(a) * 8 + 3, z: 1, vx: Math.cos(a) * (50 + sp * 0.2) - this.vx * 0.15, vy: Math.sin(a) * (34 + sp * 0.15) - this.vy * 0.15, shape: P.SMOKE, col, size: 2, size2: 8, life: 0.6, alpha: k === 1 ? 0.3 : 0.2, drag: 3, layer: 0 });
       }
-      // lateral thrusters when turning / strafing
-      const lat = this.angVel * 0.3 + this.strafeIn;
-      if (Math.abs(lat) > 0.3 && Math.random() < 0.7) {
-        const side = lat > 0 ? -1 : 1;
-        const px = this.x + (-4) * ca - (side * 15) * sa, py = this.y + (-4) * sa + (side * 15) * ca;
-        AS.Particles.spawn({ x: px, y: py, z: this.z + 4, vx: -sa * side * 70 + this.vx * 0.5, vy: ca * side * 70 + this.vy * 0.5, shape: AS.Particles.SMOKE, col: '#d8e8ff', col2: '#8090a0', size: 1, size2: 4, life: 0.25, alpha: 0.6 });
-      }
-      // damage smoke / fire
+      if (k === 1 && Math.random() < 0.25) P.spawn({ x: this.x + U.range(-14, 14), y: this.y + U.range(-9, 9), z: 0, shape: P.RING, col: '#e8fffa', size: 2, size2: 11, life: 0.5, alpha: 0.35, layer: 0 });
+      // damage smoke / fire / sparks
       const hp = this.hull / this.s.hullMax;
-      if (hp < 0.5 && Math.random() < (0.5 - hp) * 1.6) AS.FX.smoke(this.x - ca * 10, this.y - sa * 10, this.z + 6, 4, hp < 0.25);
-      if (hp < 0.25 && Math.random() < 0.3) AS.FX.fire(this.x - ca * 8, this.y - sa * 8, this.z + 6, 5);
+      if (hp < 0.5 && Math.random() < (0.5 - hp) * 1.6) { const q = this.local(-16, 4); AS.FX.smoke(q.x, q.y, this.z + 6, 4, hp < 0.25); }
+      if (hp < 0.25 && Math.random() < 0.3) { const q = this.local(-6, -10); AS.FX.fire(q.x, q.y, this.z + 5, 5); }
       if (hp < 0.15 && Math.random() < 0.05) AS.FX.sparks(this.x, this.y, this.z + 4, 4, '#ffd27a');
+      this.navT += dt;
     }
 
     drawShadow(ctx, ox, oy) {
       if (!this.alive && this.dying <= 0) return;
-      const R = AS.Renderer;
-      ctx.globalAlpha *= 0.85;
-      R.shadow(ctx, this.sheet, this.angle, this.x, this.y, this.z, ox, oy);
+      const R = AS.Renderer, sh = this.sheet;
+      const di = AS.Forge.frameIndex(sh, this.angle);
+      const off = 2 + this.z * 0.12;
+      const ca = Math.cos(this.angle), sa = Math.sin(this.angle);
+      // the shadow slides sideways a touch as the craft banks
+      const bx = -sa * this.bank * 5, by = ca * this.bank * 5;
+      ctx.save();
+      ctx.globalAlpha *= 0.8;
+      ctx.translate(this.x - ox + off + this.z * 0.15 + bx, this.y - oy + off * 0.5 + by);
+      ctx.rotate(this.angle); ctx.scale(1 - Math.abs(this.pitch) * 0.1, Math.cos(this.bank)); ctx.rotate(-this.angle);
+      ctx.drawImage(sh.shadows[di], -sh.ax, -sh.ay, sh.w, sh.h);
+      ctx.restore();
+    }
+    // draw a sheet frame with the craft's bank / pitch attitude applied about its body centre
+    drawBody(ctx, img, sh, x, y, ox, oy) {
+      const pivot = 6;
+      ctx.save();
+      ctx.translate(x - ox, y - this.z - pivot - oy);
+      ctx.rotate(this.angle);
+      ctx.scale(1 - Math.abs(this.pitch) * 0.1, Math.cos(this.bank));
+      ctx.rotate(-this.angle);
+      ctx.drawImage(img, -sh.ax, -sh.ay + pivot, sh.w, sh.h);
+      ctx.restore();
     }
     draw(ctx, ox, oy, R) {
       if (!this.alive && this.dying <= 0) return;
@@ -396,49 +505,77 @@
       const rec = this.recoil;
       const ca = Math.cos(this.angle), sa = Math.sin(this.angle);
       const x = this.x - ca * rec, y = this.y - sa * rec;
-      // tractor beam
-      if (this.tractor > 0.05 && this.tractorTarget) {
+      const sh = this.hull / this.s.hullMax < 0.45 ? this.sheetDamaged : this.sheet;
+      const di = AS.Forge.frameIndex(sh, this.angle);
+      // legacy tractor quad (consoles / cargo use the retrieval beam visuals when present)
+      if (this.tractor > 0.05 && this.tractorTarget && !(this.retrieval && this.retrieval.active)) {
         const t = this.tractorTarget;
-        ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.35 * this.tractor;
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.3 * this.tractor;
         const grd = ctx.createLinearGradient(0, y - this.z - oy, 0, t.y - oy);
-        grd.addColorStop(0, '#9ff6ff'); grd.addColorStop(1, 'rgba(159,246,255,0.1)');
+        grd.addColorStop(0, '#9ff6ff'); grd.addColorStop(1, 'rgba(159,246,255,0.08)');
         ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.moveTo(x - ox - 4, y - this.z - oy); ctx.lineTo(x - ox + 4, y - this.z - oy); ctx.lineTo(t.x - ox + 12, t.y - oy); ctx.lineTo(t.x - ox - 12, t.y - oy); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x - ox - 3, y - this.z - oy); ctx.lineTo(x - ox + 3, y - this.z - oy); ctx.lineTo(t.x - ox + 10, t.y - oy); ctx.lineTo(t.x - ox - 10, t.y - oy); ctx.closePath(); ctx.fill();
         ctx.restore();
       }
-      R.sprite(ctx, this.sheet, this.angle, 0, x, y, this.z, ox, oy);
-      if (this.hurtFlash > 0) R.flashSprite(ctx, this.sheet, this.angle, 0, x, y, this.z, ox, oy, '#ff6a4a');
-      // weapon pods (articulated, aim independently)
-      const podOff = [[3, 9], [3, -9]];
-      for (let i = 0; i < 2; i++) {
-        const p = podOff[i];
-        const px = x + p[0] * ca - p[1] * sa, py = y + p[0] * sa + p[1] * ca;
-        R.sprite(ctx, this.podSheet, this.aimAngle, 0, px, py, this.z + 7, ox, oy);
+      if (this.retrieval && this.retrieval.drawBeam) this.retrieval.drawBeam(ctx, ox, oy, 'under');
+      this.drawBody(ctx, sh.frames[0][di], sh, x, y, ox, oy);
+      if (this.hurtFlash > 0) {
+        if (!sh.__flash) R.flashSprite(ctx, sh, this.angle, 0, -1e5, -1e5, 0, 0, 0, '#ff6a4a');
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.6 * Math.min(1, this.hurtFlash * 4);
+        this.drawBody(ctx, sh.__flash[di], sh, x, y, ox, oy);
+        ctx.restore();
       }
-      // engine ring glow
+      // weapon pods (articulated, aim independently); the raised side rides a little higher
+      for (let i = 0; i < m.pods.length; i++) {
+        const p = m.pods[i];
+        const px = x + p[0] * ca - p[1] * sa, py = y + p[0] * sa + p[1] * ca;
+        const lift = -Math.sign(p[1]) * this.bank * 4;
+        R.sprite(ctx, this.podSheet, this.aimAngle, 0, px, py, this.z + m.podZ + lift, ox, oy);
+      }
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       const noFuel = this.fuel <= 0;
+      // propulsion ring glow
+      const gl = AS.Forge.glow(m.glow, 32);
       for (const rp of m.ringPts) {
         const wx = x + rp[0] * ca - rp[1] * sa, wy = y + rp[0] * sa + rp[1] * ca;
-        const pulse = 0.7 + Math.sin(this.bob * 12 + rp[1]) * 0.15 + Math.abs(this.thrust) * 0.2;
-        ctx.globalAlpha = (noFuel ? (Math.random() < 0.5 ? 0.2 : 0.6) : 0.85) * pulse;
-        const gl = AS.Forge.glow(m.glow, 32);
-        const rr = m.ringR * 2.2 + (this.boosting ? 4 : 0);
-        ctx.drawImage(gl, wx - ox - rr, wy - this.z - 4 - oy - rr, rr * 2, rr * 2);
+        const lift = -Math.sign(rp[1]) * this.bank * 4;
+        const pulse = 0.72 + Math.sin(this.bob * 12 + rp[1]) * 0.12 + Math.min(0.25, this.speed / 900);
+        ctx.globalAlpha = (noFuel ? (Math.random() < 0.5 ? 0.2 : 0.6) : 0.8) * pulse;
+        const rr = m.ringR * 2 + (this.boosting ? 4 : 0);
+        ctx.drawImage(gl, wx - ox - rr, wy - this.z - 3.4 - oy - rr + lift, rr * 2, rr * 2);
+      }
+      // engine nozzles
+      const push = Math.min(1.6, Math.max(0, this.accF) / 520 + (this.boosting ? 1 : 0) + Math.max(0, this.thrust) * 0.5);
+      for (const e of m.exhaust) {
+        const wx = x + e[0] * ca - e[1] * sa, wy = y + e[0] * sa + e[1] * ca;
+        const rr = 3.2 + push * 2.4;
+        ctx.globalAlpha = noFuel ? 0.15 : 0.55 + push * 0.25;
+        ctx.drawImage(AS.Forge.glow(this.boosting ? '#e8f4ff' : m.glow, 32), wx - ox - rr - ca * push * 3, wy - this.z - e[2] - oy - rr - sa * push * 3, rr * 2, rr * 2);
+      }
+      // nav lights: steady port / starboard, white tail strobe
+      for (const L of m.lights) {
+        const wx = x + L.x * ca - L.y * sa, wy = y + L.x * sa + L.y * ca;
+        const lift = -Math.sign(L.y) * this.bank * 4;
+        const on = L.strobe ? (this.navT % 1.3) < 0.08 : 0.75 + Math.sin(this.navT * 3 + L.y) * 0.15;
+        if (!on) continue;
+        const rr = L.strobe ? 7 : 3.4;
+        ctx.globalAlpha = L.strobe ? 0.95 : on * 0.85;
+        ctx.drawImage(AS.Forge.glow(L.col, 32), wx - ox - rr, wy - this.z - L.z - oy - rr + lift, rr * 2, rr * 2);
       }
       // shield ripples
       for (const r of this.ripples) {
         ctx.globalAlpha = r.t / 0.35 * 0.9;
         ctx.strokeStyle = '#7fd8ff'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 3 - oy, 22, 17, 0, r.a - 0.9, r.a + 0.9); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 5 - oy, 27, 21, 0, r.a - 0.9, r.a + 0.9); ctx.stroke();
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 3 - oy, 21, 16, 0, r.a - 0.4, r.a + 0.4); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 5 - oy, 26, 20, 0, r.a - 0.4, r.a + 0.4); ctx.stroke();
       }
       if (this.kitT > 0) {
         ctx.globalAlpha = 0.4 + Math.sin(this.bob * 20) * 0.2; ctx.strokeStyle = '#7dff9a'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 3 - oy, 24, 18, 0, 0, TAU); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(x - ox, y - this.z - 5 - oy, 29, 22, 0, 0, TAU); ctx.stroke();
       }
       ctx.restore();
+      if (this.retrieval && this.retrieval.drawBeam) this.retrieval.drawBeam(ctx, ox, oy, 'over');
       // drones
       for (const d of this.drones) d.draw(ctx, ox, oy, R);
     }

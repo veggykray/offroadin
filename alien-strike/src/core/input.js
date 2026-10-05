@@ -20,8 +20,8 @@
     controlMode: ['KeyC'],
   };
   const ACTION_LABELS = {
-    forward: 'Thrust forward', back: 'Thrust back / brake', left: 'Rotate / strafe left',
-    right: 'Rotate / strafe right', strafeLeft: 'Strafe left (Tactical mode)', strafeRight: 'Strafe right (Tactical mode)',
+    forward: 'Move up / thrust', back: 'Move down / brake', left: 'Move left / rotate',
+    right: 'Move right / rotate', strafeLeft: 'Strafe left (Classic mode)', strafeRight: 'Strafe right (Classic mode)',
     boost: 'Boost (extra fuel burn)', special: 'Special weapon', interact: 'Interact / rescue / pick up',
     map: 'Tactical map', objectives: 'Objectives', repair: 'Use repair kit', pause: 'Pause menu',
     controlMode: 'Toggle control mode',

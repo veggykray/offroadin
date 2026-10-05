@@ -104,6 +104,9 @@
       return best;
     }
 
+    // structures share the unit firing code (Unit.prototype.tryFire calls this.fire)
+    fire(w, t, opts) { return AS.Unit.prototype.fire.call(this, w, t, opts); }
+
     turret(dt) {
       const g = this.g, w = this.def.weapon;
       if (!this.powered || !w) return;
@@ -228,22 +231,22 @@
           const sink = k * k * (sh.h * 0.8);
           ctx.save();
           ctx.beginPath(); ctx.rect(Math.round(x - ox - sh.ax - 2), Math.round(y - oy - sh.ay - 4), sh.w + 4, sh.ay + 4 - (sh.ay - sh.h * 0) * 0); ctx.clip();
-          ctx.drawImage(sh.frames[0][0], Math.round(x - ox - sh.ax + Math.sin(k * 40) * 1.5), Math.round(y - oy - sh.ay + sink));
+          ctx.drawImage(sh.frames[0][0], x - ox - sh.ax + Math.sin(k * 40) * 1.5, y - oy - sh.ay + sink, sh.w, sh.h);
           ctx.restore();
         }
-        if (this.rubble) ctx.drawImage(this.rubble.frames[0][0], Math.round(x - ox - this.rubble.ax), Math.round(y - oy - this.rubble.ay));
+        if (this.rubble) ctx.drawImage(this.rubble.frames[0][0], x - ox - this.rubble.ax, y - oy - this.rubble.ay, this.rubble.w, this.rubble.h);
         return;
       }
       if (this.submerged && !this.scanned) {
         // only a shimmer above the water
         ctx.globalAlpha = 0.25 + Math.sin(this.t * 2) * 0.1;
-        ctx.drawImage(sh.frames[0][0], Math.round(x - ox - sh.ax), Math.round(y - oy - sh.ay));
+        ctx.drawImage(sh.frames[0][0], x - ox - sh.ax, y - oy - sh.ay, sh.w, sh.h);
         ctx.globalAlpha = 1;
         return;
       }
       if (this.submerged) ctx.globalAlpha = 0.7;
       const ai = sh.anims > 1 ? Math.floor(this.anim) % sh.anims : 0;
-      ctx.drawImage(sh.frames[ai][0], Math.round(x - ox - sh.ax), Math.round(y - oy - sh.ay));
+      ctx.drawImage(sh.frames[ai][0], x - ox - sh.ax, y - oy - sh.ay, sh.w, sh.h);
       if (this.flash > 0) R.flashSprite(ctx, sh, 0, ai, x, y, 0, ox, oy);
       if (this.gunSheet) R.sprite(ctx, this.gunSheet, this.gunAngle, 0, x, y, this.gunZ, ox, oy);
       ctx.globalAlpha = 1;

@@ -10,7 +10,8 @@
     master: 0.8, music: 0.55, sfx: 0.8, voice: 0.9,
     quality: 'high', // low | medium | high
     shake: true, flash: true, subtitles: true,
-    controlMode: 'tactical', // tactical (A/D rotate) | assault (A/D strafe, nose follows mouse)
+    controlMode: 'twinstick', // twinstick (WASD moves, mouse aims) | assault (thrust toward cursor) | tactical (A/D rotate)
+    controlsV: 2,
     bindings: null,
   };
 
@@ -75,6 +76,8 @@
         try { const raw = localStorage.getItem(SETTINGS_KEY); if (raw) s = JSON.parse(raw); } catch (e) { s = null; }
       }
       this.settings = Object.assign({}, DEFAULT_SETTINGS, s || {});
+      // v2 controls: twin-stick movement becomes the default once for older saves
+      if (!this.settings.controlsV || this.settings.controlsV < 2) { this.settings.controlMode = 'twinstick'; this.settings.controlsV = 2; }
       return this.settings;
     },
     saveSettings() {

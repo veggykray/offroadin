@@ -65,16 +65,20 @@
 
   /* ---------------- Survivors ---------------- */
   const SUIT = { crew: '#e8742a', scientist: '#e8e8e0', colonist: '#5a8ad8', prisoner: '#9a9a8a', explorer: '#6aa04a', researcher: '#e8e8e0', engineer: '#e8c24a' };
+  const SKIN = ['#e8c8a8', '#c89a74', '#8a5e40', '#f0d4b8'];
+  const LABEL = { crew: 'CREW', scientist: 'SCIENTIST', colonist: 'COLONIST', prisoner: 'PRISONER', explorer: 'EXPLORER', researcher: 'RESEARCHER', engineer: 'ENGINEER' };
   class Person {
     constructor(group, x, y, i) {
-      this.group = group; this.x = x; this.y = y; this.z = 0; this.r = 4; this.hc = 4; this.alive = true; this.aboard = false;
+      this.group = group; this.x = x; this.y = y; this.z = 0; this.r = 4; this.hc = 5; this.alive = true; this.aboard = false;
       this.vx = 0; this.vy = 0; this.anim = Math.random() * 4; this.i = i; this.wave = Math.random() * 6; this.face = 1;
       this.homeX = x; this.homeY = y; this.beam = 0; this.team = 'player'; this.hp = 22; this.hurtT = 0;
+      this.retrieving = false; this.lift = 0; this.notice = 0; this.skin = SKIN[(i * 7 + (group.id || '').length) % SKIN.length];
     }
-    get py() { return this.y - this.hc; }
+    get py() { return this.y - this.hc - this.z; }
     get sortY() { return this.y; }
+    get kind() { return 'person'; }
     takeDamage(d) {
-      if (!this.alive || this.aboard) return 0;
+      if (!this.alive || this.aboard || this.ascending) return 0;
       this.hp -= (d === undefined ? 100 : d); this.hurtT = 0.3;
       const g = this.group.g;
       if (g.player && g.player.warnOnce) g.player.warnOnce('survattack_' + this.group.id, 'survivors_attacked', 25);
@@ -85,6 +89,22 @@
       return 1;
     }
     hazard(x, y, r) { if (U.dist(this.x, this.y, x, y) < r) this.takeDamage(8); }
+    /* retrieval-beam contract (see src/game/retrieval.js) */
+    canRetrieve(pl) { return this.alive && !this.aboard && this.group.canInteract(pl); }
+    retrieveBlocked(pl) { return pl.passengers.length >= pl.s.rescueCap ? 'BAY FULL — DROP OFF AT A PAD' : null; }
+    retrievePos() { return { x: this.x, y: this.y, z: this.z }; }
+    get retrieveTime() { return 1.7; }
+    get retrieveCol() { return '#8ff4ff'; }
+    get retrieveLabel() { return 'RETRIEVE ' + (LABEL[this.group.type] || 'SURVIVOR'); }
+    onBeamStart(pl) { this.retrieving = true; this.group.onBeamStart(pl); }
+    onBeamProgress(pl, k, stab) { this.lift = k; this.z = Math.pow(k, 1.6) * 6 + (k > 0.3 ? Math.sin(this.anim * 2) * 0.4 * k : 0); }
+    onBeamBreak(pl) { this.retrieving = false; this.ascending = false; }
+    retrieveLift(f, gp, pl) {
+      if (!this.ascending) { this.ascending = true; this.sx = this.x; this.sy = this.y; this.sz = this.z; }
+      const e = f * f;
+      this.x = U.lerp(this.sx, gp.x, e); this.y = U.lerp(this.sy, gp.y, e); this.z = U.lerp(this.sz, pl.z, e);
+    }
+    onRetrieved(pl) { this.retrieving = false; this.ascending = false; this.group.board(this, pl); }
   }
   class SurvivorGroup {
     constructor(g, o) {
@@ -98,7 +118,7 @@
         this.people.push(p); g.survivors.push(p);
       }
       this.called = false; this.seen = false; this.voice = o.voice || null;
-      this.interactTime = 0;
+      this.interactTime = 0; this.t = Math.random() * 3; this.noticed = false;
     }
     get alive() { return this.people.some((p) => p.alive && !p.aboard); }
     get remaining() { return this.people.filter((p) => p.alive && !p.aboard).length; }
@@ -110,70 +130,134 @@
     interactLabel(pl) {
       const free = pl.s.rescueCap - pl.passengers.length;
       if (free <= 0) return 'PASSENGER BAY FULL — DROP OFF AT A PAD';
-      return this.called ? 'SURVIVORS BOARDING… HOLD POSITION' : 'PRESS E — RESCUE ' + this.label + ' (' + this.remaining + ')';
+      return 'HOLD E — RETRIEVE ' + this.label + ' (' + this.remaining + ')';
     }
-    call(pl) {
-      if (pl.passengers.length >= pl.s.rescueCap) { pl.warnOnce('bayfull', 'rescue_full', 6); AS.Audio.sfx('denied'); return; }
-      if (!this.called) { this.called = true; AS.Audio.sfx('confirm'); if (this.voice !== false) this.g.say(U.pick(['survivor_thanks1', 'survivor_thanks2', 'survivor_thanks3'])); }
+    // first lock on anyone in this group: they thank the pilot
+    onBeamStart(pl) {
+      if (!this.called) { this.called = true; if (this.voice !== false) this.g.say(U.pick(['survivor_thanks1', 'survivor_thanks2', 'survivor_thanks3'])); }
     }
+    call(pl) { this.onBeamStart(pl); }
     update(dt) {
       const g = this.g, pl = g.player;
+      this.t += dt;
       if (!this.seen && pl && U.dist(pl.x, pl.y, this.x, this.y) < 420 && this.remaining > 0 && !this.caged) { this.seen = true; g.say('survivors_located'); g.emit('survivorsSeen', this); }
       const cagedNow = this.caged && (() => { const c = g.byId.get(this.caged); return c && c.alive; })();
+      const plOk = pl && pl.alive && pl.dying <= 0;
+      const dGroup = plOk ? U.dist(pl.x, pl.y, this.x, this.y) : 1e9;
+      if (!this.noticed && dGroup < 260 && !cagedNow) this.noticed = true;
+      const bayFree = plOk && pl.passengers.length < pl.s.rescueCap;
+      // gather a little in front of the emitter so the beam slants into view
+      const gp0 = plOk && pl.retrieval ? pl.retrieval.groundPoint() : null;
+      const gp = gp0 ? { x: gp0.x, y: gp0.y + 18 } : null;
       for (const p of this.people) {
         if (!p.alive || p.aboard) { if (p.beam > 0) p.beam -= dt; continue; }
         p.anim += dt * 6;
-        const near = pl && pl.alive && U.dist(pl.x, pl.y, this.x, this.y) < 160;
-        if (this.called && pl && pl.alive && !cagedNow) {
-          const d = U.dist(p.x, p.y, pl.x, pl.y);
-          const far = U.dist(pl.x, pl.y, this.x, this.y) > 200;
-          if (far) { this.called = false; continue; }
-          if (pl.passengers.length >= pl.s.rescueCap) { p.vx = p.vy = 0; continue; }
-          if (d < 14 && pl.speed < 160) { this.board(p, pl); continue; }
-          const a = Math.atan2(pl.y - p.y, pl.x - p.x);
-          p.vx = Math.cos(a) * 46; p.vy = Math.sin(a) * 46; p.face = Math.cos(a) < 0 ? -1 : 1;
-          p.x += p.vx * dt; p.y += p.vy * dt;
-        } else {
+        p.hurtT = Math.max(0, p.hurtT - dt);
+        if (p.retrieving || p.ascending) { p.vx = p.vy = 0; p.wave += dt * 9; continue; }
+        if (p.z > 0) p.z = Math.max(0, p.z - dt * 30); // dropped by a broken beam
+        p.notice = U.damp(p.notice, dGroup < 260 && !cagedNow ? 1 : 0, 4, dt);
+        let moving = false;
+        // when the craft hovers close and slow, people gather under the beam emitter
+        if (gp && !cagedNow && bayFree && dGroup < 220 && pl.speed < 150) {
+          const d = U.dist(p.x, p.y, gp.x, gp.y);
+          const home = U.dist(gp.x, gp.y, this.x, this.y);
+          if (d > 11 && d < 170 && home < 150) {
+            let ax = (gp.x - p.x) / d, ay = (gp.y - p.y) / d;
+            // keep a little personal space
+            for (const o of this.people) if (o !== p && o.alive && !o.aboard) { const dx = p.x - o.x, dy = p.y - o.y, dd = dx * dx + dy * dy; if (dd < 49 && dd > 0.01) { const k = 1 / Math.sqrt(dd); ax += dx * k * 0.8; ay += dy * k * 0.8; } }
+            const n = Math.hypot(ax, ay) || 1;
+            p.vx = ax / n * 32; p.vy = ay / n * 32;
+            p.x += p.vx * dt; p.y += p.vy * dt;
+            p.face = p.vx < 0 ? -1 : 1;
+            moving = true;
+          }
+        }
+        if (!moving) {
           p.vx = p.vy = 0;
-          p.wave += dt * (near ? 8 : 2);
+          if (plOk && dGroup < 400) p.face = pl.x < p.x ? -1 : 1;
+          p.wave += dt * (p.notice > 0.5 ? 9 : 2);
         }
       }
       if (this.called && this.remaining === 0) this.called = false;
     }
     board(p, pl) {
-      p.aboard = true; p.beam = 0.5;
+      p.aboard = true; p.beam = 0.35; p.z = pl.z;
       pl.passengers.push({ group: this.id, type: this.type });
-      AS.Audio.sfx('beam_up');
-      for (let i = 0; i < 8; i++) AS.FX.beamUp(p.x, p.y, 0, pl.z, '#9ff6ff');
+      AS.Audio.sfx('beam_up', { vol: 0.5 });
       this.g.emit('boarded', this);
-      if (pl.passengers.length >= pl.s.rescueCap) { pl.warnOnce('bayfull', 'rescue_full', 6); this.called = false; }
+      if (pl.passengers.length >= pl.s.rescueCap) pl.warnOnce('bayfull', 'rescue_full', 6);
       this.g.stats.boarded++;
     }
     collectDraw(list, x0, y0, x1, y1) {
       for (const p of this.people) if (p.alive && (!p.aboard || p.beam > 0) && p.x > x0 && p.x < x1 && p.y > y0 && p.y < y1) list.push(personDrawable(p, this));
+      // a small beacon over the group while anyone is waiting (not while caged)
+      if (this.remaining > 0 && !(this.caged && (() => { const c = this.g.byId.get(this.caged); return c && c.alive; })()) && this.x > x0 && this.x < x1 && this.y > y0 && this.y < y1) list.push(beaconDrawable(this));
     }
   }
   const PD = {
     sortY: 0, p: null, gp: null,
+    drawShadow(ctx, ox, oy) {
+      const p = this.p;
+      if (p.aboard) return;
+      const k = 1 - Math.min(0.6, p.z / 20);
+      ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(p.x - ox + 0.6, p.y - oy + 0.5, 4.2 * k, 2 * k, 0, 0, TAU); ctx.fill();
+    },
     draw(ctx, ox, oy) {
       const p = this.p, gp = this.gp;
-      const x = Math.round(p.x - ox), y = Math.round(p.y - oy);
       const col = SUIT[gp.type] || '#e8742a';
-      if (p.aboard) { ctx.globalAlpha = Math.max(0, p.beam * 2); }
+      const dark = U.C.css(col, -0.35);
+      ctx.save();
+      // people are drawn a little larger than true scale so they read next to the craft
+      ctx.translate(p.x - ox, p.y - oy - p.z); ctx.scale(1.35, 1.35);
+      const x = 0, y = 0;
+      if (p.aboard) ctx.globalAlpha = Math.max(0, p.beam * 2.8);
       const moving = Math.abs(p.vx) + Math.abs(p.vy) > 1;
-      const legA = moving ? Math.sin(p.anim * 2) * 1.5 : 0;
-      ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(x - 2, y, 5, 1);
-      ctx.fillStyle = '#2a2a30'; ctx.fillRect(x - 1 + Math.round(legA * 0.5), y - 3, 1, 3); ctx.fillRect(x + 1 - Math.round(legA * 0.5), y - 3, 1, 3);
-      ctx.fillStyle = col; ctx.fillRect(x - 1, y - 7, 3, 4);
-      ctx.fillStyle = '#e8c8a8'; ctx.fillRect(x - 1, y - 9, 3, 2);
-      // waving arm when the craft is near
-      if (!moving && Math.sin(p.wave) > 0) { ctx.fillStyle = col; ctx.fillRect(x + 2, y - 10, 1, 3); }
-      else { ctx.fillStyle = col; ctx.fillRect(x + 2, y - 6, 1, 2); }
-      if (gp.caged) { /* drawn inside pen */ }
-      ctx.globalAlpha = 1;
+      const step = moving ? Math.sin(p.anim * 2.2) : 0;
+      const f = p.face;
+      // legs
+      ctx.strokeStyle = '#2a2c32'; ctx.lineWidth = 1.15; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x - 0.8, y - 3.6); ctx.lineTo(x - 0.8 + step * 1.1, y - 0.2); ctx.moveTo(x + 0.8, y - 3.6); ctx.lineTo(x + 0.8 - step * 1.1, y - 0.2); ctx.stroke();
+      // torso: suit with a darker side for volume
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x - 1.9, y - 3.4); ctx.lineTo(x - 1.6, y - 7.6); ctx.quadraticCurveTo(x, y - 8.6, x + 1.6, y - 7.6); ctx.lineTo(x + 1.9, y - 3.4); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = dark; ctx.beginPath(); ctx.moveTo(x + 0.3 * f, y - 3.4); ctx.lineTo(x + 1.9 * f, y - 3.4); ctx.lineTo(x + 1.6 * f, y - 7.6); ctx.lineTo(x + 0.5 * f, y - 8.1); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(x - 1.5, y - 6.2, 3, 0.55);
+      // arms: waving at the craft, raised in the beam, swinging when walking
+      ctx.strokeStyle = col; ctx.lineWidth = 1.05;
+      ctx.beginPath();
+      if (p.retrieving || p.ascending) { ctx.moveTo(x - 1.6, y - 7.2); ctx.lineTo(x - 2.6, y - 10.6); ctx.moveTo(x + 1.6, y - 7.2); ctx.lineTo(x + 2.6, y - 10.6); }
+      else if (!moving && p.notice > 0.5) { const w = Math.sin(p.wave) * 0.9; ctx.moveTo(x + 1.6 * f, y - 7.2); ctx.lineTo(x + (2.4 + w) * f, y - 10.6); ctx.moveTo(x - 1.6 * f, y - 7); ctx.lineTo(x - 2 * f, y - 4.4); }
+      else { ctx.moveTo(x - 1.7, y - 7); ctx.lineTo(x - 2.1 - step * 0.6, y - 4.2); ctx.moveTo(x + 1.7, y - 7); ctx.lineTo(x + 2.1 + step * 0.6, y - 4.2); }
+      ctx.stroke();
+      // head + visor
+      ctx.fillStyle = p.skin; ctx.beginPath(); ctx.arc(x, y - 9.7, 1.45, 0, TAU); ctx.fill();
+      ctx.fillStyle = U.C.css(col, -0.15); ctx.beginPath(); ctx.arc(x, y - 10.2, 1.5, Math.PI, TAU); ctx.fill();
+      if (p.hurtT > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,60,40,0.6)'; ctx.fillRect(x - 2.2, y - 11.4, 4.4, 11.4); }
+      if (p.retrieving || p.ascending) {
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.25 + p.lift * 0.5;
+        ctx.drawImage(AS.Forge.glow('#8ff4ff', 32), x - 8, y - 15, 16, 18);
+      }
+      ctx.restore();
     },
   };
   function personDrawable(p, gp) { const o = Object.create(PD); o.p = p; o.gp = gp; o.sortY = p.y; return o; }
+  // beacon: a soft light post above the group, blinking slowly; brighter until noticed
+  const BD = {
+    sortY: 0, gr: null,
+    draw(ctx, ox, oy) {
+      const gr = this.gr;
+      const blink = (Math.sin(gr.t * 3) + 1) * 0.5;
+      const x = gr.x - ox, y = gr.y - oy - 18 - Math.sin(gr.t * 2) * 1.2;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (gr.noticed ? 0.35 : 0.65) * (0.5 + blink * 0.5);
+      ctx.drawImage(AS.Forge.glow('#8ff4ff', 32), x - 9, y - 9, 18, 18);
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = '#e8ffff'; ctx.beginPath(); ctx.moveTo(x, y - 2.4); ctx.lineTo(x + 1.8, y); ctx.lineTo(x, y + 2.4); ctx.lineTo(x - 1.8, y); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      if (blink > 0.6) AS.Renderer.light(gr.x, gr.y - 18, 22, '#8ff4ff', 0.25);
+    },
+  };
+  function beaconDrawable(gr) { const o = Object.create(BD); o.gr = gr; o.sortY = gr.y - 1; return o; }
 
   /* ---------------- Cargo ---------------- */
   const CARGO_LABEL = { blackbox: 'FLIGHT RECORDER', datacore: 'DATA CORE', artifact: 'ALIEN ARTEFACT', fuelcore: 'FUEL CORE', sample: 'BIO SAMPLE', charge: 'SEISMIC CHARGE', powercell: 'POWER CELL' };
@@ -205,12 +289,32 @@
       this.g.emit('cargoPicked', this);
       if (pl.cargo.length >= pl.s.cargoCap) pl.warnOnce('cargofull', 'cargo_full', 6);
     }
-    update(dt) { this.t += dt; }
-    drawShadow(ctx, ox, oy) { if (this.aboard) return; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(Math.round(this.x - ox), Math.round(this.y - oy + 1), 6, 3, 0, 0, TAU); ctx.fill(); }
+    /* retrieval-beam contract (see src/game/retrieval.js) */
+    canRetrieve(pl) { return this.canInteract(pl); }
+    retrieveBlocked(pl) { return pl.cargo.length >= pl.s.cargoCap ? 'CARGO HOLD FULL — DELIVER FIRST' : null; }
+    retrievePos() { return { x: this.x, y: this.y, z: this.z }; }
+    get retrieveTime() { return Math.max(1.3, this.interactTime); }
+    get retrieveCol() { return '#b8f8ff'; }
+    get retrieveLabel() { return 'RECOVER ' + this.label; }
+    onBeamStart(pl) { this.beamed = true; }
+    onBeamProgress(pl, k) { this.z = Math.pow(k, 1.5) * 5; }
+    onBeamBreak(pl) { this.beamed = false; this.ascending = false; }
+    retrieveLift(f, gp, pl) {
+      if (!this.ascending) { this.ascending = true; this.sx = this.x; this.sy = this.y; this.sz = this.z; }
+      const e = f * f;
+      this.x = U.lerp(this.sx, gp.x, e); this.y = U.lerp(this.sy, gp.y, e); this.z = U.lerp(this.sz, pl.z, e);
+    }
+    onRetrieved(pl) {
+      this.beamed = false; this.ascending = false;
+      this.x = this.sx; this.y = this.sy; this.z = 0; // a drop elsewhere re-places it
+      this.complete(pl);
+    }
+    update(dt) { this.t += dt; if (!this.beamed && this.z > 0) this.z = Math.max(0, this.z - dt * 30); }
+    drawShadow(ctx, ox, oy) { if (this.aboard) return; const k = 1 - Math.min(0.6, this.z / 20); ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(this.x - ox, this.y - oy + 1, 6 * k, 3 * k, 0, 0, TAU); ctx.fill(); }
     draw(ctx, ox, oy, R) {
       if (this.aboard || this.delivered) return;
-      R.sprite(ctx, this.sheet, 0, 0, this.x, this.y, 0, ox, oy);
-      R.light(this.x, this.y - 6, 14, '#9ff6ff', 0.3 + Math.sin(this.t * 3) * 0.1);
+      R.sprite(ctx, this.sheet, 0, 0, this.x, this.y, this.z, ox, oy);
+      R.light(this.x, this.y - 6 - this.z, 14, '#9ff6ff', 0.3 + Math.sin(this.t * 3) * 0.1);
     }
   }
 
@@ -264,9 +368,9 @@
     drawShadow(ctx, ox, oy) {
       // long cast shadow down-right
       ctx.save(); ctx.globalAlpha *= 0.8;
-      ctx.translate(Math.round(this.x - ox), Math.round(this.y - oy));
+      ctx.translate(this.x - ox, this.y - oy);
       ctx.transform(1, 0, 0.55, 0.35, 0, 0);
-      ctx.drawImage(this.sheet.shadows[0], -this.sheet.ax, -this.sheet.ay);
+      ctx.drawImage(this.sheet.shadows[0], -this.sheet.ax, -this.sheet.ay, this.sheet.w, this.sheet.h);
       ctx.restore();
     }
     draw(ctx, ox, oy, R) {
@@ -277,7 +381,7 @@
       let a = 1;
       if (p && p.alive && p.y < this.y && p.y > this.y - this.h - 30 && Math.abs(p.x - this.x) < this.r + 26) a = 0.45;
       ctx.globalAlpha = a;
-      ctx.drawImage(sh.frames[ai][0], Math.round(this.x - ox - sh.ax), Math.round(this.y - oy - sh.ay));
+      ctx.drawImage(sh.frames[ai][0], this.x - ox - sh.ax, this.y - oy - sh.ay, sh.w, sh.h);
       ctx.globalAlpha = 1;
       if (this.g.world.obstacle.glowVein || this.kind === 'bigShroom') R.light(this.x, this.y - this.h * 0.6, 26, this.g.world.obstacle.pal.g, 0.18);
     }

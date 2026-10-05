@@ -183,6 +183,19 @@
     beamUp(x, y, z0, z1, col) {
       for (let i = 0; i < 3; i++) Particles.spawn({ x: x + (Math.random() - 0.5) * 8, y, z: z0 + Math.random() * (z1 - z0), vz: 40, shape: DOT, col: col || '#9ff6ff', size: 1, life: 0.4, add: true });
     },
+    // retrieval complete: bright ring + sparkles at the emitter and a column flash
+    retrieveBurst(x, y, z, col) {
+      const P = Particles;
+      col = col || '#9ff6ff';
+      P.spawn({ x, y, z, shape: GLOW, col: '#ffffff', size: 6, size2: 22, life: 0.25, add: true, keep: true });
+      P.spawn({ x, y, z: z - 2, shape: RING, col, size: 4, size2: 26, life: 0.4, add: true, keep: true });
+      P.spawn({ x, y, z: 0, shape: RING, col, size: 6, size2: 30, life: 0.5, add: true, layer: 0, keep: true });
+      for (let i = 0; i < 14; i++) {
+        const a = Math.random() * TAU, sp = 30 + Math.random() * 70;
+        P.spawn({ x, y, z: z - 2, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.7, vz: Math.random() * 40, shape: GLOW, col: Math.random() < 0.5 ? '#ffffff' : col, size: 1.6, size2: 0.3, life: 0.4 + Math.random() * 0.3, add: true, drag: 3 });
+      }
+      AS.Renderer && AS.Renderer.light(x, y - z, 40, col, 0.6);
+    },
     text(x, y, z, txt, col) { AS.Renderer && AS.Renderer.floatText(x, y - z, txt, col); },
   };
 

@@ -18,9 +18,9 @@
     },
     // screen (CSS px) position of a world entity's projected centre
     screenOf(e) {
-      const g = AS.game, cam = g.camera, R = AS.Renderer;
-      const bx = (e.x - cam.x) * cam.zoom, by = ((e.py !== undefined ? e.py : e.y) - cam.y) * cam.zoom;
-      return { x: (bx * R.scale + R.offX) / R.dpr, y: (by * R.scale + R.offY) / R.dpr };
+      const g = AS.game, R = AS.Renderer;
+      const q = R.worldToScreen(e.x, e.py !== undefined ? e.py : e.y, g.camera);
+      return { x: q.x / R.dpr, y: q.y / R.dpr };
     },
     killAll(team) { for (const u of AS.game.units) if (u.alive && u.team === (team || 'enemy') && !u.boss) { u.invuln = false; u.takeDamage(1e6, 'ap', null); } },
     destroy(id) { const e = AS.game.byId.get(id); if (e && e.alive) { e.invuln = false; e.targetable = true; if (e.isShielded) e.shieldedBy = []; e.takeDamage(1e7, 'ap', AS.game.player); } return !!e; },

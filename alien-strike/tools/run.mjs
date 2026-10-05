@@ -1,6 +1,6 @@
 // usage: STEPS='[...]' node tools/run.mjs <url> <outprefix> [w] [h]
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-const [,, url, out, w='1440', h='810'] = process.argv;
+const [,, url, out, w="1440", h="810"] = process.argv;
 const b = await chromium.launch({ args:['--autoplay-policy=no-user-gesture-required'] });
 const p = await b.newPage({ viewport: { width: +w, height: +h } });
 const errs=[]; p.on('console', m => { const t=m.type(); if (t==='error'||t==='warning') errs.push(t+': '+m.text()); else if (process.env.LOG) console.log('log: '+m.text()); }); p.on('pageerror', e => errs.push('pageerror: '+e.message+'\n'+(e.stack||'').split('\n').slice(0,4).join('\n')));

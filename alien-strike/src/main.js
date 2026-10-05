@@ -46,6 +46,7 @@
           this.lastMission = id; this.lastOpts = opts;
           AS.UI && AS.UI.hideAll();
           this.state = 'play'; this.overlay = null;
+          AS.HUD && AS.HUD.resetMission && AS.HUD.resetMission();
           AS.Audio.startWorld && AS.Audio.startWorld(this.game.world);
           AS.Music.play && AS.Music.play(this.game.world);
           AS.Voice.reset && AS.Voice.reset();
@@ -108,8 +109,9 @@
           // overlay / pause keys
           if (I.hit('pause')) { if (this.overlay) this.overlay = null; else { this.pause(); } }
           else if (I.hit('map')) this.overlay = this.overlay === 'map' ? null : 'map';
-          else if (I.hit('objectives')) this.overlay = this.overlay === 'obj' ? null : 'obj';
-          if (I.hit('controlMode')) { AS.Settings.controlMode = AS.Settings.controlMode === 'tactical' ? 'assault' : 'tactical'; AS.Save.saveSettings(); g.msg('CONTROL MODE: ' + AS.Settings.controlMode.toUpperCase(), '#7fe8ff', 2); }
+          else if (I.hit('objectives')) AS.HUD.tabPress();
+          AS.HUD.tabTick(I.down('objectives'), dt);
+          if (I.hit('controlMode')) { const modes = ['twinstick', 'assault', 'tactical'], names = { twinstick: 'TWIN-STICK', assault: 'ASSAULT', tactical: 'CLASSIC' }; AS.Settings.controlMode = modes[(modes.indexOf(AS.Settings.controlMode) + 1) % modes.length]; AS.Save.saveSettings(); g.msg('CONTROL MODE: ' + names[AS.Settings.controlMode], '#7fe8ff', 2); }
           g.uiBlocking = !!this.overlay;
           if (!this.overlay) g.update(dt);
         } else if (this.state === 'results') {
@@ -122,7 +124,6 @@
         if (this.state === 'play') {
           AS.HUD.draw(ctx, g, dt);
           if (this.overlay === 'map') AS.TacMap.draw(ctx, g);
-          if (this.overlay === 'obj') AS.TacMap.drawObjectives(ctx, g);
         }
         AS.Voice.update && AS.Voice.update(dt, g);
         AS.Audio.update && AS.Audio.update(dt, g);

@@ -105,7 +105,7 @@
       const fi = AS.Forge.frameIndex(sh, ang);
       c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.6;
       c.drawImage(AS.Forge.glow('#5fe6ff', 32), cx - 30, cy - 12, 24, 24); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-      c.drawImage(sh.frames[0][fi], Math.round(cx - sh.ax), Math.round(cy - sh.ay - 10));
+      c.drawImage(sh.frames[0][fi], Math.round(cx - sh.ax), Math.round(cy - sh.ay - 10), sh.w, sh.h);
       // present
       const R = AS.Renderer, ctx = R.ctx;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -349,8 +349,8 @@
         seg('subtitles', 'Subtitles', [[true, 'ON'], [false, 'OFF']]),
         h('div', { class: 'opt-row' }, h('label', null, 'Fullscreen'), h('div', null, btn(document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen', () => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => {}); setTimeout(() => this.showOptions(), 300); }, 'small')), h('span')),
         h('h3', null, 'CONTROLS'),
-        seg('controlMode', 'Control mode', [['tactical', 'TACTICAL'], ['assault', 'ASSAULT']]),
-        h('div', { class: 'dim mono', style: 'font-size:12px;margin:-4px 0 10px' }, S.controlMode === 'tactical' ? 'TACTICAL: W/S thrust, A/D rotate the craft, Q/F strafe. Mouse aims the weapon pods independently.' : 'ASSAULT: W/S thrust, A/D strafe, the nose follows the mouse cursor.'),
+        seg('controlMode', 'Control mode', [['twinstick', 'TWIN-STICK'], ['assault', 'ASSAULT'], ['tactical', 'CLASSIC']]),
+        h('div', { class: 'dim mono', style: 'font-size:12px;margin:-4px 0 10px' }, S.controlMode === 'tactical' ? 'CLASSIC: W/S thrust, A/D rotate the craft, Q/F strafe. Mouse aims the weapon pods independently.' : S.controlMode === 'assault' ? 'ASSAULT: W/S thrust toward the cursor, A/D strafe around it.' : 'TWIN-STICK: WASD moves the craft in screen directions, the craft faces the mouse. Strafe, retreat and circle while you fire.'),
         h('div', { class: 'row', style: 'margin-top:12px;flex-wrap:wrap' }, btn('Key bindings', () => this.showControls('options')), btn('Back', () => this.back(), 'primary'), this.backTo === 'menu' ? btn('Erase campaign', () => this.confirm('Erase all campaign progress? This cannot be undone.', () => { AS.Save.deleteProfile(); this.showMenu(); }), 'danger small') : null));
       s.appendChild(panel);
       this.show('options');

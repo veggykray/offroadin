@@ -40,7 +40,7 @@
       AS.Particles.clear();
       this.terrain = new AS.Terrain(this.world, m.map);
       this.camera = new AS.Camera();
-      this.camera.setView(AS.Renderer.bufW, AS.Renderer.bufH);
+      this.camera.setView(AS.Renderer.vw, AS.Renderer.vh);
       this.camera.bounds = { x0: 0, y0: 0, x1: m.map.w, y1: m.map.h };
       const stats = AS.Stats.compute(this.profile);
       this.player = new AS.Player(this, stats, this.profile);
@@ -248,8 +248,7 @@
         const d = U.dist(p.x, p.y, e.x, e.y);
         if (d < range && d < bd) { bd = d; best = e; }
       };
-      for (const g of this.groups) if (g.canInteract(p)) consider(g, g.interactRange);
-      for (const c of this.cargo) if (c.canInteract(p)) consider(c, c.interactRange);
+      // survivors and cargo are lifted with the retrieval beam (src/game/retrieval.js)
       for (const s of this.structures) if ((s.alive || s.role === 'console') && s.canInteract(p)) consider(s, s.interactRange);
       return best;
     }
@@ -596,8 +595,8 @@
       // dropship parked at the LZ
       const ds = this.dropship;
       const lift = this.state === 'extracting' ? (2.6 - this.endT) * 30 : 0;
-      ctx.globalAlpha = 0.3; ctx.drawImage(ds.shadows[0], ex + 50 - ds.ax + 4, ey - 34 - ds.ay + 2); ctx.globalAlpha = 1;
-      ctx.drawImage(ds.frames[0][0], ex + 50 - ds.ax, ey - 34 - 16 - lift - ds.ay);
+      ctx.globalAlpha = 0.3; ctx.drawImage(ds.shadows[0], ex + 50 - ds.ax + 4, ey - 34 - ds.ay + 2, ds.w, ds.h); ctx.globalAlpha = 1;
+      ctx.drawImage(ds.frames[0][0], ex + 50 - ds.ax, ey - 34 - 16 - lift - ds.ay, ds.w, ds.h);
       R.light(e.x + 50, e.y - 50 - lift, 30, e.active ? '#7dff9a' : '#7fe8ff', 0.35 + Math.sin(e.t * 5) * 0.15);
       if (this.walkers) for (const w of this.walkers) { ctx.fillStyle = '#e8742a'; ctx.fillRect(Math.round(w.x - ox) - 1, Math.round(w.y - oy) - 7, 3, 5); ctx.fillStyle = '#e8c8a8'; ctx.fillRect(Math.round(w.x - ox) - 1, Math.round(w.y - oy) - 9, 3, 2); }
     }

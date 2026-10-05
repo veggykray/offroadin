@@ -535,9 +535,9 @@
           if (wx < 0 || wy < 0 || wx > this.W || wy > this.H) continue;
           const sh = ds.sheets[rng.int(0, ds.sheets.length - 1)];
           ctx.globalAlpha = 0.28;
-          ctx.drawImage(sh.shadows[0], x - sh.ax + 2, y - sh.ay + 1);
+          ctx.drawImage(sh.shadows[0], x - sh.ax + 2, y - sh.ay + 1, sh.w, sh.h);
           ctx.globalAlpha = 1;
-          ctx.drawImage(sh.frames[0][0], x - sh.ax, y - sh.ay);
+          ctx.drawImage(sh.frames[0][0], x - sh.ax, y - sh.ay, sh.w, sh.h);
         }
       }
     }

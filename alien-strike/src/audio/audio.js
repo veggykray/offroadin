@@ -103,7 +103,14 @@
       const src = this.ctx.createBufferSource(); src.buffer = b; src.loop = true;
       const gn = this.ctx.createGain(); gn.gain.value = 0; gn.gain.setTargetAtTime((AS.Data.sfx[id].vol || 0.4) * (vol || 1), this.ctx.currentTime, 0.03);
       src.connect(gn); gn.connect(this.sfxBus); src.start();
-      this.loops[key] = { src, gn };
+      this.loops[key] = { src, gn, id };
+    },
+    // retune a running loop: playback rate (pitch) and volume multiplier
+    loopParam(key, rate, vol) {
+      const l = this.loops[key]; if (!l || !this.ctx) return;
+      const t = this.ctx.currentTime;
+      if (rate !== undefined) l.src.playbackRate.setTargetAtTime(rate, t, 0.05);
+      if (vol !== undefined) { const id = l.id; const base = id && AS.Data.sfx[id] ? AS.Data.sfx[id].vol || 0.4 : 0.4; l.gn.gain.setTargetAtTime(base * vol, t, 0.06); }
     },
     stopLoop(key) {
       const l = this.loops[key]; if (!l) return;

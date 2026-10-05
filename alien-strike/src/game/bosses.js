@@ -133,7 +133,7 @@
     const sink = (1 - k) * (sh.h - 4);
     ctx.save();
     ctx.beginPath(); ctx.rect(Math.round(b.x - ox - sh.ax - 4), Math.round(b.y - oy - sh.ay - 60), sh.w + 8, sh.ay + 60 + 4); ctx.clip();
-    ctx.drawImage(img, Math.round(b.x - ox - sh.ax), Math.round(b.y - oy - sh.ay + sink));
+    ctx.drawImage(img, b.x - ox - sh.ax, b.y - oy - sh.ay + sink, sh.w, sh.h);
     if (b.flash > 0) R.flashSprite(ctx, sh, b.angle, b.anim, b.x, b.y, -sink, ox, oy);
     ctx.restore();
     // churned ground ring
@@ -247,7 +247,7 @@
         for (let i = b.trail.length - 1; i > 0; i -= 9) {
           const s = b.trail[i]; if (s.z < -4) continue;
           const sh = b.segSheet, sc = 1 - i / 140;
-          ctx.drawImage(sh.frames[0][0], Math.round(s.x - ox - sh.ax * sc), Math.round(s.y - s.z - oy - sh.ay * sc), sh.w * sc, sh.h * sc);
+          ctx.drawImage(sh.frames[0][0], s.x - ox - sh.ax * sc, s.y - s.z - oy - sh.ay * sc, sh.w * sc, sh.h * sc);
         }
         if (b.z > -8) R.sprite(ctx, b.sheet, b.angle, b.anim, b.x, b.y, Math.max(0, b.z), ox, oy);
         else { ctx.fillStyle = 'rgba(60,24,12,0.5)'; ctx.beginPath(); ctx.ellipse(b.x - ox, b.y - oy, 22, 12, 0, 0, TAU); ctx.fill(); }
@@ -338,8 +338,8 @@
       },
       status(b) { return b.isShielded() ? 'CORE SEALED — DESTROY THE PUMP TURRETS' : 'CORE EXPOSED'; },
       draw(b, ctx, ox, oy, R) {
-        const sh = b.sheet; ctx.drawImage(sh.frames[0][0], Math.round(b.x - ox - sh.ax), Math.round(b.y - oy - sh.ay));
-        const c = b.coreSheet; ctx.drawImage(c.frames[0][0], Math.round(b.x - ox - c.ax), Math.round(b.y - oy - c.ay - 8));
+        const sh = b.sheet; ctx.drawImage(sh.frames[0][0], b.x - ox - sh.ax, b.y - oy - sh.ay, sh.w, sh.h);
+        const c = b.coreSheet; ctx.drawImage(c.frames[0][0], b.x - ox - c.ax, b.y - oy - c.ay - 8, c.w, c.h);
         if (b.flash > 0) R.flashSprite(ctx, c, 0, 0, b.x, b.y, 8, ox, oy);
       },
       drawShadow() {},
@@ -392,7 +392,7 @@
         AS.Renderer.light(b.x, b.y - 50, 90, '#9ffff0', 0.3 + Math.sin(b.t * 2) * 0.1);
       },
       status(b) { return b.isShielded() ? 'ROOT-SHIELDED — BURN THE SPORE ROOTS' : 'EXPOSED'; },
-      draw(b, ctx, ox, oy, R) { const sh = b.sheet; ctx.drawImage(sh.frames[0][0], Math.round(b.x - ox - sh.ax), Math.round(b.y - oy - sh.ay)); if (b.flash > 0) R.flashSprite(ctx, sh, 0, 0, b.x, b.y, 0, ox, oy); },
+      draw(b, ctx, ox, oy, R) { const sh = b.sheet; ctx.drawImage(sh.frames[0][0], b.x - ox - sh.ax, b.y - oy - sh.ay, sh.w, sh.h); if (b.flash > 0) R.flashSprite(ctx, sh, 0, 0, b.x, b.y, 0, ox, oy); },
       drawShadow() {},
     },
 
@@ -425,7 +425,7 @@
       },
       status(b) { return b.vulnT > 0 ? 'SHOCKED — VULNERABLE' : 'STORM-HIDE — LURE IT THROUGH A CHARGED LIGHTNING ROD'; },
       draw(b, ctx, ox, oy, R) {
-        for (let i = b.trail.length - 1; i > 6; i -= 7) { const s = b.trail[i]; const sh = b.segSheet, sc = 1 - i / 160; ctx.drawImage(sh.frames[0][0], Math.round(s.x - ox - sh.ax * sc), Math.round(s.y - s.z - oy - sh.ay * sc), sh.w * sc, sh.h * sc); }
+        for (let i = b.trail.length - 1; i > 6; i -= 7) { const s = b.trail[i]; const sh = b.segSheet, sc = 1 - i / 160; ctx.drawImage(sh.frames[0][0], s.x - ox - sh.ax * sc, s.y - s.z - oy - sh.ay * sc, sh.w * sc, sh.h * sc); }
         R.sprite(ctx, b.sheet, b.angle, b.anim, b.x, b.y, b.z, ox, oy);
         if (b.flash > 0) R.flashSprite(ctx, b.sheet, b.angle, b.anim, b.x, b.y, b.z, ox, oy);
         AS.Renderer.light(b.x, b.py, 50, '#9ff', 0.3);
@@ -464,7 +464,7 @@
         AS.Renderer.light(b.x, b.py, 120, '#c09aff', 0.35 + Math.sin(b.t * 3) * 0.1);
       },
       status(b) { return b.isShielded() ? 'SANCTUM PYLONS ACTIVE — CORE SEALED' : 'CORE EXPOSED — DESTROY IT'; },
-      draw(b, ctx, ox, oy, R) { const sh = b.sheet; const ai = Math.floor(b.anim) % sh.anims; ctx.drawImage(sh.frames[ai][0], Math.round(b.x - ox - sh.ax), Math.round(b.y - oy - sh.ay)); if (b.flash > 0) R.flashSprite(ctx, sh, 0, ai, b.x, b.y, 0, ox, oy); },
+      draw(b, ctx, ox, oy, R) { const sh = b.sheet; const ai = Math.floor(b.anim) % sh.anims; ctx.drawImage(sh.frames[ai][0], b.x - ox - sh.ax, b.y - oy - sh.ay, sh.w, sh.h); if (b.flash > 0) R.flashSprite(ctx, sh, 0, ai, b.x, b.y, 0, ox, oy); },
       drawShadow() {},
     },
   };

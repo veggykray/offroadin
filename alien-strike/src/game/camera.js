@@ -58,8 +58,10 @@
         cx = U.clamp(cx, b.x0 - m + vw / 2, b.x1 + m - vw / 2);
         cy = U.clamp(cy, b.y0 - m + vh / 2, b.y1 + m - vh / 2);
       }
-      this.x = Math.round(cx - vw / 2 + this.ox);
-      this.y = Math.round(cy - vh / 2 + this.oy);
+      // snap to whole buffer pixels (not whole world units) so motion stays smooth
+      const q = ((AS.Renderer && AS.Renderer.res) || 1) * this.zoom;
+      this.x = Math.round((cx - vw / 2 + this.ox) * q) / q;
+      this.y = Math.round((cy - vh / 2 + this.oy) * q) / q;
       this.w = vw; this.h = vh;
     }
     // screen pixel (canvas css px) -> world projected coordinates
