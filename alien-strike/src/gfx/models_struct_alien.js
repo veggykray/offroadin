@@ -125,10 +125,13 @@
       // creep pad and root tendrils
       parts.push({ z0: 0, z1: 1.5, side: p.d, top: C.shade(p.d, 0.2), bevel: false, shape: (c) => S.blob(c, 0, 0, 15.5, 41, 12, 0.32),
         detail: (c) => { for (let i = 0; i < 7; i++) { const a = i / 7 * TAU + 0.3; S.lines(c, ca(p.g, 0.55), 0.6, [Math.cos(a) * 9, Math.sin(a) * 9, Math.cos(a + 0.2) * 13, Math.sin(a + 0.2) * 13]); } } });
-      // opened petals, curling up at the tips
-      parts.push({ z0: 0.8, z1: 5.5, side: C.shade(flesh, -0.1), top: C.mix(fleshT, p.t, 0.35), ao: 0.5,
-        shape: (c, zt) => { for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + 0.26; const r1 = 15 - zt * 3.5; blade(c, a, 4, r1, 2.4, 4 - zt * 2, 1.8); } },
-        detail: (c) => { for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + 0.26; S.lines(c, cs(p.t, 0.15), 1.1, [Math.cos(a) * 6.5, Math.sin(a) * 6.5, Math.cos(a) * 11, Math.sin(a) * 11]); glow(c, p.g, Math.cos(a) * 10.4, Math.sin(a) * 10.4, 1.3); } } });
+      // opened petals: low at the root, curling up toward the tips
+      parts.push({ z0: 0.6, z1: 6, side: C.shade(flesh, -0.05), top: C.mix(fleshT, '#ff86b8', 0.3), ao: 0.45,
+        shape: (c, zt) => { for (let i = 0; i < 5; i++) { const a = i / 5 * TAU + 0.3; blade(c, a, 4.5 + zt * zt * 8.5, 14.5 - zt * 1.2, 2.6 + zt * 0.8, 3.6 - zt * 1.6, 1.6); } },
+        detail: (c) => { for (let i = 0; i < 5; i++) { const a = i / 5 * TAU + 0.3; S.lines(c, cs(p.t, 0.15), 0.9, [Math.cos(a) * 13, Math.sin(a) * 13, Math.cos(a) * 15, Math.sin(a) * 15]); } } });
+      // petal inner faces: veined, with glowing nectar spots near the root
+      parts.push({ z0: 0.6, z1: 0.6, side: fleshT, top: C.mix(fleshT, '#ff86b8', 0.3), shape: (c) => { for (let i = 0; i < 5; i++) blade(c, i / 5 * TAU + 0.3, 4.5, 12.5, 2.6, 3.4, 1.4); },
+        detail: (c) => { for (let i = 0; i < 5; i++) { const a = i / 5 * TAU + 0.3; S.lines(c, cs(p.t, 0.1), 0.7, [Math.cos(a) * 5.5, Math.sin(a) * 5.5, Math.cos(a) * 11.5, Math.sin(a) * 11.5]); glow(c, p.g, Math.cos(a) * 8, Math.sin(a) * 8, 1.6); } } });
       // the bulb
       parts.push({ z0: 1.5, z1: 9, side: flesh, top: fleshT, shape: (c, zt) => S.blob(c, 0, 0, 6.2 * Math.cos(zt * 0.95), 17, 9, 0.12),
         detail: (c) => { S.lines(c, ca(C.shade(flesh, -0.4), 0.7), 0.5, [-2.5, -1, 1.5, 2.2, 1, -2.4, -1.5, 1.6]); } });

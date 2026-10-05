@@ -72,66 +72,67 @@
   M.chThrall = function (p, o) {
     p = P(p); o = o || {};
     const T = tone(p), sc = o.size || 1;
-    const HIP = 9.6;
+    const HIP = 10.4;
     const legOf = (an, i) => {
       const ph = (an + i * 0.5) * TAU;
-      const fx = Math.sin(ph) * 2.7, lift = Math.max(0, Math.cos(ph)) * 1.5;
-      const y = i ? -1.55 : 1.55;
-      return [[fx, y * 1.15, lift], [fx * 0.55 - 1.7, y * 1.1, lift + 2.6], [fx * 0.3 + 1.2, y, 6.1], [-0.2, y * 0.9, HIP]];
+      const fx = Math.sin(ph) * 2.8, lift = Math.max(0, Math.cos(ph)) * 1.6;
+      const y = i ? -1.45 : 1.45;
+      return [[fx, y * 1.15, lift], [fx * 0.55 - 1.8, y * 1.1, lift + 2.8], [fx * 0.3 + 1.3, y, 6.6], [-0.2, y * 0.85, HIP]];
     };
     const parts = [];
     // feet: pointed hoof plates that lift during the swing
-    parts.push({ z0: 0, z1: 2.4, side: T.deep, top: T.bodyT, bevel: false, shape: (c, zt, an) => {
-      const z = zt * 2.4;
-      for (let i = 0; i < 2; i++) { const L = legOf(an, i); const f = L[0]; if (z < f[2] - 0.01 || z > f[2] + 0.8) continue; S.poly(c, [f[0] + 1.9, f[1], f[0] - 0.4, f[1] + 1, f[0] - 1.2, f[1], f[0] - 0.4, f[1] - 1]); }
+    parts.push({ z0: 0, z1: 2.6, side: T.deep, top: T.bodyT, bevel: false, shape: (c, zt, an) => {
+      const z = zt * 2.6;
+      for (let i = 0; i < 2; i++) { const f = legOf(an, i)[0]; if (z < f[2] - 0.01 || z > f[2] + 0.8) continue; S.poly(c, [f[0] + 2.0, f[1], f[0] - 0.4, f[1] + 1, f[0] - 1.2, f[1], f[0] - 0.4, f[1] - 1]); }
     } });
     // legs: reverse-jointed columns, thicker at the thigh
     parts.push({ z0: 0, z1: HIP, side: T.body, top: T.bodyT, bevel: false, ao: 0.25, shape: (c, zt, an) => {
       const z = zt * HIP;
-      for (let i = 0; i < 2; i++) { const L = legOf(an, i); if (z < L[0][2]) continue; const q = chainAt(L, z); S.circ(c, q[0], q[1], q[3] > 2 ? 1.05 : q[3] > 1 ? 0.75 : 0.62); }
+      for (let i = 0; i < 2; i++) { const L = legOf(an, i); if (z < L[0][2]) continue; const q = chainAt(L, z); S.circ(c, q[0], q[1], q[3] > 2 ? 1.0 : q[3] > 1 ? 0.72 : 0.6); }
     } });
-    // thigh plates (bone)
-    parts.push({ z0: 6.4, z1: 8.6, side: T.boneS, top: T.boneT, bevel: false, shape: (c, zt, an) => {
-      for (let i = 0; i < 2; i++) { const L = legOf(an, i); const q = chainAt(L, 7.4); S.ell(c, q[0] + 0.3, q[1] * 1.12, 1.25, 0.95); }
+    // bone shin guards
+    parts.push({ z0: 3.2, z1: 5.6, side: T.boneS, top: T.boneT, bevel: false, shape: (c, zt, an) => {
+      const z = 3.2 + zt * 2.4;
+      for (let i = 0; i < 2; i++) { const L = legOf(an, i); if (z < L[1][2]) continue; const q = chainAt(L, z); S.ell(c, q[0] + 0.45, q[1], 0.75, 0.62); }
     } });
-    // pelvis + bone tabard hanging at the front
-    parts.push({ z0: 8.6, z1: 10.4, side: T.deep, top: T.body, shape: (c) => S.ell(c, -0.1, 0, 1.6, 2.2) });
-    parts.push({ z0: 5.8, z1: 10.6, side: T.boneS, top: T.boneT, bevel: false, shape: (c) => S.poly(c, [2.3, 0, 1.9, 1.15, 1.1, 1.05, 1.2, -1.05, 1.9, -1.15]),
-      detail: (c) => S.lines(c, C.str(T.glow), 0.35, [1.95, -0.6, 1.95, 0.6]) });
+    // pelvis + violet tabard hanging at the front
+    parts.push({ z0: 9.4, z1: 11, side: T.deep, top: T.body, shape: (c) => S.ell(c, -0.1, 0, 1.5, 2.0) });
+    parts.push({ z0: 6.6, z1: 11.2, side: C.shade(p.t, -0.25), top: p.t, bevel: false, shape: (c) => S.poly(c, [2.2, 0, 1.8, 1.0, 1.0, 0.9, 1.1, -0.9, 1.8, -1.0]),
+      detail: (c) => S.lines(c, C.str(T.glow), 0.4, [1.9, -0.55, 1.9, 0.55]) });
     // torso: narrow waist widening to the shoulders
-    parts.push({ z0: 10.2, z1: 15.4, side: T.body, top: T.bodyT, shape: (c, zt) => S.ell(c, 0.1, 0, 1.7 + zt * 0.7, 2.0 + zt * 1.5),
-      detail: (c) => { glowLine(c, T.glow, T.hot, 0.35, [-1.6, 0, -0.2, 0]); S.lines(c, SEAM, 0.3, [-0.6, -2.6, -0.6, 2.6]); } });
+    parts.push({ z0: 10.8, z1: 16.4, side: T.body, top: T.bodyT, shape: (c, zt) => S.ell(c, 0, 0, 1.45 + zt * 0.7, 1.6 + zt * 1.45),
+      detail: (c) => { glowLine(c, T.glow, T.hot, 0.35, [-1.7, 0, -0.4, 0]); S.lines(c, SEAM, 0.3, [-0.7, -2.5, -0.7, 2.5]); } });
     // glowing chest core (protrudes from the chest front)
-    parts.push({ z0: 11.4, z1: 13.8, side: T.glow, top: T.hot, flat: true, shape: (c) => S.circ(c, 1.95, 0, 0.95),
-      detail: (c) => S.dot(c, C.str(T.white), 2.1, -0.2, 0.42) });
+    parts.push({ z0: 12.4, z1: 15, side: T.glow, top: T.hot, flat: true, shape: (c) => S.circ(c, 1.85, 0, 1.05),
+      detail: (c) => S.dot(c, C.str(T.white), 2.0, -0.25, 0.45) });
     // arms: left swings, right is bent holding the rifle
-    parts.push({ z0: 9.4, z1: 14.6, side: T.body, top: T.bodyT, bevel: false, ao: 0.2, shape: (c, zt, an) => {
-      const z = 9.4 + zt * 5.2;
+    parts.push({ z0: 10.2, z1: 15.6, side: T.body, top: T.bodyT, bevel: false, ao: 0.2, shape: (c, zt, an) => {
+      const z = 10.2 + zt * 5.4;
       const sw = Math.sin(an * TAU) * 1.7;
-      const L = [[-sw, -3.2, 9.4], [-sw * 0.4, -3.15, 12], [-0.2, -2.9, 14.6]];
-      const q = chainAt(L, z); S.circ(c, q[0], q[1], 0.62);
-      if (z >= 10.4) { const R = [[1.4, 2.7, 10.4], [0.1, 3.1, 12.4], [-0.2, 2.9, 14.6]]; const r = chainAt(R, z); S.circ(c, r[0], r[1], 0.62); }
+      const L = [[-sw, -3.0, 10.2], [-sw * 0.4, -3.0, 12.8], [-0.2, -2.7, 15.6]];
+      const q = chainAt(L, z); S.circ(c, q[0], q[1], 0.58);
+      if (z >= 11.2) { const R = [[1.4, 2.6, 11.2], [0.1, 2.95, 13.2], [-0.2, 2.7, 15.6]]; const r = chainAt(R, z); S.circ(c, r[0], r[1], 0.58); }
     } });
     // crystal lance-rifle held at the hip
-    parts.push({ z0: 10, z1: 11.2, side: T.deep, top: T.bodyT, bevel: false, shape: (c) => S.poly(c, [6.4, 2.45, 5.6, 3.05, -1.2, 3.1, -1.6, 2.6, -1.2, 2.2, 5.6, 2.0]),
-      detail: (c) => S.lines(c, LITE, 0.3, [-0.8, 2.3, 5.4, 2.2]) });
-    parts.push({ z0: 10.4, z1: 11.6, side: T.glow, top: T.hot, flat: true, shape: (c) => S.poly(c, [8.0, 2.55, 6.2, 3.0, 5.7, 2.55, 6.2, 2.1]) });
+    parts.push({ z0: 10.8, z1: 12, side: T.deep, top: T.bodyT, bevel: false, shape: (c) => S.poly(c, [6.6, 2.4, 5.8, 3.0, -1.2, 3.05, -1.6, 2.55, -1.2, 2.15, 5.8, 1.95]),
+      detail: (c) => S.lines(c, LITE, 0.3, [-0.8, 2.25, 5.6, 2.15]) });
+    parts.push({ z0: 11.2, z1: 12.4, side: T.glow, top: T.hot, flat: true, shape: (c) => S.poly(c, [8.3, 2.5, 6.4, 2.95, 5.9, 2.5, 6.4, 2.05]) });
     // bone pauldrons
-    parts.push({ z0: 13.6, z1: 15.8, side: T.boneS, top: T.boneT, shape: (c, zt) => { S.ell(c, -0.3, 3.0, 1.9 - zt * 0.25, 1.45, 0.25); S.ell(c, -0.3, -3.0, 1.9 - zt * 0.25, 1.45, -0.25); },
-      detail: (c) => { S.lines(c, SEAM, 0.3, [-1.4, 2.4, 0.9, 3.6, -1.4, -2.4, 0.9, -3.6]); } });
+    parts.push({ z0: 15.0, z1: 16.8, side: T.boneS, top: T.boneT, shape: (c, zt) => { S.ell(c, -0.3, 2.75, 1.35 - zt * 0.2, 1.05, 0.25); S.ell(c, -0.3, -2.75, 1.35 - zt * 0.2, 1.05, -0.25); },
+      detail: (c) => S.lines(c, SEAM, 0.3, [-1.1, 2.3, 0.7, 3.2, -1.1, -2.3, 0.7, -3.2]) });
     // bone mask head, tapering upward, pointed forward
-    parts.push({ z0: 15.2, z1: 19.2, side: T.boneS, top: T.boneT, shape: (c, zt) => {
-      const k = 1 - zt * 0.3;
-      S.poly(c, [0.6 + 2.0 * k, 0, 0.6 + 1.1 * k, 1.25 * k, -1.2 * k, 1.05 * k, -1.6 * k, 0, -1.2 * k, -1.05 * k, 0.6 + 1.1 * k, -1.25 * k]);
-    }, detail: (c) => { S.lines(c, SEAM, 0.28, [1.6, 0, -1, 0]); } });
+    parts.push({ z0: 16.4, z1: 19.6, side: T.boneS, top: T.boneT, shape: (c, zt) => {
+      const k = 0.82 * (1 - zt * 0.3);
+      S.poly(c, [0.5 + 2.0 * k, 0, 0.5 + 1.1 * k, 1.25 * k, -1.2 * k, 1.05 * k, -1.6 * k, 0, -1.2 * k, -1.05 * k, 0.5 + 1.1 * k, -1.25 * k]);
+    }, detail: (c) => S.lines(c, SEAM, 0.28, [1.3, 0, -0.8, 0]) });
     // glowing eye slit on the mask front
-    parts.push({ z0: 16.6, z1: 17.6, side: T.glow, top: T.hot, flat: true, shape: (c) => S.poly(c, [2.75, 0, 2.15, 0.95, 1.9, 0.85, 2.2, 0, 1.9, -0.85, 2.15, -0.95]) });
+    parts.push({ z0: 17.6, z1: 18.6, side: T.glow, top: T.hot, flat: true, shape: (c) => S.poly(c, [2.5, 0, 1.95, 0.85, 1.7, 0.75, 1.95, 0, 1.7, -0.75, 1.95, -0.85]) });
     // floating crystal above the head (diamond, detached)
-    parts.push({ z0: 20.2, z1: 23.6, side: C.shade(T.glow, -0.25), top: T.hot, flat: true, shape: (c, zt) => {
+    parts.push({ z0: 21, z1: 24.6, side: C.shade(T.glow, -0.25), top: T.hot, flat: true, shape: (c, zt) => {
       const w = Math.sin(Math.max(0.12, Math.min(0.88, zt)) * Math.PI) * 0.95;
       S.poly(c, [-0.3 + w, 0, -0.3, w * 0.8, -0.3 - w, 0, -0.3, -w * 0.8]);
     } });
-    return { r: 10, h: 24, parts, scale: sc, bevel: 0.5 };
+    return { r: 10, h: 25, parts, scale: sc, bevel: 0.5 };
   };
 
   /* ==================================================================
