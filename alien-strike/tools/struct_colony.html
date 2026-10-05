@@ -1,0 +1,110 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Colony structures preview</title>
+<style>body{background:#151417;margin:0;color:#ddd;font:12px monospace}canvas{display:block}</style></head><body>
+<canvas id="c" width="1600" height="1100"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../src/gfx/models_struct_alien.js"></script>
+<script src="../src/gfx/models_struct_colony.js"></script>
+<script>
+// Preview for package structColony. ?set=big|mid|cons|all  &old=1 renders the old generators  &frame=N anim frame
+const qs = new URLSearchParams(location.search);
+const SET = qs.get('set') || 'big', OLD = qs.get('old') === '1';
+const cv = document.getElementById('c'), c = cv.getContext('2d');
+const F = AS.Forge, M = AS.Models, W = AS.Data.worlds;
+const GROUND = { 1: '#a87444', 2: '#a8442a', 3: '#335e26', 4: '#cbdae6', 5: '#c8b888', 6: '#3a3133' };
+const pal = (w, k) => typeof k === 'string' ? W[w - 1][k] : k;
+const COOL = { a: '#4a5a6a', b: '#8aa0b8', t: '#7fe8ff', g: '#7fe8ff', d: '#1a2028' };
+const VALVE = { a: '#7a6a5a', b: '#b8a890', g: '#ff8a3a', d: '#2a2420' };
+const SWITCH = { a: '#5a5448', b: '#8a8270', g: '#ff9a3a', d: '#1e1c18' };
+const CHARGE = { a: '#6a3a3a', b: '#a86a5a', g: '#ff4a3a', d: '#2a1414' };
+const SETS = {
+  big: [
+    { k: 'refinery', w: 2, pal: 'colony', gen: 'scRefinery', anims: 4, old: ['refinery', {}] },
+    { k: 'derrick', w: 2, pal: 'colony', gen: 'scDerrick', anims: 4, old: ['derrick', {}] },
+    { k: 'heatstation', w: 4, pal: 'colony', gen: 'scHeatStation', anims: 2, old: ['heatStation', {}] },
+    { k: 'station', w: 1, pal: 'colony', gen: 'scStation', old: ['station', {}] },
+    { k: 'dome', w: 6, pal: 'colony', gen: 'scDome', anims: 2, old: ['dome', {}] },
+    { k: 'bunker', w: 1, pal: 'colony', gen: 'scBunker', old: ['bunker', {}] },
+  ],
+  mid: [
+    { k: 'turret_bunker', w: 2, pal: 'colony', gen: 'scTurretBunker', gun: { kind: 'twin' }, gunZ: 7, old: ['turretBase', { style: 'bunker' }] },
+    { k: 'fueldepot', w: 1, pal: 'colony', gen: 'scFuelDepot', old: ['tanks', {}] },
+    { k: 'ammodepot', w: 1, pal: 'colony', gen: 'scAmmoDepot', old: ['bunker', {}] },
+    { k: 'pen', w: 1, pal: 'choir', gen: 'scPen', anims: 2, old: ['pen', {}] },
+    { k: 'iceblock', w: 4, pal: {}, gen: 'scIceBlock', old: ['iceBlock', {}] },
+    { k: 'coolant', w: 6, pal: COOL, gen: 'scCoolant', anims: 2, old: ['heatStation', {}] },
+    { k: 'pad', w: 1, pal: 'colony', gen: 'scPad', anims: 4, old: ['pad', {}] },
+    { k: 'platform', w: 2, pal: 'colony', gen: 'scPlatform', old: ['platform', {}] },
+  ],
+  cons: [
+    { k: 'relay', w: 1, pal: 'colony', gen: 'scRelay', anims: 2, old: ['relay', {}] },
+    { k: 'thumper', w: 1, pal: 'colony', gen: 'scThumper', anims: 2, old: ['thumper', {}] },
+    { k: 'valve', w: 4, pal: VALVE, gen: 'scValve', old: ['node', { h: 12 }] },
+    { k: 'switch', w: 6, pal: SWITCH, gen: 'scSwitch', old: ['node', { h: 10 }] },
+    { k: 'charge_site', w: 6, pal: CHARGE, gen: 'scChargeSite', anims: 2, old: ['node', { h: 6 }] },
+    { k: 'vent', w: 2, pal: 'native', gen: 'scVent', anims: 2, old: ['vent', {}] },
+    { k: 'crusher', w: 6, pal: 'choir', gen: 'scCrusher', anims: 4, old: ['crusher', {}] },
+  ],
+};
+window.SETS = SETS;
+function ground(x, y, w, h, col) {
+  c.fillStyle = col; c.fillRect(x, y, w, h);
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < w * h / 90; i++) { c.fillStyle = rnd() < .5 ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.06)'; c.fillRect(x + rnd() * w, y + rnd() * h, 2, 2); }
+}
+const cacheKey = (e, kind, w) => kind + JSON.stringify([e.gen, e.k, w, e.opt, OLD]);
+function sheets(e, w) {
+  const p = pal(w, e.pal);
+  const gen = OLD && e.old ? e.old[0] : e.gen, opt = OLD && e.old ? e.old[1] : e.opt;
+  if (!M[gen]) return null;
+  const sh = F.sheet(cacheKey(e, 's', w), () => M[gen](p, opt || {}), 1, OLD ? 1 : (e.anims || 1));
+  let gsh = null, gunZ = 0;
+  if (e.gun) { const gg = M.gun2 || M.gun; gsh = F.sheet(cacheKey(e, 'g', w), () => gg(p, e.gun), 24, 1); gunZ = OLD ? 6 : (e.gunZ || 6); }
+  return { sh, gsh, gunZ };
+}
+function drawEnt(e, w, x, y, sc, gunAng, ai) {
+  const r = sheets(e, w); if (!r) return null;
+  const { sh, gsh, gunZ } = r;
+  const fi = (ai || 0) % sh.anims;
+  c.globalAlpha = .3; c.drawImage(sh.shadows[0], x - sh.ax * sc + 5 * sc, y - sh.ay * sc + 3 * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[fi][0], x - sh.ax * sc, y - sh.ay * sc, sh.w * sc, sh.h * sc);
+  if (gsh) { const di = F.frameIndex(gsh, gunAng || 0); c.drawImage(gsh.frames[0][di], x - gsh.ax * sc, y - gsh.ay * sc - gunZ * sc, gsh.w * sc, gsh.h * sc); }
+  return sh;
+}
+function run() {
+  const list = (SET === 'all' ? Object.values(SETS).flat() : SETS[SET]).filter((e) => M[OLD && e.old ? e.old[0] : e.gen]);
+  const only = qs.get('only'); const L = only ? list.filter((e) => only.split(',').includes(e.k)) : list;
+  const n = L.length, cols = Math.min(n, qs.get('cols') ? +qs.get('cols') : (n > 4 ? Math.ceil(n / 2) : n)), rows = Math.ceil(n / cols);
+  const topH = +(qs.get('top') || 700), cw = 1600 / cols, ch = topH / rows;
+  L.forEach((e, i) => {
+    const cx = (i % cols) * cw, cy = Math.floor(i / cols) * ch;
+    ground(cx, cy, cw, ch, GROUND[e.w]);
+    const { sh } = sheets(e, e.w);
+    const sc = Math.min(qs.get('big') ? +qs.get('big') : 3.2, (cw * 0.9) / sh.w, (ch * 0.9) / sh.h);
+    drawEnt(e, e.w, cx + cw / 2, cy + ch / 2 + (sh.ay - sh.h / 2) * sc, sc, -0.5 + i * 0.7, +(qs.get('frame') || 0));
+    c.fillStyle = '#000a'; c.fillRect(cx, cy, cw, 16); c.fillStyle = '#fff'; c.fillText(e.k + ' (W' + e.w + ') ' + (OLD ? 'OLD' : e.gen) + ' r' + sh.model.r + ' h' + sh.model.h, cx + 4, cy + 12);
+  });
+  const strips = (qs.get('worlds') || '1,2,4,6').split(',').map(Number);
+  const sw = 1600 / strips.length;
+  strips.forEach((w, j) => {
+    ground(j * sw, topH, sw, 1100 - topH, GROUND[w]);
+    c.fillStyle = '#000a'; c.fillRect(j * sw, topH, 60, 16); c.fillStyle = '#fff'; c.fillText('W' + w + ' 1.8x', j * sw + 4, topH + 12);
+    let x = j * sw + 8, y = topH + 20, rowH = 0;
+    L.forEach((e, i) => {
+      const ww0 = typeof e.pal === 'string' ? w : e.w;
+      const r = sheets(e, ww0); if (!r) return; const sh = r.sh;
+      const ww = sh.w * 1.8, hh = sh.h * 1.8;
+      if (x + ww > (j + 1) * sw - 4) { x = j * sw + 8; y += rowH + 2; rowH = 0; }
+      drawEnt(e, ww0, x + sh.ax * 1.8, y + sh.ay * 1.8, 1.8, 0.6 * i, +(qs.get('frame') || 0));
+      x += ww - 8; rowH = Math.max(rowH, hh);
+    });
+  });
+  document.title = 'ready';
+}
+try { run(); } catch (err) { document.title = 'error'; console.error(err && err.stack || err); }
+</script></body></html>
