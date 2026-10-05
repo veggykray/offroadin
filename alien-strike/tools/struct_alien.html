@@ -1,0 +1,86 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Alien structures preview</title>
+<style>body{background:#151417;margin:0;color:#ddd;font:12px monospace}canvas{display:block}</style></head><body>
+<canvas id="c" width="1600" height="1000"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../src/gfx/models_struct_alien.js"></script>
+<script>
+// Preview for package structAlien. ?set=turrets|spires|systems|halls|organic|all  &old=1 renders the old generators.
+const qs = new URLSearchParams(location.search);
+const SET = qs.get('set') || 'turrets', OLD = qs.get('old') === '1';
+const cv = document.getElementById('c'), c = cv.getContext('2d');
+const F = AS.Forge, M = AS.Models, W = AS.Data.worlds;
+const GROUND = { 1: '#a16f42', 2: '#a8442a', 3: '#335e26', 4: '#cbdae6', 5: '#c8b888', 6: '#3a3133', 7: '#625c76', 8: '#5a8a5a', 9: '#50565e', 10: '#bfb39c' };
+const pal = (w, k) => typeof k === 'string' ? W[w - 1][k] : k;
+const ORG = { a: '#5e2440', b: '#b04a74', t: '#f09a3a', g: '#ffcf4a', d: '#2a0e1c' };
+const LANCER = { a: '#2e4a7a', b: '#9cc4ec', t: '#dff4ff', g: '#7ff8ff', d: '#16203a' };
+const RESO = { a: '#3e2f6e', b: '#b6a4ee', t: '#efe6ff', g: '#c890ff', d: '#1c1634' };
+const SETS = {
+  turrets: [
+    { k: 'turret', w: 1, pal: 'choir', gen: 'saTurret', opt: { style: 'needle' }, gun: { kind: 'cannon' }, old: ['turretBase', { style: 'needle' }] },
+    { k: 'turret_heavy', w: 6, pal: 'choir', gen: 'saTurret', opt: { style: 'ancient' }, gun: { kind: 'heavy' }, old: ['turretBase', { style: 'ancient' }] },
+    { k: 'sam', w: 1, pal: 'choir', gen: 'saTurret', opt: { style: 'rack' }, gun: { kind: 'missile' } },
+    { k: 'flak', w: 5, pal: 'choir', gen: 'saTurret', opt: { style: 'flak' }, gun: { kind: 'flak' } },
+    { k: 'aagun', w: 10, pal: 'choir', gen: 'saTurret', opt: { style: 'ancient', size: 1.3 }, gun: { kind: 'flak', size: 1.3 } },
+    { k: 'turret_organic', w: 3, pal: ORG, gen: 'saTurret', opt: { style: 'organic' }, gun: { kind: 'organic' } },
+    { k: 'turret_heavy W10', w: 10, pal: 'choir', gen: 'saTurret', opt: { style: 'ancient' }, gun: { kind: 'heavy' } },
+    { k: 'bunker(colony twin)', w: 2, pal: 'colony', gen: 'turretBase', opt: { style: 'bunker' }, gun: { kind: 'twin' } },
+  ],
+};
+window.SETS = SETS;
+function ground(x, y, w, h, col) {
+  c.fillStyle = col; c.fillRect(x, y, w, h);
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < w * h / 90; i++) { c.fillStyle = rnd() < .5 ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.06)'; c.fillRect(x + rnd() * w, y + rnd() * h, 2, 2); }
+}
+const cacheKey = (e, kind) => kind + JSON.stringify([e.gen, e.k, e.w, e.opt, OLD]);
+function sheets(e) {
+  const p = pal(e.w, e.pal);
+  const gen = OLD && e.old ? e.old[0] : e.gen, opt = OLD && e.old ? e.old[1] : e.opt;
+  const sh = F.sheet(cacheKey(e, 's'), () => M[gen](p, opt || {}), 1, e.anims || 1);
+  let gsh = null, gunZ = 0;
+  if (e.gun) { gsh = F.sheet(cacheKey(e, 'g'), () => (OLD ? M.gun : M.gun2)(p, e.gun), 24, 1); gunZ = e.gunZ || sh.model.gunZ || 6; }
+  return { sh, gsh, gunZ };
+}
+function drawEnt(e, x, y, sc, gunAng, ai) {
+  const { sh, gsh, gunZ } = sheets(e);
+  const fi = (ai || 0) % sh.anims;
+  c.globalAlpha = .32; c.drawImage(sh.shadows[0], x - sh.ax * sc + 6 * sc, y - sh.ay * sc + 4 * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[fi][0], x - sh.ax * sc, y - sh.ay * sc, sh.w * sc, sh.h * sc);
+  if (gsh) { const di = F.frameIndex(gsh, gunAng || 0); c.drawImage(gsh.frames[0][di], x - gsh.ax * sc, y - gsh.ay * sc - gunZ * sc, gsh.w * sc, gsh.h * sc); }
+  return sh;
+}
+function run() {
+  const list = SET === 'all' ? Object.values(SETS).flat() : SETS[SET];
+  const n = list.length, cols = Math.min(n, qs.get('cols') ? +qs.get('cols') : (n > 6 ? Math.ceil(n / 2) : n)), rows = Math.ceil(n / cols);
+  const topH = 640, cw = 1600 / cols, ch = topH / rows;
+  list.forEach((e, i) => {
+    const cx = (i % cols) * cw, cy = Math.floor(i / cols) * ch;
+    ground(cx, cy, cw, ch, GROUND[e.w]);
+    const { sh } = sheets(e);
+    const sc = Math.min(qs.get('big') ? +qs.get('big') : 3.2, (cw * 0.86) / sh.w, (ch * 0.86) / sh.h);
+    drawEnt(e, cx + cw / 2, cy + ch / 2 + (sh.ay - sh.h / 2) * sc, sc, -0.5 + i * 0.7, +(qs.get('frame') || 0));
+    c.fillStyle = '#000a'; c.fillRect(cx, cy, cw, 16); c.fillStyle = '#fff'; c.fillText(e.k + ' (W' + e.w + ') ' + (OLD ? 'OLD' : (e.gen + ' ' + JSON.stringify(e.opt || {}))), cx + 4, cy + 12);
+  });
+  // game-scale strip: each entry at 1.8x on several grounds
+  const strips = [1, 3, 4, 6, 10];
+  const sw = 1600 / strips.length;
+  strips.forEach((w, j) => {
+    ground(j * sw, topH, sw, 1000 - topH, GROUND[w]);
+    c.fillStyle = '#000a'; c.fillRect(j * sw, topH, 60, 16); c.fillStyle = '#fff'; c.fillText('W' + w + ' 1.8x', j * sw + 4, topH + 12);
+    list.forEach((e, i) => {
+      const per = Math.ceil(list.length / 2);
+      const col = i % per, row = Math.floor(i / per);
+      const e2 = Object.assign({}, e, { w: typeof e.pal === 'string' ? w : e.w });
+      drawEnt(e2, j * sw + 30 + col * ((sw - 40) / per) + 10, topH + 120 + row * 180, 1.8, 0.6 * i, 0);
+    });
+  });
+  document.title = 'ready';
+}
+try { run(); } catch (err) { document.title = 'error'; console.error(err && err.stack || err); }
+</script></body></html>

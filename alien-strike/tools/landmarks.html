@@ -1,0 +1,123 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Landmarks preview</title>
+<style>body{background:#15130f;margin:0;color:#ddd;font:13px monospace}canvas{display:block}</style></head><body>
+<canvas id="c" width="1600" height="400"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../src/gfx/models_landmarks.js"></script>
+<script>
+/* Landmark preview: each row = one model on its world's ground colour, a large view
+ * (scale `big`) plus game-scale (1.8 px/unit) renders at several headings.
+ * ?set=crashColony,skeletonBeast  limits the rows; ?big=2.4 changes the large scale. */
+const COLONY = { a: '#7d8288', b: '#b9bec4', t: '#d08a2a', g: '#7fe8ff', d: '#33363a' };
+const CHOIR = { a: '#a59e8c', b: '#d8d0bc', t: '#5a4f7a', g: '#b07cff', d: '#34303e' };
+const BONE = { a: '#a89c80', b: '#d8ccb0', t: '#8a7a60', g: '#ffe0a0', d: '#4a4234' };
+const NAT = {
+  3: { a: '#3a5a2a', b: '#6a9a3a', t: '#c8e07a', g: '#e0ff6a', d: '#16240e' },
+  4: { a: '#6a8aa8', b: '#bfe4ff', t: '#e0f4ff', g: '#7ff', d: '#2a3a52' },
+  7: { a: '#6a5a8a', b: '#a090c0', t: '#c0306a', g: '#7fffd0', d: '#2a2040' },
+  8: { a: '#3a4a7a', b: '#6a8ac0', t: '#c0d8ff', g: '#9ff', d: '#1a2240' },
+  10: { a: '#5a2a3a', b: '#8a4a5a', t: '#e0b0c0', g: '#c09aff', d: '#2a1018' },
+};
+const CHOIR6 = { a: '#5a4e48', b: '#8a7a6e', t: '#ff7a2a', g: '#ff9a3a', d: '#1a1412' };
+const CHOIR10 = { a: '#b8ae9a', b: '#e6dcc6', t: '#5a4f7a', g: '#c09aff', d: '#3a3446' };
+const CHOIR9 = { a: '#6a6458', b: '#a89c84', t: '#ff6a3a', g: '#ff6a3a', d: '#2a2620' };
+const COL2 = { a: '#8a7a6a', b: '#c4b49a', t: '#e8a02a', g: '#ffd36b', d: '#3a322a' };
+const COL4 = { a: '#8a8a92', b: '#c8c8d2', t: '#e8742a', g: '#ffb26a', d: '#3a3a42' };
+const GROUND = { 1: '#a16f42', 2: '#a8442a', 3: '#335e26', 4: '#cbdae6', 5: '#2a8484', 6: '#3a3133', 7: '#4e4860', 8: '#5a8a5a', 9: '#3e434a', 10: '#a69a86' };
+const CAT = [
+  { k: 'crashColony', gen: 'crashShip', pal: COLONY, opt: { variant: 'colony' }, w: 1 },
+  { k: 'crashChoir', gen: 'crashShip', pal: CHOIR, opt: { variant: 'choir' }, w: 4 },
+  { k: 'crashFrigate', gen: 'crashShip', pal: { a: '#5a6470', b: '#9aa6b4', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' }, opt: { variant: 'colony' }, w: 8 },
+  { k: 'skeletonBeast', gen: 'skeleton', pal: BONE, opt: { kind: 'beast' }, w: 1 },
+  { k: 'skeletonWorm', gen: 'skeleton', pal: BONE, opt: { kind: 'worm' }, w: 2 },
+  { k: 'skeletonBeast4', gen: 'skeleton', pal: BONE, opt: { kind: 'beast' }, w: 4 },
+  { k: 'colonyRuins', gen: 'colonyRuins', pal: COLONY, opt: { seed: 5 }, w: 1 },
+  { k: 'colonyRuins2', gen: 'colonyRuins', pal: COL2, opt: { seed: 22 }, w: 2 },
+  { k: 'colonyRuins3', gen: 'colonyRuins', pal: COLONY, opt: { seed: 39 }, w: 3 },
+  { k: 'monoliths', gen: 'monolith', pal: CHOIR, multi: [{ h: 50, seed: 3 }, { h: 38, broken: true, seed: 14 }, { h: 44, lean: 0.12, seed: 25 }, { h: 58, seed: 36 }, { h: 34, broken: true, lean: -0.1, seed: 47 }], w: 1 },
+  { k: 'monoliths6', gen: 'monolith', pal: CHOIR6, multi: [{ h: 50, seed: 3 }, { h: 38, broken: true, seed: 14 }, { h: 44, lean: 0.12, seed: 25 }], w: 6 },
+  { k: 'monoliths10', gen: 'monolith', pal: CHOIR10, multi: [{ h: 50, seed: 3 }, { h: 38, broken: true, seed: 14 }, { h: 44, lean: 0.12, seed: 25 }], w: 10 },
+  { k: 'choirTower', gen: 'choirTower', pal: CHOIR10, opt: {}, w: 10 },
+  { k: 'choirTower6', gen: 'choirTower', pal: CHOIR6, opt: {}, w: 6 },
+  { k: 'choirTower8', gen: 'choirTower', pal: CHOIR, opt: {}, w: 8 },
+  { k: 'industrialStacks', gen: 'industrialStacks', pal: COLONY, opt: {}, w: 6 },
+  { k: 'industrialStacks2', gen: 'industrialStacks', pal: COL2, opt: {}, w: 2 },
+  { k: 'industrialStacks9', gen: 'industrialStacks', pal: COLONY, opt: {}, w: 9 },
+  { k: 'crystal3', gen: 'crystalCluster', pal: NAT[3], opt: {}, w: 3 },
+  { k: 'crystal4', gen: 'crystalCluster', pal: NAT[4], opt: {}, w: 4 },
+  { k: 'crystal7', gen: 'crystalCluster', pal: NAT[7], opt: {}, w: 7 },
+  { k: 'crystal10', gen: 'crystalCluster', pal: NAT[10], opt: {}, w: 10 },
+  { k: 'crystal8', gen: 'crystalCluster', pal: NAT[8], opt: {}, w: 8 },
+  { k: 'shrooms7', gen: 'giantShrooms', pal: NAT[7], opt: {}, w: 7 },
+  { k: 'shrooms3', gen: 'giantShrooms', pal: NAT[3], opt: {}, w: 3 },
+  { k: 'gear9', gen: 'giantGear', pal: COLONY, opt: {}, w: 9 },
+  { k: 'gear6', gen: 'giantGear', pal: COLONY, opt: {}, w: 6 },
+  { k: 'hulks', gen: 'convoyHulk', pal: COLONY, multi: [{ seed: 5 }, { seed: 22 }, { seed: 39 }, { seed: 56 }], w: 2 },
+  { k: 'hulks1', gen: 'convoyHulk', pal: COLONY, multi: [{ seed: 5 }, { seed: 22 }], w: 1 },
+  { k: 'drowned', gen: 'drownedTower', pal: COLONY, multi: [{ seed: 5 }, { seed: 22, helipad: true }, { seed: 39 }, { seed: 56, helipad: true }], w: 5 },
+];
+const q = new URLSearchParams(location.search);
+const only = q.get('set') ? q.get('set').split(',') : null;
+const BIG = +(q.get('big') || 2.4), SMALL = 1.8;
+const rows = CAT.filter((e) => !only || only.includes(e.k) || only.includes(e.gen));
+const F = AS.Forge, M = AS.Models;
+const errors = [];
+function render(e, opt, ang) {
+  if (!M[e.gen]) return null;
+  try { const m = M[e.gen](e.pal, Object.assign({}, opt)); return F.renderModel(m, ang, 0); }
+  catch (err) { errors.push(e.k + ': ' + err.message); console.error(err); return null; }
+}
+// build all renders first so the canvas can be sized
+const built = rows.map((e) => {
+  const opts = e.multi || [e.opt || {}];
+  const bigs = opts.map((o, i) => render(e, o, e.multi ? -0.5 + i * 0.7 : -0.35));
+  const smalls = [];
+  for (const o of opts.slice(0, e.multi ? opts.length : 1)) for (const a of (e.multi ? [0.6] : [0, 2.1, 4.2])) smalls.push(render(e, o, a));
+  return { e, bigs, smalls };
+});
+const W = 1600;
+let H = 0;
+const layout = built.map((b) => {
+  const bw = b.bigs.reduce((s, f) => s + (f ? f.w * BIG + 10 : 0), 0);
+  const bh = Math.max(60, ...b.bigs.map((f) => (f ? f.h * BIG : 0)));
+  const sh = Math.max(40, ...b.smalls.map((f) => (f ? f.h * SMALL : 0)));
+  const sw = b.smalls.reduce((s, f) => s + (f ? f.w * SMALL + 10 : 0), 0);
+  const side = bw + sw + 40 <= W;
+  const h = side ? Math.max(bh, sh) + 30 : bh + sh + 40;
+  const L = { y: H, h, side, bw, bh, sh };
+  H += h;
+  return L;
+});
+const cv = document.getElementById('c');
+cv.width = W; cv.height = Math.max(100, H);
+const c = cv.getContext('2d');
+function ground(x, y, w, h, col) {
+  c.fillStyle = col; c.fillRect(x, y, w, h);
+  const r = new AS.U.RNG(7);
+  for (let i = 0; i < w * h / 260; i++) { c.fillStyle = r.next() < 0.5 ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.06)'; c.fillRect(x + r.next() * w, y + r.next() * h, 2, 2); }
+}
+function put(f, x, y, sc, hgt) {
+  // x,y = ground anchor on screen; engine-style soft shadow offset
+  const off = 3 + (hgt || 20) * 0.16;
+  const sil = F.silhouette(f.img, 3);
+  c.globalAlpha = 0.32; c.drawImage(sil, x - f.ax * sc + off * sc, y - f.ay * sc + off * 0.55 * sc, f.w * sc, f.h * sc); c.globalAlpha = 1;
+  c.drawImage(f.img, x - f.ax * sc, y - f.ay * sc, f.w * sc, f.h * sc);
+}
+built.forEach((b, i) => {
+  const L = layout[i];
+  ground(0, L.y, W, L.h, GROUND[b.e.w] || '#777');
+  let x = 10;
+  const yb = L.y + 18;
+  b.bigs.forEach((f, j) => { if (!f) return; put(f, x + f.ax * BIG, yb + f.ay * BIG, BIG, f.h - f.ay); x += f.w * BIG + 10; });
+  let sx = L.side ? x + 20 : 10, sy = L.side ? yb : yb + L.bh + 12;
+  b.smalls.forEach((f) => { if (!f) return; put(f, sx + f.ax * SMALL, sy + f.ay * SMALL, SMALL, f.h - f.ay); sx += f.w * SMALL + 10; });
+  c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, L.y, 330, 16);
+  c.fillStyle = '#fff'; c.fillText(b.e.k + ' (' + b.e.gen + ') W' + b.e.w + (M[b.e.gen] ? '' : '  [missing]'), 4, L.y + 12);
+});
+window.__errors = errors;
+window.__done = true;
+</script></body></html>
