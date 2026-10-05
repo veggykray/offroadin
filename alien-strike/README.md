@@ -31,27 +31,29 @@ Handy URL parameters for development:
 
 ## Controls
 
+The default scheme is **twin-stick**: you move with the keys and aim with the
+mouse, independently. The craft turns its nose toward your aim and banks into
+every manoeuvre, so you can strafe sideways or back away while firing.
+
 | Input | Action |
 |---|---|
-| **W / S** | Thrust forward / reverse |
-| **A / D** | Rotate the craft (Tactical mode, the default) or strafe (Assault mode) |
-| **Q / F** | Strafe left / right (always) |
-| **Mouse** | Aim the weapon pods (Tactical) or steer the nose (Assault) |
+| **W / A / S / D** | Move up / left / down / right on screen |
+| **Mouse** | Aim. The craft faces the cursor |
 | **Left mouse** | Primary weapon |
-| **Right mouse** | Secondary weapon. Hold over a target to lock missiles |
+| **Right mouse** | Secondary weapon. Hold over a target to paint missile locks |
 | **Space** | Special weapon |
 | **Shift** | Boost (burns extra fuel) |
-| **E** | Interact: winch survivors / cargo, open bunkers, scan, use consoles |
+| **E (hold)** | Retrieval beam: lift survivors and cargo; also opens bunkers, scans and runs consoles |
 | **R** | Use a repair kit |
 | **M** | Tactical map |
-| **Tab** | Objectives and mission details |
-| **C** | Toggle Tactical / Assault control mode |
+| **Tab** | Tap to pin the objective list open, hold to peek |
+| **C** | Cycle control scheme: Twin-stick, Assault (nose follows the mouse, W/S thrust) or Classic (A/D rotate, Q/F strafe) |
 | **Esc / P** | Pause |
 
-Gamepads work too: left stick flies, right stick aims, RT and LT fire primary and
-secondary, RB fires the special, A interacts, LB boosts, Y repairs, X shows
-objectives, Back opens the map and Start pauses. Every key can be rebound under
-**Options → Controls**.
+Gamepads work too: left stick moves, right stick aims, RT and LT fire primary and
+secondary, RB fires the special, hold A for the beam, LB boosts, Y repairs, X
+shows objectives, Back opens the map and Start pauses. Every key can be rebound
+under **Options → Controls**.
 
 ## Playing
 
@@ -62,9 +64,16 @@ objectives, Back opens the map and Start pauses. Every key can be rebound under
   friendly pads repair, refuel and rearm you.
 * **Fuel:** the ship's AI warns you at 50%, 25% and 10%. At zero you get a short emergency
   reserve with sluggish handling, so you can still glide to a pad or a fuel can.
-* **Rescue:** hover low over survivors and hold **E** to winch them aboard. The
-  passenger bay has a fixed number of seats, so ferry people to the landing zone
-  or to a friendly pad. Cargo works the same way.
+* **Retrieval beam:** hover over a survivor (or a piece of cargo) and **hold E**.
+  The beam locks on over about two seconds: small drift is fine, but flying fast
+  or wobbling makes it unstable and slows the lock, and leaving the beam radius
+  breaks it (progress decays, it doesn't reset straight away). Survivors notice
+  you, wave, gather under the emitter and rise up the beam. The passenger bay has
+  a fixed number of seats, so ferry people to the landing zone or a friendly pad.
+* **HUD:** hull, shield and fuel sit as three slim bars top-left; weapons, ammo and
+  counters (seats, cargo, kits) bottom-right; the current objective is one line
+  top-right (**Tab** expands it). Missile locks are drawn on the targets
+  themselves, and short tips appear the first few times you need a control.
 * **Objectives:** primaries must be completed. Secondaries pay extra salvage, and
   hidden objectives turn up through exploration. Objectives affect each other:
   destroying a comm relay stops enemy reinforcements, knocking out a power plant
@@ -117,10 +126,21 @@ tools/                test suite, voice generator, art and terrain galleries, pr
 ```
 
 All art is generated at load time by the **Sprite Forge** (`src/gfx/forge.js`).
-Models are stacks of shaded slices that are rendered at every rotation into
-sprite sheets, then put through a pixel pass (outline, rim light, ordered dither).
-`tools/gallery.html` shows every model and `tools/terrain.html` previews every
-world's terrain.
+Models (`src/gfx/models*.js`) are stacks of shaded slices rendered at every
+rotation into supersampled sprite sheets, lit from a single top-left key light,
+then given a rim light and an outline whose weight depends on the object's role
+(hero, unit, prop, decor). `tools/ART_GUIDE.md` describes the model format and
+the art direction, `tools/gallery.html` shows every model and
+`tools/terrain.html` previews every world's terrain.
+
+The world is built in layers: terraced terrain with lit cliff faces, cast shadows
+and ambient occlusion (`src/gfx/terrain.js`); clustered rock formations and
+vegetation; ground decals for craters, scorch, crash trenches, plazas, roads and
+building foundations (`src/gfx/decals.js`); large landmark set pieces placed per
+world and per mission (`src/game/landmarks.js`, `data/landmarks.js`); and an
+atmosphere pass with drifting cloud shadows, a key-light glow and distance haze
+(`src/gfx/atmosphere.js`). Explosions, weapon fire and the retrieval beam light
+the ground around them.
 
 ## Audio hooks
 
@@ -166,15 +186,19 @@ with:
 ## Testing
 
 `tools/test_game.mjs` is an end-to-end Playwright suite. It covers a new campaign,
-movement, shooting, enemy AI, objectives, pickups, fuel and ammo depletion, damage,
-rescue, extraction, success and failure, the hangar, buying and applying upgrades,
-save/load, moving between missions and loading every one of the 30 missions. It
-also checks for console errors and failed requests throughout.
+twin-stick movement, strafing and aiming, shooting (primary, missiles, special),
+enemy AI, damage, shields, pickups, fuel and ammo depletion, survivor detection,
+the retrieval beam (lock, interruption, partial progress, multiple retrievals,
+seat capacity, cargo), consoles, the objective panel, rescue and delivery,
+extraction, success and failure, the hangar, buying and applying upgrades,
+save/load, moving between missions and loading, playing and extracting every one
+of the 30 missions. It fails on any console error or failed request.
 
 ```bash
 cd alien-strike
-python3 -m http.server 8765 --bind 127.0.0.1 &
+python3 -m http.server 8766 --bind 127.0.0.1 &
 node tools/test_game.mjs            # optional: SHOTS=/some/dir for screenshots
+node tools/sweep.mjs                # quick load-and-fly pass over every mission
 ```
 
 ## Credits

@@ -133,10 +133,14 @@
         const px = (gx + U.hash2(gx, gy, sd + 4)) * cell, py = (gy + U.hash2(gx, gy, sd + 5)) * cell;
         const r = 40 + U.hash2(gx, gy, sd + 6) * 110;
         const dx = x - px, dy = y - py, d = Math.sqrt(dx * dx + dy * dy) / r;
-        if (d < 1.25) {
-          // inner bowl shading: lit on the far (south-east) inner wall
-          if (d < 1) v += ((dx + dy) / (r * 1.41)) * 0.9 * (1 - d * d) - 0.25 * (1 - d);
-          else v += (1.25 - d) * 1.4; // rim
+        if (d < 1.7) {
+          const side = (dx + dy) / (r * 1.41 * Math.max(d, 0.001)); // +1 on the far (south-east) side
+          // inner bowl: the south-east inner wall faces the light, the north-west one is shaded
+          if (d < 1) v += ((dx + dy) / (r * 1.41)) * 1.15 * (1 - d * d) - 0.3 * (1 - d);
+          // raised rim: its outer slope is lit on the north-west side
+          else if (d < 1.16) v += ((1.16 - d) / 0.16) * 0.42 * (0.55 - 0.45 * side);
+          // pale ejecta blanket
+          else v += ((1.7 - d) / 0.54) * 0.09;
         }
       }
       return v;
@@ -468,10 +472,28 @@
         }
         case 'jungle': {
           if (l < 0) { this.water(x, y, h, out); break; }
-          if (ex > 0.08) {
-            const t = U.clamp((ex - 0.08) * 6, 0, 1);
-            const cc = lit > 0.2 ? col.canopy.h : lit < -0.3 ? col.canopy.d : col.canopy.c;
-            out[0] = U.lerp(out[0], cc[0], t); out[1] = U.lerp(out[1], cc[1], t); out[2] = U.lerp(out[2], cc[2], t);
+          if (ex > 0.02) {
+            // dense canopy of individual tree crowns seen from above: each crown is
+            // a rounded dome lit from the top-left, with dark gaps between crowns
+            const t = U.clamp((ex - 0.02) * 5, 0, 1);
+            const CELL = 24, gx = Math.floor(x / CELL), gy = Math.floor(y / CELL), sd = this.seed;
+            let best = 1e9, bx = 0, by = 0, br = 1, bh = 0;
+            for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
+              const cx = gx + i, cy = gy + j, hh = U.hash2(cx, cy, sd + 71);
+              const px = (cx + 0.15 + U.hash2(cx, cy, sd + 72) * 0.7) * CELL, py = (cy + 0.15 + U.hash2(cx, cy, sd + 73) * 0.7) * CELL;
+              const r = CELL * (0.55 + hh * 0.4), dd = Math.hypot(x - px, y - py) / r;
+              if (dd < best) { best = dd; bx = px; by = py; br = r; bh = hh; }
+            }
+            const cn = col.canopy;
+            let r0, g0, b0;
+            if (best < 1) {
+              const tone = bh;
+              r0 = U.lerp(cn.c[0], cn.h[0], tone * 0.6); g0 = U.lerp(cn.c[1], cn.h[1], tone * 0.6); b0 = U.lerp(cn.c[2], cn.h[2], tone * 0.6);
+              const litK = ((bx - x) + (by - y)) / (br * 1.41) * 0.32 - best * best * 0.3 + 0.08;
+              const leaf = U.hash2((x * 1.3) | 0, (y * 1.3) | 0, sd + 74) * 0.08 - 0.04;
+              r0 *= 1 + litK + leaf; g0 *= 1 + litK + leaf; b0 *= 1 + litK * 0.8 + leaf;
+            } else { r0 = cn.d[0]; g0 = cn.d[1]; b0 = cn.d[2]; }
+            out[0] = U.lerp(out[0], r0, t); out[1] = U.lerp(out[1], g0, t); out[2] = U.lerp(out[2], b0, t);
           }
           break;
         }
@@ -481,7 +503,14 @@
             const d = U.clamp((this.sea - h) * 5, 0, 1);
             out[0] = U.lerp(w.shallow[0], w.deep[0], d); out[1] = U.lerp(w.shallow[1], w.deep[1], d); out[2] = U.lerp(w.shallow[2], w.deep[2], d);
             if (ex > 0.92) { out[0] = w.foam[0]; out[1] = w.foam[1]; out[2] = w.foam[2]; }
-            else if (U.hash2(x >> 2, y >> 2, 5) > 0.97) { out[0] += 20; out[1] += 24; out[2] += 26; }
+            else {
+              // sea ice: pale wind-polished plates, frost drifts and dark pressure cracks
+              const drift = U.clamp(U.noise2(x / 140, y / 110, this.seed + 41) * 1.4, 0, 1) * 0.35 + 0.12;
+              out[0] = U.lerp(out[0], w.foam[0], drift); out[1] = U.lerp(out[1], w.foam[1], drift); out[2] = U.lerp(out[2], w.foam[2], drift);
+              const ck = U.ridged(x / 110, y / 110, 2, this.seed + 40);
+              if (ck > 0.955) { const k = (ck - 0.955) * 14; out[0] *= 1 - k * 0.45; out[1] *= 1 - k * 0.35; out[2] *= 1 - k * 0.25; }
+              else if (ck > 0.93) { out[0] += 10; out[1] += 12; out[2] += 12; }
+            }
           } else if (ex > 0.95 && l < 2) { out[0] *= 0.7; out[1] *= 0.8; out[2] *= 0.9; }
           break;
         }
@@ -501,12 +530,18 @@
             else cc = L2.crust;
             if (U.ridged(x / 18, y / 18, 1, this.seed + 56) > 0.9 && k > 0.3) cc = C.mix(cc, [40, 16, 10], 0.7);
             out[0] = cc[0]; out[1] = cc[1]; out[2] = cc[2];
-          } else if (m > 0.7) { out[0] = U.lerp(out[0], 90, 0.4); out[1] = U.lerp(out[1], 84, 0.4); out[2] = U.lerp(out[2], 82, 0.4); }
+          } else {
+            if (m > 0.7) { out[0] = U.lerp(out[0], 90, 0.4); out[1] = U.lerp(out[1], 84, 0.4); out[2] = U.lerp(out[2], 82, 0.4); }
+            // heat glow on the ground beside the lava
+            if (s < T.lava.width * 2.4) { const k = U.clamp(1 - (s - T.lava.width) / (T.lava.width * 1.4), 0, 1); const w2 = k * k * 0.55; out[0] += 150 * w2; out[1] += 46 * w2; out[2] += 8 * w2; }
+          }
           break;
         }
         case 'moon': {
           const k = U.clamp(ex, -0.6, 0.6);
-          out[0] *= 1 + k * 0.5; out[1] *= 1 + k * 0.5; out[2] *= 1 + k * 0.45;
+          out[0] *= 1 + k * 0.62; out[1] *= 1 + k * 0.62; out[2] *= 1 + k * 0.55;
+          // sunlit crater walls and rims pick up the pale lip colour
+          if (k > 0.12) { const t = (k - 0.12) * 0.9; out[0] = U.lerp(out[0], col.lip[0], t); out[1] = U.lerp(out[1], col.lip[1], t); out[2] = U.lerp(out[2], col.lip[2], t); }
           const fz = (m - 0.55) * 0.9;
           if (fz > 0.12 && l >= 0) {
             const fc = fz > 0.25 ? col.fungus.b : col.fungus.a;
@@ -585,6 +620,12 @@
           out[0] = U.lerp(out[0], w.ruins[0], inner * (1 - d * 0.4)); out[1] = U.lerp(out[1], w.ruins[1], inner * (1 - d * 0.4)); out[2] = U.lerp(out[2], w.ruins[2], inner * (1 - d * 0.4));
         }
       }
+      // wind-driven wave crests and broad sky reflections
+      const wv = Math.sin((x * 0.6 + y * 0.8) / 6.5 + U.noise2(x / 110, y / 110, this.seed + 23) * 7);
+      const crest = wv > 0.8 ? (wv - 0.8) * 5 : wv < -0.85 ? (wv + 0.85) * 3 : 0;
+      const broad = U.noise2(x / 320, y / 260, this.seed + 24) * 0.07;
+      const k = 1 + broad + crest * 0.11 * (1 - d * 0.4);
+      out[0] *= k; out[1] *= k; out[2] *= k;
       if (U.hash2(x >> 1, y, this.seed + 22) > 0.993) { out[0] += 40; out[1] += 50; out[2] += 50; }
     }
 

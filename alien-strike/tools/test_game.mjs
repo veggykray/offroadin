@@ -1,12 +1,14 @@
 // ALIEN STRIKE — end-to-end browser test suite (Playwright + Chromium).
-// Usage: node tools/test_game.mjs [baseUrl]   (default: http://127.0.0.1:8765/)
+// Usage: node tools/test_game.mjs [baseUrl]   (default: http://127.0.0.1:8766/)
 // Covers: new campaign, movement, shooting, enemy AI, objectives, pickups, fuel
-// depletion, ammo depletion, damage, rescue, extraction, success, failure, hangar,
+// depletion, ammo depletion, damage, twin-stick flight (move, strafe, aim), the
+// retrieval beam (lock, interruption, multiple retrievals, seat capacity, cargo),
+// compact HUD objectives, rescue, extraction, success, failure, hangar,
 // buying + applying upgrades, save/load, moving between missions, every mission
 // loading, and console/network errors throughout.
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 
-const BASE = process.argv[2] || 'http://127.0.0.1:8765/';
+const BASE = process.argv[2] || 'http://127.0.0.1:8766/';
 const SHOTS = process.env.SHOTS || '';
 const results = []; const errors = [];
 const ok = (name, cond, info) => { results.push({ name, pass: !!cond, info }); console.log((cond ? 'PASS ' : 'FAIL ') + name + (info !== undefined ? '  ' + JSON.stringify(info) : '')); };
@@ -19,6 +21,7 @@ page.on('pageerror', (e) => errors.push('pageerror: ' + e.message + ' ' + (e.sta
 page.on('requestfailed', (r) => errors.push('requestfailed: ' + r.url()));
 page.on('response', (r) => { if (r.status() >= 400) errors.push('http ' + r.status() + ': ' + r.url()); });
 const ev = (fn, arg) => page.evaluate(fn, arg);
+const AS_wrap = (a) => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
 const wait = (ms) => page.waitForTimeout(ms);
 const shot = async (n) => { if (SHOTS) await page.screenshot({ path: SHOTS + '_' + n + '.png' }); };
 const waitFor = async (fn, ms, arg) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await ev(fn, arg)) return true; await wait(100); } return false; };
@@ -60,19 +63,34 @@ await wait(1500);
 await shot('ingame');
 ok('profile created', await ev(() => !!localStorage.getItem('alienstrike.profile.v1')));
 
-// ---------------------------------------------------------------- movement & fuel burn
+// ---------------------------------------------------------------- twin-stick flight & fuel burn
 let s0 = await ev(() => AS.Debug.state());
 await ev(() => AS.Debug.god(true));
+ok('twin-stick is the default control mode', await ev(() => AS.Settings.controlMode === 'twinstick'));
 await page.keyboard.down('KeyW'); await wait(1200); await page.keyboard.up('KeyW');
 let s1 = await ev(() => AS.Debug.state());
-ok('player moves forward', Math.hypot(s1.x - s0.x, s1.y - s0.y) > 100, { from: [s0.x, s0.y], to: [s1.x, s1.y] });
+ok('W moves the craft up the screen', s1.y - s0.y < -100, { from: [s0.x, s0.y], to: [s1.x, s1.y] });
 ok('fuel burns while flying', s1.fuel < s0.fuel, { before: s0.fuel, after: s1.fuel });
-await page.keyboard.down('KeyD'); await wait(500); await page.keyboard.up('KeyD');
-ok('player rotates', await ev(() => Math.abs(AS.game.player.angle + Math.PI / 2) > 0.3));
+const baseSp = await ev(() => AS.game.player.speed);
+await wait(1200);
+// aim to the right of the craft: the body turns to face the cursor
+const right = await ev(() => { const p = AS.game.player; return AS.Renderer.worldToScreen(p.x + 300, p.y - p.z, AS.game.camera); });
+const cssK = await ev(() => AS.Renderer.canvas.width / AS.Renderer.canvas.getBoundingClientRect().width);
+await page.mouse.move(right.x / cssK, right.y / cssK); await wait(700);
+ok('craft faces the mouse aim', await ev(() => Math.abs(AS.U.wrapAngle(AS.game.player.angle - AS.game.player.aimAngle)) < 0.35), await ev(() => ({ angle: AS.game.player.angle, aim: AS.game.player.aimAngle })));
+// strafe: move down the screen while the nose keeps pointing right
+const st0 = await ev(() => AS.Debug.state());
+await page.keyboard.down('KeyS'); await wait(900); await page.keyboard.up('KeyS');
+const st1 = await ev(() => AS.Debug.state());
+ok('S strafes down while aiming right', st1.y - st0.y > 60 && Math.abs(AS_wrap(await ev(() => AS.game.player.angle))) < 0.6, { dy: st1.y - st0.y });
+await page.keyboard.down('KeyD'); await wait(700); await page.keyboard.up('KeyD');
+const st2 = await ev(() => AS.Debug.state());
+ok('D moves right independent of facing', st2.x - st1.x > 50, { dx: st2.x - st1.x });
 await page.keyboard.down('ShiftLeft'); await page.keyboard.down('KeyW'); await wait(900);
 const boostSp = await ev(() => AS.game.player.speed);
 await page.keyboard.up('KeyW'); await page.keyboard.up('ShiftLeft');
-ok('boost exceeds base speed', boostSp > (await ev(() => AS.game.player.s.maxSpeed)), { boostSp });
+ok('boost is faster than normal flight', boostSp > baseSp * 1.15, { boostSp, baseSp });
+ok('craft banks into manoeuvres', await ev(() => typeof AS.game.player.bank === 'number' && typeof AS.game.player.pitch === 'number'));
 
 // ---------------------------------------------------------------- shooting & enemy AI
 await ev(() => { const e = AS.Debug.nearest((u) => u.kind === 'skitter'); AS.Debug.tp(e.x, e.y + 220); });
@@ -134,43 +152,73 @@ await page.mouse.down(); await wait(800); await page.mouse.up();
 ok('primary ammo depletes to zero and stops', (await ev(() => AS.game.player.ammo.primary)) === 0);
 await ev(() => { const p = AS.game.player; p.ammo.primary = p.s.primary.ammoMax; });
 
-// ---------------------------------------------------------------- rescue → drop-off
-const g0 = await ev(() => { const gr = AS.game.groupById('crewA'); AS.Debug.tp(gr.x, gr.y - 30); return gr.remaining; });
-await wait(400);
-await page.keyboard.press('KeyE');
-ok('survivors respond to rescue call', await waitFor(() => AS.game.player.passengers.length > 0, 8000));
-await waitFor(() => AS.game.groupById('crewA').remaining === 0, 8000);
+// ---------------------------------------------------------------- retrieval beam → drop-off
+const holdE = async (cond, ms) => { await page.keyboard.down('KeyE'); const r = await waitFor(cond, ms); await page.keyboard.up('KeyE'); return r; };
+const g0 = await ev(() => { const gr = AS.game.groupById('crewA'); AS.Debug.tp(gr.x, gr.y - 40); return gr.remaining; });
+await wait(500);
+ok('survivors detected', await ev(() => AS.game.groupById('crewA').seen === true));
+ok('beam candidate offered when hovering', await waitFor(() => !!AS.game.player.retrieval.candidate, 3000));
+ok('nothing boards without holding E', await ev(() => AS.game.player.passengers.length === 0));
+// interruption: start a lock, then leave the beam radius
+await page.keyboard.down('KeyE');
+await waitFor(() => AS.game.player.retrieval.active && AS.game.player.retrieval.state === 'lock', 3000);
+await wait(700);
+const midLock = await ev(() => { const r = AS.game.player.retrieval; return r.target ? r.progress.get(r.target) || 0 : 0; });
+await ev(() => { const p = AS.game.player; p.x += 160; });
+await wait(250);
+await page.keyboard.up('KeyE');
+const broke = await ev(() => { const r = AS.game.player.retrieval; let best = 0; for (const v of r.progress.values()) best = Math.max(best, v); return { active: r.active, kept: best }; });
+ok('beam locks progressively', midLock > 0.15 && midLock < 0.95, { midLock });
+ok('leaving the beam radius breaks the lock', !broke.active, broke);
+ok('a broken lock keeps partial progress', broke.kept > 0.05, broke);
+ok('no one boarded from the broken lock', await ev(() => AS.game.player.passengers.length === 0));
+// full retrieval of the whole group (one beam per survivor)
+await ev(() => { const gr = AS.game.groupById('crewA'); AS.Debug.tp(gr.x, gr.y - 40); });
+await wait(500);
+ok('first survivor retrieved by holding E', await holdE(() => AS.game.player.passengers.length >= 1, 6000));
+ok('multiple retrievals board the whole group', await holdE(() => AS.game.groupById('crewA').remaining === 0, 14000), await ev(() => AS.game.player.passengers.length));
 const pas = await ev(() => AS.game.player.passengers.length);
-ok('survivors board the craft', pas === g0, { pas, g0 });
+ok('survivors aboard', pas === g0, { pas, g0 });
+ok('boarded survivors are alive', await ev(() => AS.game.groupById('crewA').people.every((p) => p.alive && p.aboard)));
+// seat capacity: a full bay refuses the beam
+const cap = await ev(() => { const p = AS.game.player, gr = AS.game.groupById('crewB'); const save = p.passengers.slice(); while (p.passengers.length < p.s.rescueCap) p.passengers.push({ group: 'x', type: 'crew' }); window.__savePas = save; AS.Debug.killAll(); AS.Debug.tp(gr.x, gr.y - 40); return p.s.rescueCap; });
+await wait(600);
+await page.keyboard.down('KeyE'); await wait(900); await page.keyboard.up('KeyE');
+ok('full bay blocks the beam', await ev(() => { const p = AS.game.player; return p.passengers.length === p.s.rescueCap && !!p.retrieval.blocked; }), { cap });
+await ev(() => { const p = AS.game.player; p.passengers.length = 0; p.passengers.push(...window.__savePas); });
 await ev(() => { const lz = AS.game.lz; AS.Debug.tp(lz.x, lz.y); });
 ok('survivors delivered at LZ', await waitFor(() => AS.game.player.passengers.length === 0 && AS.game.script.count.deliveredTotal >= 3, 6000));
 ok('rescue objective progresses', await ev(() => AS.game.script.obj('rescue').progress >= 3));
-// cargo
-await ev(() => { const c = AS.game.byId.get('bb'); AS.Debug.tp(c.x, c.y - 10); });
-await wait(300);
-await page.keyboard.down('KeyE'); await wait(1600); await page.keyboard.up('KeyE');
-ok('cargo picked up with tractor beam', await ev(() => AS.game.player.cargo.length === 1));
+// cargo by beam
+await ev(() => { const c = AS.game.byId.get('bb'); AS.Debug.tp(c.x, c.y - 30); });
+await wait(400);
+ok('cargo lifted with the retrieval beam', await holdE(() => AS.game.player.cargo.length === 1, 6000));
 await ev(() => { const lz = AS.game.lz; AS.Debug.tp(lz.x, lz.y); });
 ok('cargo delivered → secondary objective complete', await waitFor(() => AS.game.script.obj('bb').state === 'done', 5000));
 // console interaction (forward pad)
 await ev(() => { const c = AS.game.byId.get('fob_console'); AS.Debug.tp(c.x, c.y + 20); });
 await wait(300);
-await page.keyboard.down('KeyE'); await wait(2900); await page.keyboard.up('KeyE');
+await page.keyboard.down('KeyE'); await waitFor(() => AS.game.script.obj('fob').state === 'done', 6000); await page.keyboard.up('KeyE');
 ok('console interaction activates pad', await ev(() => AS.game.script.obj('fob').state === 'done' && AS.game.byId.get('fob').def.repair === true));
 // trigger chain: engineer reveals bunker
-await ev(() => { const g = AS.game; const gr = g.groupById('crewB'); AS.Debug.killAll(); AS.Debug.tp(gr.x, gr.y - 20); });
-await wait(300); await page.keyboard.press('KeyE');
-ok('engineer rescue triggers bunker unlock', await waitFor(() => AS.game.byId.get('bunker_door').locked === false, 9000));
+await ev(() => { const g = AS.game; const gr = g.groupById('crewB'); AS.Debug.killAll(); AS.Debug.tp(gr.x, gr.y - 40); });
+await wait(500);
+ok('engineer rescue triggers bunker unlock', await holdE(() => AS.game.byId.get('bunker_door').locked === false, 12000));
 // tactical map + objectives overlay
 await page.keyboard.press('KeyM'); await wait(300);
 ok('tactical map opens and pauses', await ev(() => AS.App.overlay === 'map'));
 await shot('tacmap');
 const tPaused = await ev(() => AS.game.time); await wait(300);
 ok('game paused under map', (await ev(() => AS.game.time)) === tPaused);
-await page.keyboard.press('KeyM'); await page.keyboard.press('Tab'); await wait(200);
-ok('objectives overlay opens', await ev(() => AS.App.overlay === 'obj'));
+await page.keyboard.press('KeyM'); await wait(100); await page.keyboard.press('Tab'); await wait(200);
+ok('TAB tap pins the objective panel open', await ev(() => AS.HUD.objExpanded && AS.HUD.objSticky && AS.App.overlay !== 'map'));
 await shot('objectives');
-await page.keyboard.press('Tab');
+await page.keyboard.press('Tab'); await wait(150);
+ok('second TAB tap collapses it', await ev(() => !AS.HUD.objExpanded && !AS.HUD.objSticky));
+await page.keyboard.down('Tab'); await wait(500);
+const held = await ev(() => AS.HUD.objExpanded);
+await page.keyboard.up('Tab'); await wait(150);
+ok('holding TAB peeks at objectives', held && await ev(() => !AS.HUD.objExpanded));
 // pause menu
 await page.keyboard.press('Escape'); await wait(200);
 ok('pause menu', await ev(() => AS.App.state === 'paused' && !!document.querySelector('#pause.show')));
