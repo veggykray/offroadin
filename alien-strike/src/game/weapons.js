@@ -13,9 +13,8 @@
     return { x: x + Math.cos(a) * 9, y: y - p.z - 9 + Math.sin(a) * 9 };
   }
 
-  function muzzle(p, pos, col) {
-    AS.Particles.spawn({ x: pos.x, y: pos.y + 20, z: 20, shape: AS.Particles.GLOW, col, size: 4, size2: 9, life: 0.06, add: true });
-    AS.Renderer.light(pos.x, pos.y, 22, col, 0.6);
+  function muzzle(p, pos, col, k) {
+    AS.FX.muzzle(pos.x, pos.y, 20, p.aimAngle, col, k);
   }
 
   // first target hit along a ray in projected space

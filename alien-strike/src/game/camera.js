@@ -42,6 +42,7 @@
         z += this.zoomPulse * Math.sin(Math.min(1, (1 - k) * 4) * Math.PI / 2) * Math.min(1, k * 3);
       }
       this.zoom = U.damp(this.zoom, z, 4, dt);
+      if (Math.abs(this.zoom - z) < 5e-4) this.zoom = z; // settle exactly so terrain blits stay 1:1
       // shake
       this.trauma = Math.max(0, this.trauma - dt * 1.4);
       const s = this.trauma * this.trauma * 14;

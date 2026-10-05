@@ -80,6 +80,7 @@
         if (!dead && p.life <= 0) {
           if (p.type === 'missile' || p.type === 'swarmlet' || p.splash > 0 || p.prox) this.burst(g, p);
           else if (p.type === 'emp') this.empBurst(g, p);
+          else if (p.team === 'player' && !p.arc) AS.FX.groundHit(p.x, p.y + 12, p.col);
           else AS.FX.impact(p.x, p.y, 0, p.col);
           dead = true;
         }
@@ -266,30 +267,66 @@
           ctx.globalAlpha = 0.3; ctx.fillStyle = '#000';
           ctx.beginPath(); ctx.ellipse(p.gxNow - ox, p.gyNow - oy, p.size + 1, (p.size + 1) * 0.6, 0, 0, TAU); ctx.fill();
           ctx.globalAlpha = 1;
-          ctx.fillStyle = p.col;
-          ctx.beginPath(); ctx.arc(Math.round(p.x - ox), Math.round(p.y - oy), p.size, 0, TAU); ctx.fill();
-          ctx.fillStyle = '#fff'; ctx.fillRect(Math.round(p.x - ox) - 1, Math.round(p.y - oy) - 1, 1, 1);
-          AS.Renderer.light(p.x, p.y, 16, p.col, 0.4);
+          const lx = p.x - ox, ly = p.y - oy, ps = p.size * (1 + Math.sin(p.age * 24) * 0.1);
+          ctx.fillStyle = 'rgba(20,8,10,0.5)'; ctx.beginPath(); ctx.arc(lx, ly, ps + 1.2, 0, TAU); ctx.fill();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.drawImage(AS.Forge.glow(p.col, 64), lx - ps * 3.2, ly - ps * 3.2, ps * 6.4, ps * 6.4);
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(lx, ly, ps, 0, TAU); ctx.fill();
+          ctx.fillStyle = '#fff6ee'; ctx.beginPath(); ctx.arc(lx - ps * 0.25, ly - ps * 0.25, ps * 0.45, 0, TAU); ctx.fill();
+          AS.Renderer.light(p.x, p.y, 18 + p.size * 3, p.col, 0.45);
           continue;
         }
-        const sx = Math.round(p.x - ox);
-        const sy = Math.round((p.arc ? p.y - Math.sin(Math.min(1, p.age / p.T) * Math.PI) * p.arc : p.y) - oy);
+        const sx = p.x - ox;
+        const sy = (p.arc ? p.y - Math.sin(Math.min(1, p.age / p.T) * Math.PI) * p.arc : p.y) - oy;
+        const ang = Math.atan2(p.vy, p.vx), ca = Math.cos(ang), sa = Math.sin(ang);
         if (p.type === 'missile' || p.type === 'swarmlet') {
-          const ang = Math.atan2(p.vy, p.vx);
-          ctx.strokeStyle = '#d8d8d8'; ctx.lineWidth = p.type === 'swarmlet' ? 1.5 : 2;
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - Math.cos(ang) * 6, sy - Math.sin(ang) * 6); ctx.stroke();
-          ctx.fillStyle = p.col; ctx.fillRect(sx - 1, sy - 1, 2, 2);
-          AS.Renderer.light(p.x, p.y, 12, p.col, 0.5);
-        } else {
-          const ang = Math.atan2(p.vy, p.vx);
-          const L = Math.max(3, p.speed * 0.012);
+          // body, nose and a flickering engine flame
+          const L = p.type === 'swarmlet' ? 4.5 : 7, mine = p.team === 'player';
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = p.type === 'swarmlet' ? 2.6 : 3.4;
+          ctx.beginPath(); ctx.moveTo(sx + 0.6, sy + 0.8); ctx.lineTo(sx - ca * L + 0.6, sy - sa * L + 0.8); ctx.stroke();
+          ctx.strokeStyle = mine ? '#e8eef2' : '#c8b8b0'; ctx.lineWidth = p.type === 'swarmlet' ? 1.6 : 2.2;
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - ca * L, sy - sa * L); ctx.stroke();
+          ctx.strokeStyle = mine ? '#5ad8ff' : '#ff4a3a'; ctx.lineWidth = p.type === 'swarmlet' ? 1.6 : 2.2;
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - ca * 1.6, sy - sa * 1.6); ctx.stroke();
+          ctx.lineCap = 'butt';
+          const fl = 0.8 + Math.random() * 0.4, gl = AS.Forge.glow(p.col, 64);
           ctx.globalCompositeOperation = 'lighter';
-          ctx.strokeStyle = p.col; ctx.lineWidth = p.size + 1; ctx.globalAlpha = 0.45;
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - Math.cos(ang) * L * 1.6, sy - Math.sin(ang) * L * 1.6); ctx.stroke();
-          ctx.globalAlpha = 1; ctx.lineWidth = Math.max(1, p.size - 0.5); ctx.strokeStyle = '#ffffff';
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - Math.cos(ang) * L, sy - Math.sin(ang) * L); ctx.stroke();
+          ctx.drawImage(gl, sx - ca * (L + 2) - 5 * fl, sy - sa * (L + 2) - 5 * fl, 10 * fl, 10 * fl);
+          ctx.drawImage(AS.Forge.glow('#ffffff', 64), sx - ca * (L + 1) - 2, sy - sa * (L + 1) - 2, 4, 4);
           ctx.globalCompositeOperation = 'source-over';
-          if (p.size >= 3 || p.dtype === 'energy') AS.Renderer.light(p.x, p.y, 10 + p.size * 3, p.col, 0.35);
+          AS.Renderer.light(p.x - ca * L, p.y - sa * L, 18, p.col, 0.5);
+        } else if (p.team !== 'player') {
+          // hostile fire: hot round plasma with a dark rim so it reads on any ground
+          const r = Math.max(1.6, p.size * 0.95), pulse = 1 + Math.sin(p.age * 30) * 0.12;
+          ctx.fillStyle = 'rgba(20,6,10,0.55)';
+          ctx.beginPath(); ctx.arc(sx, sy, r + 1.3, 0, TAU); ctx.fill();
+          const L = Math.max(4, p.speed * 0.014);
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.strokeStyle = p.col; ctx.globalAlpha = 0.35; ctx.lineWidth = r * 1.6; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - ca * L, sy - sa * L); ctx.stroke();
+          ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+          ctx.drawImage(AS.Forge.glow(p.col, 64), sx - r * 3 * pulse, sy - r * 3 * pulse, r * 6 * pulse, r * 6 * pulse);
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(sx, sy, r, 0, TAU); ctx.fill();
+          ctx.fillStyle = '#fff6ee'; ctx.beginPath(); ctx.arc(sx - r * 0.2, sy - r * 0.2, r * 0.5, 0, TAU); ctx.fill();
+          AS.Renderer.light(p.x, p.y, 10 + p.size * 4, p.col, 0.35);
+        } else {
+          // player fire: a bright tapered energy streak with a glowing head
+          const L = Math.max(5, p.speed * 0.016) * (p.size >= 3 ? 1.2 : 1), w = p.size;
+          ctx.globalCompositeOperation = 'lighter';
+          const gr = ctx.createLinearGradient(sx, sy, sx - ca * L * 1.8, sy - sa * L * 1.8);
+          gr.addColorStop(0, p.col); gr.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.strokeStyle = gr; ctx.lineWidth = w + 1.6; ctx.globalAlpha = 0.7; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - ca * L * 1.8, sy - sa * L * 1.8); ctx.stroke();
+          ctx.globalAlpha = 1; ctx.lineWidth = Math.max(0.9, w - 0.6); ctx.strokeStyle = '#ffffff';
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - ca * L * 0.8, sy - sa * L * 0.8); ctx.stroke();
+          ctx.lineCap = 'butt';
+          const hs = 3 + w * 1.6;
+          ctx.drawImage(AS.Forge.glow(p.col, 64), sx - hs, sy - hs, hs * 2, hs * 2);
+          ctx.globalCompositeOperation = 'source-over';
+          AS.Renderer.light(p.x, p.y, 12 + p.size * 3, p.col, 0.3);
         }
       }
       // beams

@@ -87,6 +87,15 @@
     return cv;
   }
 
+  /* Outline hierarchy (model.style): the hero and units read strongest, props are
+   * lighter, terrain decor carries no outline at all (just its contact shadow). */
+  const STYLE = {
+    hero: { rimStrength: 0.3, outlineDark: 0.2 },
+    unit: {},
+    prop: { soft: false, outlineAlpha: 200, rimStrength: 0.18 },
+    decor: { outline: false, rimStrength: 0.14 },
+  };
+
   /* Illustrated post-processing for supersampled frames: soft top-left rim light,
    * bottom-right under-shade and a two-ring dark outline (crisp inner ring, soft
    * outer ring) that gives every sprite a strong, clean silhouette. */
@@ -129,7 +138,7 @@
         const p = i * 4, q = best * 4;
         out[p] = d[q] * k + 6; out[p + 1] = d[q + 1] * k + 5; out[p + 2] = d[q + 2] * k + 10; out[p + 3] = oa;
       }
-      if (F >= 2) {
+      if (F >= 2 && opts.soft !== false) {
         for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
           const i = y * w + x;
           if (solid[i] || ring[i]) continue;
@@ -224,7 +233,7 @@
       }
     }
     if (opts.noPost !== true) {
-      if (F >= 2) postIllustrated(cv, model.post || {}, F);
+      if (F >= 2) postIllustrated(cv, Object.assign({}, STYLE[model.style] || STYLE.unit, model.post || {}), F);
       else postProcess(cv, model.post || {});
     }
     return { img: cv, ax: ax / F, ay: ay / F, w: w / F, h: h / F };
@@ -242,7 +251,7 @@
     for (let a = 0; a < anims; a++) {
       const row = [];
       for (let d = 0; d < dirs; d++) {
-        const f = renderModel(model, (d / dirs) * U.TAU, anims > 1 ? a / anims : 0, opts);
+        const f = renderModel(model, (d / dirs) * U.TAU + ((opts && opts.angle) || 0), anims > 1 ? a / anims : 0, opts);
         row.push(f.img); ax = f.ax; ay = f.ay; w = f.w; h = f.h;
       }
       frames.push(row);
@@ -319,6 +328,6 @@
     if (F !== Forge.res) { Forge.res = F; clearCache(); }
   }
 
-  const Forge = { res: 2, canvas, postProcess, postIllustrated, renderModel, sheet, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
+  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
   AS.Forge = Forge;
 })(window.AS);

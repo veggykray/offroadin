@@ -473,9 +473,38 @@
 
   /* ---------- terrain decor (baked into terrain chunks) ---------- */
   M.decor = function (kind, p, seed) {
-    p = P(p);
+    const m = decorModel(kind, P(p), seed);
+    m.style = 'decor';
+    return m;
+  };
+  function decorModel(kind, p, seed) {
     switch (kind) {
-      case 'rock': { const R = 3 + U.hash2(seed, 1, 9) * 6; return { r: R + 3, h: R, parts: [{ z0: 0, z1: Math.round(R * 0.8), side: p.a, top: p.b, shape: (c, zt) => S.blob(c, 0, 0, R * (1 - zt * 0.5), seed, 7, 0.35) }] }; }
+      case 'rock': {
+        // medium rock: a main body and a smaller lump leaning on it
+        const R = 4.5 + U.hash2(seed, 1, 9) * 4.5, a = U.hash2(seed, 2, 9) * TAU;
+        return { r: R + 6, h: R * 1.1, parts: [
+          { z0: 0, z1: Math.round(R * 0.85), side: p.a, top: p.b, ao: 0.5, shape: (c, zt) => S.blob(c, 0, 0, R * (1 - zt * 0.45), seed, 7, 0.38), detail: (c) => S.lines(c, p.d || 'rgba(0,0,0,0.4)', 0.45, [-R * 0.3, -R * 0.2, R * 0.1, R * 0.05]) },
+          { z0: 0, z1: Math.round(R * 0.5), side: p.a, top: p.b, ao: 0.5, shape: (c, zt) => S.blob(c, Math.cos(a) * R * 0.9, Math.sin(a) * R * 0.7, R * 0.5 * (1 - zt * 0.4), seed + 5, 6, 0.4) },
+        ] };
+      }
+      case 'formation': {
+        // large outcrop: a tall core flanked by smaller blocks, cracked top faces
+        const R = 11 + U.hash2(seed, 1, 9) * 6;
+        const lumps = [];
+        for (let i = 0; i < 4; i++) { const a = U.hash2(seed, i, 31) * TAU, d = R * (0.55 + U.hash2(seed, i, 32) * 0.35); lumps.push([Math.cos(a) * d, Math.sin(a) * d * 0.8, R * (0.32 + U.hash2(seed, i, 33) * 0.22)]); }
+        const parts = [
+          { z0: 0, z1: Math.round(R * 0.35), side: C.shade(p.a, -0.1), top: p.a, ao: 0.55, shape: (c) => S.blob(c, 0, 0, R * 1.05, seed + 9, 11, 0.32) },
+          { z0: 0, z1: Math.round(R * 1.05), side: p.a, top: p.b, ao: 0.55, shape: (c, zt) => S.blob(c, -R * 0.08, -R * 0.05, R * 0.72 * (1 - zt * 0.42), seed, 9, 0.34),
+            detail: (c) => S.lines(c, p.d || 'rgba(0,0,0,0.45)', 0.55, [-R * 0.35, -R * 0.15, R * 0.05, R * 0.1, R * 0.05, R * 0.1, R * 0.25, -R * 0.2]) },
+        ];
+        for (let i = 0; i < lumps.length; i++) { const L = lumps[i]; parts.push({ z0: 0, z1: Math.round(L[2] * 1.3), side: p.a, top: p.b, ao: 0.5, shape: (c, zt) => S.blob(c, L[0], L[1], L[2] * (1 - zt * 0.4), seed + i * 3, 7, 0.4) }); }
+        return { r: R * 1.7, h: R * 1.15, parts };
+      }
+      case 'pebbles': {
+        const parts = [];
+        for (let i = 0; i < 4; i++) { const a = U.hash2(seed, i, 41) * TAU, d = 1.5 + U.hash2(seed, i, 42) * 4.5, rr = 0.9 + U.hash2(seed, i, 43) * 1.6; parts.push({ z0: 0, z1: Math.max(1, Math.round(rr)), side: p.a, top: p.b, ao: 0.5, bevel: false, shape: (c) => S.blob(c, Math.cos(a) * d, Math.sin(a) * d * 0.8, rr, seed + i, 6, 0.35) }); }
+        return { r: 9, h: 3, parts };
+      }
       case 'boulder': { const R = 9 + U.hash2(seed, 1, 9) * 7; return { r: R + 3, h: R, parts: [{ z0: 0, z1: Math.round(R * 0.9), side: p.a, top: p.b, shape: (c, zt) => S.blob(c, 0, 0, R * Math.sqrt(1 - zt * 0.75), seed, 9, 0.3), detail: (c) => S.lines(c, p.d, 0.7, [-R * 0.3, -R * 0.1, R * 0.2, R * 0.15]) }] }; }
       case 'bones': return { r: 10, h: 4, parts: [{ z0: 0, z1: 2, side: '#a39a86', top: '#e6dcc4', stroke: 1.2, shape: (c) => { for (let i = 0; i < 4; i++) { c.moveTo(-6 + i * 3, -4); c.quadraticCurveTo(-4 + i * 3, 0, -6 + i * 3, 4); } S.seg(c, -8, 0, 6, 0); } }] };
       case 'tuft': return { r: 7, h: 5, parts: [{ z0: 0, z1: 3, side: p.a, top: p.b, shape: (c, zt) => { S.blob(c, 0, 0, 3.3 - zt * 1.2, seed, 6, 0.45); S.blob(c, 2.6, 1.2, 2.3 - zt * 0.8, seed + 1, 5, 0.45); S.blob(c, -2, 1.5, 1.8 - zt * 0.6, seed + 2, 5, 0.45); } }] };
@@ -483,7 +512,7 @@
       case 'scrap': return { r: 8, h: 4, parts: [{ z0: 0, z1: 2, side: '#4a4642', top: '#77716a', shape: (c) => { S.poly(c, [-5, -2, 0, -4, 2, 0, -3, 2]); S.rect(c, 1, 1, 4, 2); } }] };
       case 'shroomlet': return { r: 6, h: 6, parts: [{ z0: 0, z1: 3, side: '#b8b2c6', top: '#ddd8ea', shape: (c) => S.circ(c, 0, 0, 0.9) }, { z0: 3, z1: 5, side: p.a, top: p.b, shape: (c, zt) => S.circ(c, 0, 0, 2.6 - zt) }] };
       case 'panel': return { r: 10, h: 2, parts: [{ z0: 0, z1: 1, side: p.d, top: p.a, shape: (c) => S.rect(c, -7, -5, 14, 10), detail: (c) => S.lines(c, p.g, 0.7, [-5, 0, 5, 0]) }] };
-      default: return M.decor('rock', p, seed);
+      default: return decorModel('rock', p, seed);
     }
   };
 })(window.AS);

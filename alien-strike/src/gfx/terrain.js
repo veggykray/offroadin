@@ -24,6 +24,9 @@
       this.cache = new Map();
       this.maxCache = 150;
       this.decals = new Map(); // chunkKey -> [decal]
+      this.sdecals = new Map(); // chunkKey -> [static decal]
+      this.clearAreas = []; // landmark footprints kept free of decor
+      this.clearSegs = []; // roads kept free of decor: [x0, y0, x1, y1, halfWidth]
       this.typeGrid = new Uint8Array(Math.ceil(this.W / 32 + 2) * Math.ceil(this.H / 32 + 2)).fill(255);
       this.tgW = Math.ceil(this.W / 32 + 2);
       this.col = {
@@ -45,26 +48,34 @@
       // zones without an explicit height flatten to the local ground level (so bases
       // sit flat without carving artificial circular plateaus); on water / cloud
       // worlds they are raised just above the surface to form islands.
-      const f = new Float32Array(4);
       // The zone takes the terrace level most of its footprint already sits on, at
       // that level's centre height, so its rim never hovers on a level threshold
       // (which made ragged, stair-stepped edges).
-      const votes = new Map();
-      for (const z of this.zones) {
-        if (z.h !== null) continue;
-        votes.clear();
-        for (let i = 0; i < 13; i++) {
-          const a = i * 2.4, rr = i === 0 ? 0 : z.r * (i % 2 ? 0.5 : 0.9);
-          this.field(z.x + Math.cos(a) * rr, z.y + Math.sin(a) * rr, f, true);
-          if (this.T.river && f[2] < this.T.river.width * 1.6) continue;
-          if (this.T.lava && f[2] < this.T.lava.width * 1.8) continue;
-          const l = Math.max(0, this.levelOf(f[0]));
-          votes.set(l, (votes.get(l) || 0) + (i === 0 ? 2 : 1));
-        }
-        let best = this.levelOf(0.4), bv = 0;
-        for (const [l, v] of votes) if (v > bv || (v === bv && l > best)) { best = l; bv = v; }
-        z.h = U.clamp(this.levelMid(best), 0.05, 0.95);
+      for (const z of this.zones) this.zoneLevel(z);
+    }
+    zoneLevel(z) {
+      if (z.h !== null) return;
+      const f = new Float32Array(4), votes = new Map();
+      for (let i = 0; i < 13; i++) {
+        const a = i * 2.4, rr = i === 0 ? 0 : z.r * (i % 2 ? 0.5 : 0.9);
+        this.field(z.x + Math.cos(a) * rr, z.y + Math.sin(a) * rr, f, true);
+        if (this.T.river && f[2] < this.T.river.width * 1.6) continue;
+        if (this.T.lava && f[2] < this.T.lava.width * 1.8) continue;
+        const l = Math.max(0, this.levelOf(f[0]));
+        votes.set(l, (votes.get(l) || 0) + (i === 0 ? 2 : 1));
       }
+      let best = this.levelOf(0.4), bv = 0;
+      for (const [l, v] of votes) if (v > bv || (v === bv && l > best)) { best = l; bv = v; }
+      z.h = U.clamp(this.levelMid(best), 0.05, 0.95);
+    }
+    /* flatten an extra area after construction (landmark sites); call before chunks exist */
+    addZone(z) {
+      z = Object.assign({ r: 120, h: null, soft: 1.5 }, z);
+      this.zoneLevel(z);
+      this.zones.push(z);
+      this.typeGrid.fill(255);
+      this.cache.clear(); this.pending = null;
+      return z;
     }
 
     /* ---------- analytic field ---------- */
@@ -176,6 +187,7 @@
 
     /* ---------- chunk rasterisation ---------- */
     getChunk(cx, cy) {
+      this.texel();
       const key = cx * 10000 + cy;
       let ch = this.cache.get(key);
       if (ch) { ch.used = this.frame; return ch.cv; }
@@ -193,12 +205,15 @@
     }
     store(key, cx, cy, cv) {
       this.cache.set(key, { cv, used: this.frame });
+      const ss = this.sdecals.get(key);
+      if (ss) for (const d of ss) this.paintDecal(cv, cx, cy, d);
       const ds = this.decals.get(key);
       if (ds) for (const d of ds) this.paintDecal(cv, cx, cy, d);
       if (this.cache.size > this.maxCache) this.evict();
     }
     /* Incrementally generate queued chunks within a time budget (ms). */
     work(budget, queue) {
+      this.texel();
       const t0 = performance.now();
       while (performance.now() - t0 < budget) {
         if (!this.pending) {
@@ -218,67 +233,93 @@
       if (ok !== null) this.cache.delete(ok);
     }
 
+    /* Texels per world unit that chunks are rasterised at — matched to the renderer
+     * so chunk blits are 1:1 (and crisp); 1 at low quality. Changing it drops the
+     * chunk cache (decals are kept and repainted). */
+    texel() {
+      const R = AS.Renderer;
+      const td = R && !R.pixelated && R.res ? R.res : 1;
+      if (td !== this.TD) {
+        this.TD = td; this.cache.clear(); this.pending = null; this._bufs = null;
+        this.maxCache = td > 1.5 ? 56 : td > 1.01 ? 80 : 150;
+      }
+      return td;
+    }
+
     bufs(slot) {
       this._bufs = this._bufs || [];
       if (!this._bufs[slot]) {
-        const top = Math.ceil((this.F * 2.2 * 1.6 + 8) / G) * G;
-        const rows = CH + top;
-        const gw = CH / G + 3, gh = rows / G + 3, N = gw * gh;
+        const TD = this.TD;
+        const topW = Math.ceil((this.F * 2.2 * 1.6 + 8) / G) * G; // world rows rasterised above the chunk
+        // margins on every side so shading that samples neighbours (hillshade, shadows,
+        // occlusion, lips) sees real terrain across chunk borders and stays seamless
+        const ML = Math.ceil(18 * TD), MR = Math.ceil(6 * TD), MB = Math.ceil(7 * TD);
+        const N = Math.round(CH * TD), top = Math.round(topW * TD), rows = N + top + MB, NW = N + ML + MR;
+        const GL = 3; // grid cells left of the chunk (covers ML)
+        const gw = CH / G + GL + 3, gh = Math.ceil((CH + topW + 8) / G) + 3, NG = gw * gh;
+        const T = NW * rows;
         this._bufs[slot] = {
-          top, rows, gw, gh,
-          GH: new Float32Array(N), GM: new Float32Array(N), GS: new Float32Array(N), GX: new Float32Array(N),
-          L: new Int8Array(CH * rows), HH: new Float32Array(CH * rows), SS: new Float32Array(CH * rows),
-          MM: new Float32Array(CH * rows), XX: new Float32Array(CH * rows),
-          cnt: new Int16Array(CH), dropL: new Int8Array(CH), faceH: new Float32Array(CH), out: [0, 0, 0],
+          TD, N, top, topW, rows, ML, MR, MB, NW, GL, gw, gh,
+          GH: new Float32Array(NG), GM: new Float32Array(NG), GS: new Float32Array(NG), GX: new Float32Array(NG), GA: new Float32Array(NG),
+          L: new Int8Array(T), HH: new Float32Array(T), SS: new Float32Array(T), MM: new Float32Array(T), XX: new Float32Array(T), AA: new Float32Array(T),
+          cnt: new Int16Array(NW), dropL: new Int8Array(NW), faceH: new Float32Array(NW), faceNX: new Float32Array(NW), out: [0, 0, 0],
         };
       }
       return this._bufs[slot];
     }
 
     *genChunk(cx, cy, slot) {
+      this.texel();
       const st = this.bufs(slot || 0);
+      const TD = st.TD, N = st.N;
       st.cx = cx; st.cy = cy; st.x0 = cx * CH; st.y0 = cy * CH;
       for (let j = 0; j < st.gh; j += 12) { this._grid(st, j, Math.min(st.gh, j + 12)); yield null; }
-      for (let y = 0; y < st.rows; y += 72) { this._up(st, y, Math.min(st.rows, y + 72)); yield null; }
-      const cv = AS.Forge.canvas(CH, CH);
+      const upStep = Math.max(16, Math.round(72 / (TD * TD)));
+      for (let y = 0; y < st.rows; y += upStep) { this._up(st, y, Math.min(st.rows, y + upStep)); yield null; }
+      const cv = AS.Forge.canvas(N, N);
       const ctx = cv.getContext('2d');
-      const img = ctx.createImageData(CH, CH);
+      const img = ctx.createImageData(N, N);
       st.D = img.data;
-      st.cnt.fill(0); st.dropL.fill(-9); st.faceH.fill(0);
-      for (let y = 1; y < st.rows; y += 48) { this._shade(st, y, Math.min(st.rows, y + 48)); yield null; }
+      st.cnt.fill(0); st.dropL.fill(-9); st.faceH.fill(0); st.faceNX.fill(0);
+      const shStep = Math.max(10, Math.round(44 / (TD * TD)));
+      for (let y = 1; y < st.rows; y += shStep) { this._shade(st, y, Math.min(st.rows, y + shStep)); yield null; }
       ctx.putImageData(img, 0, 0);
       st.D = null;
       yield null;
-      this.stampDecor(ctx, cx, cy, st.L, st.HH, st.SS, st.top);
+      this.stampDecor(ctx, cx, cy, st);
       return cv;
     }
 
     _grid(st, j0, j1) {
-      const f = this._f, gw = st.gw;
-      const gx0 = st.x0 - G, gy0 = st.y0 - st.top - G;
+      const f = this._f, gw = st.gw, sd = this.seed;
+      const gx0 = st.x0 - G * (st.GL + 1), gy0 = st.y0 - st.topW - G;
       for (let j = j0; j < j1; j++) for (let i = 0; i < gw; i++) {
-        this.field(gx0 + i * G, gy0 + j * G, f);
+        const wx = gx0 + i * G, wy = gy0 + j * G;
+        this.field(wx, wy, f);
         const k = j * gw + i;
         st.GH[k] = f[0]; st.GM[k] = f[1]; st.GS[k] = f[2]; st.GX[k] = f[3];
+        // large soft albedo variation (soil patches) + a finer mottling
+        st.GA[k] = U.noise2(wx / 260, wy / 260, sd + 101) * 0.7 + U.noise2(wx / 64, wy / 64, sd + 102) * 0.3;
       }
     }
 
     _up(st, y0, y1) {
-      const { GH, GM, GS, GX, HH, SS, MM, XX, L, gw } = st;
-      const sea = this.sea, levels = this.levels, invG = 1 / G;
+      const { GH, GM, GS, GX, GA, HH, SS, MM, XX, AA, L, gw, NW, ML, TD, GL } = st;
+      const sea = this.sea, levels = this.levels, invG = 1 / G, inv = 1 / TD;
       const seaK = sea >= 0 ? (levels * 1.15) / (1 - sea) : 0;
       for (let y = y0; y < y1; y++) {
-        const fy = (y + G) * invG; const j = fy | 0, ty = fy - j;
-        for (let x = 0; x < CH; x++) {
-          const fx = (x + G) * invG; const i = fx | 0, tx = fx - i;
+        const fy = ((y + 0.5) * inv + G) * invG; const j = fy | 0, ty = fy - j;
+        for (let xi = 0; xi < NW; xi++) {
+          const fx = ((xi - ML + 0.5) * inv + G * (GL + 1)) * invG; const i = fx | 0, tx = fx - i;
           const k = j * gw + i, k2 = k + gw;
           const a = (1 - tx) * (1 - ty), b = tx * (1 - ty), c = (1 - tx) * ty, d = tx * ty;
-          const p = y * CH + x;
+          const p = y * NW + xi;
           const h = GH[k] * a + GH[k + 1] * b + GH[k2] * c + GH[k2 + 1] * d;
           HH[p] = h;
           SS[p] = GS[k] * a + GS[k + 1] * b + GS[k2] * c + GS[k2 + 1] * d;
           MM[p] = GM[k] * a + GM[k + 1] * b + GM[k2] * c + GM[k2 + 1] * d;
           XX[p] = GX[k] * a + GX[k + 1] * b + GX[k2] * c + GX[k2 + 1] * d;
+          AA[p] = GA[k] * a + GA[k + 1] * b + GA[k2] * c + GA[k2 + 1] * d;
           let l;
           if (sea >= 0) { if (h < sea) l = -1; else { l = ((h - sea) * seaK) | 0; if (l > levels - 1) l = levels - 1; } }
           else { l = (h * levels) | 0; if (l < 0) l = 0; else if (l > levels - 1) l = levels - 1; }
@@ -288,64 +329,93 @@
     }
 
     _shade(st, y0, y1) {
-      const { L, HH, SS, MM, XX, cnt, dropL, faceH, D, out, top, rows, x0: cx0, y0: cy0 } = st;
+      const { L, HH, SS, MM, XX, AA, cnt, dropL, faceH, faceNX, D, out, top, rows, x0: cx0, y0: cy0, N, NW, ML, TD } = st;
+      const inv = 1 / TD;
       const F = this.F, clouds = this.type === 'clouds';
       const faceCol = this.col.face, faceDark = this.col.faceDark, lip = this.col.lip;
       const faceCloud = C.mix(faceCol, faceDark, 0.3);
-      const shadowK = 1 - (this.world.light.shadow || 0.3) * 0.9;
-      const speck = this.col.speck, seed = this.seed, W = this.W, H = this.H, N = CH * rows;
+      const shadowA = this.world.light.shadow !== undefined ? this.world.light.shadow : 0.3;
+      const seed = this.seed, W = this.W, H = this.H, NR = NW * rows;
+      const d3 = Math.max(1, Math.round(3 * TD)), d5 = Math.max(1, Math.round(5 * TD));
+      const s1 = Math.max(1, Math.round(4 * TD)), s2 = Math.max(2, Math.round(9 * TD)), s3 = Math.max(3, Math.round(15 * TD));
+      const ao = Math.max(1, Math.round(3.5 * TD));
+      const lipW = Math.max(1, Math.round(TD * 1.2));
+      const baseBand = 4 * TD;
+      const D1 = NW + 1;
       for (let y = y0; y < y1; y++) {
-        for (let x = 0; x < CH; x++) {
-          const p = y * CH + x;
-          const l = L[p], lu = L[p - CH];
-          let c = cnt[x];
-          if (lu > l) { c = 1; dropL[x] = lu; faceH[x] = Math.min(F * 2.2, F * (lu - (l < -1 ? -1 : l)) * (l < 0 && clouds ? 1.6 : 1)); }
-          else if (c > 0) { if (l < dropL[x] && c < faceH[x] + 4) c++; else c = 0; }
-          cnt[x] = c;
-          if (y < top) continue;
-          const fh = faceH[x];
+        for (let xi = 0; xi < NW; xi++) {
+          const p = y * NW + xi;
+          const l = L[p], lu = L[p - NW];
+          let c = cnt[xi];
+          if (lu > l) {
+            c = 1; dropL[xi] = lu;
+            faceH[xi] = Math.min(F * 2.2, F * (lu - (l < -1 ? -1 : l)) * (l < 0 && clouds ? 1.6 : 1)) * TD;
+            // which way the wall faces, from the height gradient along the plateau edge
+            const pl = p - NW;
+            faceNX[xi] = (HH[xi > d3 ? pl - d3 : pl] - HH[xi < NW - d3 ? pl + d3 : pl]) * 24;
+          } else if (c > 0) { if (l < dropL[xi] && c < faceH[xi] + baseBand) c++; else c = 0; }
+          cnt[xi] = c;
+          const x = xi - ML;
+          if (y < top || y >= top + N || x < 0 || x >= N) continue;
+          const fh = faceH[xi];
           const py = y - top;
-          const wx = cx0 + x, wy = cy0 + py;
-          const pd = x > 0 ? p - CH - 1 : p - CH;
-          const pa = p - CH * 5 - (x > 4 ? 5 : x), pb = p + CH * 5 + (x < CH - 5 ? 5 : 0);
-          this.colorize(wx, wy, HH[p], MM[p], SS[p], XX[p], l, out, (XX[pa] - XX[pb < N ? pb : p]) * 9);
+          const wx = cx0 + (x + 0.5) * inv, wy = cy0 + (py + 0.5) * inv;
+          const pa = p - NW * d5 - d5, pb = p + NW * d5 + d5;
+          this.colorize(wx, wy, HH[p], MM[p], SS[p], XX[p], l, out, (XX[pa >= 0 ? pa : p] - XX[pb < NR ? pb : p]) * 9);
           let r = out[0], g = out[1], b = out[2];
-          const pn = p + CH * 2 < N ? p + CH * 2 : p;
-          let hs = (HH[p - CH * 2 >= 0 ? p - CH * 2 : p] - HH[pn]) * 7;
-          hs = hs < -0.18 ? -0.18 : hs > 0.22 ? 0.22 : hs;
-          let sh = 1 + hs;
+          // hillshade along the light direction (top-left) from the continuous height
+          const pu = p - D1 * d3, pd = p + D1 * d3;
+          let hs = (HH[pu >= 0 ? pu : p] - HH[pd < NR ? pd : p]) * 6.5;
+          hs = hs < -0.22 ? -0.22 : hs > 0.26 ? 0.26 : hs;
+          let sh = (1 + hs) * (1 + AA[p] * 0.09);
           const onFace = c > 0 && c <= fh;
           if (onFace) {
             const t = c / fh;
-            const strata = (U.hash2(wx >> 1, ((c + dropL[x] * 7) / 3) | 0, seed) - 0.5) * 0.16;
-            const vert = (U.hash2(wx, 0, seed + 1) - 0.5) * 0.12;
+            const band = ((c * inv + dropL[xi] * 7) / 2.6) | 0;
+            const strata = (U.hash2(band, dropL[xi], seed) - 0.5) * 0.2;
+            const ck = U.hash2((wx * 0.8) | 0, band >> 1, seed + 1);
+            const vert = ck > 0.92 ? -0.18 : (ck - 0.5) * 0.06;
             const c0 = l < 0 && clouds ? faceCloud : faceCol;
-            const tt = t * 0.85;
+            const tt = t * 0.8;
             r = c0[0] + (faceDark[0] - c0[0]) * tt; g = c0[1] + (faceDark[1] - c0[1]) * tt; b = c0[2] + (faceDark[2] - c0[2]) * tt;
-            sh = 1 + strata + vert - (t > 0.9 ? 0.15 : 0);
+            const facing = faceNX[xi] < -1 ? -1 : faceNX[xi] > 1 ? 1 : faceNX[xi];
+            sh = 1 + strata + vert - facing * 0.2 + (t < 0.1 ? 0.1 : 0) - (t > 0.88 ? 0.16 : 0);
             if (l < 0 && clouds && t > 0.6) {
-              const q = (t - 0.6) / 0.4;
+              const qq = (t - 0.6) / 0.4;
               this.colorize(wx, wy, HH[p], MM[p], SS[p], XX[p], -1, out, 0);
-              r += (out[0] - r) * q; g += (out[1] - g) * q; b += (out[2] - b) * q;
+              r += (out[0] - r) * qq; g += (out[1] - g) * qq; b += (out[2] - b) * qq;
             }
           } else if (c > fh) {
-            sh *= 0.62 + (c - fh) * 0.07;
-          } else if (y + 1 < rows && L[p + CH] < l) {
-            r += (lip[0] - r) * 0.55; g += (lip[1] - g) * 0.55; b += (lip[2] - b) * 0.55;
-          } else if (x > 0 && L[p - 1] !== l) {
-            sh *= L[p - 1] > l ? 0.8 : 1.12;
-          } else if (x > 3 && y > 3 && (L[p - CH * 3 - 3] > l || L[p - CH * 2 - 2] > l)) {
-            sh *= shadowK;
+            // contact shadow at the foot of the wall
+            sh *= 0.58 + (c - fh) * inv * 0.085;
+          } else if (y + lipW < rows && L[p + NW * lipW] < l) {
+            // lip: the sunlit edge of a plateau
+            r += (lip[0] - r) * 0.6; g += (lip[1] - g) * 0.6; b += (lip[2] - b) * 0.6; sh *= 1.05;
+          } else {
+            // cast shadow from higher ground (light from the top-left), softer further out
+            let shade = 0;
+            if (p - D1 * s3 >= 0) {
+              if (L[p - D1 * s1] > l) shade = 0.62;
+              else if (L[p - D1 * s2] > l) shade = 0.42;
+              else if (L[p - D1 * s3] > l) shade = 0.2;
+            }
+            // ambient occlusion beside walls to the left and right
+            if (L[p - ao] > l || L[p + ao] > l) shade = Math.max(shade, 0.26);
+            else if (L[p - 1] !== l) sh *= L[p - 1] > l ? 0.85 : 1.08;
+            sh *= 1 - shade * shadowA * 1.5;
           }
-          const hn = U.hash2(wx, wy, seed + 9);
-          if (hn > 0.985 && l >= 0 && !onFace) { const sp = speck[hn > 0.993 ? 1 : 0]; r = sp[0]; g = sp[1]; b = sp[2]; }
-          else sh *= 0.96 + hn * 0.08;
+          // fine grain and sparse gravel (no isolated bright specks)
+          if (!onFace && l >= 0) {
+            const hn = U.hash2((wx * 2.2) | 0, (wy * 2.2) | 0, seed + 9);
+            if (hn > 0.988 && AA[p] > -0.1) sh *= hn > 0.995 ? 1.12 : 0.74;
+            else sh *= 0.975 + hn * 0.05;
+          }
           if (wx < 0 || wy < 0 || wx > W || wy > H) {
             const dd = Math.max(-wx, -wy, wx - W, wy - H);
             let k = 0.75 - dd / 500; k = k < 0.2 ? 0.2 : k > 0.75 ? 0.75 : k;
             sh *= k; r += (40 - r) * 0.3; g += (30 - g) * 0.3; b += (50 - b) * 0.3;
           }
-          const q = (py * CH + x) * 4;
+          const q = (py * N + x) * 4;
           D[q] = r * sh; D[q + 1] = g * sh; D[q + 2] = b * sh; D[q + 3] = 255;
         }
       }
@@ -364,12 +434,18 @@
       }
       switch (this.type) {
         case 'terraces': {
-          if (T.river && s < T.river.width) {
-            const rc = col.river;
-            const crack = U.ridged(x / 14, y / 14, 1, this.seed + 33) > 0.93;
-            const edge = s > T.river.width * 0.75;
-            const cc = crack ? rc.k : edge ? rc.d : rc.c;
-            out[0] = cc[0]; out[1] = cc[1]; out[2] = cc[2];
+          if (T.river) {
+            const rw = T.river.width, rc = col.river;
+            if (s < rw) {
+              // dry riverbed: smooth pale sand, damp darker banks, faint mud cracks in the centre only
+              const bank = U.smoothstep(rw * 0.55, rw, s);
+              out[0] = U.lerp(rc.c[0], rc.d[0], bank * 0.85); out[1] = U.lerp(rc.c[1], rc.d[1], bank * 0.85); out[2] = U.lerp(rc.c[2], rc.d[2], bank * 0.85);
+              if (s < rw * 0.5 && U.ridged(x / 16, y / 16, 1, this.seed + 33) > 0.94) { out[0] = U.lerp(out[0], rc.k[0], 0.38); out[1] = U.lerp(out[1], rc.k[1], 0.38); out[2] = U.lerp(out[2], rc.k[2], 0.38); }
+            } else if (s < rw * 1.5 && l >= 0) {
+              // darker damp soil along the banks
+              const k = (1 - (s - rw) / (rw * 0.5)) * 0.16;
+              out[0] *= 1 - k; out[1] *= 1 - k * 0.9; out[2] *= 1 - k * 0.8;
+            }
           }
           break;
         }
@@ -459,14 +535,14 @@
           const v = (U.hash2(gx, gy, this.seed) - 0.5) * 0.16;
           out[0] *= 1 + v; out[1] *= 1 + v; out[2] *= 1 + v;
           if (U.hash2(gx, gy, this.seed + 1) > 0.8) { out[0] = U.lerp(out[0], 106, 0.35); out[1] = U.lerp(out[1], 74, 0.35); out[2] = U.lerp(out[2], 58, 0.35); }
-          if (lx === 0 || ly === 0) { out[0] = mc.seam[0]; out[1] = mc.seam[1]; out[2] = mc.seam[2]; }
-          else if ((lx === 3 || lx === g - 3) && (ly === 3 || ly === g - 3)) { out[0] = mc.rivet[0]; out[1] = mc.rivet[1]; out[2] = mc.rivet[2]; }
-          else if (U.hash2(gx, gy, this.seed + 2) > 0.86 && ly > 8 && ly < g - 8 && lx > 8 && lx < g - 8 && ((ly + lx) % 4 === 0)) { out[0] *= 0.6; out[1] *= 0.6; out[2] *= 0.65; }
+          if (lx < 1 || ly < 1) { out[0] = mc.seam[0]; out[1] = mc.seam[1]; out[2] = mc.seam[2]; }
+          else if ((Math.abs(lx - 3.5) < 0.9 || Math.abs(lx - (g - 3.5)) < 0.9) && (Math.abs(ly - 3.5) < 0.9 || Math.abs(ly - (g - 3.5)) < 0.9)) { out[0] = mc.rivet[0]; out[1] = mc.rivet[1]; out[2] = mc.rivet[2]; }
+          else if (U.hash2(gx, gy, this.seed + 2) > 0.86 && ly > 8 && ly < g - 8 && lx > 8 && lx < g - 8 && (((ly + lx) | 0) % 4 === 0)) { out[0] *= 0.6; out[1] *= 0.6; out[2] *= 0.65; }
           // power conduits along selected grid lines
           const cxl = U.hash2(gx, 0, this.seed + 3) > 0.82, cyl = U.hash2(0, gy, this.seed + 4) > 0.82;
           if ((cxl && lx >= g / 2 - 1 && lx <= g / 2 + 1) || (cyl && ly >= g / 2 - 1 && ly <= g / 2 + 1)) {
             const cc = U.hash2(gx + gy, 1, this.seed + 5) > 0.5 ? mc.c1 : mc.c2;
-            const pulse = (lx === g / 2 || ly === g / 2) ? 1 : 0.55;
+            const pulse = (Math.abs(lx - g / 2) < 0.6 || Math.abs(ly - g / 2) < 0.6) ? 1 : 0.55;
             out[0] = U.lerp(out[0], cc[0], pulse); out[1] = U.lerp(out[1], cc[1], pulse); out[2] = U.lerp(out[2], cc[2], pulse);
           }
           break;
@@ -512,85 +588,126 @@
       if (U.hash2(x >> 1, y, this.seed + 22) > 0.993) { out[0] += 40; out[1] += 50; out[2] += 50; }
     }
 
-    stampDecor(ctx, cx, cy, L, HH, SS, top) {
-      const wd = this.world;
-      if (!this.decorSheets) {
-        this.decorSheets = wd.decor.map((d) => {
-          const sheets = [];
-          for (let v = 0; v < 5; v++) sheets.push(AS.Forge.sheet('decor:' + wd.key + ':' + d.k + ':' + v + ':' + JSON.stringify(d.pal || {}), () => AS.Models.decor(d.k, d.pal, v * 13 + 3), 1, 1));
-          return { d, sheets };
-        });
+    /* ---------- decor: composed formations instead of an even scatter ----------
+     * Rocks gather in clusters seeded from a world-space jittered grid (one large
+     * formation, a few medium rocks, a spray of small stones and some vegetation),
+     * so every chunk boundary is seamless. A few singles break up open ground. Base
+     * zones stay clear and nothing is placed on walls, water or uneven ground. */
+    buildDecorSets() {
+      const wd = this.world, sets = { sheets: {}, any: false, big: null, med: null, small: null, veg: null, debris: null };
+      const find = (...ks) => { for (const k of ks) { const d = wd.decor.find((e) => e.k === k); if (d) return d; } return null; };
+      const mk = (name, kind, pal, n) => {
+        sets.sheets[name] = [];
+        for (let v = 0; v < n; v++) sets.sheets[name].push(AS.Forge.sheet('decor2:' + wd.key + ':' + kind + ':' + v + ':' + JSON.stringify(pal || {}), () => AS.Models.decor(kind, pal, v * 13 + 3), 1, 1));
+        sets.any = true;
+      };
+      const rock = find('rock'), boulder = find('boulder'), crystal = find('crystal');
+      const veg = find('tuft', 'shroomlet'), debris = find('bones', 'scrap', 'panel');
+      let rockD = (rock ? rock.d : 0) + (boulder ? boulder.d * 2 : 0) + (crystal ? crystal.d : 0);
+      if (rock || boulder) {
+        const pal = (rock || boulder).pal, bpal = (boulder || rock).pal;
+        mk('big', 'formation', bpal, 4); mk('med', 'rock', pal, 5); mk('small', 'pebbles', pal, 5);
+        sets.big = 'big'; sets.med = 'med'; sets.small = 'small';
       }
-      const rng = new U.RNG(cx * 7919 + cy * 104729 + this.seed);
-      const q = (AS.Settings && AS.Settings.quality === 'low') ? 0.5 : 1;
-      for (const ds of this.decorSheets) {
-        const n = Math.round(ds.d.d * q * (0.6 + rng.next() * 0.8));
-        for (let i = 0; i < n; i++) {
-          const x = rng.int(6, CH - 6), y = rng.int(6, CH - 6);
-          const p = (y + top) * CH + x;
-          const l = L[p];
-          if (l < 0 || L[p - CH * 4] !== l || L[p + CH * 4 < L.length ? p + CH * 4 : p] !== l) continue;
-          const wx = cx * CH + x, wy = cy * CH + y;
-          if (this.kindOf(HH[p], SS[p]) !== 0) continue;
-          if (wx < 0 || wy < 0 || wx > this.W || wy > this.H) continue;
-          const sh = ds.sheets[rng.int(0, ds.sheets.length - 1)];
-          ctx.globalAlpha = 0.28;
-          ctx.drawImage(sh.shadows[0], x - sh.ax + 2, y - sh.ay + 1, sh.w, sh.h);
-          ctx.globalAlpha = 1;
-          ctx.drawImage(sh.frames[0][0], x - sh.ax, y - sh.ay, sh.w, sh.h);
+      if (crystal) { mk('crys', 'crystal', crystal.pal, 4); if (!sets.med) { sets.med = 'crys'; sets.small = 'crys'; } else sets.accent = 'crys'; }
+      if (veg) { mk('veg', veg.k, veg.pal, 5); sets.veg = 'veg'; }
+      if (debris) { mk('deb', debris.k, debris.pal, 3); sets.debris = 'deb'; if (!sets.med) { sets.med = 'deb'; sets.small = 'deb'; rockD += debris.d * 2; } }
+      sets.clusterP = U.clamp(rockD / 22, 0.1, 0.55);
+      sets.single = Math.min(7, rockD * 0.22 + (veg ? veg.d * 0.3 : 0));
+      sets.vegN = veg ? U.clamp(veg.d / 6, 0.5, 5) : 0;
+      sets.debrisP = debris ? U.clamp(debris.d / 4, 0.1, 0.5) : 0;
+      return sets;
+    }
+    atCliffFoot(x, y) {
+      const f = this._fd || (this._fd = new Float32Array(4));
+      this.field(x, y, f); const l = this.levelOf(f[0]);
+      for (const [dx, dy] of [[0, -34], [-26, -20], [26, -20], [0, -60]]) { this.field(x + dx, y + dy, f); if (this.levelOf(f[0]) > l) return true; }
+      return false;
+    }
+    decorOK(x, y, r) {
+      if (x < 4 || y < 4 || x > this.W - 4 || y > this.H - 4) return false;
+      for (const z of this.zones) { const dx = x - z.x, dy = y - z.y; if (dx * dx + dy * dy < (z.r * 0.95 + r) * (z.r * 0.95 + r)) return false; }
+      for (const z of this.clearAreas) { const dx = x - z.x, dy = (y - z.y) / 0.8; if (dx * dx + dy * dy < (z.r + r) * (z.r + r)) return false; }
+      for (const sg of this.clearSegs) if (U.segDist(x, y, sg[0], sg[1], sg[2], sg[3]) < sg[4] + r) return false;
+      const f = this._fd || (this._fd = new Float32Array(4));
+      this.field(x, y, f);
+      const l = this.levelOf(f[0]);
+      if (l < 0 || this.kindOf(f[0], f[2]) !== 0) return false;
+      const rr = Math.max(4, r * 0.8);
+      for (const [dx, dy] of [[rr, 0], [-rr, 0], [0, rr], [0, -rr * 1.4]]) { this.field(x + dx, y + dy, f); if (this.levelOf(f[0]) !== l || this.kindOf(f[0], f[2]) !== 0) return false; }
+      return true;
+    }
+    stampDecor(ctx, cx, cy, st) {
+      if (!this.decorSets) this.decorSets = this.buildDecorSets();
+      const ds = this.decorSets;
+      if (!ds.any) return;
+      const TD = st.TD, q = (AS.Settings && AS.Settings.quality === 'low') ? 0.6 : 1;
+      const x0 = cx * CH, y0 = cy * CH, CELL = 150, M = 44;
+      const items = [];
+      const add = (k, x, y, v, r) => { if (k && ds.sheets[k]) items.push({ k, x, y, v, r }); };
+      for (let gy = Math.floor((y0 - M) / CELL); gy <= Math.floor((y0 + CH + M) / CELL); gy++) {
+        for (let gx = Math.floor((x0 - M) / CELL); gx <= Math.floor((x0 + CH + M) / CELL); gx++) {
+          if (U.hash2(gx, gy, this.seed + 300) > ds.clusterP * q) continue;
+          const ccx = (gx + 0.2 + U.hash2(gx, gy, this.seed + 301) * 0.6) * CELL;
+          const ccy = (gy + 0.2 + U.hash2(gx, gy, this.seed + 302) * 0.6) * CELL;
+          // scree gathers at the foot of cliffs; open ground keeps more empty space
+          if (!this.atCliffFoot(ccx, ccy) && U.hash2(gx, gy, this.seed + 303) > 0.45) continue;
+          const rng = new U.RNG((Math.imul(gx, 73856093) ^ Math.imul(gy, 19349663) ^ this.seed) >>> 0);
+          const big = ds.big && rng.next() < 0.8;
+          if (big) add(ds.big, ccx, ccy, rng.int(0, 3), 16);
+          const nm = rng.int(1, 3) + (big ? 1 : 0);
+          for (let i = 0; i < nm; i++) { const a = rng.next() * U.TAU, d = 12 + rng.next() * 14; add(ds.med, ccx + Math.cos(a) * d, ccy + Math.sin(a) * d * 0.75, rng.int(0, 4), 8); }
+          if (ds.accent && rng.next() < 0.6) { const a = rng.next() * U.TAU; add(ds.accent, ccx + Math.cos(a) * 16, ccy + Math.sin(a) * 12, rng.int(0, 3), 6); }
+          const ns = rng.int(2, 5);
+          for (let i = 0; i < ns; i++) { const a = rng.next() * U.TAU, d = 16 + rng.next() * 26; add(ds.small, ccx + Math.cos(a) * d, ccy + Math.sin(a) * d * 0.75, rng.int(0, 4), 4); }
+          const nv = Math.round(ds.vegN * rng.next() * 1.4);
+          for (let i = 0; i < nv; i++) { const a = rng.next() * U.TAU, d = 10 + rng.next() * 34; add(ds.veg, ccx + Math.cos(a) * d, ccy + Math.sin(a) * d * 0.8, rng.int(0, 4), 5); }
+          if (rng.next() < ds.debrisP) add(ds.debris, ccx + (rng.next() - 0.5) * 60, ccy + (rng.next() - 0.5) * 40, rng.int(0, 2), 6);
         }
       }
+      const rng = new U.RNG((cx * 7919 + cy * 104729 + this.seed) >>> 0);
+      const nSingle = Math.round(ds.single * q * (0.6 + rng.next() * 0.8));
+      for (let i = 0; i < nSingle; i++) add(ds.veg && rng.next() < 0.55 ? ds.veg : ds.small, x0 + rng.next() * CH, y0 + rng.next() * CH, rng.int(0, 4), 4);
+      items.sort((a, b) => a.y - b.y);
+      ctx.save();
+      ctx.scale(TD, TD);
+      ctx.imageSmoothingEnabled = true;
+      for (const it of items) {
+        if (it.x < x0 - 34 || it.x > x0 + CH + 34 || it.y < y0 - 34 || it.y > y0 + CH + 40) continue;
+        if (!this.decorOK(it.x, it.y, it.r)) continue;
+        const list = ds.sheets[it.k], sh = list[it.v % list.length];
+        const lx = it.x - x0, ly = it.y - y0;
+        ctx.globalAlpha = 0.34; ctx.drawImage(sh.shadows[0], lx - sh.ax + 2.4, ly - sh.ay + 1.4, sh.w, sh.h);
+        ctx.globalAlpha = 1; ctx.drawImage(sh.frames[0][0], lx - sh.ax, ly - sh.ay, sh.w, sh.h);
+      }
+      ctx.restore();
     }
 
-    /* ---------- decals (scorch marks etc.) baked into chunks ---------- */
-    addDecal(kind, x, y, r, col) {
-      const d = { kind, x, y, r, col, seed: (Math.random() * 1e6) | 0 };
-      const c0 = Math.floor((x - r) / CH), c1 = Math.floor((x + r) / CH);
-      const r0 = Math.floor((y - r) / CH), r1 = Math.floor((y + r) / CH);
+    /* ---------- decals baked into chunks ----------
+     * Dynamic decals (scorch, craters, splats) are capped per chunk; static ones
+     * (landmark sites, roads, foundations) are permanent and painted first. */
+    addDecal(kind, x, y, r, col, opts) {
+      const d = Object.assign({ kind, x, y, r, col, seed: (Math.random() * 1e6) | 0 }, opts || {});
+      const st = !!d.static, map = st ? this.sdecals : this.decals;
+      const bb = AS.Decals.bounds(d);
+      const c0 = Math.floor(bb[0] / CH), c1 = Math.floor(bb[2] / CH);
+      const r0 = Math.floor(bb[1] / CH), r1 = Math.floor(bb[3] / CH);
       for (let cx = c0; cx <= c1; cx++) for (let cy = r0; cy <= r1; cy++) {
         const key = cx * 10000 + cy;
-        let list = this.decals.get(key);
-        if (!list) { list = []; this.decals.set(key, list); }
+        let list = map.get(key);
+        if (!list) { list = []; map.set(key, list); }
         list.push(d);
-        if (list.length > 60) list.shift();
+        if (!st && list.length > 60) list.shift();
         const ch = this.cache.get(key);
         if (ch) this.paintDecal(ch.cv, cx, cy, d);
       }
+      return d;
     }
     paintDecal(cv, cx, cy, d) {
       const ctx = cv.getContext('2d');
-      const x = d.x - cx * CH, y = d.y - cy * CH;
-      const rng = new U.RNG(d.seed);
       ctx.save();
-      if (d.kind === 'scorch' || d.kind === 'crater') {
-        for (let i = 0; i < 14; i++) {
-          const a = rng.next() * U.TAU, rr = rng.next() * d.r * 0.7;
-          ctx.fillStyle = 'rgba(14,10,8,' + (0.12 + rng.next() * 0.16) + ')';
-          ctx.beginPath(); ctx.arc(Math.round(x + Math.cos(a) * rr), Math.round(y + Math.sin(a) * rr * 0.8), d.r * (0.25 + rng.next() * 0.45), 0, U.TAU); ctx.fill();
-        }
-        if (d.kind === 'crater') {
-          ctx.fillStyle = 'rgba(8,6,6,0.45)';
-          ctx.beginPath(); ctx.ellipse(x, y, d.r * 0.45, d.r * 0.36, 0, 0, U.TAU); ctx.fill();
-          ctx.strokeStyle = 'rgba(255,230,200,0.12)'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.ellipse(x, y + 1, d.r * 0.5, d.r * 0.4, 0, 0.2, Math.PI - 0.2); ctx.stroke();
-        }
-        // debris flecks
-        for (let i = 0; i < d.r * 0.8; i++) {
-          const a = rng.next() * U.TAU, rr = d.r * (0.5 + rng.next() * 0.9);
-          ctx.fillStyle = rng.next() > 0.5 ? 'rgba(20,16,14,0.7)' : 'rgba(90,80,70,0.6)';
-          ctx.fillRect(Math.round(x + Math.cos(a) * rr), Math.round(y + Math.sin(a) * rr * 0.8), 1, 1);
-        }
-      } else if (d.kind === 'splat') {
-        const c = C.hex(d.col || '#6a8a2a');
-        for (let i = 0; i < 10; i++) {
-          const a = rng.next() * U.TAU, rr = rng.next() * d.r;
-          ctx.fillStyle = C.str(c, 0.35 + rng.next() * 0.3);
-          ctx.beginPath(); ctx.arc(Math.round(x + Math.cos(a) * rr), Math.round(y + Math.sin(a) * rr), 1 + rng.next() * d.r * 0.3, 0, U.TAU); ctx.fill();
-        }
-      } else if (d.kind === 'wreck') {
-        ctx.fillStyle = 'rgba(10,8,8,0.35)';
-        ctx.beginPath(); ctx.ellipse(x, y, d.r, d.r * 0.7, 0, 0, U.TAU); ctx.fill();
-      }
+      ctx.scale(cv.width / CH, cv.height / CH);
+      AS.Decals.paint(ctx, d, cx * CH, cy * CH);
       ctx.restore();
     }
 

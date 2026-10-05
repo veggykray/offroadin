@@ -163,6 +163,7 @@
         case 'bullet': case 'plasma':
           AS.Proj.bolt({ team, x: sx, y: sy, a: a + U.range(-(w.spread || 0.03), w.spread || 0.03), speed: w.speed || 420, range: (w.range || 350) * 1.25, dmg: w.dmg * dmgMul, dtype: w.dtype || (w.k === 'plasma' ? 'energy' : 'kinetic'), col, size: w.size || (w.k === 'plasma' ? 3 : 2), r: w.k === 'plasma' ? 4 : 3, owner: this });
           AS.Audio.sfx(w.k === 'plasma' ? 'enemy_plasma' : 'enemy_shot', { x: this.x, y: this.y, vol: 0.5, rate: U.range(0.9, 1.1) });
+          AS.FX.muzzle(sx, sy, 0, a, col, w.k === 'plasma' ? 0.8 : 0.6);
           break;
         case 'acid':
           AS.Proj.bolt({ team, x: sx, y: sy, a: a + U.range(-0.06, 0.06), speed: w.speed || 260, range: (w.range || 300) * 1.2, dmg: w.dmg * dmgMul, dtype: w.dtype || 'bio', col, size: w.big ? 4 : 3, r: w.big ? 5 : 4, owner: this, arc: Math.min(30, d * 0.08) });
@@ -172,12 +173,14 @@
           const fl = Math.max(0.2, d / (w.speed || 330));
           AS.Proj.bolt({ team, x: sx, y: sy, a: a + U.range(-0.08, 0.08), speed: w.speed || 330, range: Math.min(w.range * 1.2, d + 30), dmg: w.dmg * dmgMul, dtype: 'explosive', col, size: 2, r: 3, owner: this, prox: 22, splash: w.radius || 30 });
           AS.Audio.sfx('flak', { x: this.x, y: this.y, vol: 0.5 });
+          AS.FX.muzzle(sx, sy, 0, a, col, 0.8);
           break;
         }
         case 'shell': {
           const gx = t.x + tvx * (w.flight || 1.6) * 0.8 + U.range(-30, 30), gy = t.y + tvy * (w.flight || 1.6) * 0.8 + U.range(-30, 30);
           AS.Proj.lob({ team, sx: this.x, sy: this.y, sz: this.z + 12, gx, gy, T: w.flight || 1.6, arc: 160, land: 'explode', dmg: w.dmg * dmgMul, dtype: 'explosive', radius: w.radius || 50, col, size: 3, owner: this, warn: true, burn: w.burn });
           AS.Audio.sfx('artillery', { x: this.x, y: this.y, vol: 0.7 });
+          AS.FX.muzzle(this.x, this.py - 6, 0, -Math.PI / 2, '#ffd08a', 1.3); AS.FX.smoke(this.x, this.y, this.z + 14, 8);
           break;
         }
         case 'spore': {
@@ -310,7 +313,7 @@
     collideSolids() {
       const g = this.g;
       for (const s of g.solids) {
-        if (s === this || s.alive === false) continue;
+        if (s === this || s.alive === false || (s.groundOnly && this.air)) continue;
         const dx = this.x - s.x, dy = this.y - s.y, rr = this.r + s.r;
         const d2 = dx * dx + dy * dy;
         if (d2 < rr * rr && d2 > 0.01) { const d = Math.sqrt(d2); this.x = s.x + dx / d * rr; this.y = s.y + dy / d * rr; }
@@ -325,7 +328,7 @@
       const big = this.r >= 18;
       if (this.organic && !this.mech) {
         AS.FX.splat(this.x, this.y, this.z + this.hc, this.def.splat || '#9a8a40', big ? 30 : 14);
-        AS.FX.explosion(this.x, this.y, this.z + this.hc * 0.5, this.r * 0.5, { col: '#fff0c0', col2: this.def.splat || '#9a8a40', debris: false, lightCol: this.def.splat });
+        AS.FX.explosion(this.x, this.y, this.z + this.hc * 0.5, this.r * 0.5, { col: '#fff0c0', col2: this.def.splat || '#9a8a40', debris: false, lightCol: this.def.splat, fireCol: U.C.shade(this.def.splat || '#9a8a40', 0.35), fireCol2: U.C.shade(this.def.splat || '#9a8a40', -0.3), dustCol: this.def.splat });
         if (!this.air) g.terrain.addDecal('splat', this.x, this.y, this.r * 1.2, this.def.splat || '#6a5a2a');
       } else {
         AS.FX.explosion(this.x, this.y, this.z + this.hc * 0.5, this.r * (big ? 1.1 : 0.85));

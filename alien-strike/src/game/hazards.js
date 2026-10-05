@@ -173,14 +173,16 @@
       }
       ctx.restore();
       // haze layers
+      // these layers fill the whole device-pixel buffer
+      const BW = R.bufW, BH = R.bufH;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-      if (this.sand > 0.01) { ctx.globalAlpha = this.sand * 0.55; ctx.fillStyle = '#c0582a'; ctx.fillRect(0, 0, vw, vh); }
-      if (this.whiteout > 0.01) { ctx.globalAlpha = this.whiteout * 0.6; ctx.fillStyle = '#e8f0f8'; ctx.fillRect(0, 0, vw, vh); }
-      if (this.weather === 'spores') { ctx.globalAlpha = 0.08 + Math.sin(t * 0.3) * 0.03; ctx.fillStyle = '#7a5ac8'; ctx.fillRect(0, 0, vw, vh); }
-      if (this.flashT > 0) { ctx.globalAlpha = this.flashT * 1.5; ctx.fillStyle = '#e8f0ff'; ctx.fillRect(0, 0, vw, vh); }
+      if (this.sand > 0.01) { ctx.globalAlpha = this.sand * 0.55; ctx.fillStyle = '#c0582a'; ctx.fillRect(0, 0, BW, BH); }
+      if (this.whiteout > 0.01) { ctx.globalAlpha = this.whiteout * 0.6; ctx.fillStyle = '#e8f0f8'; ctx.fillRect(0, 0, BW, BH); }
+      if (this.weather === 'spores') { ctx.globalAlpha = 0.08 + Math.sin(t * 0.3) * 0.03; ctx.fillStyle = '#7a5ac8'; ctx.fillRect(0, 0, BW, BH); }
+      if (this.flashT > 0) { ctx.globalAlpha = this.flashT * 1.5; ctx.fillStyle = '#e8f0ff'; ctx.fillRect(0, 0, BW, BH); }
       if (this.scramble > 0) {
         ctx.globalAlpha = Math.min(0.4, this.scramble * 0.25);
-        for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? '#9ffff0' : '#e0a0ff'; ctx.fillRect(0, Math.random() * vh, vw, 1 + Math.random() * 2); }
+        for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? '#9ffff0' : '#e0a0ff'; ctx.fillRect(0, Math.random() * BH, BW, 1 + Math.random() * 2); }
       }
       ctx.restore();
     }

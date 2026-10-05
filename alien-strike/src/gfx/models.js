@@ -186,7 +186,7 @@
       retro: [[20, 3.6, 5], [20, -3.6, 5]],
       lateral: [[1.5, 7, 4.5], [-12, 6.9, 4.5]],
       lights: [{ x: -2.8, y: wingTip, z: 4.2, col: '#5aff7a' }, { x: -2.8, y: -wingTip, z: 4.2, col: '#ff4a4a' }, { x: -22, y: 0, z: 14.5, col: '#ffffff', strobe: true }],
-      beamPt: [-14.5, 0], bevel: 0.7,
+      beamPt: [-14.5, 0], bevel: 0.7, style: 'hero',
     };
   }
 

@@ -255,7 +255,7 @@
       const g = this.g;
       // major obstacles (spires, tall structures)
       for (const o of g.solids) {
-        if (!o.alive && o.alive !== undefined) continue;
+        if ((!o.alive && o.alive !== undefined) || o.groundOnly) continue;
         const dx = this.x - o.x, dy = this.y - o.y;
         const rr = this.r + o.r;
         const d2 = dx * dx + dy * dy;

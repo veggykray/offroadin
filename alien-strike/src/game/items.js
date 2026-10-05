@@ -369,7 +369,8 @@
       // long cast shadow down-right
       ctx.save(); ctx.globalAlpha *= 0.8;
       ctx.translate(this.x - ox, this.y - oy);
-      ctx.transform(1, 0, 0.55, 0.35, 0, 0);
+      // height (up the sprite) is cast toward the bottom-right, matching every other shadow
+      ctx.transform(1, 0, -0.5, -0.32, 0, 0);
       ctx.drawImage(this.sheet.shadows[0], -this.sheet.ax, -this.sheet.ay, this.sheet.w, this.sheet.h);
       ctx.restore();
     }

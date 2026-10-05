@@ -16,6 +16,7 @@
       this.time = 0;
       this.units = []; this.structures = []; this.props = []; this.pickups = []; this.groups = []; this.survivors = [];
       this.cargo = []; this.obstacles = []; this.solids = []; this.friendlies = []; this.pads = [];
+      this.landmarks = []; this.sites = [];
       this.zones = new Map(); this.byId = new Map(); this.markers = [];
       this.convoys = {}; this.convoyState = {}; this.groupSpawned = {}; this.boardedGroups = {}; this.pickedIds = {}; this.cargoPicked = {};
       this.laterQ = [];
@@ -38,6 +39,8 @@
       const m = this.mission;
       AS.Proj.init(); AS.Proj.clear();
       AS.Particles.clear();
+      AS.Renderer.flares.length = 0;
+      AS.FX.groundCol = this.world.terrain.ramp[1] || '#a08060';
       this.terrain = new AS.Terrain(this.world, m.map);
       this.camera = new AS.Camera();
       this.camera.setView(AS.Renderer.vw, AS.Renderer.vh);
@@ -53,6 +56,8 @@
       this.script = new AS.Script(this, m);
       this.spawnSpecs(m.entities || []);
       this.hazards = new AS.Hazards(this, m);
+      // scenery set pieces, haul roads and building footprints (before any chunk is rasterised)
+      AS.Landmarks.place(this); AS.Landmarks.roads(this); AS.Landmarks.foundations(this);
       // explored fog grid
       this.fogCell = 64;
       this.fogW = Math.ceil(m.map.w / this.fogCell); this.fogH = Math.ceil(m.map.h / this.fogCell);
@@ -569,6 +574,8 @@
       for (const q of this.props) if (q.alive && inV(q)) list.push(q);
       for (const q of this.pickups) if (q.alive && inV(q)) list.push(q);
       for (const o of this.obstacles) if (inV(o, 40)) list.push(o);
+      for (const l of this.landmarks) if (inV(l, Math.max(l.sheet.w * 0.5, l.sheet.ay))) list.push(l);
+      for (const s of this.sites) if (inV(s, s.r)) s.tick(AS.Renderer);
       for (const c of this.cargo) if (!c.aboard && !c.delivered && inV(c)) list.push(c);
       for (const g of this.groups) g.collectDraw(list, x0, y0, x1, y1 + 60);
       if (this.bossList) for (const b of this.bossList) if (b.extraDrawables) b.extraDrawables(list);

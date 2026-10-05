@@ -14,7 +14,7 @@
   const R = {
     canvas: null, ctx: null, buf: null, bctx: null, mid: null, mctx: null, lightBuf: null, lctx: null,
     bufW: 854, bufH: 480, vw: 854, vh: 480, res: 1, scale: 2, dpr: 1, screenW: 0, screenH: 0,
-    lights: [], texts: [], drawList: [], time: 0,
+    lights: [], flares: [], texts: [], drawList: [], time: 0,
     weatherParts: [],
     init(canvas) {
       this.canvas = canvas;
@@ -59,8 +59,9 @@
       this.bufW = bufW; this.bufH = bufH;
       this.vw = bufW / res; this.vh = bufH / res;
       this.buf.width = this.bufW; this.buf.height = this.bufH;
-      // lighting is soft, so its buffer runs at half resolution
-      this.lightScale = this.res > 1.2 ? 0.5 : 1;
+      // the light buffer matches the world buffer: its multiply composite is then a
+      // straight 1:1 blend (a scaled multiply costs far more than the extra pixels)
+      this.lightScale = 1;
       this.lightBuf.width = Math.ceil(this.bufW * this.lightScale); this.lightBuf.height = Math.ceil(this.bufH * this.lightScale);
       const fit = Math.min((w * dpr) / this.bufW, (h * dpr) / this.bufH);
       this.scale = fit; // device px per buffer px
@@ -93,6 +94,8 @@
     // device pixels per world unit at the current zoom (HUD sizing)
     worldScale(cam) { return cam.zoom * this.res * this.scale; },
     light(x, y, r, col, a) { if (this.lights.length < 220) this.lights.push({ x, y, r, col, a: a === undefined ? 0.5 : a }); },
+    /* a light that lives for a while and fades (muzzle flashes, explosions) */
+    flare(x, y, r, col, a, life) { if (this.flares.length < 80) this.flares.push({ x, y, r, col, a: a === undefined ? 0.6 : a, life: life || 0.15, max: life || 0.15 }); },
     floatText(x, y, txt, col) { if (this.texts.length < 40) this.texts.push({ x, y, txt, col: col || '#fff', t: 1.1 }); },
 
     /* Main world render. g = game world */
@@ -112,8 +115,10 @@
       T.frame = (T.frame || 0) + 1;
       const x0 = Math.floor(cam.x / S), x1 = Math.floor((cam.x + cam.w) / S);
       const y0 = Math.floor(cam.y / S), y1 = Math.floor((cam.y + cam.h) / S);
-      // chunks overlap by one device pixel so fractional positions never open seams
-      const ov = this.pixelated ? 0 : 1 / zr;
+      // chunks are rasterised at the render scale, so at zoom 1 they blit 1:1; while the
+      // camera zooms they overlap by one device pixel so scaling never opens seams
+      const exact = T.TD === this.res && Math.abs(z - 1) < 1e-4;
+      const ov = this.pixelated || exact ? 0 : 1 / zr;
       for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
         const cv = T.getChunk(cx, cy);
         ctx.drawImage(cv, cx * S - ox, cy * S - oy, S + ov, S + ov);
@@ -149,12 +154,21 @@
       AS.Particles.draw(ctx, ox, oy, 1, cam.w, cam.h);
       g.drawProjectiles(ctx, ox, oy, this);
       g.drawOverlay(ctx, ox, oy, this);
+      // cloud shadows fall on the ground and everything standing on it
+      if (AS.Atmosphere) AS.Atmosphere.under(ctx, g, this);
 
       // ---- lighting
+      for (let i = this.flares.length - 1; i >= 0; i--) {
+        const f = this.flares[i];
+        f.life -= dt;
+        if (f.life <= 0) { this.flares.splice(i, 1); continue; }
+        const k = f.life / f.max;
+        this.light(f.x, f.y, f.r * (0.7 + 0.3 * k), f.col, f.a * k * k);
+      }
       this.applyLights(g, ctx, ox, oy, vw, vh);
       // ---- weather
       if (g.hazards) g.hazards.drawWeather(ctx, ox, oy, vw, vh, this);
-      if (g.drawAtmosphere) g.drawAtmosphere(ctx, ox, oy, this);
+      if (AS.Atmosphere) AS.Atmosphere.over(ctx, g, this);
       // floating texts
       ctx.textAlign = 'center';
       ctx.font = 'bold 8px "Share Tech Mono", monospace';
