@@ -40,7 +40,7 @@
     init(target) {
       window.addEventListener('keydown', (e) => {
         if (this.captureHandler) { e.preventDefault(); this.captureHandler(e.code); return; }
-        if (e.code === 'Tab' || e.code === 'Space' || e.code.startsWith('Arrow')) {
+        if (e.code === 'Tab' || e.code === 'Space' || e.code === 'F9' || e.code.startsWith('Arrow')) {
           if (!(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT'))) e.preventDefault();
         }
         if (!this.keys.has(e.code)) this.pressed.add(e.code);

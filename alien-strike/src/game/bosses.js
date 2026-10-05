@@ -22,8 +22,8 @@
   };
 
   const DEFS = {
-    maw: { name: 'THE BASALT MAW', cls: 'creature', ai: 'none', hp: 1500, r: 30, hc: 12, speed: 120, turn: 2, organic: true, boss: true, sight: 2000,
-      weapon: W('acid', { dmg: 9, range: 420, rate: 1, speed: 260, col: '#b6ff4a', dtype: 'bio' }), model: { gen: 'worm', pal: { a: '#3a3034', b: '#6a5a5a', t: '#d0a060', g: '#ff8a3a', d: '#1a1214' }, opt: { segs: 5, rad: 14, plates: 1 }, anims: 4, dirs: 16 }, salvage: 400, splat: '#c08040' },
+    maw: { name: 'THE BASALT MAW', cls: 'creature', ai: 'none', hp: 950, r: 30, hc: 12, speed: 120, turn: 2, organic: true, boss: true, sight: 2000,
+      weapon: W('acid', { dmg: 7, range: 420, rate: 1, speed: 240, col: '#b6ff4a', dtype: 'bio' }), model: { gen: 'worm', pal: { a: '#3a3034', b: '#6a5a5a', t: '#d0a060', g: '#ff8a3a', d: '#1a1214' }, opt: { segs: 5, rad: 14, plates: 1 }, anims: 4, dirs: 16 }, salvage: 400, splat: '#c08040' },
     kharad: { name: 'KHARAD, THE DEEP MOUTH', cls: 'creature', ai: 'none', hp: 2000, r: 26, hc: 10, speed: 170, turn: 1.6, organic: true, boss: true, sight: 3000,
       weapon: W('acid', { dmg: 12, range: 400, rate: 1, speed: 280, col: '#ff9a4a', dtype: 'bio' }), model: { gen: 'worm', pal: { a: '#6a3a24', b: '#a8603a', t: '#e8c890', g: '#ffcf4a', d: '#2a140c' }, opt: { segs: 2, rad: 14, plates: 1 }, anims: 4, dirs: 16 }, salvage: 600, splat: '#d07030' },
     queen: { name: 'THE HIVE QUEEN', cls: 'air', ai: 'none', hp: 1900, r: 32, hc: 6, alt: 54, speed: 120, turn: 1.4, organic: true, boss: true, sight: 3000,
@@ -119,6 +119,7 @@
       if (this.B.onDeath) this.B.onDeath(this, g);
     }
     statusText() { return this.B.status ? this.B.status(this) : ''; }
+    extraDrawables(list) { if (this.alive && this.B.overlay) list.push({ sortY: 1e9, draw: (ctx, ox, oy, R) => this.B.overlay(this, ctx, ox, oy, R) }); }
     drawShadow(ctx, ox, oy) { if (this.B.drawShadow) return this.B.drawShadow(this, ctx, ox, oy); if (this.st === 'under') return; super.drawShadow(ctx, ox, oy); }
     draw(ctx, ox, oy, R) {
       if (this.B.draw) this.B.draw(this, ctx, ox, oy, R);
@@ -167,15 +168,18 @@
     /* ---------------- W1: THE BASALT MAW ---------------- */
     maw: {
       init(b) { b.st = 'under'; b.stT = 2; b.targetable = false; b.burrowed = true; b.emerge = 0; },
-      dmgMul(b) { return b.vulnT > 0 ? 1.6 : 0.3; },
+      // the campaign's first boss: a forgiving damage curve and a long stun window
+      dmgMul(b) { return b.vulnT > 0 ? 2.2 : 0.5; },
       surface(b, g, stunned) {
-        b.st = 'up'; b.stT = stunned ? 7 : 5.5; b.targetable = true; b.burrowed = false;
-        if (stunned) { b.vulnT = 7; g.msg('THE MAW IS STUNNED — ATTACK NOW', '#ff8a5a', 3); g.say('maw_stunned'); }
+        b.st = 'up'; b.stT = stunned ? 10 : 5; b.targetable = true; b.burrowed = false;
+        if (stunned) { b.vulnT = 10; g.msg('THE MAW IS STUNNED — ATTACK NOW', '#ff8a5a', 3); g.say('maw_stunned'); }
         AS.FX.dust(b.x, b.y, 30, '#8a6a4a', 140); AS.FX.shockwave(b.x, b.y, 110);
         AS.Audio.sfx('roar', { x: b.x, y: b.y }); AS.Audio.sfx('burrow', { x: b.x, y: b.y });
         g.camera.shake(0.6);
         const p = g.player;
-        if (p && U.dist(p.x, p.y, b.x, b.y) < 90 && !stunned) p.takeDamage(16, 'impact', b);
+        if (p && U.dist(p.x, p.y, b.x, b.y) < 90 && !stunned) p.takeDamage(10, 'impact', b);
+        // surfacing on its own: remind the player how to break the armour (throttled)
+        if (!stunned && g.time - (b.hintT || -99) > 14) { b.hintT = g.time; g.msg('ARMOURED — HOLD E AT A SEISMIC THUMPER TO STUN THE MAW', '#ffc35a', 4); }
         g.terrain.addDecal('crater', b.x, b.y, 40);
       },
       update(b, dt, g) {
@@ -195,14 +199,38 @@
           if (t && b.vulnT <= 0) {
             b.angle = U.turnToward(b.angle, Math.atan2(t.y - b.y, t.x - b.x), dt * 1.5);
             b.cd -= dt;
-            if (b.cd <= 0) { b.cd = b.enraged ? 0.9 : 1.3; fan(b, b.def.weapon, b.enraged ? 7 : 5, 0.16); }
+            if (b.cd <= 0) { b.cd = b.enraged ? 1.2 : 1.7; fan(b, b.def.weapon, b.enraged ? 5 : 4, 0.17); }
           } else if (b.vulnT > 0 && Math.random() < 0.2) AS.FX.sparks(b.x, b.py, 0, 2, '#ffd27a');
           if (b.stT <= 0) { b.st = 'under'; b.stT = U.range(3, 5); b.targetable = false; b.burrowed = true; AS.FX.dust(b.x, b.y, 20, '#8a6a4a', 100); AS.Audio.sfx('burrow', { x: b.x, y: b.y }); }
         }
         b.emergeOff = (1 - b.emerge) * 30;
       },
       act(b, act, a, g) { if (act === 'lure') { b.lure = { x: a.x, y: a.y }; if (b.st === 'up') { b.stT = 0.3; } g.msg('SEISMIC LURE ACTIVE — THE MAW IS COMING', '#ffc35a', 3); } },
-      status(b) { return b.isShielded() ? 'SHIELDED' : b.vulnT > 0 ? 'STUNNED — WEAK POINT EXPOSED' : b.st === 'under' ? 'BURROWED — USE A SEISMIC THUMPER TO LURE IT' : 'ARMOURED HIDE — DAMAGE REDUCED'; },
+      status(b) { return b.isShielded() ? 'SHIELDED' : b.vulnT > 0 ? 'STUNNED — ATTACK NOW  ' + Math.ceil(b.vulnT) + 's' : b.st === 'under' ? 'BURIED — HOLD E AT A SEISMIC THUMPER TO STUN IT' : 'ARMOURED — FIRE A THUMPER TO STUN IT'; },
+      /* make the stun mechanic impossible to miss: a pulsing beacon and a HOLD E label on
+         every ready thumper while the Maw is not already stunned */
+      overlay(b, ctx, ox, oy, R) {
+        if (b.vulnT > 0) return;
+        const g = b.g, t = g.time;
+        for (const id of ['th1', 'th2', 'th3']) {
+          const c = g.byId.get(id);
+          if (!c || c.locked) continue;
+          const ready = !c.activated, x = c.x - ox, y = c.y - oy;
+          const k = 0.5 + Math.sin(t * 4 + c.x) * 0.5;
+          ctx.save();
+          ctx.globalAlpha = ready ? 0.55 + k * 0.35 : 0.25;
+          ctx.strokeStyle = ready ? '#ffc35a' : '#8a7a5a'; ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.ellipse(x, y, 26 + k * 6, (26 + k * 6) * 0.72, 0, 0, U.TAU); ctx.stroke();
+          ctx.globalAlpha = 1;
+          ctx.font = '700 8px "Chakra Petch", sans-serif'; ctx.textAlign = 'center';
+          const txt = ready ? 'THUMPER · HOLD E TO STUN' : 'THUMPER RECHARGING';
+          const w = ctx.measureText(txt).width + 10;
+          ctx.fillStyle = 'rgba(6,12,18,0.82)'; ctx.fillRect(x - w / 2, y - 52, w, 12);
+          ctx.fillStyle = ready ? '#ffc35a' : '#a89a7a'; ctx.fillText(txt, x, y - 43);
+          ctx.restore();
+          if (ready) R.light(c.x, c.y - 10, 40, '#ffc35a', 0.25 + k * 0.2);
+        }
+      },
       draw(b, ctx, ox, oy, R) {
         if (b.st === 'under' && b.emerge <= 0.01) { ctx.fillStyle = 'rgba(40,26,16,0.55)'; ctx.beginPath(); ctx.ellipse(Math.round(b.x - ox), Math.round(b.y - oy), 26, 14, 0, 0, TAU); ctx.fill(); return; }
         drawEmerging(b, ctx, ox, oy, R, b.emerge);

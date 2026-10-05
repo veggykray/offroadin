@@ -4,7 +4,7 @@
   const Campaign = {
     profile() { return AS.Save.profile || AS.Save.loadProfile() || AS.Save.newProfile(); },
     order() { return AS.Levels.ordered().map((m) => m.id); },
-    isUnlocked(id) { const p = this.profile(); return p.unlockedMissions.includes(id); },
+    isUnlocked(id) { if (AS.Settings && AS.Settings.testMode) return true; const p = this.profile(); return p.unlockedMissions.includes(id); },
     isDone(id) { const p = this.profile(); return !!(p.missions[id] && p.missions[id].completed); },
     nextMission() {
       const p = this.profile();

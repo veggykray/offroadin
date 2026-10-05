@@ -60,6 +60,16 @@
       }, 60);
     },
     restart() { if (this.lastMission) this.startMission(this.lastMission, this.lastOpts); },
+    /* testing: finish the current mission as a success without playing it
+       (primaries are marked done, rewards and unlocks apply as normal) */
+    skipMission() {
+      const g = this.game;
+      if (!g || g.ended || (this.state !== 'play' && this.state !== 'paused')) return;
+      this.state = 'play';
+      AS.UI && AS.UI.hideAll();
+      for (const o of g.script.objs) if (o.cat === 'primary' && o.state !== 'done') { if (o.state === 'locked') o.state = 'active'; g.script.setDone(o, true); }
+      g.finish(true);
+    },
     pause() {
       if (this.state !== 'play') return;
       this.state = 'paused';
@@ -110,6 +120,7 @@
           if (I.hit('pause')) { if (this.overlay) this.overlay = null; else { this.pause(); } }
           else if (I.hit('map')) this.overlay = this.overlay === 'map' ? null : 'map';
           else if (I.hit('objectives')) AS.HUD.tabPress();
+          if (AS.Settings.testMode && I.pressed.has('F9')) this.skipMission();
           AS.HUD.tabTick(I.down('objectives'), dt);
           if (I.hit('controlMode')) { const modes = ['twinstick', 'assault', 'tactical'], names = { twinstick: 'TWIN-STICK', assault: 'ASSAULT', tactical: 'CLASSIC' }; AS.Settings.controlMode = modes[(modes.indexOf(AS.Settings.controlMode) + 1) % modes.length]; AS.Save.saveSettings(); g.msg('CONTROL MODE: ' + names[AS.Settings.controlMode], '#7fe8ff', 2); }
           g.uiBlocking = !!this.overlay;

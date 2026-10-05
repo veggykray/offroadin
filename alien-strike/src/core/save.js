@@ -12,6 +12,7 @@
     shake: true, flash: true, subtitles: true,
     controlMode: 'twinstick', // twinstick (WASD moves, mouse aims) | assault (thrust toward cursor) | tactical (A/D rotate)
     controlsV: 2,
+    testMode: false, // testing: every mission unlocked, F9 skips the current mission
     bindings: null,
   };
 

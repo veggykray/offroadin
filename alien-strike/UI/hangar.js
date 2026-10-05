@@ -40,6 +40,14 @@
       root.appendChild(left); root.appendChild(right);
       this.sheet = null;
     },
+    /* purchase receipt: shows exactly what was deducted, next to the totals */
+    receipt(what, salvage, tech) {
+      const { h } = AS.UI;
+      const r = h('div', { class: 'receipt' }, h('b', null, '−' + salvage + ' ◈' + (tech ? '  −' + tech + ' ✦' : '')), ' ', what, h('span', { class: 'dim' }, '  ·  ' + AS.Save.profile.salvage + ' ◈ left'));
+      this.root.appendChild(r);
+      setTimeout(() => r.classList.add('out'), 2600);
+      setTimeout(() => r.remove(), 3200);
+    },
     upgradesTab(list) {
       const { h, btn } = AS.UI;
       const p = AS.Save.profile, C = AS.Campaign;
@@ -50,7 +58,7 @@
           const pips = h('div', { class: 'pips' }, ...Array.from({ length: u.max }, (_, i) => h('span', { class: i < lv ? 'on' : '' })));
           const buy = h('div', { class: 'buy' },
             cost ? h('div', { class: 'cost' }, cost.salvage + ' ◈', cost.tech ? h('span', { class: 't' }, '  ' + cost.tech + ' ✦') : null) : h('div', { class: 'cost' }, 'MAXED'),
-            cost ? btn('Buy', () => { if (C.buyUpgrade(u.id)) { AS.Audio.sfx('ui_buy'); this.flashT = 1; this.render(); } else AS.Audio.sfx('denied'); }, 'small') : null);
+            cost ? btn('Buy · ' + cost.salvage + ' ◈' + (cost.tech ? ' + ' + cost.tech + ' ✦' : ''), () => { const b0 = AS.Save.profile.salvage, t0 = AS.Save.profile.tech; if (C.buyUpgrade(u.id)) { AS.Audio.sfx('ui_buy'); this.flashT = 1; this.render(); this.receipt(u.name + ' → LEVEL ' + C.upgradeLevel(u.id), b0 - AS.Save.profile.salvage, t0 - AS.Save.profile.tech); } else AS.Audio.sfx('denied'); }, 'small') : null);
           if (cost && !C.canAfford(cost)) buy.querySelector('button').disabled = true;
           list.appendChild(h('div', { class: 'upg' }, h('div', null, h('span', { class: 'nm' }, u.name), '  ', h('span', { class: 'tag' }, u.effect)), buy, pips, h('div', { class: 'ds' }, u.desc)));
         }
@@ -67,7 +75,7 @@
           let act;
           if (eq) act = h('span', { class: 'tag amber' }, 'EQUIPPED');
           else if (owned) act = btn('Equip', () => { C.equip(id); AS.Audio.sfx('confirm'); this.render(); }, 'small');
-          else if (unlocked) { act = h('div', null, h('div', { class: 'cost mono', style: 'color:#e8c24a;font-size:12px;text-align:right' }, (w.fab.salvage + ' ◈') + (w.fab.tech ? '  ' + w.fab.tech + ' ✦' : '')), btn('Fabricate', () => { if (C.fabricate(id)) { AS.Audio.sfx('ui_buy'); this.render(); } else AS.Audio.sfx('denied'); }, 'small')); if (!C.canAfford(w.fab)) act.querySelector('button').disabled = true; }
+          else if (unlocked) { act = h('div', null, h('div', { class: 'cost mono', style: 'color:#e8c24a;font-size:12px;text-align:right' }, (w.fab.salvage + ' ◈') + (w.fab.tech ? '  ' + w.fab.tech + ' ✦' : '')), btn('Fabricate · ' + w.fab.salvage + ' ◈', () => { const b0 = AS.Save.profile.salvage, t0 = AS.Save.profile.tech; if (C.fabricate(id)) { AS.Audio.sfx('ui_buy'); this.render(); this.receipt(w.name + ' FABRICATED', b0 - AS.Save.profile.salvage, t0 - AS.Save.profile.tech); } else AS.Audio.sfx('denied'); }, 'small')); if (!C.canAfford(w.fab)) act.querySelector('button').disabled = true; }
           else act = h('span', { class: 'tag' }, 'BLUEPRINT MISSING');
           list.appendChild(h('div', { class: 'weapon-card' + (eq ? ' eq' : '') + (!unlocked ? ' locked' : '') }, h('div', { class: 'nm' }, unlocked ? w.name : '??? — UNKNOWN SYSTEM'), h('div', { class: 'act' }, act), h('div', { class: 'ds' }, unlocked ? w.desc : 'Recover the blueprint during the campaign.')));
         }
@@ -77,7 +85,7 @@
       const { h, btn } = AS.UI;
       const p = AS.Save.profile, st = AS.Stats.compute(p);
       list.appendChild(h('div', { class: 'cat-title' }, 'CONSUMABLES'));
-      const b = btn('Buy repair kit', () => { if (AS.Campaign.buyKit()) { AS.Audio.sfx('ui_buy'); this.render(); } else AS.Audio.sfx('denied'); }, 'small');
+      const b = btn('Buy repair kit · ' + AS.Data.repairKitCost + ' ◈', () => { const b0 = p.salvage; if (AS.Campaign.buyKit()) { AS.Audio.sfx('ui_buy'); this.render(); this.receipt('NANITE REPAIR KIT', b0 - AS.Save.profile.salvage, 0); } else AS.Audio.sfx('denied'); }, 'small');
       if (p.repairKits >= st.kitCap || p.salvage < AS.Data.repairKitCost) b.disabled = true;
       list.appendChild(h('div', { class: 'upg' }, h('div', null, h('span', { class: 'nm' }, 'NANITE REPAIR KIT'), '  ', h('span', { class: 'tag' }, p.repairKits + ' / ' + st.kitCap)), h('div', { class: 'buy' }, h('div', { class: 'cost' }, AS.Data.repairKitCost + ' ◈'), b), h('div', { class: 'ds' }, 'Press R in flight to restore 40% hull over 1.4 seconds. Kits not used are kept between missions. Upgrade the kit rack to carry more.')));
       list.appendChild(h('div', { class: 'cat-title' }, 'STANDARD ISSUE'));
