@@ -248,7 +248,7 @@
       ]);
       // small hoodoo behind-left of the butte (drawn first: it sits to the north)
       const sx = -R * 0.55, sy = -R * 0.7, sh = H * rg.range(0.75, 1);
-      const sb = jag(9, R * 0.3, seed + 8, 0.2, rg.range(0, TAU));
+      const sb = jag(9, R * 0.4, seed + 8, 0.2, rg.range(0, TAU));
       const s2 = stack(sb, [
         { z0: 0, z1: sh * 0.88, kf: (u) => (1.15 - 0.4 * u) * (0.92 + 0.08 * Math.cos(u * 13)) * (1 - 0.3 * U.smoothstep(0.7, 1, u)) },
         { z0: sh * 0.88, z1: sh, kf: (u) => 1.05 + 0.05 * u },
@@ -299,12 +299,12 @@
     o = o || {};
     const p = pickPal(pal, o, { a: '#1e4a1a', b: '#3e7a2a', t: '#9ad04a', g: '#ffef7a' });
     const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 3);
-    const CR = R * rg.range(2.35, 2.75);
-    const zc = H * rg.range(0.6, 0.66), D = H - zc;
+    const CR = Math.max(R * rg.range(2.35, 2.75), H * rg.range(0.44, 0.5));
+    const zc = H * rg.range(0.54, 0.6), D = H - zc;
     const bark = '#7a6650', barkT = '#a89070', barkD = '#3a2c22';
     const parts = [];
     // buttress roots: fins that taper from wide tips at the ground into the trunk
-    const rt = R * 0.4, nR = 5 + rg.int(0, 2), roots = [];
+    const rt = Math.max(R * 0.4, H * 0.07), nR = 5 + rg.int(0, 2), roots = [];
     for (let i = 0; i < nR; i++) roots.push({ a: (i / nR) * TAU + rg.range(-0.25, 0.25), L: R * rg.range(0.95, 1.2) });
     const rootPoly = (k) => {
       const pts = [];
@@ -357,9 +357,10 @@
       c.restore();
     };
     const dome = (zt, flare) => (zt < flare ? lerp(0.8, 1, zt / flare) : Math.sqrt(Math.max(0.05, 1 - Math.pow((zt - flare) / (1 - flare) * 0.78, 2))));
-    const c0s = mixS(p.a, '#10301c', 0.35), c0t = mixS(p.b, '#2e6a2a', 0.3);
-    const c1s = mixS(p.b, '#2e6428', 0.4), c1t = mixS(p.b, p.t, 0.45);
-    const c2s = mixS(p.b, p.t, 0.35), c2t = mixS(p.t, '#d8f070', 0.3);
+    // deep emerald/teal crown (hue-shifted off the yellow-green jungle floor), lime only where the sun hits
+    const c0s = mixS(p.a, '#0c2e2a', 0.7), c0t = mixS(p.b, '#1e5a48', 0.7);
+    const c1s = mixS(p.b, '#1a4e40', 0.7), c1t = mixS(p.b, '#3a8a5e', 0.65);
+    const c2s = mixS(p.b, '#2e7452', 0.6), c2t = mixS(p.t, '#b4e070', 0.35);
     parts.push({ z0: zc, z1: zc + D * 0.5, side: c0s, top: c0t, ao: 0.55, shape: (c, zt) => puffs(c, L0, dome(zt, 0.3)), detail: leafDetail(L0, dome(1, 0.3), c1t, c0s) });
     parts.push({ z0: zc + D * 0.32, z1: zc + D * 0.8, side: c1s, top: c1t, ao: 0.45, shape: (c, zt) => puffs(c, L1, dome(zt, 0.2)), detail: leafDetail(L1, dome(1, 0.2), c2t, c1s) });
     parts.push({ z0: zc + D * 0.62, z1: H, side: c2s, top: c2t, ao: 0.4, shape: (c, zt) => puffs(c, L2, dome(zt, 0.15)),
@@ -499,6 +500,346 @@
       detail: (c) => { S.lines(c, 'rgba(30,40,40,0.5)', 0.45, chunk.slice(0, 6)); } }));
     parts.push(paint(st3, Hb + 1, Hc - 1.2, glass, { band: winBand, dash: [1.7, 1.15, 0.9], w: 0.95 }));
     return { r: R * 1.4 + 2, h: Hc + 2, parts, style: 'prop', bevel: 0.8 };
+  };
+
+  // Index (into a flat point array) of the edge whose outward normal points most toward +y.
+  function southEdge(pts) {
+    const n = pts.length, sg = area(pts) > 0 ? 1 : -1;
+    let best = 0, bv = -2;
+    for (let i = 0; i < n; i += 2) { const j = (i + 2) % n; const ex = pts[j] - pts[i], ey = pts[j + 1] - pts[i + 1], L = Math.hypot(ex, ey) || 1; const ny = -sg * ex / L; if (ny > bv) { bv = ny; best = i; } }
+    return best;
+  }
+  // Point at parameter t along edge i of a polygon.
+  const onEdge = (pts, i, t) => { const j = (i + 2) % pts.length; return [lerp(pts[i], pts[j], t), lerp(pts[i + 1], pts[j + 1], t)]; };
+
+  /* ==================================================================
+   * W6 OBSIDIAN FORGE — faceted volcanic-glass spires: 3-5 sharp shards
+   * with cool specular light faces, near-black shadow faces and a white
+   * arris glint; glowing magma veins zig-zag up the camera-facing faces and
+   * a cracked glassy scree apron glows orange at the base (opt.glowVein).
+   * ================================================================== */
+  M.obsObsidian = function (pal, o) {
+    o = o || {};
+    const p = pickPal(pal, o, { a: '#141012', b: '#2a2226', t: '#3a3034', g: '#ff6a1a' });
+    const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 6);
+    const veins = o.glowVein !== false;
+    const glassS = '#2a2434', glassT = '#6a6684', spec = '#a2aad2', darkF = '#0a080c', vein = p.g, hot = '#ffcf6a';
+    const parts = [];
+    const apron = jag(12, R * 1.1, seed + 2, 0.3, rg.range(0, 1), 0, R * 0.06, 1.05, 0.9);
+    parts.push({ z0: 0, z1: 1.6, side: '#141016', top: '#3a3444', ao: 0.2, bevel: false, shape: (c) => S.poly(c, apron),
+      detail: (c) => {
+        clipTo(c, () => S.poly(c, apron));
+        if (veins) {
+          const g = c.createRadialGradient(0, R * 0.1, 0, 0, R * 0.1, R * 1.1);
+          g.addColorStop(0, C.str(vein, 0.75)); g.addColorStop(0.5, C.str(vein, 0.3)); g.addColorStop(1, C.str(vein, 0));
+          c.fillStyle = g; c.fill();
+          const r2 = rngOf(seed, 13);
+          for (let i = 0; i < 6; i++) { const a = r2.range(0, TAU), d0 = R * 0.3, d1 = R * r2.range(0.8, 1.1), m = a + r2.range(-0.3, 0.3); S.lines(c, hot, 0.55, [Math.cos(a) * d0, Math.sin(a) * d0, Math.cos(m) * (d0 + d1) / 2, Math.sin(m) * (d0 + d1) / 2, Math.cos(m) * (d0 + d1) / 2, Math.sin(m) * (d0 + d1) / 2, Math.cos(a) * d1, Math.sin(a) * d1]); }
+        }
+        const r3 = rngOf(seed, 14);
+        for (let i = 0; i < 10; i++) { const a = r3.range(0, TAU), d = R * r3.range(0.5, 1.05); S.fillPoly(c, i % 3 ? '#4a4660' : '#b8c0e0', [Math.cos(a) * d, Math.sin(a) * d, Math.cos(a) * d + 1.6, Math.sin(a) * d - 0.6, Math.cos(a) * d + 0.8, Math.sin(a) * d + 1]); }
+        c.restore();
+      } });
+    const n = 3 + rg.int(0, 2), sp = [];
+    for (let i = 0; i < n; i++) {
+      const main = i === 0, a = rg.range(0, TAU), d = main ? R * 0.08 : R * rg.range(0.42, 0.62);
+      const rr = main ? R * 0.5 : R * rg.range(0.26, 0.36);
+      const bx = Math.cos(a) * d, by = Math.sin(a) * d * 0.85, h = main ? H : H * rg.range(0.35, 0.7);
+      const out = Math.hypot(bx, by) || 1, lk = h * rg.range(0.06, 0.16);
+      sp.push({ base: jag(5 + rg.int(0, 2), rr, seed + i * 17, 0.35, rg.range(0, TAU)), bx, by, h, i, lean: [bx / out * lk, by / out * lk], blunt: !main && rg.chance(0.35) });
+    }
+    sp.sort((a, b) => a.by - b.by);
+    let nv = 0;
+    for (const s of sp) {
+      const st = stack(s.base, [{ z0: 0, z1: s.h, kf: (u) => (s.blunt ? 0.32 : 0.04) + (s.blunt ? 0.74 : 0.98) * Math.pow(1 - u, 0.8) }], s.bx, s.by, s.lean, true);
+      parts.push(st.part(st.tiers[0], glassS, glassT, { ao: 0.5 }));
+      parts.push(paint(st, 0.4, s.h - 0.5, spec, { test: litFace, w: 0.95 }));
+      parts.push(paint(st, 0.4, s.h - 0.5, darkF, { test: darkFace, w: 0.95 }));
+      const vi = extremeVertex(s.base, -0.7, 0.7);
+      parts.push(streak(st, 0.4, s.h * 0.94, '#f4f6ff', 0.45, (pts) => [pts[vi], pts[vi + 1]], { flat: true }));
+      if (veins && nv < 3 && s.h > H * 0.4) {
+        nv++;
+        const ei = southEdge(s.base), ph = rg.range(0, 6), top = s.h * rg.range(0.45, 0.7);
+        parts.push({ z0: 0.5, z1: top, side: vein, top: hot, stroke: 0.85, flat: true, bevel: false,
+          shape: (c, zt) => { const z = lerp(0.5, top, zt), pts = st.at(z); const t = 0.5 + 0.3 * Math.sin(z * 0.32 + ph) + 0.08 * Math.sin(z * 1.3); const q = onEdge(pts, ei, t); c.moveTo(q[0], q[1] + 0.2); c.lineTo(q[0] + 0.02, q[1] + 0.2); } });
+      }
+    }
+    return { r: R * 1.4 + 2, h: H + 2, parts, style: 'prop', bevel: 0.8 };
+  };
+
+  /* ==================================================================
+   * W7 THE SPORE MOON — giant mushroom cluster: one towering mushroom plus
+   * 1-2 small ones, pale ribbed stems with a bulbous foot and a frilled
+   * skirt, magenta caps with a cream gill rim, pale and glowing cyan spots
+   * on dome and wall, on a mycelium mat.
+   * ================================================================== */
+  M.obsMushroom = function (pal, o) {
+    o = o || {};
+    const p = pickPal(pal, o, { a: '#6a3a7a', b: '#b06ac8', t: '#e0a0f0', g: '#9ffff0' });
+    const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 7);
+    const capS = mixS(p.a, '#7a1a52', 0.6), capT = mixS(p.b, '#e4508a', 0.6), stemS = '#b4a0c4', stemT = '#f2e8f4', gill = '#f6dcea', spotC = '#fff0f6', glow = p.g;
+    const parts = [];
+    parts.push({ z0: 0, z1: 0.8, side: '#3e3050', top: '#7a6a90', bevel: false, ao: 0.2, shape: (c) => S.blob(c, 0, R * 0.12, R * 1.15, seed, 12, 0.35),
+      detail: (c) => {
+        const r2 = rngOf(seed, 15);
+        for (let i = 0; i < 9; i++) { const a = r2.range(0, TAU), d = R * r2.range(0.3, 1.05); S.lines(c, 'rgba(240,220,250,0.45)', 0.35, [Math.cos(a) * R * 0.2, Math.sin(a) * R * 0.2, Math.cos(a + 0.3) * d, Math.sin(a + 0.3) * d]); }
+        for (let i = 0; i < 6; i++) { const a = r2.range(0, TAU), d = R * r2.range(0.5, 1.0); S.dot(c, C.str(glow, 0.5), Math.cos(a) * d, Math.sin(a) * d, 1.1); S.dot(c, glow, Math.cos(a) * d, Math.sin(a) * d, 0.5); }
+      } });
+    const ms = [{ x: 0, y: -R * 0.05, s: 1, h: H, main: true }];
+    const nSm = 1 + rg.int(0, 1), a0 = rg.range(0, TAU);
+    for (let i = 0; i < nSm; i++) { const a = a0 + i * 2.4, d = R * rg.range(0.75, 0.95); ms.push({ x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8, s: rg.range(0.32, 0.46), h: H * rg.range(0.3, 0.42) }); }
+    ms.sort((a, b) => a.y - b.y);
+    for (const m of ms) {
+      const stemR = R * (m.main ? 0.3 : 0.75 * m.s), Hs = m.h * 0.8, capR = R * (m.main ? rg.range(1.4, 1.6) : 1.45 * m.s), cT = Math.max(3, m.h * 0.12);
+      const EX = 1.12, EY = 0.86;
+      const lean = [rg.range(-0.1, 0.1) * Hs, rg.range(-0.1, 0.02) * Hs];
+      const st = stack(ngon(12, stemR, 0.1), [{ z0: 0, z1: Hs + 1, kf: (u) => 1 + 0.6 * (1 - U.smoothstep(0, 0.22, u)) - 0.12 * u }], m.x, m.y, lean);
+      const cc = st.centre(Hs);
+      parts.push(st.part(st.tiers[0], stemS, stemT, { ao: 0.45 }));
+      // stem ribs
+      parts.push(streak(st, 2, Hs - 1, hexS(stemS, -0.18), 0.4, (pts, z) => { const ce = st.centre(z), k = 1 + 0.6 * (1 - U.smoothstep(0, 0.22, z / (Hs + 1))) - 0.12 * z / (Hs + 1), q = []; for (const a of [0.55, 1.2, 1.9, 2.55]) q.push(ce[0] + Math.cos(a) * stemR * k, ce[1] + Math.sin(a) * stemR * k); return q; }));
+      // gill rim under the cap, then cap wall and dome
+      parts.push({ z0: Hs - 2.2, z1: Hs - 0.4, side: gill, top: gill, ao: 0.15, shape: (c) => S.ell(c, cc[0], cc[1], capR * EX * 0.95, capR * EY * 0.95) });
+      const rimZ = Hs + cT * 0.32;
+      parts.push({ z0: Hs, z1: rimZ, side: capS, top: capT, ao: 0.3, shape: (c, zt) => S.ell(c, cc[0], cc[1], capR * EX * (0.97 + 0.03 * zt), capR * EY * (0.97 + 0.03 * zt)) });
+      const domeK = (u) => Math.sqrt(Math.max(0.04, 1 - Math.pow(u * 0.8, 2)));
+      const spots = [];
+      for (let i = 0; i < (m.main ? 7 : 3); i++) spots.push({ a: rg.range(0.35, 2.8), u: rg.range(0.15, 0.6), r: capR * rg.range(0.05, 0.08), g: i % 3 === 0 });
+      const topSpots = [];
+      for (let i = 0; i < (m.main ? 7 : 3); i++) { const a = rg.range(0, TAU), d = rg.range(0.1, 0.5) * capR; topSpots.push([cc[0] + Math.cos(a) * d * EX, cc[1] + Math.sin(a) * d * EY, capR * rg.range(0.05, 0.1), i % 3 === 0]); }
+      parts.push({ z0: rimZ, z1: Hs + cT, side: capS, top: capT, ao: 0.2, shape: (c, zt) => S.ell(c, cc[0], cc[1], capR * EX * domeK(zt), capR * EY * domeK(zt)),
+        detail: (c) => {
+          const rT = capR * domeK(1);
+          clipTo(c, () => S.ell(c, cc[0], cc[1], rT * EX, rT * EY));
+          const g = c.createRadialGradient(cc[0] - rT * 0.35, cc[1] - rT * 0.4, 0, cc[0], cc[1], rT);
+          g.addColorStop(0, 'rgba(255,200,230,0.55)'); g.addColorStop(0.6, 'rgba(255,200,230,0)'); c.fillStyle = g; c.fill();
+          for (const q of topSpots) { S.dot(c, q[3] ? C.str(glow, 0.5) : spotC, q[0], q[1], q[2] * (q[3] ? 1.5 : 1)); if (q[3]) S.dot(c, '#eafffb', q[0], q[1], q[2] * 0.6); }
+          c.restore();
+        } });
+      parts.push({ z0: rimZ, z1: Hs + cT * 0.9, side: spotC, top: spotC, flat: true, bevel: false,
+        shape: (c, zt) => {
+          for (const q of spots) {
+            const dz = 0.22, du = (zt - q.u) / dz;
+            if (Math.abs(du) >= 1) continue;
+            const rr = capR * domeK(zt) * 0.96, k = Math.sqrt(1 - du * du);
+            S.circ(c, cc[0] + Math.cos(q.a) * rr * EX, cc[1] + Math.sin(q.a) * rr * EY, q.r * k);
+          }
+        } });
+    }
+    return { r: R * 1.95 + 2, h: H + 2, parts, style: 'prop', bevel: 0.8 };
+  };
+
+  /* ==================================================================
+   * W8 STORM GIANT — sky-rock pillar: a weathered slate column that pinches
+   * at the waist and flares under a grassy, wind-combed cap, crackling blue
+   * storm veins on its face, and 2-3 small floating rock islets drifting
+   * beside it (inverted cones, some with grass) — a piece of the floating
+   * archipelago.
+   * ================================================================== */
+  M.obsSkyPillar = function (pal, o) {
+    o = o || {};
+    const p = pickPal(pal, o, { a: '#4a4048', b: '#6a6068', t: '#8a8088', g: '#9fdcff' });
+    const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 8);
+    const rock = mixS(p.b, '#5e5a74', 0.35), rockT = mixS(p.t, '#b0aac0', 0.4), rockD = mixS(p.a, '#1e1a26', 0.5), pale = mixS(rock, '#c8c0d0', 0.35);
+    const grassS = '#36602e', grassT = '#94c860', glow = p.g;
+    const parts = [];
+    const apron = jag(11, R * 1.08, seed + 1, 0.3, rg.range(0, 1), 0, R * 0.06);
+    parts.push({ z0: 0, z1: 2, side: rockD, top: rock, ao: 0.3, shape: (c) => S.poly(c, apron) });
+    const Hp = H * 0.9, ph = rg.range(0, 6);
+    const base = jag(11, R * 0.72, seed + 2, 0.3, rg.range(0, TAU));
+    const pk = (u) => (1.15 - 0.6 * U.smoothstep(0, 0.55, u) + 0.75 * U.smoothstep(0.55, 1, u)) * (0.93 + 0.07 * Math.cos(u * 11 + ph));
+    const st = stack(base, [{ z0: 0, z1: Hp, kf: pk }, { z0: Hp, z1: Hp + 3.5, kf: (u) => pk(1) * (1.04 - 0.04 * u) }], 0, 0, [rg.range(-3, 3), rg.range(-2, 0)]);
+    // floating islets
+    const isl = [];
+    const ni = 2 + rg.int(0, 1), a0 = rg.range(0, TAU);
+    for (let i = 0; i < ni; i++) {
+      const a = a0 + i * (TAU / ni) + rg.range(-0.4, 0.4), d = R * rg.range(1.25, 1.5), rs = R * rg.range(0.32, 0.44);
+      const zc = H * rg.range(0.3, 0.7), hh = rs * 1.5;
+      const ib = jag(8, rs, seed + 30 + i, 0.3, rg.range(0, TAU));
+      isl.push({ x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8, st: null, ib, z0: zc - hh * 0.6, z1: zc + hh * 0.4, grass: rg.chance(0.6), rs });
+    }
+    const isletParts = (q) => {
+      const s2 = stack(q.ib, [{ z0: q.z0, z1: q.z1, kf: (u) => 0.12 + 0.88 * Math.pow(u, 0.55) }], q.x, q.y);
+      const out = [s2.part(s2.tiers[0], rock, q.grass ? grassT : rockT, { ao: 0.5 }), paint(s2, q.z0 + 0.5, q.z1 - 0.5, rockD, { test: darkFace, w: 0.8 })];
+      if (q.grass) out.push(paint(s2, q.z1 - 1.4, q.z1 - 0.2, grassS, { w: 0.9 }));
+      return out;
+    };
+    for (const q of isl) if (q.y < 0) parts.push(...isletParts(q));
+    parts.push(st.part(st.tiers[0], rock, rockT, { ao: 0.5 }));
+    parts.push(paint(st, 3, Hp - 2, pale, { band: (z) => frac((z + ph * 3) / 13) < 0.1, w: 0.8 }));
+    parts.push(paint(st, 1, Hp - 1, rockD, { test: darkFace, w: 0.9 }));
+    // erosion grooves
+    parts.push(streak(st, 2, Hp * 0.8, rockD, 0.5, (pts) => { const q = [], k = pts.length / 2; for (const i of [Math.floor(k * 0.2), Math.floor(k * 0.4)]) q.push(pts[i * 2], pts[i * 2 + 1]); return q; }));
+    // storm veins
+    const ei = southEdge(base), vph = rg.range(0, 6);
+    parts.push({ z0: H * 0.12, z1: H * 0.62, side: glow, top: '#ffffff', stroke: 0.7, flat: true, bevel: false,
+      shape: (c, zt) => { const z = lerp(H * 0.12, H * 0.62, zt), pts = st.at(z); const t = 0.5 + 0.32 * Math.sin(z * 0.5 + vph) * Math.sign(Math.sin(z * 0.21)); const q = onEdge(pts, ei, t); c.moveTo(q[0], q[1] + 0.2); c.lineTo(q[0] + 0.02, q[1] + 0.2); } });
+    // grass cap with overhanging turf lip
+    const capTop = st.at(Hp + 3.5), ce = st.centre(Hp + 3.5);
+    parts.push(st.part(st.tiers[1], grassS, grassT, { ao: 0.25,
+      detail: (c) => {
+        clipTo(c, () => S.poly(c, capTop));
+        const g = c.createRadialGradient(ce[0] - R * 0.3, ce[1] - R * 0.3, 0, ce[0], ce[1], R);
+        g.addColorStop(0, 'rgba(230,255,180,0.4)'); g.addColorStop(1, 'rgba(230,255,180,0)'); c.fillStyle = g; c.fill();
+        const r2 = rngOf(seed, 16);
+        for (let i = 0; i < 9; i++) { const a = r2.range(0, TAU), d = R * r2.range(0.1, 0.6); const x = ce[0] + Math.cos(a) * d, y = ce[1] + Math.sin(a) * d; S.lines(c, 'rgba(40,80,30,0.6)', 0.45, [x, y, x + 2.2, y - 0.6]); }
+        c.restore();
+      } }));
+    // wind-combed shrubs on the summit
+    const bush = []; for (let i = 0; i < 3; i++) { const a = rg.range(0, TAU), d = R * rg.range(0.2, 0.5); bush.push([ce[0] + Math.cos(a) * d, ce[1] + Math.sin(a) * d * 0.8, R * rg.range(0.16, 0.24)]); }
+    parts.push({ z0: Hp + 3.5, z1: Hp + 7, side: '#2a5228', top: '#6aa448', ao: 0.4, shape: (c, zt) => { for (const b of bush) S.blob(c, b[0], b[1], b[2] * (1 - zt * zt * 0.5), seed + b[2] * 9, 8, 0.25); } });
+    // storm crystal on the summit (lightning rod)
+    if (rg.chance(0.6)) {
+      const cx = ce[0] + R * 0.2, cy = ce[1] - R * 0.1;
+      parts.push({ z0: Hp + 3.5, z1: Hp + 12, side: hexS(glow, -0.3), top: '#eaf8ff', flat: true, shape: (c, zt) => { const k = 1 - zt * 0.85; S.poly(c, [cx - 1.6 * k, cy, cx, cy - 1.2 * k, cx + 1.6 * k, cy, cx, cy + 1.2 * k]); S.poly(c, [cx + 2.2 - 1 * k, cy + 1.5, cx + 2.2, cy + 1.5 - 0.8 * k, cx + 2.2 + 1 * k, cy + 1.5, cx + 2.2, cy + 1.5 + 0.8 * k]); } });
+    }
+    for (const q of isl) if (q.y >= 0) parts.push(...isletParts(q));
+    return { r: R * 2.0 + 2, h: H + 14, parts, style: 'prop', bevel: 0.8 };
+  };
+
+  /* ==================================================================
+   * W9 THE DEAD MACHINE — gear tower: a riveted dark-iron octagonal tower on
+   * a hazard-striped plinth, 2-3 brass gears turning at different heights
+   * (4 anim frames loop one tooth), glowing furnace vents, piston rods, a
+   * lit control housing and a smokestack with a blinking beacon.
+   * ================================================================== */
+  M.obsGearTower = function (pal, o) {
+    o = o || {};
+    const p = pickPal(pal, o, { a: '#4a4e56', b: '#7a808a', t: '#9aa0aa', g: '#ff9a3a', d: '#1a1c20' });
+    const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 9);
+    const iron = '#3e3a36', ironT = '#7a7064', steel = mixS(p.a, '#34363c', 0.4), steelT = mixS(p.b, '#9a9aa0', 0.3), brass = '#c49a4a', brassS = '#7a5a28', glow = p.g, trim = '#e8a83a';
+    const parts = [];
+    const rot8 = Math.PI / 8;
+    const plinth = ngon(8, R * 0.98, rot8), shaft = ngon(8, R * 0.56, rot8), house = ngon(8, R * 0.74, rot8);
+    const zP = H * 0.1, zS = H * 0.74, zH = H * 0.85;
+    parts.push({ z0: 0, z1: zP, side: iron, top: ironT, ao: 0.4, shape: (c) => S.poly(c, plinth),
+      detail: (c) => {
+        // hazard ring + bolts
+        for (let i = 0; i < 16; i++) { const a0 = (i / 16) * TAU, a1 = a0 + TAU / 32; const r1 = R * 0.9, r2 = R * 0.76; S.fillPoly(c, i % 2 ? '#24221f' : trim, [Math.cos(a0) * r1, Math.sin(a0) * r1, Math.cos(a1) * r1, Math.sin(a1) * r1, Math.cos(a1) * r2, Math.sin(a1) * r2, Math.cos(a0) * r2, Math.sin(a0) * r2]); }
+      } });
+    const stP = stack(plinth, [{ z0: 0, z1: zP, k0: 1, k1: 1 }]);
+    parts.push(paint(stP, zP * 0.3, zP * 0.6, '#24221f', { dash: [1.6, 1.4, 0.6], w: 0.9 }));
+    // gears: centres off-axis so most of each gear stands proud of the shaft
+    const ng = 2 + rg.int(0, 1), ga = rg.range(0, TAU), gears = [];
+    for (let i = 0; i < ng; i++) {
+      const a = ga + i * 2.2, zr = H * (0.26 + i * 0.22) + rg.range(-2, 2), gr = R * rg.range(0.55, 0.72), n = 10 + rg.int(0, 4);
+      gears.push({ x: Math.cos(a) * R * 0.48, y: Math.sin(a) * R * 0.42, z: zr, r: gr, n, dir: i % 2 ? -1 : 1, ph: rg.range(0, 1) });
+    }
+    const gearPts = (g, anim) => {
+      const pts = [], rot = g.ph + g.dir * anim * TAU / g.n;
+      for (let i = 0; i < g.n; i++) {
+        const a = rot + (i / g.n) * TAU, w = TAU / g.n;
+        const ro = g.r, ri = g.r * 0.8;
+        pts.push(g.x + Math.cos(a - w * 0.5) * ri, g.y + Math.sin(a - w * 0.5) * ri, g.x + Math.cos(a - w * 0.2) * ro, g.y + Math.sin(a - w * 0.2) * ro, g.x + Math.cos(a + w * 0.2) * ro, g.y + Math.sin(a + w * 0.2) * ro);
+      }
+      return pts;
+    };
+    const gearParts = (g) => [
+      { z0: g.z, z1: g.z + 2.6, side: brassS, top: brass, ao: 0.25, shape: (c, zt, an) => S.poly(c, gearPts(g, an)),
+        detail: (c, an) => {
+          const rot = g.ph + g.dir * an * TAU / g.n;
+          for (let k = 0; k < 5; k++) { const a = rot + (k / 5) * TAU; S.dot(c, '#3a2a14', g.x + Math.cos(a) * g.r * 0.5, g.y + Math.sin(a) * g.r * 0.5, g.r * 0.14); }
+          S.lines(c, 'rgba(255,240,200,0.4)', 0.4, [g.x - g.r * 0.7, g.y - g.r * 0.3, g.x - g.r * 0.3, g.y - g.r * 0.7]);
+        } },
+      { z0: g.z + 2.6, z1: g.z + 3.6, side: '#4a4440', top: '#a09484', shape: (c) => S.circ(c, g.x, g.y, g.r * 0.22), detail: (c) => S.dot(c, '#2a2622', g.x, g.y, g.r * 0.09) },
+    ];
+    const stS = stack(shaft, [{ z0: zP, z1: zS, k0: 1, k1: 0.94 }]);
+    for (const g of gears) if (g.y < -R * 0.1) parts.push(...gearParts(g));
+    // piston rods
+    const rods = [[-R * 0.62, R * 0.2], [R * 0.3, R * 0.6]];
+    parts.push({ z0: zP, z1: H * 0.52, side: '#8a5a3a', top: '#d09a6a', ao: 0.3, shape: (c) => { for (const q of rods) S.circ(c, q[0], q[1], 1.2); } });
+    parts.push(stS.part(stS.tiers[0], steel, steelT, { ao: 0.45 }));
+    parts.push(paint(stS, zP + 2, zS - 1, hexS(steel, -0.45), { band: (z) => frac(z / 9) < 0.08, w: 0.9 }));
+    parts.push(paint(stS, zP + 1, zS - 1, hexS(steel, -0.35), { test: darkFace, w: 0.9 }));
+    // furnace vents (flicker between frames)
+    const ventBand = (z) => { const f = (z - zP) / (zS - zP); return (f > 0.18 && f < 0.27) || (f > 0.56 && f < 0.63); };
+    parts.push(paint(stS, zP, zS, glow, { band: ventBand, dash: [1.1, 1.0, 1.4], w: 0.9, extra: { flat: true, when: (an) => an < 0.5 } }));
+    parts.push(paint(stS, zP, zS, '#ffd27a', { band: ventBand, dash: [1.1, 1.0, 1.4], w: 0.9, extra: { flat: true, when: (an) => an >= 0.5 } }));
+    for (const g of gears) if (g.y >= -R * 0.1) parts.push(...gearParts(g));
+    // control housing with lit window band
+    const stH = stack(house, [{ z0: zS, z1: zH, k0: 0.92, k1: 1 }]);
+    parts.push(stH.part(stH.tiers[0], iron, ironT, { ao: 0.3,
+      detail: (c) => { S.lines(c, 'rgba(20,18,16,0.55)', 0.45, [-R * 0.5, 0, R * 0.5, 0, 0, -R * 0.5, 0, R * 0.5]); S.dot(c, '#2a2622', R * 0.3, -R * 0.25, 2.4); S.dot(c, '#5a524a', R * 0.3, -R * 0.25, 1.2); } }));
+    parts.push(paint(stH, zS + (zH - zS) * 0.45, zS + (zH - zS) * 0.75, glow, { dash: [1.6, 0.9, 0.8], w: 0.9, extra: { flat: true } }));
+    // smokestack + beacon
+    const sx = -R * 0.25, sy = R * 0.1;
+    parts.push({ z0: zH, z1: H, side: '#2e2b28', top: '#5a524a', ao: 0.3, shape: (c, zt) => S.circ(c, sx, sy, R * 0.2 * (1 - zt * 0.15)), detail: (c) => { S.dot(c, '#141210', sx, sy, R * 0.13); S.dot(c, C.str(glow, 0.5), sx, sy, R * 0.07); } });
+    parts.push(paint(stack(ngon(10, R * 0.2, 0), [{ z0: zH, z1: H, k0: 1, k1: 0.85 }], sx, sy), H - 6, H - 3, trim, { w: 0.9 }));
+    parts.push({ z0: zH, z1: zH + 2.5, side: '#7a1a10', top: '#ff4a2a', flat: true, bevel: false, when: (an) => an < 0.25 || (an >= 0.5 && an < 0.75), shape: (c) => S.circ(c, R * 0.5, R * 0.4, 1) });
+    return { r: R * 1.35 + 2, h: H + 2, parts, style: 'prop', bevel: 0.8 };
+  };
+
+  /* ==================================================================
+   * W10 THE FIRST WORLD — Choir carved column: stepped plinth, an octagonal
+   * bone-stone shaft in carved drums separated by dark recessed collars, violet
+   * glyph channels on the faces, a flared capital crowned by a floating
+   * crystal inside a halo ring and two floating fins. By seed a broken column:
+   * jagged stump leaking violet light, the capital fallen at its foot.
+   * ================================================================== */
+  M.obsChoirColumn = function (pal, o) {
+    o = o || {};
+    const p = pickPal(pal, o, { a: '#9a907c', b: '#d0c6b0', t: '#f0e6d0', g: '#9a7aff' });
+    const H = o.h || 90, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 10);
+    const stoneS = mixS(p.a, '#5e5648', 0.5), stoneT = mixS(p.t, '#f4ead4', 0.3), recess = '#3a2e4c', glyph = mixS(p.g, '#c8b0ff', 0.3), glowC = p.g;
+    const parts = [];
+    const broken = rg.chance(0.35);
+    const r8 = Math.PI / 8 + rg.range(-0.15, 0.15);
+    // plinth steps
+    const step1 = ngon(8, R * 1.0, r8), step2 = ngon(8, R * 0.8, r8);
+    parts.push({ z0: 0, z1: 3, side: stoneS, top: hexS(stoneT, -0.06), ao: 0.4, shape: (c) => S.poly(c, step1) });
+    parts.push({ z0: 3, z1: 6.5, side: stoneS, top: stoneT, ao: 0.3, shape: (c) => S.poly(c, step2),
+      detail: (c) => { c.save(); c.strokeStyle = C.str(glowC, 0.8); c.lineWidth = 0.6; c.beginPath(); S.poly(c, ngon(8, R * 0.68, r8)); c.stroke(); c.restore(); } });
+    const shaft = ngon(8, R * 0.5, r8);
+    const Hs = broken ? H * rg.range(0.45, 0.62) : H * 0.68;
+    // drums separated by recessed collars
+    const nd = broken ? 2 : 3, dh = (Hs - 6.5) / nd;
+    const tiers = [];
+    for (let i = 0; i < nd; i++) {
+      const z0 = 6.5 + i * dh;
+      tiers.push({ z0, z1: z0 + 1.6, k0: 0.82, k1: 0.82, collar: true });
+      tiers.push({ z0: z0 + 1.6, z1: z0 + dh, k0: 1, k1: 0.97 });
+    }
+    const st = stack(shaft, tiers);
+    for (const T of tiers) {
+      if (T.collar) { parts.push(st.part(T, recess, recess, { ao: 0.2, bevel: false })); parts.push(paint(st, T.z0 + 0.3, T.z1 - 0.2, glowC, { w: 0.6, extra: { flat: true } })); }
+      else parts.push(st.part(T, stoneS, stoneT, { ao: 0.35 }));
+    }
+    // glyph channels: dashed violet ticks in a rhythm up every drum face
+    const gph = rg.range(0, 1);
+    const onDrum = (z) => { const T = st.tierAt(z); return !T.collar && z > T.z0 + 1.5 && z < T.z1 - 1.5; };
+    parts.push(paint(st, 8, Hs - 1, recess, { band: onDrum, dash: [1.5, 40, 0], w: 0.9 }));
+    parts.push(paint(st, 8, Hs - 1, glyph, { band: onDrum, dash: [0.6, 40, 0], w: 0.7, extra: { flat: true } }));
+    parts.push(paint(st, 8, Hs - 1, glyph, { band: (z) => onDrum(z) && frac(z / 6 + gph) < 0.1, dash: [2.6, 40, 0], w: 0.6, extra: { flat: true } }));
+    parts.push(paint(st, 7, Hs - 1, hexS(stoneS, -0.3), { test: darkFace, w: 0.8, extra: { ao: 0 } }));
+    if (broken) {
+      // jagged break at the top + violet light leaking, fallen capital at the foot
+      const jagTop = jag(9, R * 0.46, seed + 4, 0.35, r8);
+      parts.push({ z0: Hs, z1: Hs + 4, side: stoneS, top: stoneT, ao: 0.1, shape: (c, zt) => { const pts = []; for (let i = 0; i < jagTop.length; i += 2) { const keep = U.hash2(i, seed, 5) > zt * 0.9; const k = keep ? 1 : 0.4; pts.push(jagTop[i] * k, jagTop[i + 1] * k); } S.poly(c, pts); },
+        detail: (c) => { S.dot(c, C.str(glowC, 0.45), 0, 0, R * 0.3); S.dot(c, glyph, 0, 0, R * 0.12); } });
+      parts.push({ z0: Hs + 1, z1: Hs + 9, side: hexS(glowC, -0.2), top: '#f0e8ff', flat: true, shape: (c, zt) => { const k = 1 - zt; S.poly(c, [-1.5 * k - 1, 0, -1, -1.2 * k, -1 + 1.5 * k, 0, -1, 1.2 * k]); if (zt < 0.6) S.poly(c, [2 - 1.2 * k, 1, 2, 1 - k, 2 + 1.2 * k, 1, 2, 1 + k]); } });
+      const fa = rg.range(-0.6, 0.9), fx = Math.cos(fa) * R * 1.05, fy = Math.sin(fa) * R * 0.8;
+      parts.push({ z0: 0, z1: R * 0.55, side: stoneS, top: stoneT, ao: 0.45, shape: (c) => { c.save(); c.translate(fx, fy); c.rotate(fa + 1.2); S.poly(c, [-R * 0.55, -R * 0.36, R * 0.55, -R * 0.36, R * 0.62, 0, R * 0.55, R * 0.36, -R * 0.55, R * 0.36, -R * 0.62, 0]); c.restore(); },
+        detail: (c) => { c.save(); c.translate(fx, fy); c.rotate(fa + 1.2); S.lines(c, C.str(glyph, 0.9), 0.6, [-R * 0.4, 0, R * 0.4, 0, -R * 0.2, -R * 0.2, -R * 0.2, R * 0.2, R * 0.2, -R * 0.2, R * 0.2, R * 0.2]); c.restore(); } });
+      return { r: R * 1.6 + 2, h: Hs + 10, parts, style: 'prop', bevel: 0.8 };
+    }
+    // flared capital
+    const cap = ngon(8, R * 0.72, r8);
+    parts.push({ z0: Hs, z1: Hs + 5, side: stoneS, top: stoneT, ao: 0.25, shape: (c, zt) => S.poly(c, xf(cap, 0.72 + 0.28 * Math.sqrt(zt))),
+      detail: (c) => {
+        c.save(); c.strokeStyle = C.str(glowC, 0.9); c.lineWidth = 0.6; c.beginPath(); S.poly(c, ngon(8, R * 0.5, r8)); c.stroke(); c.restore();
+        S.dot(c, C.str(glowC, 0.4), 0, 0, R * 0.32); S.dot(c, glyph, 0, 0, R * 0.14);
+      } });
+    parts.push(paint(stack(cap, [{ z0: Hs, z1: Hs + 5, kf: (u) => 0.72 + 0.28 * Math.sqrt(u) }]), Hs + 2.6, Hs + 3.6, glowC, { w: 0.6, extra: { flat: true } }));
+    // floating crystal in a halo ring, flanked by floating fins
+    const zr = Hs + 5 + (H - Hs - 5) * 0.4, hr = R * 0.55, zc0 = Hs + 8, zc1 = H;
+    parts.push({ z0: zr, z1: zr + 0.8, side: glowC, top: '#d8ccff', stroke: 0.9, flat: true, bevel: false, shape: (c) => { c.moveTo(-hr, 0); c.arc(0, 0, hr, Math.PI, TAU); } });
+    const fz = Hs + 7, fins = [[-R * 0.95, 1], [R * 0.95, -1]];
+    parts.push({ z0: fz, z1: fz + (H - Hs) * 0.55, side: stoneS, top: stoneT, ao: 0.2, shape: (c, zt) => { const k = 1 - zt * 0.6; for (const f of fins) S.poly(c, [f[0] - 1.6 * k, -R * 0.3 * k, f[0] + 1.6 * k, -R * 0.1 * k, f[0] + 1.2 * k, R * 0.3 * k, f[0] - 1.4 * k, R * 0.15 * k]); },
+      detail: (c) => { for (const f of fins) S.dot(c, glyph, f[0], 0, 0.7); } });
+    parts.push({ z0: zc0, z1: zc1, side: hexS(glowC, -0.15), top: '#f4f0ff', flat: true, shape: (c, zt) => { const k = zt < 0.4 ? zt / 0.4 : 1 - (zt - 0.4) / 0.6; const w = 0.4 + R * 0.2 * k; S.poly(c, [-w, 0, 0, -w * 0.7, w, 0, 0, w * 0.7]); },
+      detail: (c) => S.dot(c, '#ffffff', 0, 0, 0.5) });
+    parts.push({ z0: zr, z1: zr + 0.8, side: glowC, top: '#d8ccff', stroke: 0.9, flat: true, bevel: false, shape: (c) => { c.moveTo(hr, 0); c.arc(0, 0, hr, 0, Math.PI); } });
+    return { r: R * 1.3 + 2, h: H + 2, parts, style: 'prop', bevel: 0.8 };
   };
 
   /* ==================================================================

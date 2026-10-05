@@ -15,10 +15,13 @@
  * (1.8 px/unit) renders with the engine's down-right cast shadow.
  * ?set=ashen,crimson,dropship limits rows; ?big=3 changes the large scale; ?old=1 adds the
  * world's original obstacle for comparison. */
-const GEN = {
-  ashen: 'obsBasalt', crimson: 'obsHoodoo', verdant: 'obsCanopyTree', frost: 'obsSerac', drowned: 'obsDrownedTower',
-  obsidian: 'obsObsidian', spore: 'obsMushroom', storm: 'obsSkyPillar', machine: 'obsGearTower', first: 'obsChoirColumn',
+const MAP = {   // the integration mapping (world key -> { gen, opt }) exactly as the lead applies it
+  ashen: { gen: 'obsBasalt', opt: { pal: { a: '#3e332e', b: '#7f6c5e', t: '#c99a62', d: '#211a16' } } },
+  crimson: { gen: 'obsHoodoo', opt: {} }, verdant: { gen: 'obsCanopyTree', opt: {} }, frost: { gen: 'obsSerac', opt: {} },
+  drowned: { gen: 'obsDrownedTower', opt: {} }, obsidian: { gen: 'obsObsidian', opt: {} }, spore: { gen: 'obsMushroom', opt: {} },
+  storm: { gen: 'obsSkyPillar', opt: {} }, machine: { gen: 'obsGearTower', opt: { anims: 4 } }, first: { gen: 'obsChoirColumn', opt: {} },
 };
+const GEN = {}; for (const k in MAP) GEN[k] = MAP[k].gen;
 const q = new URLSearchParams(location.search);
 const only = q.get('set') ? q.get('set').split(',') : null;
 const BIG = +(q.get('big') || 2.2), SMALL = 1.8, OLD = q.get('old');
@@ -35,7 +38,7 @@ const rows = [];
 for (const w of W) {
   if (only && !only.includes(w.key)) continue;
   const gen = GEN[w.key], ob = w.obstacle;
-  const base = { glowVein: !!ob.glowVein };
+  const base = Object.assign({ glowVein: !!ob.glowVein }, MAP[w.key].opt);
   const anim = gen === 'obsGearTower' ? [0, 0.25, 0.5, 0.75] : [0];
   const bigs = SEEDS.map((o) => render(gen, ob.pal, Object.assign({}, base, o), 0, 0));
   const smalls = SMALLS.map((o, i) => render(gen, ob.pal, Object.assign({}, base, o), 0, anim[i % anim.length]));
