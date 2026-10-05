@@ -185,5 +185,48 @@
     refcore: {"gen": "boRefCore", "opt": {}},
   });
 
+  /* ---- integrated packages: obstacles + dropship, colony structures, pickups / cargo / props ---- */
+  Object.assign(ArtMap.structures, {
+    turret_bunker: {"gen": "scTurretBunker", "opt": {}, "gunZ": 6.5},
+    derrick: {"gen": "scDerrick", "opt": {}, "anims": 4},
+    refinery: {"gen": "scRefinery", "opt": {}, "anims": 4},
+    fueldepot: {"gen": "scFuelDepot", "opt": {}},
+    ammodepot: {"gen": "scAmmoDepot", "opt": {}},
+    pen: {"gen": "scPen", "opt": {}, "anims": 2},
+    iceblock: {"gen": "scIceBlock", "opt": {}},
+    coolant: {"gen": "scCoolant", "opt": {}, "anims": 2},
+    heatstation: {"gen": "scHeatStation", "opt": {}, "anims": 2},
+    pad: {"gen": "scPad", "opt": {}, "pal": "colony", "anims": 4},
+    station: {"gen": "scStation", "opt": {}},
+    dome: {"gen": "scDome", "opt": {}, "anims": 2},
+    platform: {"gen": "scPlatform", "opt": {}},
+    vent: {"gen": "scVent", "opt": {}, "anims": 2},
+    crusher: {"gen": "scCrusher", "opt": {}, "anims": 4},
+    relay: {"gen": "scRelay", "opt": {}, "anims": 2},
+    thumper: {"gen": "scThumper", "opt": {}, "anims": 2},
+    valve: {"gen": "scValve", "opt": {}},
+    switch: {"gen": "scSwitch", "opt": {}},
+    charge_site: {"gen": "scChargeSite", "opt": {}, "anims": 2},
+    bunker: {"gen": "scBunker", "opt": {}},
+  });
+  Object.assign(ArtMap.obstacle, {
+    ashen: {"gen": "obsBasalt", "opt": {"pal": {"a": "#3e332e", "b": "#7f6c5e", "t": "#c99a62", "d": "#211a16"}}},
+    crimson: {"gen": "obsHoodoo", "opt": {}},
+    verdant: {"gen": "obsCanopyTree", "opt": {}},
+    frost: {"gen": "obsSerac", "opt": {}},
+    drowned: {"gen": "obsDrownedTower", "opt": {}},
+    obsidian: {"gen": "obsObsidian", "opt": {}},
+    spore: {"gen": "obsMushroom", "opt": {}},
+    storm: {"gen": "obsSkyPillar", "opt": {}},
+    machine: {"gen": "obsGearTower", "opt": {"anims": 4}},
+    first: {"gen": "obsChoirColumn", "opt": {}},
+  });
+  Object.assign(ArtMap.other, {
+    dropship: {"gen": "dropship", "opt": {}},
+    pickup: {"gen": "pickup2", "opt": {}},
+    cargo: {"gen": "cargo2", "opt": {}},
+    prop: {"gen": "prop2", "opt": {}},
+  });
+
   AS.ArtMap = ArtMap;
 })(window.AS);

@@ -24,6 +24,10 @@
   const ngon = (r, n, rot, cx, cy) => { const a = []; for (let i = 0; i < n; i++) { const t = (rot || 0) + (i / n) * TAU; a.push((cx || 0) + Math.cos(t) * r, (cy || 0) + Math.sin(t) * r); } return a; };
   const rot = (pts, a, ox, oy) => { const ca = Math.cos(a), sa = Math.sin(a), out = []; for (let i = 0; i < pts.length; i += 2) out.push((ox || 0) + pts[i] * ca - pts[i + 1] * sa, (oy || 0) + pts[i] * sa + pts[i + 1] * ca); return out; };
   const SEAM = 'rgba(16,14,12,0.45)', HI = 'rgba(255,255,255,0.4)';
+  // screen-down component of an object-space wall normal for the frame being rendered
+  // (> 0: the wall faces the camera). Lets 8-direction props skip wall details on walls
+  // facing away, which would otherwise paint over the roof in the stacked projection.
+  const facing = (c, nx, ny) => { const t = c.getTransform(); const n = Math.hypot(t.a, t.b) || 1; return (t.b / n) * nx + (t.a / n) * ny; };
   function radial(c, x, y, r, c0, c1, off) {
     const o = off === undefined ? 0.3 : off;
     const g = c.createRadialGradient(x - r * o, y - r * o, 0, x, y, r);
@@ -323,7 +327,7 @@
           c.fillStyle = 'rgba(255,248,220,0.55)'; c.fillRect(hx * 0.15, hy * 0.25, hx * 0.5, 0.55); c.fillRect(hx * 0.15, hy * 0.25 + 0.9, hx * 0.32, 0.55);
           c.restore();
         } });
-      parts.push({ z0, z1: z0 + h + 0.15, side: '#2a2d32', top: '#7a828c', bevel: false, shape: (c) => { for (const sx of [-1, 1]) for (const sy of [-1, 1]) S.poly(c, rot([sx * hx - 0.55, sy * hy - 0.55, sx * hx + 0.15, sy * hy - 0.55, sx * hx + 0.15, sy * hy + 0.15, sx * hx - 0.55, sy * hy + 0.15], a, x, y)); } });
+      parts.push({ z0, z1: z0 + h + 0.15, side: '#2a2d32', top: '#7a828c', bevel: false, shape: (c) => { const ca = Math.cos(a), sa = Math.sin(a); for (const sx of [-1, 1]) for (const sy of [-1, 1]) if (facing(c, sx * ca, sx * sa) > -0.05 || facing(c, -sy * sa, sy * ca) > -0.05) S.poly(c, rot([sx * hx - 0.55, sy * hy - 0.55, sx * hx + 0.15, sy * hy - 0.55, sx * hx + 0.15, sy * hy + 0.15, sx * hx - 0.55, sy * hy + 0.15], a, x, y)); } });
     };
     const wood = mx('#8c6236', p.a, 0.15), olive = desat(mx('#56643a', p.a, 0.2), 0.15);
     if (seed === 2) {
@@ -332,8 +336,8 @@
       return { r: 9, h: 7, parts };
     }
     if (seed === 3) {
+      box(5.4, -2.8, 2.8, 2.8, 0, 4.2, -0.35, olive);
       box(-1.2, 1.0, 4.4, 4.4, 0, 6.4, 0.1, wood);
-      box(5.4, -2.6, 2.8, 2.8, 0, 4.2, -0.35, olive);
       box(-1.0, 0.6, 3.0, 3.0, 6.4, 4.4, 0.5, wood);
       return { r: 10, h: 12, parts };
     }
@@ -344,36 +348,42 @@
   /* ---------- barrel: ribbed fuel drums (red, hazard yellow, upright + tipped pair) ---------- */
   PROPS.barrel = function (p, seed) {
     const parts = [];
-    const drum = (x, y, col) => {
-      const top = sh(col, 0.32);
-      parts.push({ z0: 0, z1: 8, side: col, top, shape: (c) => S.circ(c, x, y, 3.4),
-        detail: (c) => { c.save(); c.strokeStyle = rgba(sh(col, -0.4), 0.8); c.lineWidth = 0.45; c.beginPath(); S.circ(c, x, y, 2.85); c.stroke(); c.restore(); S.dot(c, '#2a2a2a', x + 1.3, y - 1.0, 0.6); S.dot(c, '#9a9a9a', x + 1.3, y - 1.0, 0.3); S.dot(c, '#2a2a2a', x - 1.5, y + 0.9, 0.42); spec(c, x - 1.2, y - 1.6, 0.5, 1.0, 0.7, 0.35); } });
-      parts.push({ z0: 3.2, z1: 4.8, side: '#f2e4c0', top: '#fff4d8', bevel: false, shape: (c) => S.circ(c, x, y, 3.42) });
-      parts.push({ z0: 3.6, z1: 4.4, side: '#1a1a1a', top: '#1a1a1a', bevel: false, flat: true, shape: (c) => { c.moveTo(x, y); c.arc(x, y, 3.45, 0.55, 1.15); c.closePath(); c.moveTo(x, y); c.arc(x, y, 3.45, 1.75, 2.35); c.closePath(); } });
-      parts.push({ z0: 1.6, z1: 2.1, side: sh(col, -0.25), top: sh(col, 0.1), bevel: false, shape: (c) => S.circ(c, x, y, 3.6) });
-      parts.push({ z0: 5.9, z1: 6.4, side: sh(col, -0.25), top: sh(col, 0.1), bevel: false, shape: (c) => S.circ(c, x, y, 3.6) });
+    const drum = (x, y, col, hz) => {
+      // interleave body segments with ribs/bands bottom-to-top so higher slices never hide lower ones
+      const top = sh(col, 0.32), rib = sh(col, -0.22), ribT = sh(col, 0.12);
+      const seg = (z0, z1, side, topC, R, extra) => parts.push(Object.assign({ z0, z1, side, top: topC, bevel: false, shape: (c) => S.circ(c, x, y, R) }, extra || {}));
+      seg(0, 1.5, col, col, 3.4);
+      seg(1.5, 2.0, rib, ribT, 3.62);
+      seg(2.0, 3.3, col, col, 3.4);
+      seg(3.3, 4.7, '#e8dcbc', '#fff4d8', 3.44);
+      if (hz) parts.push({ z0: 3.5, z1: 4.5, side: '#1a1a1a', top: '#1a1a1a', flat: true, bevel: false, shape: (c) => { c.moveTo(x, y); c.arc(x, y, 3.48, 0.45, 0.95); c.closePath(); c.moveTo(x, y); c.arc(x, y, 3.48, 1.35, 1.85); c.closePath(); c.moveTo(x, y); c.arc(x, y, 3.48, 2.25, 2.75); c.closePath(); } });
+      seg(4.7, 5.8, col, col, 3.4);
+      seg(5.8, 6.3, rib, ribT, 3.62);
+      parts.push({ z0: 6.3, z1: 8, side: col, top, shape: (c) => S.circ(c, x, y, 3.4),
+        detail: (c) => { c.save(); c.strokeStyle = rgba(sh(col, -0.45), 0.85); c.lineWidth = 0.5; c.beginPath(); S.circ(c, x, y, 2.75); c.stroke(); c.restore(); S.dot(c, '#2a2a2a', x + 1.3, y - 0.9, 0.62); S.dot(c, '#a8a8a8', x + 1.3, y - 0.9, 0.32); S.dot(c, '#2a2a2a', x - 1.4, y + 1.0, 0.42); spec(c, x - 1.3, y - 1.4, 0.45, 0.9, 0.7, 0.35); } });
     };
     const red = mx('#a8301e', p.a, 0.1), yel = mx('#d0961c', p.a, 0.1);
     if (seed === 3) {
       // a tipped drum lying behind an upright one
       parts.push({ z0: 0, z1: 6.6, side: sh(red, -0.1), top: sh(red, 0.3), shape: (c, zt) => lyingCyl(c, zt, 1.0, -3.4, 8, 3.3, 0.35) });
       parts.push({ z0: 0, z1: 6.7, side: '#2a2a2a', top: '#5a5a5a', shape: (c, zt) => { const w = 3.35 * cylW(zt); S.poly(c, rot([3.6, -w, 4.1, -w, 4.1, w, 3.6, w], 0.35, 1.0, -3.4)); } });
-      drum(-2.2, 2.4, yel);
+      drum(-2.2, 2.4, yel, true);
       return { r: 9, h: 9, parts };
     }
-    drum(0, 0, seed === 2 ? yel : red);
+    drum(0, 0, seed === 2 ? yel : red, seed === 2);
     return { r: 6, h: 9, parts };
   };
 
   /* ---------- container: weathered shipping container, corrugated walls, rust, stencil ---------- */
   PROPS.container = function (p, seed) {
     const tint = [mx(p.a, '#6a6660', 0.3), mx('#8e4a28', p.a, 0.2), mx('#3c4e5c', p.a, 0.25)][(seed - 1) % 3];
-    const base = desat(tint, 0.4), top = sh(base, 0.2), rib = sh(base, 0.14), rust = '#6e3e22';
+    const base = desat(tint, 0.35), top = sh(base, 0.3), rib = sh(base, 0.16), rust = '#6e3e22';
     const L = 12, W = 5, H = 10;
     const parts = [];
-    parts.push({ z0: 0, z1: H, side: base, top, shape: (c) => S.rect(c, -L, -W, L * 2, W * 2),
+    parts.push({ z0: 0, z1: 0.8, side: '#24262a', top: '#3a3d42', bevel: false, shape: (c) => S.rect(c, -L - 0.15, -W - 0.15, L * 2 + 0.3, W * 2 + 0.3) });
+    parts.push({ z0: 0, z1: H, side: base, top, ao: 0.28, shape: (c) => S.rect(c, -L, -W, L * 2, W * 2),
       detail: (c) => {
-        const s = []; for (let x = -L + 3; x < L; x += 3) s.push(x, -W + 0.3, x, W - 0.3); S.lines(c, 'rgba(0,0,0,0.22)', 0.35, s);
+        const s = [], s2 = []; for (let x = -L + 4; x < L - 1; x += 4) { s.push(x, -W + 0.5, x, W - 0.5); s2.push(x + 0.4, -W + 0.5, x + 0.4, W - 0.5); } S.lines(c, 'rgba(0,0,0,0.16)', 0.3, s); S.lines(c, 'rgba(255,255,255,0.14)', 0.3, s2);
         const g = (x, y, r) => { const gr = c.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, rgba(rust, 0.55)); gr.addColorStop(1, rgba(rust, 0)); c.fillStyle = gr; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); };
         g(-6 + seed * 2, -2, 3.2); g(7 - seed, 2.6, 2.4); g(-10, 3.6, 1.8);
         // stencil block and hazard stripe at the door end
@@ -381,13 +391,11 @@
         stripes(c, -L + 0.4, -W + 0.4, -L + 2.2, W - 0.4, 6, '#1e1e1e', HAZ);
       } });
     // corrugation ribs on both long walls, rust streaks dripping from the roof line
-    parts.push({ z0: 0.6, z1: H - 0.5, side: rib, top: rib, bevel: false, shape: (c) => { for (let x = -L + 1.5; x < L - 1; x += 1.5) { S.rect(c, x - 0.35, W - 0.05, 0.7, 0.3); S.rect(c, x - 0.35, -W - 0.25, 0.7, 0.3); } } });
-    parts.push({ z0: H * 0.35, z1: H - 0.5, side: rust, top: rust, bevel: false, shape: (c) => { for (let i = 0; i < 5; i++) { const x = -L + 2 + Math.floor(U.hash2(i, seed, 71) * 13) * 1.5; S.rect(c, x - 0.4, W - 0.05, 0.8, 0.36); S.rect(c, -x - 0.4, -W - 0.3, 0.8, 0.36); } } });
+    parts.push({ z0: 0.6, z1: H - 0.5, side: rib, top: rib, bevel: false, shape: (c) => { const fp = facing(c, 0, 1) > -0.05, fn = facing(c, 0, -1) > -0.05; for (let x = -L + 1.5; x < L - 1; x += 1.5) { if (fp) S.rect(c, x - 0.35, W - 0.05, 0.7, 0.3); if (fn) S.rect(c, x - 0.35, -W - 0.25, 0.7, 0.3); } } });
+    parts.push({ z0: H * 0.35, z1: H - 0.5, side: rust, top: rust, bevel: false, shape: (c) => { const fp = facing(c, 0, 1) > -0.05, fn = facing(c, 0, -1) > -0.05; for (let i = 0; i < 5; i++) { const x = -L + 2 + Math.floor(U.hash2(i, seed, 71) * 13) * 1.5; if (fp) S.rect(c, x - 0.4, W - 0.05, 0.8, 0.36); if (fn) S.rect(c, -x - 0.4, -W - 0.3, 0.8, 0.36); } } });
     // rails, corner castings and door locking bars
-    parts.push({ z0: 0, z1: 0.8, side: '#24262a', top: '#3a3d42', bevel: false, shape: (c) => S.rect(c, -L - 0.15, -W - 0.15, L * 2 + 0.3, W * 2 + 0.3) });
-    parts.push({ z0: H - 0.6, z1: H + 0.1, side: sh(base, -0.3), top: sh(base, 0.3), stroke: 0.55, bevel: false, shape: (c) => S.rect(c, -L + 0.2, -W + 0.2, L * 2 - 0.4, W * 2 - 0.4) });
-    parts.push({ z0: 0, z1: H + 0.2, side: '#26282c', top: '#4a4e54', bevel: false, shape: (c) => { for (const sx of [-1, 1]) for (const sy of [-1, 1]) S.rect(c, sx * L - (sx > 0 ? 0.9 : -0.1) - 0.1, sy * W - (sy > 0 ? 0.9 : -0.1) - 0.1, 1.0, 1.0); } });
-    parts.push({ z0: 0.6, z1: H - 0.4, side: '#b8b8b0', top: '#d8d8d0', bevel: false, shape: (c) => { for (const y of [-3.4, -1.2, 1.2, 3.4]) S.rect(c, -L - 0.35, y - 0.2, 0.4, 0.4); } });
+    parts.push({ z0: 0, z1: H + 0.15, side: '#2a2c30', top: '#5a5e64', bevel: false, shape: (c) => { for (const sx of [-1, 1]) for (const sy of [-1, 1]) if (facing(c, sx, 0) > -0.05 || facing(c, 0, sy) > -0.05) S.rect(c, sx > 0 ? L - 0.95 : -L - 0.05, sy > 0 ? W - 0.95 : -W - 0.05, 1.0, 1.0); } });
+    parts.push({ z0: 0.6, z1: H - 0.4, side: '#b8b8b0', top: '#d8d8d0', bevel: false, shape: (c) => { if (facing(c, -1, 0) < -0.05) return; for (const y of [-3.4, -1.2, 1.2, 3.4]) S.rect(c, -L - 0.35, y - 0.2, 0.4, 0.4); } });
     return { r: 15, h: H + 1, parts };
   };
 
@@ -467,25 +475,27 @@
   function rover(parts, livery, flip) {
     const fy = flip ? -1 : 1;
     const soot = 'rgba(20,16,12,';
+    // a detached door lying beside (ground level, drawn first)
+    parts.push({ z0: 0, z1: 0.6, side: sh(livery, -0.2), top: sh(livery, 0.1), bevel: false, shape: (c) => S.poly(c, [-3.0, 6.4 * fy, 2.4, 6.0 * fy, 2.8, 8.8 * fy, -2.6, 9.4 * fy]),
+      detail: (c) => S.lines(c, 'rgba(0,0,0,0.35)', 0.35, [-1.6, 7.2 * fy, 1.8, 6.9 * fy]) });
     // squashed cabin (roof on the ground)
-    parts.push({ z0: 0, z1: 2.6, side: livery, top: sh(livery, 0.2), shape: (c) => S.poly(c, [-7.2, -4.4, 6.0, -4.6, 7.6, -3.2, 7.4, 3.4, 5.8, 4.6, -7.0, 4.4]) });
+    parts.push({ z0: 0, z1: 3.2, side: livery, top: sh(livery, 0.18), shape: (c) => S.poly(c, [-8.2, -4.9, 6.4, -5.1, 8.4, -3.4, 8.2, 3.6, 6.2, 5.1, -8.0, 4.9]),
+      detail: (c) => { S.fillPoly(c, HAZ, [-8.0, 4.2, 6.0, 4.4, 6.2, 4.9, -8.0, 4.8]); S.fillPoly(c, '#1e2226', [7.0, -3.0, 8.0, -2.6, 7.9, 2.8, 6.9, 3.2]); } });
     // exposed underside (chassis plate) with axles and shaft
-    parts.push({ z0: 2.6, z1: 4.4, side: '#3e3a36', top: '#5e5852', shape: (c) => S.rrect(c, -8.4, -5.0, 16.8, 10.0, 1.2),
+    parts.push({ z0: 3.2, z1: 4.6, side: '#3e3a36', top: '#5e5852', shape: (c) => S.rrect(c, -7.2, -3.8, 14.4, 7.6, 1.2),
       detail: (c) => {
-        S.lines(c, '#2a2724', 0.9, [-5.4, -4.6, -5.4, 4.6, 5.4, -4.6, 5.4, 4.6]);
+        S.lines(c, '#2a2724', 0.9, [-5.4, -3.6, -5.4, 3.6, 5.4, -3.6, 5.4, 3.6]);
         S.lines(c, '#2a2724', 0.7, [-5.4, 0, 5.4, 0]);
         c.fillStyle = '#34302c'; c.beginPath(); S.rrect(c, -2.6, -2.2, 5.2, 4.4, 0.8); c.fill();
-        S.lines(c, 'rgba(255,255,255,0.18)', 0.35, [-8, -4.6, 8, -4.6]);
+        S.lines(c, 'rgba(255,255,255,0.18)', 0.35, [-7, -3.5, 7, -3.5]);
         const g = c.createRadialGradient(2.4, 1.6 * fy, 0, 2.4, 1.6 * fy, 4.5); g.addColorStop(0, soot + '0.7)'); g.addColorStop(1, soot + '0)'); c.fillStyle = g; c.beginPath(); c.arc(2.4, 1.6 * fy, 4.5, 0, TAU); c.fill();
         S.dot(c, 'rgba(140,70,30,0.6)', -6.2, 2.6 * fy, 1.4);
       } });
     // the four wheels, pointing at the sky
-    parts.push({ z0: 4.4, z1: 9.4, side: '#24221f', top: '#4e4a44', shape: (c, zt) => { const w = 2.5 * cylW(zt); for (const x of [-5.4, 5.4]) for (const y of [-1, 1]) S.rect(c, x - w, y * 4.6 - 0.95 + (y > 0 ? 0 : 0), w * 2, 1.9); },
-      detail: (c) => { for (const x of [-5.4, 5.4]) for (const y of [-1, 1]) S.lines(c, 'rgba(0,0,0,0.5)', 0.3, [x, y * 4.6 - 0.9, x, y * 4.6 + 0.9]); } });
-    // torn bumper and a detached door lying beside
-    parts.push({ z0: 0, z1: 3.6, side: '#2e2c2a', top: '#6a6460', shape: (c) => S.poly(c, [8.4, -3.6, 9.6, -3.0, 9.2, 2.2, 8.4, 3.0]) });
-    parts.push({ z0: 0, z1: 0.6, side: sh(livery, -0.2), top: sh(livery, 0.1), bevel: false, shape: (c) => S.poly(c, [-3.0, 6.4 * fy, 2.4, 6.0 * fy, 2.8, 8.8 * fy, -2.6, 9.4 * fy]),
-      detail: (c) => S.lines(c, 'rgba(0,0,0,0.35)', 0.35, [-1.6, 7.2 * fy, 1.8, 6.9 * fy]) });
+    parts.push({ z0: 4.6, z1: 9.6, side: '#24221f', top: '#4e4a44', shape: (c, zt) => { const w = 2.5 * cylW(zt); for (const x of [-5.4, 5.4]) for (const y of [-1, 1]) S.rect(c, x - w, y * 4.4 - 0.95, w * 2, 1.9); },
+      detail: (c) => { for (const x of [-5.4, 5.4]) for (const y of [-1, 1]) S.lines(c, 'rgba(0,0,0,0.5)', 0.3, [x, y * 4.4 - 0.9, x, y * 4.4 + 0.9]); } });
+    // torn bumper
+    parts.push({ z0: 0, z1: 3.0, side: '#2e2c2a', top: '#6a6460', shape: (c) => S.poly(c, [8.6, -3.6, 9.8, -3.0, 9.4, 2.2, 8.6, 3.0]) });
   }
   PROPS.wreck = function (p, seed) {
     const parts = [];
@@ -498,7 +508,7 @@
       parts.push({ z0: 0, z1: 7.6, side: hull, top: hullT, shape: (c, zt) => { const z = zt * 7.6, zc = 3.8; const w = (x) => { const r = rAt(x); return Math.sqrt(Math.max(0, r * r - (z - zc) * (z - zc))); }; const w0 = w(-10), w1 = w(6); S.poly(c, [-10, -w0, 3.6, -w1, 5.2, -w1 * 0.6, 6.0, -w1 * 0.9, 6.6, 0, 6.0, w1 * 0.7, 5.0, w1, -10, w0]); },
         detail: (c) => { S.lines(c, 'rgba(0,0,0,0.35)', 0.35, [-4, -0.9, -4, 0.9, 1, -1.2, 1, 1.2]); S.lines(c, HAZ, 0.6, [-8.5, 0.0, -1, 0.0]); const g = c.createRadialGradient(4, 0, 0, 4, 0, 4.5); g.addColorStop(0, 'rgba(20,16,12,0.75)'); g.addColorStop(1, 'rgba(20,16,12,0)'); c.fillStyle = g; c.beginPath(); c.arc(4, 0, 4.5, 0, TAU); c.fill(); } });
       // torn break: dark interior with ribs
-      parts.push({ z0: 0.4, z1: 7.4, side: '#1a1816', top: '#2a2622', bevel: false, shape: (c, zt) => { const z = zt * 7.6, r = rAt(6) - 0.4; const w = Math.sqrt(Math.max(0, r * r - (z - 3.8) * (z - 3.8))); S.rect(c, 6.0, -w, 0.7, w * 2); } });
+      parts.push({ z0: 0.4, z1: 7.4, side: '#1a1816', top: '#2a2622', bevel: false, shape: (c, zt) => { if (facing(c, 1, 0) < -0.05) return; const z = zt * 7.6, r = rAt(6) - 0.4; const w = Math.sqrt(Math.max(0, r * r - (z - 3.8) * (z - 3.8))); S.rect(c, 6.0, -w, 0.7, w * 2); } });
       parts.push({ z0: 7.0, z1: 12.4, side: hull, top: hullT, shape: (c, zt) => S.poly(c, [-6.6 - zt * 2.4, -0.4, -10.4 - zt * 1.2, -0.4, -10.4 - zt * 1.2, 0.4, -6.6 - zt * 2.4, 0.4]) });
       parts.push({ z0: 12.4, z1: 14.0, side: '#a8281c', top: '#ff5a40', shape: (c) => S.poly(c, [-9.0, -0.4, -11.6, -0.4, -11.6, 0.4, -9.0, 0.4]) });
       // exposed spars
@@ -515,53 +525,65 @@
     parts.push({ z0: 0, z1: 2.4, side: CONC, top: CONC_T, shape: (c) => S.rrect(c, -3.2, -3.2, 6.4, 6.4, 0.6),
       detail: (c) => { stripes(c, -3.0, 2.2, 3.0, 3.0, 6, '#1e1e1e', HAZ); S.dot(c, '#3a3a38', -2.2, -2.2, 0.4); S.dot(c, '#3a3a38', 2.2, -2.2, 0.4); } });
     parts.push({ z0: 2.4, z1: 3.4, side: '#2e3238', top: '#6a727c', shape: (c) => S.rect(c, -1.4, -1.4, 2.8, 2.8) });
-    parts.push({ z0: 3.4, z1: 17.2, side: '#4e565e', top: '#a0a8b0', shape: (c) => S.rect(c, -0.6, -0.6, 1.2, 1.2) });
+    parts.push({ z0: 3.4, z1: 17.0, side: '#4e565e', top: '#a0a8b0', shape: (c) => S.rect(c, -0.7, -0.7, 1.4, 1.4) });
     parts.push({ z0: 6.0, z1: 8.4, side: '#3a4048', top: '#7a828c', shape: (c) => S.rect(c, -1.1, 0.4, 2.2, 1.3), detail: (c) => S.dot(c, '#7aff8a', 0.5, 1.0, 0.3) });
-    parts.push({ z0: 17.2, z1: 17.9, side: '#2a2e34', top: '#6a727c', shape: (c) => S.rect(c, -0.5, -4.2, 1.0, 8.4) });
+    parts.push({ z0: 17.0, z1: 17.8, side: '#2a2e34', top: '#6a727c', shape: (c) => S.rect(c, -4.4, -0.5, 8.8, 1.0) });
     // lamp heads face +y (toward the viewer) so their lenses read as bright panels
     const heads = [-2.6, 2.6];
-    parts.push({ z0: 16.4, z1: 19.6, side: '#30353c', top: '#6e7680', shape: (c) => { for (const y of heads) S.rrect(c, -1.5, y - 1.3, 3.0, 2.6, 0.5); },
-      detail: (c) => { for (const y of heads) S.lines(c, 'rgba(0,0,0,0.4)', 0.3, [-1.2, y - 0.4, 1.2, y - 0.4, -1.2, y + 0.3, 1.2, y + 0.3]); } });
-    parts.push({ z0: 16.7, z1: 19.3, side: '#fff0a0', top: '#fffbe0', flat: true, bevel: false, shape: (c) => { for (const y of heads) S.rect(c, -1.2, y + 1.25, 2.4, 0.35); } });
+    parts.push({ z0: 16.0, z1: 19.8, side: '#30353c', top: '#6e7680', shape: (c) => { for (const x of heads) S.rrect(c, x - 1.5, -1.6, 3.0, 2.6, 0.5); },
+      detail: (c) => { for (const x of heads) S.lines(c, 'rgba(0,0,0,0.45)', 0.3, [x - 1.1, -1.0, x + 1.1, -1.0, x - 1.1, -0.3, x + 1.1, -0.3]); } });
+    parts.push({ z0: 16.2, z1: 19.6, side: '#ffec98', top: '#fffbe0', flat: true, bevel: false, shape: (c) => { for (const x of heads) S.rect(c, x - 1.35, 0.9, 2.7, 0.5); } });
     return { r: 6, h: 21, parts };
   };
 
-  /* ---------- plant: broad-leaf cluster with glowing buds ---------- */
+  /* ---------- plant: large broad-leaf foliage cluster (elephant-ear leaves, fern fronds, lantern pods) ---------- */
   PROPS.plant = function (p, seed) {
     const parts = [];
-    const leafS = sh(p.a, -0.1), leafT = mx(p.b, '#e8f070', 0.22), leafT2 = mx(p.b, '#f4ff9a', 0.38);
-    const n1 = 6 + (seed % 2), off = seed * 0.7;
-    parts.push({ z0: 0, z1: 2.8, side: leafS, top: leafT, shape: (c, zt) => { for (let i = 0; i < n1; i++) { const a = off + i / n1 * TAU, L = (9.5 + U.hash2(i, seed, 5) * 2.5) * (1 - zt * 0.42); leafPath(c, a, 0, L, 2.6 * (1 - zt * 0.3)); } },
-      detail: (c) => { const s = []; for (let i = 0; i < n1; i++) { const a = off + i / n1 * TAU, L = (9.5 + U.hash2(i, seed, 5) * 2.5) * 0.58; s.push(Math.cos(a) * 1, Math.sin(a) * 1, Math.cos(a) * L * 0.9, Math.sin(a) * L * 0.9); } S.lines(c, rgba(sh(p.a, -0.35), 0.7), 0.35, s); } });
-    const n2 = 5;
-    parts.push({ z0: 2.2, z1: 6.4, side: sh(p.a, 0.05), top: leafT2, shape: (c, zt) => { for (let i = 0; i < n2; i++) { const a = off + 0.5 + i / n2 * TAU, L = 7.0 * (1 - zt * 0.55); leafPath(c, a, 0, L, 2.2 * (1 - zt * 0.35)); } },
-      detail: (c) => { const s = []; for (let i = 0; i < n2; i++) { const a = off + 0.5 + i / n2 * TAU; s.push(0, 0, Math.cos(a) * 2.8, Math.sin(a) * 2.8); } S.lines(c, rgba(sh(p.b, 0.5), 0.6), 0.3, s); } });
-    // stalks with glowing buds
-    const buds = [[0.6, -0.8, 9.6], [-2.4, 1.4, 7.8], [2.6, 1.8, 7.0]].slice(0, 1 + seed);
-    parts.push({ z0: 5.0, z1: 9.0, side: sh(p.a, -0.2), top: p.b, shape: (c, zt) => { for (const b of buds) if (zt * 4 + 5 < b[2]) S.circ(c, b[0] * zt, b[1] * zt, 0.45); } });
-    parts.push({ z0: 6.4, z1: 9.6, side: sh(p.g, -0.25), top: '#ffffff', flat: true, shape: (c, zt) => { for (const b of buds) { const z = 6.4 + zt * 3.2; if (z >= b[2] - 1.6 && z <= b[2]) S.circ(c, b[0], b[1], 1.1 * Math.sqrt(Math.max(0.1, 1 - Math.pow((z - b[2] + 0.8) / 0.8, 2)))); } } });
-    return { r: 13, h: 11, parts, style: 'prop' };
+    const lum = (c) => { const v = C.hex(c); return (v[0] * 0.3 + v[1] * 0.59 + v[2] * 0.11) / 255; };
+    // leaves must stand out from their ground: lift dark palettes toward a sunlit yellow-green / pink
+    const lift = lum(p.b) < 0.5 ? 0.3 : 0.12;
+    const leafS = mx(p.a, p.b, 0.35), leafT = sh(mx(p.b, '#e8f070', 0.25), lift), leafT2 = sh(mx(p.b, '#f6ff9a', 0.4), lift + 0.05), vein = rgba(sh(p.a, -0.4), 0.6);
+    const off = seed * 0.9;
+    // fern fronds: long, thin, notched, lying low
+    const nf = 5 + seed % 2;
+    parts.push({ z0: 0, z1: 1.6, side: sh(p.a, -0.05), top: mx(leafT, p.a, 0.35), bevel: false, shape: (c, zt) => { for (let i = 0; i < nf; i++) { const a = off + 0.3 + i / nf * TAU, L = (13 + U.hash2(i, seed, 8) * 3) * (1 - zt * 0.3); for (let k = 0; k < 6; k++) { const d = 3 + k * L / 7.5, w = 1.6 * (1 - k / 7); leafPath(c, a + 0.18 * (k % 2 ? 1 : -1), d - 0.6, 2.4, w); } leafPath(c, a, 1, L, 0.5); } } });
+    // broad leaves, low tier
+    const n1 = 5 + (seed % 2);
+    parts.push({ z0: 0.6, z1: 4.0, side: leafS, top: leafT, shape: (c, zt) => { for (let i = 0; i < n1; i++) { const a = off + i / n1 * TAU, L = (10 + U.hash2(i, seed, 5) * 2.5) * (1 - zt * 0.45); leafPath(c, a, 0, L, 3.6 * (1 - zt * 0.25)); } },
+      detail: (c) => { const s = []; for (let i = 0; i < n1; i++) { const a = off + i / n1 * TAU, L = (10 + U.hash2(i, seed, 5) * 2.5) * 0.55; s.push(Math.cos(a) * 0.8, Math.sin(a) * 0.8, Math.cos(a) * L * 0.92, Math.sin(a) * L * 0.92); for (const sg of [-1, 1]) s.push(Math.cos(a) * L * 0.45, Math.sin(a) * L * 0.45, Math.cos(a + sg * 0.35) * L * 0.75, Math.sin(a + sg * 0.35) * L * 0.75); } S.lines(c, vein, 0.32, s); } });
+    // upper tier
+    const n2 = 4;
+    parts.push({ z0: 3.2, z1: 7.4, side: mx(p.a, p.b, 0.55), top: leafT2, shape: (c, zt) => { for (let i = 0; i < n2; i++) { const a = off + 0.7 + i / n2 * TAU, L = 7.4 * (1 - zt * 0.55); leafPath(c, a, 0, L, 2.8 * (1 - zt * 0.3)); } },
+      detail: (c) => { const s = []; for (let i = 0; i < n2; i++) { const a = off + 0.7 + i / n2 * TAU; s.push(0, 0, Math.cos(a) * 3.0, Math.sin(a) * 3.0); } S.lines(c, rgba(sh(p.b, 0.55), 0.6), 0.3, s); } });
+    // stalks carrying glowing lantern pods
+    const buds = [[1.4, -1.6, 12.0], [-3.2, 1.0, 10.0], [3.0, 2.4, 9.0]].slice(0, 1 + seed);
+    parts.push({ z0: 6.0, z1: 11.0, side: sh(p.a, -0.2), top: p.b, bevel: false, shape: (c, zt) => { const z = 6 + zt * 5; for (const b of buds) if (z < b[2] - 1.2) S.circ(c, b[0] * (z - 6) / (b[2] - 6), b[1] * (z - 6) / (b[2] - 6), 0.45); } });
+    parts.push({ z0: 7.6, z1: 12.8, side: sh(p.g, -0.2), top: '#ffffff', flat: true, ao: 0.2, shape: (c, zt) => { const z = 7.6 + zt * 5.2; for (const b of buds) { const d = (z - (b[2] - 1.1)) / 1.3; if (Math.abs(d) <= 1) S.circ(c, b[0], b[1], 1.5 * Math.sqrt(Math.max(0.08, 1 - d * d))); } } });
+    return { r: 16, h: 14, parts, style: 'prop' };
   };
 
-  /* ---------- crystals: cluster of leaning hexagonal prisms with glowing cores ---------- */
+  /* ---------- crystals: cluster of leaning hexagonal shards with lit facets and glowing cores ---------- */
   PROPS.crystals = function (p, seed) {
     const parts = [];
-    const side = sh(p.a, -0.22), top = mx(p.a, p.b, 0.45), glow = p.g;
-    parts.push({ z0: 0, z1: 1.6, side: sh(desat(p.a, 0.6), -0.55), top: sh(desat(p.a, 0.6), -0.3), shape: (c) => S.blob(c, 0, 0.5, 6.4, seed * 7, 9, 0.35) });
-    const cr = [];
-    const n = 4 + (seed % 2);
+    const side = sh(p.a, -0.2), top = mx(p.a, p.b, 0.6), glow = p.g, facet = rgba(sh(p.b, 0.4), 0.9);
+    parts.push({ z0: 0, z1: 1.4, side: sh(desat(p.a, 0.7), -0.6), top: sh(desat(p.a, 0.7), -0.38), shape: (c) => S.blob(c, 0, 0.6, 5.4, seed * 7, 9, 0.35) });
+    const cr = [{ x: -0.4, y: -0.6, r: 2.0, h: 16, la: -Math.PI / 2 + 0.2, lk: 0.1 }];
+    const n = 3 + (seed % 2);
     for (let i = 0; i < n; i++) {
-      const a = U.hash2(i, seed, 11) * TAU, d = i === 0 ? 0 : 2.4 + U.hash2(i, seed, 12) * 2.2;
-      cr.push({ x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8, r: i === 0 ? 2.4 : 1.2 + U.hash2(i, seed, 13) * 1.0, h: i === 0 ? 15 : 5 + U.hash2(i, seed, 14) * 6, la: a, lk: i === 0 ? 0.12 : 0.35, rot: U.hash2(i, seed, 15) });
+      const a = (i / n) * TAU + seed * 1.3 + U.hash2(i, seed, 11) * 0.6, d = 3.0 + U.hash2(i, seed, 12) * 1.6;
+      cr.push({ x: Math.cos(a) * d, y: Math.sin(a) * d * 0.75, r: 1.1 + U.hash2(i, seed, 13) * 0.7, h: 6 + U.hash2(i, seed, 14) * 5.5, la: a, lk: 0.42 });
     }
     cr.sort((A, B) => A.y - B.y);
     for (const q of cr) {
-      const tipZ = q.h * 0.75;
-      parts.push({ z0: 0.8, z1: 0.8 + q.h, side, top, ao: 0.3, shape: (c, zt) => { const z = zt * q.h, k = z < tipZ ? 1 : Math.max(0.05, 1 - (z - tipZ) / (q.h - tipZ)); const cx = q.x + Math.cos(q.la) * q.lk * z, cy = q.y + Math.sin(q.la) * q.lk * z; S.poly(c, ngon(q.r * k, 6, q.rot, cx, cy)); },
-        detail: (c) => { const cx = q.x + Math.cos(q.la) * q.lk * q.h, cy = q.y + Math.sin(q.la) * q.lk * q.h; S.dot(c, '#ffffff', cx, cy, 0.3); } });
-      parts.push({ z0: 1.2, z1: 0.8 + tipZ, side: glow, top: glow, flat: true, bevel: false, shape: (c, zt) => { const z = 0.4 + zt * (tipZ - 0.4); const cx = q.x + Math.cos(q.la) * q.lk * z, cy = q.y + Math.sin(q.la) * q.lk * z; S.rect(c, cx - 0.22, cy + q.r * 0.82, 0.44, 0.22); } });
+      const tipZ = q.h * 0.62;
+      const at = (z) => [q.x + Math.cos(q.la) * q.lk * z, q.y + Math.sin(q.la) * q.lk * z];
+      parts.push({ z0: 0.6, z1: 0.6 + q.h, side, top, ao: 0.25, shape: (c, zt) => { const z = zt * q.h, k = z < tipZ ? 1 : Math.max(0.04, 1 - (z - tipZ) / (q.h - tipZ)); const o = at(z); S.poly(c, ngon(q.r * k, 6, Math.PI / 6, o[0], o[1])); },
+        detail: (c) => { const o = at(q.h); S.dot(c, '#ffffff', o[0], o[1], 0.35); } });
+      // lit facet edge (left-front) and glowing core streak (front face)
+      parts.push({ z0: 1.0, z1: 0.6 + tipZ, side: facet, top: facet, flat: true, bevel: false, shape: (c, zt) => { const o = at(zt * tipZ); S.rect(c, o[0] - q.r * 0.86, o[1] + q.r * 0.2, 0.32, 0.3); } });
+      parts.push({ z0: 1.2, z1: 0.6 + tipZ * 0.9, side: glow, top: glow, flat: true, bevel: false, shape: (c, zt) => { const o = at(zt * tipZ * 0.9); S.rect(c, o[0] - 0.35, o[1] + q.r * 0.78, 0.7, 0.25); } });
     }
-    return { r: 10, h: 18, parts, style: 'prop', post: { rimStrength: 0.3 } };
+    return { r: 12, h: 18, parts, style: 'prop', post: { rimStrength: 0.32 } };
   };
 
   /* ---------- shroom: glowing-spotted mushroom cluster ---------- */
@@ -582,53 +604,59 @@
     return { r: 11, h: 15, parts, style: 'prop' };
   };
 
-  /* ---------- gearbit: half-buried standing gear, fallen broken gear, glowing slag ---------- */
+  /* ---------- gearbit: half-buried standing gear, fallen broken gear, bent shaft, hot embers ---------- */
   PROPS.gearbit = function (p, seed) {
     const parts = [];
-    const metal = desat(mx(p.b, '#8a8a8a', 0.3), 0.3), metalS = sh(desat(p.a, 0.3), -0.1), glow = p.g;
-    const GR = seed === 1 ? 6.6 : 5.4, gx = seed === 3 ? 2.0 : -1.0, gy = -2.0;
-    // slag / debris mound
-    parts.push({ z0: 0, z1: 1.2, side: sh(p.d, 0.05), top: sh(desat(p.a, 0.3), -0.35), shape: (c) => S.blob(c, 0.5, 0.5, 8.6, seed * 13, 11, 0.32) });
-    // standing gear (disc in the xz plane, facing the viewer): toothed semicircle
-    parts.push({ z0: 0.4, z1: 0.4 + GR + 0.9, side: metalS, top: metal, shape: (c, zt) => { const z = zt * (GR + 0.9); const teeth = Math.floor(z / 0.9) % 2 === 0 ? 0.9 : 0; const rr = GR + teeth; const w = Math.sqrt(Math.max(0, rr * rr - z * z)); if (w > 0.05) S.rect(c, gx - w, gy - 0.9, w * 2, 1.8); } });
-    // hub boss on the gear face
-    parts.push({ z0: GR * 0.5 - 1.6, z1: GR * 0.5 + 1.6, side: sh(metal, -0.25), top: sh(metal, 0.2), shape: (c, zt) => { const w = 1.6 * cylW(zt); S.rect(c, gx - w, gy - 0.9, w * 2, 2.4); } });
-    parts.push({ z0: GR * 0.5 - 0.7, z1: GR * 0.5 + 0.7, side: '#1a1816', top: '#2a2622', bevel: false, shape: (c, zt) => { const w = 0.7 * cylW(zt); S.rect(c, gx - w, gy + 1.0, w * 2, 0.6); } });
+    const metal = desat(mx('#9a9ea4', p.b, 0.3), 0.25), metalS = sh(metal, -0.12), metalD = sh(metal, -0.45), glow = p.g;
+    const GR = seed === 1 ? 6.4 : 5.4, gx = seed === 3 ? 1.6 : -1.2, gy = -2.2, nT = 14;
+    // scorched debris patch
+    parts.push({ z0: 0, z1: 0.8, side: sh(p.d, 0.08), top: sh(desat(p.a, 0.4), -0.3), bevel: false, shape: (c) => S.blob(c, 0.4, 0.8, 7.2, seed * 13, 11, 0.36) });
+    // standing gear (disc in the xz plane facing the viewer) with radial teeth on its rim
+    parts.push({ z0: 0.4, z1: 0.4 + GR + 0.9, side: metalS, top: sh(metal, 0.25), ao: 0.22, shape: (c, zt) => { const z = zt * (GR + 0.9); const w0 = Math.sqrt(Math.max(0, GR * GR - z * z)); const th = Math.atan2(z, Math.max(0.01, w0)); const tooth = Math.floor(th / (Math.PI / nT)) % 2 === 0 ? 0.95 : 0; const rr = GR + tooth; const w = Math.sqrt(Math.max(0, rr * rr - z * z)); if (w > 0.05) S.rect(c, gx - w, gy - 0.9, w * 2, 1.8); } });
+    // lightening holes and hub boss on the gear face (drawn in front of it)
+    const faceY = gy + 0.9;
+    parts.push({ z0: 0.4 + GR * 0.5 - 1.0, z1: 0.4 + GR * 0.5 + 1.0, side: metalD, top: metalD, flat: true, bevel: false, shape: (c, zt) => { const w = 1.0 * cylW(zt); for (const dx of [-GR * 0.55, GR * 0.55]) S.rect(c, gx + dx - w, faceY, w * 2, 0.15); } });
+    parts.push({ z0: 0.4 + GR * 0.32 - 1.7, z1: 0.4 + GR * 0.32 + 1.7, side: sh(metal, 0.08), top: sh(metal, 0.3), shape: (c, zt) => { const w = 1.7 * cylW(zt); S.rect(c, gx - w, faceY, w * 2, 1.0); } });
+    parts.push({ z0: 0.4 + GR * 0.32 - 0.7, z1: 0.4 + GR * 0.32 + 0.7, side: '#1a1816', top: '#2a2622', flat: true, bevel: false, shape: (c, zt) => { const w = 0.7 * cylW(zt); S.rect(c, gx - w, faceY + 1.0, w * 2, 0.15); } });
     // fallen broken gear in front
-    const fx = seed === 3 ? -3.2 : 3.4, fy = 3.0, FR = 4.2;
-    parts.push({ z0: 0.4, z1: 2.0, side: metalS, top: metal, shape: (c) => { const n = 12, a0 = 0.9, a1 = TAU - 0.4; let first = true; for (let i = 0; i <= n * 2; i++) { const a = a0 + (a1 - a0) * i / (n * 2); const r = i % 2 ? FR : FR + 0.9; const px = fx + Math.cos(a) * r, py = fy + Math.sin(a) * r * 0.9; if (first) { c.moveTo(px, py); first = false; } else c.lineTo(px, py); } c.lineTo(fx + Math.cos(a1) * 1.6, fy + Math.sin(a1) * 1.4); c.lineTo(fx + 1.0, fy + 0.6); c.lineTo(fx + Math.cos(a0) * 1.8, fy + Math.sin(a0) * 1.6); c.closePath(); },
-      detail: (c) => { S.dot(c, sh(p.d, 0.1), fx, fy, 1.2); c.save(); c.strokeStyle = 'rgba(0,0,0,0.3)'; c.lineWidth = 0.35; c.beginPath(); c.arc(fx, fy, FR * 0.7, 0.9, TAU - 0.4); c.stroke(); c.restore(); } });
+    const fx = seed === 3 ? -3.0 : 3.2, fy = 3.0, FR = 4.0;
+    parts.push({ z0: 0.4, z1: 1.9, side: metalS, top: sh(metal, 0.18), shape: (c) => { const n = 11, a0 = 0.9, a1 = TAU - 0.5; for (let i = 0; i <= n * 2; i++) { const a = a0 + (a1 - a0) * i / (n * 2); const r = i % 2 ? FR : FR + 0.9; const px = fx + Math.cos(a) * r, py = fy + Math.sin(a) * r; if (i === 0) c.moveTo(px, py); else c.lineTo(px, py); } c.lineTo(fx + Math.cos(a1) * 1.6, fy + Math.sin(a1) * 1.6); c.lineTo(fx + 1.2, fy + 0.4); c.lineTo(fx + Math.cos(a0) * 1.8, fy + Math.sin(a0) * 1.8); c.closePath(); },
+      detail: (c) => { S.dot(c, metalD, fx, fy, 1.3); S.dot(c, '#1a1816', fx, fy, 0.7); c.save(); c.strokeStyle = 'rgba(0,0,0,0.3)'; c.lineWidth = 0.35; c.beginPath(); c.arc(fx, fy, FR * 0.66, 0.9, TAU - 0.5); c.stroke(); c.restore(); spec(c, fx - 2.2, fy - 1.6, 0.4, 1.2, 0.8, 0.4); } });
     // bent shaft
-    parts.push({ z0: 0.6, z1: 2.6, side: sh(metal, -0.3), top: sh(metal, 0.25), shape: (c, zt) => lyingCyl(c, zt, -3.6, 4.4, 6.0, 1.0, 0.6 + seed * 0.3) });
-    // glowing hot slag cracks / embers
-    parts.push({ z0: 1.2, z1: 1.2, side: glow, top: glow, flat: true, bevel: false, shape: (c) => { S.blob(c, -5.6, -1.0, 1.1, seed, 6, 0.4); S.blob(c, 6.2, -2.4, 0.8, seed + 3, 6, 0.4); S.blob(c, 0.6, 6.6, 0.7, seed + 5, 6, 0.4); },
-      detail: (c) => { S.dot(c, '#fff0c0', -5.6, -1.0, 0.4); } });
+    parts.push({ z0: 0.4, z1: 2.4, side: sh(metal, -0.25), top: sh(metal, 0.3), shape: (c, zt) => lyingCyl(c, zt, seed === 3 ? 4.2 : -4.0, 4.0, 5.6, 1.0, 0.5 + seed * 0.35) });
+    // glowing embers / hot slag
+    parts.push({ z0: 0.8, z1: 0.8, side: glow, top: glow, flat: true, bevel: false, shape: (c) => { S.blob(c, -5.4, -0.2, 1.0, seed, 6, 0.4); S.blob(c, 5.8, -1.6, 0.8, seed + 3, 6, 0.4); S.blob(c, 0.4, 6.0, 0.7, seed + 5, 6, 0.4); },
+      detail: (c) => { S.dot(c, '#fff0c0', -5.4, -0.2, 0.4); S.dot(c, '#fff0c0', 5.8, -1.6, 0.3); } });
     return { r: 11, h: GR + 3, parts, style: 'prop' };
   };
 
-  /* ---------- coral: reef cluster (branching coral, brain coral, sea fan) ---------- */
+  /* ---------- coral: reef cluster (branching coral, tube sponges, brain coral) ---------- */
   PROPS.coral = function (p, seed) {
     const parts = [];
-    const pink = p.b, pinkS = sh(p.a, -0.05), orange = mx('#e8904a', p.a, 0.3), teal = '#3ab0a8';
-    parts.push({ z0: 0, z1: 1.0, side: '#8a7e66', top: '#b8aa88', shape: (c) => S.blob(c, 0, 0.6, 7.4, seed * 5, 9, 0.3) });
-    // sea fan (thin, facing the viewer) at the back
-    const fx = seed === 2 ? 3.0 : -2.6;
-    parts.push({ z0: 0.6, z1: 10.6, side: sh(teal, -0.15), top: sh(teal, 0.35), shape: (c, zt) => { const w = 0.8 + Math.sin(Math.min(1, zt * 1.15) * Math.PI * 0.62) * 4.0; S.rect(c, fx - w, -3.2, w * 2, 0.7); } });
-    parts.push({ z0: 0.6, z1: 10.6, side: sh(teal, -0.45), top: sh(teal, -0.2), bevel: false, shape: (c, zt) => { const w = 0.8 + Math.sin(Math.min(1, zt * 1.15) * Math.PI * 0.62) * 4.0; for (let k = -2; k <= 2; k++) { const x = fx + k * w * 0.42 * (0.4 + zt * 0.6); S.rect(c, x - 0.12, -2.55, 0.24, 0.12); } } });
-    // brain coral dome
-    const bx = seed === 2 ? -3.4 : 3.6, by = 2.4;
-    parts.push({ z0: 0.6, z1: 4.0, side: sh(orange, -0.2), top: sh(orange, 0.2), shape: (c, zt) => S.circ(c, bx, by, 3.2 * Math.sqrt(Math.max(0.1, 1 - zt * zt * 0.85))),
-      detail: (c) => { c.save(); c.strokeStyle = rgba(sh(orange, -0.4), 0.7); c.lineWidth = 0.3; c.beginPath(); c.moveTo(bx - 1.0, by - 0.4); c.quadraticCurveTo(bx, by - 1.0, bx + 0.9, by - 0.2); c.moveTo(bx - 0.8, by + 0.4); c.quadraticCurveTo(bx + 0.2, by + 0.9, bx + 0.9, by + 0.5); c.stroke(); c.restore(); } });
-    // branching coral: trunks that fork, tips glowing
+    const pink = sh(mx(p.b, '#ff8aa8', 0.25), 0.12), pinkS = mx(mx(p.a, p.b, 0.45), '#e8507a', 0.2), orange = mx('#f8a048', p.a, 0.18), teal = '#38b8aa', violet = '#9a62d8';
+    parts.push({ z0: 0, z1: 0.9, side: '#4a4240', top: '#6a5e58', bevel: false, shape: (c) => S.blob(c, 0, 0.8, 3.4, seed * 5, 8, 0.35) });
+    // tube sponges at the back
+    const tubes = seed === 2 ? [[3.6, -2.6, 1.3, 7.5], [5.4, -0.6, 1.0, 5.2]] : [[-3.8, -2.4, 1.3, 7.8], [-5.4, -0.2, 1.0, 5.0], [-2.0, -3.6, 0.9, 5.6]];
+    tubes.sort((A, B) => A[1] - B[1]);
+    parts.push({ z0: 0.6, z1: 8.6, side: sh(seed === 3 ? violet : teal, -0.1), top: sh(seed === 3 ? violet : teal, 0.35), shape: (c, zt) => { const z = 0.6 + zt * 8; for (const t of tubes) if (z <= t[3] + 0.6) S.circ(c, t[0], t[1], t[2] * (1 + zt * 0.25)); },
+      detail: (c) => { for (const t of tubes) { S.dot(c, '#14302c', t[0], t[1], t[2] * 0.62); } } });
+    // branching coral: forked arms with glowing tips
     const br = [];
-    const n = 4 + (seed % 2);
-    for (let i = 0; i < n; i++) { const a = -Math.PI / 2 + (i - (n - 1) / 2) * 0.7 + (U.hash2(i, seed, 3) - 0.5) * 0.4; br.push({ a, len: 4.2 + U.hash2(i, seed, 4) * 2.4, h: 7 + U.hash2(i, seed, 6) * 4 }); }
-    const ox = seed === 2 ? 1.6 : -0.6, oy = 1.4;
-    const pos = (b, zt) => { const d = Math.pow(zt, 1.3) * b.len; return [ox + Math.cos(b.a) * d * 0.8, oy + Math.sin(b.a) * d * 0.55 + d * 0.15]; };
-    parts.push({ z0: 0.6, z1: 11.6, side: pinkS, top: pink, shape: (c, zt) => { for (const b of br) { const z = zt * 11; if (z > b.h) continue; const k = z / b.h, q = pos(b, k), q2 = pos(b, Math.max(0, k - 0.03)); bar(c, q2[0], q2[1], q[0], q[1], 0.75 * (1 - k * 0.35)); if (k > 0.45) { const s2 = { a: b.a + 0.8, len: b.len * 0.55 }; const kk = (k - 0.45) / 0.55, bx0 = pos(b, 0.45); const qx = bx0[0] + Math.cos(s2.a) * kk * s2.len * 0.8, qy = bx0[1] + Math.sin(s2.a) * kk * s2.len * 0.55; S.circ(c, qx, qy, 0.6 * (1 - kk * 0.3)); } } } });
-    parts.push({ z0: 7.0, z1: 11.6, side: sh(p.g, -0.3), top: '#ffffff', flat: true, bevel: false, shape: (c, zt) => { const z = 7 + zt * 4.6; for (const b of br) { if (Math.abs(z - b.h) < 0.7) { const q = pos(b, 1); S.circ(c, q[0], q[1], 0.75); } } } });
+    const n = 6 + (seed % 2);
+    for (let i = 0; i < n; i++) { const a = -Math.PI / 2 + (i - (n - 1) / 2) * 0.55 + (U.hash2(i, seed, 3) - 0.5) * 0.35; br.push({ a, len: 4.6 + U.hash2(i, seed, 4) * 2.2, h: 7.5 + U.hash2(i, seed, 6) * 4 }); }
+    const ox = seed === 2 ? -1.0 : 1.0, oy = 0.6;
+    const pos = (b, k) => { const d = Math.pow(k, 1.25) * b.len; return [ox + Math.cos(b.a) * d * 0.9, oy + Math.sin(b.a) * d * 0.5 + d * 0.2]; };
+    const tipPos = (b) => pos(b, 1);
+    const forkPos = (b, kk) => { const f = pos(b, 0.5), a2 = b.a + (b.a < -Math.PI / 2 ? -0.9 : 0.9); return [f[0] + Math.cos(a2) * kk * b.len * 0.5, f[1] + Math.sin(a2) * kk * b.len * 0.35]; };
+    parts.push({ z0: 0.6, z1: 12.0, side: pinkS, top: pink, shape: (c, zt) => { const z = zt * 11.4; for (const b of br) { if (z <= b.h) { const k = z / b.h, q = pos(b, k), q2 = pos(b, Math.max(0, k - 0.04)); bar(c, q2[0], q2[1], q[0], q[1], 1.2 * (1 - k * 0.3)); } const fz = b.h * 0.5, fh = b.h * 0.8; if (z > fz && z <= fh) { const kk = (z - fz) / (fh - fz), q = forkPos(b, kk); S.circ(c, q[0], q[1], 0.95 * (1 - kk * 0.3)); } } } });
+    parts.push({ z0: 5.0, z1: 12.0, side: sh(p.g, -0.25), top: '#ffffff', flat: true, bevel: false, shape: (c, zt) => { const z = 5.0 + zt * 7.0; for (const b of br) { if (Math.abs(z - (b.h + 0.6)) < 0.75) { const q = tipPos(b); S.circ(c, q[0], q[1], 0.95); } if (Math.abs(z - (b.h * 0.8 + 0.6)) < 0.6) { const q = forkPos(b, 1); S.circ(c, q[0], q[1], 0.75); } } } });
+    // brain coral dome in front
+    const bx = seed === 2 ? 3.4 : -2.4, by = 3.0;
+    parts.push({ z0: 0.6, z1: 3.8, side: sh(orange, -0.15), top: sh(orange, 0.22), shape: (c, zt) => S.circ(c, bx, by, 3.0 * Math.sqrt(Math.max(0.1, 1 - zt * zt * 0.85))),
+      detail: (c) => { c.save(); c.strokeStyle = rgba(sh(orange, -0.45), 0.75); c.lineWidth = 0.32; c.beginPath(); c.moveTo(bx - 1.0, by - 0.3); c.quadraticCurveTo(bx, by - 1.0, bx + 0.9, by - 0.2); c.moveTo(bx - 0.8, by + 0.5); c.quadraticCurveTo(bx + 0.2, by + 0.9, bx + 0.9, by + 0.5); c.stroke(); c.restore(); } });
     return { r: 10, h: 14, parts, style: 'prop' };
   };
+
   M.prop2 = function (kind, pal, o) {
     o = o || {};
     const fn = PROPS[kind];

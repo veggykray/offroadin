@@ -7,7 +7,7 @@ const [,, out, scenesJson] = process.argv;
 const scenes = JSON.parse(scenesJson);
 const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 810 } });
 const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
-await p.goto('http://127.0.0.1:8766/index.html?atm=1'); await p.waitForTimeout(1200);
+await p.goto((process.env.BASE || 'http://127.0.0.1:8766/') + 'index.html?atm=1'); await p.waitForTimeout(1200);
 for (const sc of scenes) {
   await p.evaluate((m) => { AS.App.endGame(); AS.App.startMission(m, { god: true }); }, sc.mission);
   await p.waitForTimeout(900);

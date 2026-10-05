@@ -59,6 +59,15 @@
       // landing zone at extraction: always accepts survivors and cargo
       this.lz = this.spawnStructure('pad', m.extraction.x, m.extraction.y, { id: 'lz', pad: { dropoff: true, repair: !!m.extraction.repair, refuel: !!m.extraction.refuel, rearm: !!m.extraction.rearm, lz: true } });
       const dsPal = { a: '#5a6470', b: '#a0acba', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' }, dsAlt = AS.ArtMap && AS.ArtMap.gen('dropship');
+      this.dropshipGrounded = !!dsAlt;
+      // the carrier parks on whichever side of the pad has flat open ground
+      if (dsAlt) {
+        const T = this.terrain, f = new Float32Array(4), ex0 = m.extraction.x, ey0 = m.extraction.y;
+        T.field(ex0, ey0, f); const lz = T.levelOf(f[0]);
+        const flat = (cx, cy) => { for (const [dx, dy] of [[0, 0], [-40, 0], [40, 0], [0, -26], [0, 26], [-30, 20], [30, -20], [-40, -60], [0, -70], [40, -60]]) { T.field(cx + dx, cy + dy, f); if (T.levelOf(f[0]) !== lz || T.kindOf(f[0], f[2]) !== 0) return false; } return true; };
+        const opts = [[112, -44], [-112, -44], [112, 40], [-112, 40], [0, -118], [150, 0], [-150, 0]];
+        this.dsOff = opts.find((o) => flat(ex0 + o[0], ey0 + o[1])) || opts[0];
+      }
       this.dropship = dsAlt
         ? AS.Forge.sheet('dropship2', () => AS.Models[dsAlt.gen](dsAlt.pal || dsPal, dsAlt.opt || {}), 1, 1, { angle: -0.45 })
         : AS.Forge.sheet('dropship', () => AS.Models.gunship(dsPal, { size: 1.7 }), 1, 1);
@@ -612,9 +621,12 @@
       // dropship parked at the LZ
       const ds = this.dropship;
       const lift = this.state === 'extracting' ? (2.6 - this.endT) * 30 : 0;
-      ctx.globalAlpha = 0.3; ctx.drawImage(ds.shadows[0], ex + 50 - ds.ax + 4, ey - 34 - ds.ay + 2, ds.w, ds.h); ctx.globalAlpha = 1;
-      ctx.drawImage(ds.frames[0][0], ex + 50 - ds.ax, ey - 34 - 16 - lift - ds.ay, ds.w, ds.h);
-      R.light(e.x + 50, e.y - 50 - lift, 30, e.active ? '#7dff9a' : '#7fe8ff', 0.35 + Math.sin(e.t * 5) * 0.15);
+      // parked beside the pad (the redesigned carrier is larger, so it sits further out)
+      const dsx = this.dsOff ? this.dsOff[0] : 50, dsy = this.dsOff ? this.dsOff[1] : -34;
+      ctx.globalAlpha = 0.3; ctx.drawImage(ds.shadows[0], ex + dsx - ds.ax + 4, ey + dsy - ds.ay + 2, ds.w, ds.h); ctx.globalAlpha = 1;
+      // the redesigned dropship stands on its struts; the old gunship model hovered
+      ctx.drawImage(ds.frames[0][0], ex + dsx - ds.ax, ey + dsy - (this.dropshipGrounded ? 0 : 16) - lift - ds.ay, ds.w, ds.h);
+      R.light(e.x + dsx, e.y + dsy - 16 - lift, 30, e.active ? '#7dff9a' : '#7fe8ff', 0.35 + Math.sin(e.t * 5) * 0.15);
       if (this.walkers) for (const w of this.walkers) { ctx.fillStyle = '#e8742a'; ctx.fillRect(Math.round(w.x - ox) - 1, Math.round(w.y - oy) - 7, 3, 5); ctx.fillStyle = '#e8c8a8'; ctx.fillRect(Math.round(w.x - ox) - 1, Math.round(w.y - oy) - 9, 3, 2); }
     }
     drawProjectiles(ctx, ox, oy, R) {
