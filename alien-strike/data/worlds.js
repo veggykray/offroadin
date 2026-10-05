@@ -47,7 +47,7 @@
         dune: { freq: 0.07, amp: 0.12, col: '#d8774a', shade: '#7a2c1a' },
         speck: ['#5a1e14', '#e09060'],
       },
-      decor: [{ k: 'rock', d: 8, pal: { a: '#5a2a1e', b: '#8a4a32', d: '#2a120c' } }, { k: 'bones', d: 2 }, { k: 'scrap', d: 3 }],
+      decor: [{ k: 'rock', d: 8, pal: { a: '#5a2a1e', b: '#8a4a32', d: '#2a120c' } }, { k: 'bones', d: 0.4 }, { k: 'scrap', d: 1.6 }],
       props: ['crate', 'barrel', 'container', 'pipe', 'wreck', 'mast'],
       propPal: { a: '#8a4a2a', b: '#c47a4a', g: '#ffd36b' },
       obstacle: { kind: 'spire', pal: { a: '#5a2418', b: '#8a3c26', t: '#a85a3a', g: '#ffb06a' } },

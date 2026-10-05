@@ -7,8 +7,11 @@
  *   3 boss     — dedicated darker progression, heavier drums, distorted bass
  * Material re-generates every 8 bars (new arps / melodies, occasional breakdowns)
  * so it never loops one track. Victory / failure stingers on mission end.
- * AUDIO HOOK: place recorded stems in audio/music/ and point a world's music.files
- * at them to replace the generator (see README). */
+ * AUDIO HOOK: place recorded loops in audio/music/ and give a world's music block
+ *   files: { explore, combat, battle, boss, victory, fail }  (paths, any subset)
+ * Looping stems are started in sync and cross-faded by the same intensity layers;
+ * victory / fail are one-shot stingers. Stems replace the generator once the
+ * explore stem has decoded (http(s) only); anything missing keeps the synth. */
 'use strict';
 (function (AS) {
   const SCALES = {
@@ -54,9 +57,39 @@
       const t = this.ctx.currentTime;
       this.out.gain.cancelScheduledValues(t); this.out.gain.setValueAtTime(0, t); this.out.gain.linearRampToValueAtTime(0.9, t + 3);
       this.layers.forEach((g, i) => g.gain.setTargetAtTime(i === 0 ? 1 : 0, t, 0.5));
+      this.stopStems();
+      if (m.files && location.protocol.startsWith('http')) this.loadStems(m.files, world);
+    },
+    /* ---------- recorded stems (optional) ---------- */
+    stemCache: {},
+    fetchBuf(url) {
+      if (!this.stemCache[url]) {
+        this.stemCache[url] = fetch(url).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(url)))).then((ab) => this.ctx.decodeAudioData(ab)).catch(() => null);
+      }
+      return this.stemCache[url];
+    },
+    loadStems(files, world) {
+      const keys = ['explore', 'combat', 'battle', 'boss'];
+      Promise.all(keys.map((k) => (files[k] ? this.fetchBuf(files[k]) : null))).then((bufs) => {
+        if (this.world !== world || !this.playing || !bufs[0]) return;
+        const t = this.ctx.currentTime + 0.1;
+        this.stems = bufs.map((b, i) => {
+          if (!b) return null;
+          const src = this.ctx.createBufferSource(); src.buffer = b; src.loop = true;
+          src.connect(this.layers[i]); src.start(t);
+          return src;
+        });
+      });
+      for (const k of ['victory', 'fail']) if (files[k]) this.fetchBuf(files[k]);
+    },
+    stopStems() {
+      if (!this.stems) return;
+      for (const s of this.stems) if (s) { try { s.stop(); } catch (e) { /* already stopped */ } }
+      this.stems = null;
     },
     stop() {
       if (!this.ctx) { this.pendingWorld = null; return; }
+      if (this.stems) { const st = this.stems; this.stems = null; setTimeout(() => st.forEach((s) => s && s.stop()), 2500); }
       this.playing = false;
       const t = this.ctx.currentTime;
       this.out.gain.cancelScheduledValues(t); this.out.gain.setTargetAtTime(0, t, 0.6);
@@ -106,6 +139,7 @@
         const gains = lvl === 3 ? [0.6, 0, 0, 1] : [1, lvl >= 1 ? 1 : 0, lvl >= 2 ? 1 : 0, 0];
         this.layers.forEach((g, i) => g.gain.setTargetAtTime(gains[i], t, lvl > 0 ? 0.6 : 2.2));
       }
+      if (this.stems) return; // recorded stems are playing instead of the generator
       // schedule ahead
       const tempo = this.tempo * (this.intensity === 3 ? 1.12 : 1);
       const sixteenth = 60 / tempo / 4;
@@ -262,6 +296,12 @@
       const root = this.root || 50;
       this.playing = false;
       this.out.gain.setTargetAtTime(0, t, 0.3);
+      if (this.stems) { const st = this.stems; this.stems = null; setTimeout(() => st.forEach((s) => s && s.stop()), 1500); }
+      const file = (kind === 'victory' || kind === 'fail') && this.cfg && this.cfg.files && this.cfg.files[kind];
+      if (file && this.stemCache[file]) {
+        this.stemCache[file].then((b) => { if (!b) return; const src = this.ctx.createBufferSource(); src.buffer = b; src.connect(bus); src.start(); });
+        return;
+      }
       if (kind === 'victory') {
         const notes = [0, 4, 7, 12, 16];
         notes.forEach((n, i) => this.inst('saw', t + i * 0.11, root + 12 + n, 0.5, bus, 0.09, true));

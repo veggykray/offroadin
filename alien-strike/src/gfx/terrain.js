@@ -42,10 +42,33 @@
       if (T.dune) this.col.dune = { c: rgb(T.dune.col), s: rgb(T.dune.shade) };
       this.decorSheets = null;
       this._f = new Float32Array(4);
+      // zones without an explicit height flatten to the local ground level (so bases
+      // sit flat without carving artificial circular plateaus); on water / cloud
+      // worlds they are raised just above the surface to form islands.
+      const f = new Float32Array(4);
+      // The zone takes the terrace level most of its footprint already sits on, at
+      // that level's centre height, so its rim never hovers on a level threshold
+      // (which made ragged, stair-stepped edges).
+      const votes = new Map();
+      for (const z of this.zones) {
+        if (z.h !== null) continue;
+        votes.clear();
+        for (let i = 0; i < 13; i++) {
+          const a = i * 2.4, rr = i === 0 ? 0 : z.r * (i % 2 ? 0.5 : 0.9);
+          this.field(z.x + Math.cos(a) * rr, z.y + Math.sin(a) * rr, f, true);
+          if (this.T.river && f[2] < this.T.river.width * 1.6) continue;
+          if (this.T.lava && f[2] < this.T.lava.width * 1.8) continue;
+          const l = Math.max(0, this.levelOf(f[0]));
+          votes.set(l, (votes.get(l) || 0) + (i === 0 ? 2 : 1));
+        }
+        let best = this.levelOf(0.4), bv = 0;
+        for (const [l, v] of votes) if (v > bv || (v === bv && l > best)) { best = l; bv = v; }
+        z.h = U.clamp(this.levelMid(best), 0.05, 0.95);
+      }
     }
 
     /* ---------- analytic field ---------- */
-    field(x, y, out) {
+    field(x, y, out, noZones) {
       const T = this.T, sc = T.scale, sd = this.seed;
       const wx = x + U.noise2(x * sc * 0.6, y * sc * 0.6, sd + 5) * 180;
       const wy = y + U.noise2(x * sc * 0.6 + 41.3, y * sc * 0.6, sd + 6) * 180;
@@ -68,7 +91,7 @@
       else if (ty === 'ice') ex = U.ridged(x / 260, y / 260, 3, sd + 93);
       else if (ty === 'sanctum') ex = U.fbm(x / 220, y / 220, 3, sd + 94);
       // mission zones (base plateaus, forced islands, lakes)
-      const zs = this.zones;
+      const zs = noZones ? [] : this.zones;
       for (let i = 0; i < zs.length; i++) {
         const z = zs[i];
         const dx = x - z.x, dy = y - z.y, R = z.r * z.soft;
@@ -78,7 +101,7 @@
         const t = U.smoothstep(R, z.r, d);
         const target = z.h !== null ? z.h : this.landMid();
         h = U.lerp(h, target, t);
-        if (t > 0.5) s = Math.max(s, 1);
+        s += (Math.max(s, 1.2) - s) * Math.min(1, t * 1.6); // rivers taper out of the zone
       }
       out[0] = h; out[1] = m; out[2] = s; out[3] = ex;
       return out;
@@ -106,6 +129,11 @@
         }
       }
       return v;
+    }
+
+    levelMid(l) {
+      if (this.sea >= 0) return this.sea + ((l + 0.5) / (this.levels * 1.15)) * (1 - this.sea);
+      return (l + 0.5) / this.levels;
     }
 
     levelOf(h) {
@@ -347,11 +375,15 @@
         }
         case 'dunes': {
           if (l >= 1) {
-            const dir = 0.6 + ex * 0.8;
-            const ph = (x * Math.cos(dir) + y * Math.sin(dir)) * T.dune.freq + ex * 9;
-            const w = Math.sin(ph), k = w > 0.55 ? 0.12 : w < -0.7 ? -0.1 : 0;
+            // wind ripples: parallel crests along a fixed wind axis, gently meandering,
+            // with a long lit stoss side and a short shadowed slip face; patchy strength
+            const u = x * 0.825 + y * 0.565, v = y * 0.825 - x * 0.565;
+            const ph = u * T.dune.freq + U.noise2(v / 210, u / 520, this.seed + 95) * 2.6;
+            const f = ph / 6.2832 - Math.floor(ph / 6.2832);
+            const patch = U.clamp(0.55 + ex * 0.9, 0, 1);
+            const k = f > 0.56 && f < 0.7 ? 0.12 : f >= 0.7 && f < 0.8 ? -0.11 : 0;
             const dc = k > 0 ? col.dune.c : col.dune.s;
-            const t = Math.abs(k) * 2.5 * U.clamp(l / 2, 0.5, 1);
+            const t = Math.abs(k) * 2.5 * U.clamp(l / 2, 0.5, 1) * (patch > 0.35 ? 1 : 0);
             out[0] = U.lerp(out[0], dc[0], t); out[1] = U.lerp(out[1], dc[1], t); out[2] = U.lerp(out[2], dc[2], t);
           } else if (l === 0 && m > 0.55) {
             out[0] = U.lerp(out[0], 216, 0.3); out[1] = U.lerp(out[1], 180, 0.3); out[2] = U.lerp(out[2], 154, 0.3);

@@ -273,7 +273,8 @@
       const head = h('div', { class: 'panel' },
         h('div', { class: 'planet' }, 'WORLD ' + String(w.id).padStart(2, '0') + ' — ' + w.name + ' · ' + m.region.toUpperCase()),
         h('div', { class: 'mname' }, 'OPERATION ' + m.name),
-        h('div', { class: 'danger mono dim', style: 'margin-top:6px' }, 'ESTIMATED DANGER  ', ...[1, 2, 3, 4, 5].map((i) => h('span', { class: i <= (b.danger || 1) ? 'on' : '' }))));
+        h('div', { class: 'danger mono dim', style: 'margin-top:6px' }, 'ESTIMATED DANGER  ', ...[1, 2, 3, 4, 5].map((i) => h('span', { class: i <= (b.danger || 1) ? 'on' : '' }))),
+        h('div', { class: 'row actions', style: 'margin-top:14px;flex-wrap:wrap;gap:10px' }, btn('Launch', () => { AS.Voice.stop(); AS.App.startMission(m.id); }, 'primary'), btn('Hangar', () => { AS.Voice.stop(); this.showHangar(m.id); }), btn('Back', () => { AS.Voice.stop(); this.showSelect(m.world); })));
       left.appendChild(head);
       const sit = h('p', { class: 'typing' });
       left.appendChild(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'SITUATION'), sit));
@@ -286,12 +287,12 @@
       if (hid) obj.appendChild(h('div', { class: 'dim mono' }, '★ ' + hid + ' hidden objective' + (hid > 1 ? 's' : '') + ' — discovered through exploration'));
       left.appendChild(obj);
       const right = h('div', { class: 'right' });
-      const mapc = h('canvas', { class: 'mapprev', width: 220, height: 220 });
+      const mx = Math.max(m.map.w, m.map.h);
+      const mapc = h('canvas', { class: 'mapprev', width: Math.round(220 * m.map.w / mx), height: Math.round(220 * m.map.h / mx) });
       right.appendChild(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'AREA OF OPERATIONS'), mapc));
       right.appendChild(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'KNOWN THREATS'), h('ul', null, (b.threats || []).map((t) => h('li', null, t))), (b.intel && b.intel.length) ? h('h3', null, 'INTELLIGENCE') : null, (b.intel && b.intel.length) ? h('ul', null, b.intel.map((t) => h('li', { class: 'dim' }, t))) : null));
       const P = AS.Save.profile, W = AS.Data.weapons;
-      right.appendChild(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'LOADOUT'), h('div', { class: 'mono' }, W[P.loadout.primary].name + ' · ' + W[P.loadout.secondary].name + ' · ' + W[P.loadout.special].name), h('div', { class: 'mono dim', style: 'margin-top:4px' }, 'Repair kits: ' + P.repairKits),
-        h('div', { class: 'row', style: 'margin-top:14px;flex-wrap:wrap' }, btn('Launch', () => { AS.Voice.stop(); AS.App.startMission(m.id); }, 'primary'), btn('Hangar', () => { AS.Voice.stop(); this.showHangar(m.id); }), btn('Back', () => { AS.Voice.stop(); this.showSelect(m.world); }))));
+      left.appendChild(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'LOADOUT'), h('div', { class: 'mono' }, W[P.loadout.primary].name + ' · ' + W[P.loadout.secondary].name + ' · ' + W[P.loadout.special].name), h('div', { class: 'mono dim', style: 'margin-top:4px' }, 'Repair kits: ' + P.repairKits)));
       s.appendChild(left); s.appendChild(right);
       this.show('briefing');
       // typewriter
@@ -308,11 +309,12 @@
       const T = new AS.Terrain(w, m.map);
       const sc = Math.max(m.map.w, m.map.h) / 220;
       const img = T.buildMap(sc);
-      const c = cv.getContext('2d');
-      c.fillStyle = '#000'; c.fillRect(0, 0, 220, 220);
-      c.globalAlpha = 0.85; c.drawImage(img, 0, 0); c.globalAlpha = 1;
+      const c = cv.getContext('2d'), cw = cv.width, ch = cv.height;
+      c.fillStyle = '#000'; c.fillRect(0, 0, cw, ch);
+      c.globalAlpha = 0.85; c.drawImage(img, 0, 0, cw, ch); c.globalAlpha = 1;
       c.strokeStyle = 'rgba(127,232,255,0.15)';
-      for (let x = 0; x < 220; x += 22) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, 220); c.stroke(); c.beginPath(); c.moveTo(0, x); c.lineTo(220, x); c.stroke(); }
+      for (let x = 0; x < cw; x += 22) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, ch); c.stroke(); }
+      for (let y = 0; y < ch; y += 22) { c.beginPath(); c.moveTo(0, y); c.lineTo(cw, y); c.stroke(); }
       const dot = (x, y, col, r, lbl) => { c.strokeStyle = col; c.fillStyle = col; c.beginPath(); c.arc(x / sc, y / sc, r, 0, TAU); c.stroke(); if (lbl) { c.font = '9px "Share Tech Mono"'; c.fillText(lbl, x / sc + r + 2, y / sc + 3); } };
       dot(m.extraction.x, m.extraction.y, '#7dff9a', 5, 'LZ');
       dot(m.start.x, m.start.y, '#ffffff', 2);
@@ -423,10 +425,11 @@
         const tag = o.cat === 'primary' ? '◆' : o.cat === 'hidden' ? '★' : '◇';
         objs.appendChild(h('div', { class: o.state === 'done' ? 'done' : o.state === 'failed' ? 'failed' : 'open' }, (o.state === 'done' ? '✔ ' : o.state === 'failed' ? '✖ ' : '○ ') + tag + ' ' + o.text));
       }
-      const opt = res.objectives.filter((o) => o.cat !== 'primary');
-      const optDone = opt.filter((o) => o.state === 'done').length;
+      const sec = res.objectives.filter((o) => o.cat === 'secondary');
+      const secDone = sec.filter((o) => o.state === 'done').length;
+      const hidDone = res.objectives.filter((o) => o.cat === 'hidden' && o.state === 'done').length;
       const grid = h('div', { class: 'res-grid' },
-        h('div', null, 'Optional objectives', h('b', null, optDone + ' / ' + opt.filter((o) => o.cat === 'secondary').length + (res.objectives.some((o) => o.cat === 'hidden' && o.state === 'done') ? ' (+hidden)' : ''))),
+        h('div', null, 'Optional objectives', h('b', null, secDone + ' / ' + sec.length + (hidDone ? '  +' + hidDone + ' hidden' : ''))),
         h('div', null, 'Enemies destroyed', h('b', null, st.kills + st.structures)),
         h('div', null, 'Survivors rescued', h('b', null, st.rescued + (st.lost ? ' (' + st.lost + ' lost)' : ''))),
         h('div', null, 'Salvage collected', h('b', null, st.salvage + st.bonusSalvage)),

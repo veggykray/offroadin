@@ -74,14 +74,16 @@ canvas#game { position: fixed; inset: 0; display: block; image-rendering: auto; 
 /* ---------- briefing ---------- */
 #briefing { align-items: stretch; padding: 3vh 4vw; gap: 20px; background: rgba(4,8,12,0.6); }
 #briefing .left { flex: 1.25; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
-#briefing .right { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+#briefing .right { flex: 1; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
 #briefing .planet { font: 700 13px 'Share Tech Mono'; letter-spacing: 4px; color: var(--amber); }
 #briefing .mname { font: 900 clamp(26px, 3vw, 42px) 'Orbitron'; letter-spacing: 2px; margin: 4px 0 2px; color: #fff; }
 #briefing p { line-height: 1.55; margin: 0 0 8px; font-size: 15px; }
 #briefing ul { margin: 4px 0 8px; padding-left: 20px; line-height: 1.6; }
 #briefing .danger span { display: inline-block; width: 18px; height: 8px; margin-right: 4px; background: rgba(255,90,58,0.2); clip-path: polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%); }
 #briefing .danger span.on { background: var(--red); }
-#briefing canvas.mapprev { width: 100%; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--line2); background: #000; }
+#briefing .actions .btn { min-width: 150px; }
+@media (max-height: 820px) { #briefing .panel { padding: 16px 22px; } #briefing p { font-size: 14px; } #briefing ul { line-height: 1.45; } #briefing .left, #briefing .right { gap: 10px; } }
+#briefing canvas.mapprev { display: block; width: min(100%, 44vh); height: auto; margin: 0 auto; image-rendering: pixelated; border: 1px solid var(--line2); background: #000; }
 .typing::after { content: '▌'; animation: blink 1s steps(1) infinite; color: var(--cyan); }
 @keyframes blink { 50% { opacity: 0; } }
 

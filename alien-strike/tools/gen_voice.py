@@ -11,8 +11,8 @@ Usage:
 
 Voices used (Piper v0.0.2 release): en-us-lessac-medium (ship), en-us-ryan-medium
 (command), en-gb-alan-low (intel), en-us-amy-low (survivor). Any recorded file placed
-at audio/voice/<id>.mp3 replaces the generated one (rerun with --keep to skip ids
-that already have audio, then rebuild the manifest).
+at audio/voice/<id>.mp3 replaces the generated one: existing files are kept unless
+--force is given, and every run rebuilds the manifest.
 """
 import argparse, json, os, subprocess, sys, tempfile, concurrent.futures
 
