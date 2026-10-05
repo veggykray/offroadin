@@ -39,6 +39,7 @@
       this.gunSheet = AS.Art.gun(def, g.world);
       this.gunZ = (def.model && def.model.gen === 'tracked') ? 7 : (def.model && def.model.gen === 'boat') ? 6 : 7;
       if (def.model && def.model.opt && def.model.opt.size) this.gunZ *= def.model.opt.size;
+      if (def.gunZ !== undefined) this.gunZ = def.gunZ; // redesigned models state their own turret height
       this.ai = AS.AI[def.ai] || AS.AI.tank;
       this.mem = {};
       if (this.ai.init) this.ai.init(this, g, o);

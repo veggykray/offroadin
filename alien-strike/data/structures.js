@@ -29,7 +29,7 @@
       weapon: W('beam', { dmg: 22, range: 460, rate: 0.3, charge: 1, col: '#7ff8ff', dtype: 'energy' }), model: { gen: 'obelisk', pal: 'native', opt: { h: 34 } }, salvage: 26, drop: 0.3 },
     // ---------- systems ----------
     radar: { name: 'Radar Spire', role: 'radar', hp: 130, armor: 2, r: 14, hc: 18, mech: true, coverage: 1000, model: { gen: 'radar', pal: 'choir', anims: 8 }, salvage: 24, drop: 0.4, solid: true },
-    comms: { name: 'Comm Relay', role: 'comms', hp: 110, armor: 2, r: 12, hc: 22, mech: true, model: { gen: 'comms', pal: 'choir', anims: 2 }, salvage: 22, drop: 0.4, solid: true },
+    comms: { name: 'Comm Relay', role: 'comms', hp: 110, armor: 2, r: 12, hc: 30, mech: true, model: { gen: 'comms', pal: 'choir', anims: 2 }, salvage: 22, drop: 0.4, solid: true },
     power: { name: 'Power Node', role: 'power', hp: 220, armor: 3, r: 24, hc: 12, mech: true, model: { gen: 'power', pal: 'choir' }, salvage: 34, drop: 0.5, solid: true },
     shieldgen: { name: 'Shield Generator', role: 'shieldgen', hp: 170, armor: 3, r: 15, hc: 12, mech: true, model: { gen: 'shieldgen', pal: 'choir' }, salvage: 30, drop: 0.5 },
     factory: { name: 'War Foundry', role: 'spawner', hp: 420, armor: 4, r: 34, hc: 14, mech: true, solid: true, spawn: { types: ['shardback'], max: 3, interval: 16 }, model: { gen: 'factory', pal: 'choir' }, salvage: 60, drop: 0.8 },
@@ -62,6 +62,7 @@
     dome: { name: 'Colony Shelter', role: 'friendly', team: 'player', hp: 600, r: 28, hc: 14, solid: true, model: { gen: 'dome', pal: 'colony' } },
     heatstation: { name: 'Thermal Station', role: 'friendly', team: 'player', hp: 500, r: 30, hc: 14, invuln: true, solid: true, model: { gen: 'heatStation', pal: 'colony' } },
     wreckship: { name: 'Crashed Survey Ship', role: 'scenery', team: 'neutral', hp: 1, r: 40, hc: 10, invuln: true, solid: true, model: { gen: 'wreckShip', pal: 'colony' } },
+    choirwreck: { name: 'Frozen Choir Ship', role: 'scenery', team: 'neutral', hp: 1, r: 40, hc: 10, invuln: true, solid: true, model: { gen: 'wreckShip', pal: 'choir' } },
     crashedship: { name: 'Crashed Frigate', role: 'friendly', team: 'player', hp: 700, r: 40, hc: 10, solid: true, model: { gen: 'wreckShip', pal: { a: '#5a6470', b: '#9aa6b4', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' } } },
     obelisk: { name: 'Choir Ruin', role: 'scenery', team: 'neutral', hp: 1, r: 14, hc: 20, invuln: true, solid: true, model: { gen: 'obelisk', pal: 'choir', opt: { h: 46 } } },
     platform: { name: 'Platform', role: 'scenery', team: 'neutral', hp: 1, r: 30, hc: 4, invuln: true, flat: true, model: { gen: 'platform', pal: 'colony' } },

@@ -29,7 +29,7 @@
       gen: 'crashShip', pal: 'colony', opt: { variant: 'colony' }, r: 120,
       solids: [[0, 0, 34, true], [55, 4, 22, true], [-60, -4, 24, true]],
       decals: [{ kind: 'trench', dx: -95, dy: 0, len: 260, w: 44, ang: 0 }, { kind: 'scorch', dx: 10, dy: 6, r: 70 }],
-      fx: [{ t: 'smoke', dx: 6, dy: 0, z: 18, rate: 3, size: 8 }, { t: 'fire', dx: -30, dy: 10, z: 6 }, { t: 'smoke', dx: -40, dy: 8, z: 10, rate: 2 }, { t: 'beacon', dx: 70, dy: -10, z: 22, col: '#ff5a3a' }],
+      fx: [{ t: 'smoke', dx: -8, dy: 2, z: 18, rate: 3, size: 8 }, { t: 'fire', dx: -36, dy: 2, z: 6 }, { t: 'smoke', dx: -40, dy: 2, z: 10, rate: 2 }, { t: 'beacon', dx: 54, dy: -4.5, z: 23, col: '#ff5a3a' }, { t: 'light', dx: -108, dy: 7, z: 6, r: 40, col: '#ff8a3a', a: 0.3 }],
     },
     crashChoir: {
       gen: 'crashShip', pal: 'choir', opt: { variant: 'choir' }, r: 120,
@@ -40,31 +40,30 @@
     /* ---- fossils ---- */
     skeletonBeast: {
       gen: 'skeleton', pal: BONE, opt: { kind: 'beast' }, r: 115,
-      solids: [[0, 0, 26, true], [-60, 0, 18, true], [70, 0, 18, true]],
-      decals: [{ kind: 'scorch', dx: 0, dy: 0, r: 90, soft: true }],
+      solids: [[0, 10, 28, true], [84, -4, 16, true], [-60, -6, 14, true]],
     },
     skeletonWorm: {
       gen: 'skeleton', pal: BONE, opt: { kind: 'worm' }, r: 125,
-      solids: [[0, 0, 24, true], [-70, 0, 20, true], [70, 0, 20, true]],
+      solids: [[0, 0, 22, true], [-70, -23, 20, true], [70, 23, 20, true], [106, 28, 16, true]],
     },
     /* ---- human frontier ---- */
     colonyRuins: {
       gen: 'colonyRuins', pal: 'colony', r: 80,
       solids: [[0, 0, 30, true]],
       decals: [{ kind: 'foundation', dx: 0, dy: 0, r: 70, slab: '#8a8478' }],
-      fx: [{ t: 'smoke', dx: 18, dy: 10, z: 4, rate: 0.8, size: 5 }],
+      fx: [{ t: 'smoke', dx: 27, dy: -10, z: 4, rate: 0.8, size: 5 }],
     },
     convoyHulk: {
       gen: 'convoyHulk', pal: 'colony', r: 36,
       solids: [[0, 0, 16, true]],
       decals: [{ kind: 'scorch', dx: 0, dy: 0, r: 34 }, { kind: 'trench', dx: -30, dy: 0, len: 70, w: 18, ang: 0 }],
-      fx: [{ t: 'smoke', dx: 4, dy: 0, z: 10, rate: 1.6, size: 5 }],
+      fx: [{ t: 'smoke', dx: 16, dy: 0, z: 12, rate: 1.6, size: 5 }],
     },
     industrialStacks: {
       gen: 'industrialStacks', pal: 'colony', r: 70,
       solids: [[0, 0, 40]],
       decals: [{ kind: 'foundation', dx: 0, dy: 0, r: 64, slab: '#6a6660' }],
-      fx: [{ t: 'smoke', dx: -18, dy: -10, z: 80, rate: 4, size: 9, col: '#4a4440', col2: '#8a8278' }, { t: 'smoke', dx: 18, dy: 8, z: 66, rate: 3, size: 8, col: '#4a4440', col2: '#8a8278' }, { t: 'light', dx: 0, dy: 20, z: 10, r: 50, col: '#ffa040', a: 0.25 }, { t: 'beacon', dx: -18, dy: -10, z: 84, col: '#ff3a2a', rate: 0.6 }],
+      fx: [{ t: 'smoke', dx: -18, dy: -10, z: 80, rate: 4, size: 9, col: '#4a4440', col2: '#8a8278' }, { t: 'smoke', dx: 18, dy: 8, z: 66, rate: 3, size: 8, col: '#4a4440', col2: '#8a8278' }, { t: 'light', dx: 0, dy: 20, z: 10, r: 50, col: '#ffa040', a: 0.25 }, { t: 'beacon', dx: -13, dy: -10, z: 81, col: '#ff3a2a', rate: 0.6 }, { t: 'smoke', dx: -27, dy: 25, z: 52, rate: 2.5, size: 10, col: '#cfcac2', col2: '#f0ede8' }],
     },
     drownedTower: {
       gen: 'drownedTower', pal: 'colony', r: 50, water: true,
@@ -75,7 +74,7 @@
       gen: 'giantGear', pal: 'colony', r: 70,
       solids: [[0, 0, 36, true]],
       decals: [{ kind: 'crater', dx: 0, dy: 6, r: 60 }],
-      fx: [{ t: 'sparks', dx: 20, dy: 10, z: 12, rate: 0.5 }],
+      fx: [{ t: 'sparks', dx: 41, dy: -25, z: 26, rate: 0.5 }],
     },
     /* ---- Choir ---- */
     monolith: { gen: 'monolith', pal: 'choir', r: 16, solids: [[0, 0, 10]] },
@@ -100,7 +99,7 @@
     giantShrooms: {
       gen: 'giantShrooms', pal: 'native', r: 60,
       solids: [[0, 0, 18]],
-      fx: [{ t: 'light', dx: 0, dy: 0, z: 60, r: 80, col: '#7fffd0', a: 0.18, pulse: 0.7 }, { t: 'motes', dx: 0, dy: 0, z: 40, col: '#9ffff0', rate: 3, spread: 40 }],
+      fx: [{ t: 'light', dx: -8, dy: -13, z: 66, r: 80, col: '#7fffd0', a: 0.18, pulse: 0.7 }, { t: 'motes', dx: -8, dy: -13, z: 40, col: '#9ffff0', rate: 3, spread: 40 }],
     },
     impactCrater: {
       r: 120,

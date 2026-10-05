@@ -1,0 +1,87 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Creature preview</title>
+<style>body{background:#111;margin:0;color:#ddd;font:12px monospace}canvas{display:block}</style></head><body>
+<canvas id="c"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/models_creatures.js"></script>
+<script>
+// Native creature preview. Each cell: the creature large (left, anim frame 0) and at
+// game scale (1.8 px/unit): 4 headings on the top row, the 4 anim frames below,
+// all on the creature's world ground. ?k=skitter,warrior limits the cells;
+// ?cols=N sets the column count; ?big=1 doubles the large view.
+const Q = new URLSearchParams(location.search);
+const W = (id) => AS.Data.worldById(id);
+const LIST = [
+  { k: 'skitter', gen: 'crSkitter', w: 1, pal: 'native', anims: 4 },
+  { k: 'skitterLead', gen: 'crSkitter', w: 1, pal: 'native', opt: { leader: 1 }, anims: 4 },
+  { k: 'tunneler', gen: 'crTunneler', w: 1, pal: 'native', anims: 4 },
+  { k: 'sandwyrm', gen: 'crSandwyrm', w: 2, pal: 'native', anims: 4 },
+  { k: 'hivedrone', gen: 'crHiveDrone', w: 3, pal: 'native', anims: 4, air: 26 },
+  { k: 'spitter', gen: 'crSpitter', w: 3, pal: 'native', anims: 4 },
+  { k: 'lurker', gen: 'crLurker', w: 3, pal: { a: '#2a5a22', b: '#5a9a3a', t: '#e0a040', g: '#ff4a6a', d: '#2a1214' }, anims: 4, dirs: 1, fa: 1 },
+  { k: 'warrior', gen: 'crWarrior', w: 3, pal: { a: '#2a3a4a', b: '#4a6a7a', t: '#c0e0e0', g: '#7affd0', d: '#101820' }, anims: 4 },
+  { k: 'hivebomber', gen: 'crBomber', w: 3, pal: 'native', anims: 4, air: 48 },
+  { k: 'stalker', gen: 'crStalker', w: 4, pal: 'native', anims: 4 },
+  { k: 'lancer', gen: 'crLancer', w: 4, pal: 'native', anims: 1, dirs: 1, gun: 1 },
+  { k: 'lurcher', gen: 'crLurcher', w: 5, pal: 'native', anims: 4 },
+  { k: 'golem', gen: 'crGolem', w: 6, pal: 'native', anims: 4 },
+  { k: 'sporeling', gen: 'crSporeling', w: 7, pal: 'native', anims: 4 },
+  { k: 'puffball', gen: 'crPuffball', w: 7, pal: { a: '#8a5a9a', b: '#d0a0e0', t: '#fff', g: '#fff0a0' }, anims: 4, dirs: 1, air: 22 },
+  { k: 'sporemortar', gen: 'crSporeMortar', w: 7, pal: { a: '#5a3a6a', b: '#8a5aa0', g: '#c58aff', d: '#22142a' }, anims: 4, dirs: 1 },
+  { k: 'skyray', gen: 'crSkyRay', w: 8, pal: 'native', anims: 4, air: 46 },
+  { k: 'sentinel', gen: 'crSentinel', w: 9, pal: 'native', anims: 4, air: 30 },
+  { k: 'mite', gen: 'crMite', w: 9, pal: { a: '#5a5448', b: '#9a9078', t: '#ff6a3a', g: '#ff6a3a', d: '#1e1c18' }, anims: 4 },
+  { k: 'behemoth', gen: 'crBehemoth', w: 10, pal: 'native', anims: 4 },
+];
+const only = Q.get('k') ? Q.get('k').split(',') : null;
+const items = LIST.filter((e) => (!only || only.includes(e.k)) && AS.Models[e.gen]);
+const cols = +(Q.get('cols') || 3), CW = 520, CH = 340;
+const cv = document.getElementById('c');
+cv.width = cols * CW; cv.height = Math.ceil(items.length / cols) * CH;
+const c = cv.getContext('2d');
+const F = AS.Forge;
+const errs = [];
+function ground(x, y, w, h, world) {
+  const ramp = world.terrain.ramp;
+  c.fillStyle = ramp[1]; c.fillRect(x, y, w, h);
+  let s = 1;
+  const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 900; i++) { c.fillStyle = ramp[rnd() < 0.5 ? 0 : 2] + '66'; c.fillRect(x + rnd() * w, y + rnd() * h, 3, 3); }
+}
+function put(sh, ang, ai, x, y, sc, air) {
+  const di = F.frameIndex(sh, ang), lift = (air || 0) * 0.35;
+  c.globalAlpha = 0.32; c.drawImage(sh.shadows[di], x - sh.ax * sc + (4 + lift) * sc, y - sh.ay * sc + (6 + lift) * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[ai % sh.anims][di], x - sh.ax * sc, y - sh.ay * sc - lift * sc, sh.w * sc, sh.h * sc);
+}
+items.forEach((e, i) => {
+  const x0 = (i % cols) * CW, y0 = Math.floor(i / cols) * CH;
+  const world = W(e.w);
+  ground(x0, y0, CW, CH, world);
+  const pal = typeof e.pal === 'string' ? world[e.pal] : e.pal;
+  let sh, gun;
+  try {
+    const t0 = performance.now();
+    sh = F.sheet('cr:' + e.k, () => AS.Models[e.gen](pal, e.opt || {}), e.dirs || 16, e.anims || 1);
+    e.ms = Math.round(performance.now() - t0);
+    if (e.gun) gun = F.sheet('crgun:' + e.k, () => AS.Models.gun(pal, { kind: 'crystal' }), 24, 1);
+  } catch (err) { errs.push(e.k + ': ' + err.message); c.fillStyle = '#f44'; c.fillText(e.k + ' ERR ' + err.message, x0 + 8, y0 + 20); return; }
+  const m = sh.model;
+  const big = Math.min(5.5, 150 / m.r) * (Q.get('big') ? 1.6 : 1);
+  const ang = e.dirs === 1 ? 0 : -0.55;
+  put(sh, ang, e.fa || 0, x0 + 150, y0 + 170 + m.h * big * 0.3, big, e.air);
+  if (gun) put(gun, -0.55, 0, x0 + 150, y0 + 170 + m.h * big * 0.3 - 7 * big, big, e.air);
+  const gs = 1.8, heads = e.dirs === 1 ? [0] : [0, Math.PI / 2, Math.PI, -Math.PI / 2];
+  heads.forEach((a, j) => { put(sh, a, 0, x0 + 330 + j * 50, y0 + 90, gs, e.air); if (gun) put(gun, a, 0, x0 + 330 + j * 50, y0 + 90 - 7 * gs, gs, e.air); });
+  for (let a = 0; a < sh.anims; a++) put(sh, -0.3, a, x0 + 330 + a * 50, y0 + 190, gs, e.air);
+  // a second set of 4 anim frames at the large-ish scale for gait inspection
+  for (let a = 0; a < sh.anims; a++) put(sh, -Math.PI / 2 + 0.2, a, x0 + 320 + a * 52, y0 + 290, 2.6, e.air);
+  c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(x0, y0, CW, 18);
+  c.fillStyle = '#fff'; c.fillText(e.k + ' · ' + e.gen + ' · r' + m.r + ' h' + m.h + ' · parts ' + m.parts.length + ' · ' + (e.dirs || 16) + 'x' + (e.anims || 1) + ' · ' + e.ms + 'ms · frame ' + Math.round(sh.w * 2) + 'x' + Math.round(sh.h * 2) + ' · W' + e.w, x0 + 6, y0 + 13);
+});
+window.__errs = errs; window.__done = true;
+</script></body></html>

@@ -56,6 +56,7 @@ const CAT = [
   { k: 'shrooms3', gen: 'giantShrooms', pal: NAT[3], opt: {}, w: 3 },
   { k: 'gear9', gen: 'giantGear', pal: COLONY, opt: {}, w: 9 },
   { k: 'gear6', gen: 'giantGear', pal: COLONY, opt: {}, w: 6 },
+  { k: 'gearUpright', gen: 'giantGear', pal: COLONY, multi: [{ tilt: 55 }], angs: [0], w: 9 },
   { k: 'hulks', gen: 'convoyHulk', pal: COLONY, multi: [{ seed: 5 }, { seed: 22 }, { seed: 39 }, { seed: 56 }], w: 2 },
   { k: 'hulks1', gen: 'convoyHulk', pal: COLONY, multi: [{ seed: 5 }, { seed: 22 }], w: 1 },
   { k: 'drowned', gen: 'drownedTower', pal: COLONY, multi: [{ seed: 5 }, { seed: 22, helipad: true }, { seed: 39 }, { seed: 56, helipad: true }], w: 5 },
@@ -74,7 +75,7 @@ function render(e, opt, ang) {
 // build all renders first so the canvas can be sized
 const built = rows.map((e) => {
   const opts = e.multi || [e.opt || {}];
-  const bigs = opts.map((o, i) => render(e, o, e.multi ? -0.5 + i * 0.7 : -0.35));
+  const bigs = opts.map((o, i) => render(e, o, e.angs ? e.angs[0] : e.multi ? -0.5 + i * 0.7 : -0.35));
   const smalls = [];
   for (const o of opts.slice(0, e.multi ? opts.length : 1)) for (const a of (e.multi ? [0.6] : [0, 2.1, 4.2])) smalls.push(render(e, o, a));
   return { e, bigs, smalls };

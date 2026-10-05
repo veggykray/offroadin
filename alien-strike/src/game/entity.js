@@ -25,7 +25,8 @@
     gun(def, world, palKey) {
       if (!def.gun) return null;
       const pal = this.pal(palKey || (def.model && def.model.pal), world);
-      const alt = AS.ArtMap && AS.ArtMap.gen('gun'), gen = alt ? alt.gen : 'gun';
+      const alt = AS.ArtMap && AS.ArtMap.gen('gun');
+      const gen = def.gun.gen && AS.Models[def.gun.gen] ? def.gun.gen : alt ? alt.gen : 'gun';
       const key = 'gun:' + gen + JSON.stringify(def.gun) + JSON.stringify(pal);
       return AS.Forge.sheet(key, () => AS.Models[gen](pal, def.gun), 24, 1);
     },

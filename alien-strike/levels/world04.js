@@ -83,7 +83,7 @@
       { t: 'struct', k: 'lancertower', id: 'lt1', x: 2400, y: 1300 }, { t: 'struct', k: 'lancertower', id: 'lt2', x: 4250, y: 1350 }, { t: 'struct', k: 'lancertower', id: 'lt3', x: 5100, y: 3500 }, { t: 'struct', k: 'lancertower', id: 'lt4', x: 3200, y: 4500 },
       { t: 'unit', k: 'stalker', x: 2300, y: 1600, n: 3 }, { t: 'unit', k: 'stalker', x: 5200, y: 3800, n: 3 }, { t: 'unit', k: 'strider', x: 4500, y: 1500 },
       { t: 'zone', id: 'ship', x: 5800, y: 600, r: 260 },
-      { t: 'struct', k: 'wreckship', x: 5800, y: 600 }, ...L.cache(5700, 680, ['tech', 'tech', 'special'], { hidden: true }),
+      { t: 'struct', k: 'choirwreck', x: 5800, y: 600 }, ...L.cache(5700, 680, ['tech', 'tech', 'special'], { hidden: true }),
       ...L.fill(97, { w: 6400, units: [['stalker', 5, [3, 4]], ['frostdrone', 4, [2, 2]], ['strider', 2, [1, 1]], ['lancer', 3, [1, 1]]], obstacles: 30 }),
     ],
     objectives: [

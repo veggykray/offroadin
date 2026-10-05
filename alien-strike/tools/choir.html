@@ -20,14 +20,14 @@ const SERAPH = { a: '#b8ae9a', b: '#e6dcc6', t: '#5a4f7a', g: '#c09aff', d: '#3a
 const CFG = {
   chThrall: { anims: 4, big: 4 },
   chSentry: { anims: 4, alt: 34, big: 4 },
-  chShardback: { gun: { kind: 'cannon' }, gunZ: 7.6, big: 3.4 },
-  chNeedler: { gun: { kind: 'missile' }, gunZ: 7.6, big: 3.4 },
-  chOverseer: { gun: { kind: 'twin', size: 1.3 }, gunZ: 9.6, anims: 4, big: 2.6 },
+  chShardback: { gun: { kind: 'cannon' }, gunZ: 7.8, big: 3.4 },
+  chNeedler: { gun: { kind: 'missile' }, gunZ: 6.8, big: 3.4 },
+  chOverseer: { gun: { kind: 'twin', size: 1.3 }, gunZ: 9, anims: 4, big: 2.6 },
   chStormInt: { alt: 44, big: 3.2 },
   chGunship: { alt: 50, big: 2.4, anims: 4 },
-  chLancer: { gun: { kind: 'beam' }, gunZ: 8.2, big: 3 },
+  chLancer: { gun: { kind: 'beam' }, gunZ: 7.4, big: 3 },
   chTitan: { anims: 4, big: 2.2 },
-  chSeraph: { alt: 46, pal: SERAPH, big: 3, anims: 4 },
+  chSeraph: { alt: 46, pal: SERAPH, big: 3 },
 };
 const c = document.getElementById('c').getContext('2d');
 c.fillStyle = GROUND; c.fillRect(0, 0, 1600, 980);
@@ -53,7 +53,7 @@ list.forEach((name, ri) => {
     const t0 = performance.now();
     const sh = F.sheet(name + ri, () => M[name](pal, cfg.opt || {}), cfg.dirs || 24, cfg.anims || 1);
     const ms = performance.now() - t0;
-    const gun = cfg.gun ? F.sheet('gun' + ri, () => M.gun(pal, cfg.gun), 24, 1) : null;
+    const gun = cfg.gun && Q.get('gun') !== 'none' ? F.sheet('gun' + ri, () => M[Q.get('gun') === 'old' ? 'gun' : 'chGun'](pal, cfg.gun), 24, 1) : null;
     const z = cfg.alt ? cfg.alt * 0.35 : 0; // compress altitude so rows fit
     const big = cfg.big || 3;
     const by = y0 + rowH * 0.62;

@@ -19,6 +19,12 @@ const GROUND = { 1: '#a16f42', 2: '#a8442a', 3: '#335e26', 4: '#cbdae6', 5: '#c8
 const pal = (w, k) => typeof k === 'string' ? W[w - 1][k] : k;
 const ORG = { a: '#5e2440', b: '#b04a74', t: '#f09a3a', g: '#ffcf4a', d: '#2a0e1c' };
 const LANCER = { a: '#2e4a7a', b: '#9cc4ec', t: '#dff4ff', g: '#7ff8ff', d: '#16203a' };
+const HIVE = { a: '#8a5a2a', b: '#d39a4c', t: '#6a2a62', g: '#ff9a3a', d: '#2a1424' };
+const GROW = { a: '#7a1a4a', b: '#d0508a', t: '#ffb04a', g: '#ffd04a', d: '#2a0a1a' };
+const SILK = { a: '#b8b09a', b: '#efe9d6', t: '#6a5a4a', g: '#c0e040', d: '#3a3026' };
+const AMBER = { a: '#a0581a', b: '#e8a040', t: '#ffe0a0', g: '#fff07a', d: '#3a1c08' };
+const SPEC = { a: '#245a66', b: '#5ab4bc', t: '#d8f4e0', g: '#9ffff0', d: '#10262c' };
+const SPORE = { a: '#5a3a5a', b: '#8a5a7a', t: '#c08ab0', g: '#d0ff6a', d: '#2a1a2a' };
 const RESO = { a: '#3e2f6e', b: '#b6a4ee', t: '#efe6ff', g: '#c890ff', d: '#1c1634' };
 const SETS = {
   turrets: [
@@ -30,6 +36,44 @@ const SETS = {
     { k: 'turret_organic', w: 3, pal: ORG, gen: 'saTurret', opt: { style: 'organic' }, gun: { kind: 'organic' } },
     { k: 'turret_heavy W10', w: 10, pal: 'choir', gen: 'saTurret', opt: { style: 'ancient' }, gun: { kind: 'heavy' } },
     { k: 'bunker(colony twin)', w: 2, pal: 'colony', gen: 'turretBase', opt: { style: 'bunker' }, gun: { kind: 'twin' } },
+  ],
+  spires: [
+    { k: 'lancertower', w: 4, pal: LANCER, gen: 'saSpire', opt: { style: 'lancer' }, old: ['obelisk', { h: 34 }] },
+    { k: 'resonator', w: 4, pal: RESO, gen: 'saSpire', opt: { style: 'resonator' }, anims: 2, old: ['obelisk', { h: 40 }] },
+    { k: 'obelisk W1', w: 1, pal: 'choir', gen: 'saSpire', opt: { style: 'ruin' }, old: ['obelisk', { h: 46 }] },
+    { k: 'obelisk W6', w: 6, pal: 'choir', gen: 'saSpire', opt: { style: 'ruin' } },
+    { k: 'obelisk W10', w: 10, pal: 'choir', gen: 'saSpire', opt: { style: 'ruin' } },
+    { k: 'pylon W9', w: 9, pal: 'choir', gen: 'saSpire', opt: { style: 'arc' }, old: ['rod', {}] },
+    { k: 'pylon W8', w: 8, pal: 'choir', gen: 'saSpire', opt: { style: 'arc' } },
+    { k: 'rod W8', w: 8, pal: 'colony', gen: 'saSpire', opt: { style: 'rod' }, old: ['rod', {}] },
+  ],
+  systems: [
+    { k: 'radar', w: 1, pal: 'choir', gen: 'saRadar', anims: 8, old: ['radar', {}] },
+    { k: 'comms', w: 1, pal: 'choir', gen: 'saComms', anims: 2, old: ['comms', {}] },
+    { k: 'comms W6', w: 6, pal: 'choir', gen: 'saComms', anims: 2 },
+    { k: 'shieldpylon', w: 10, pal: 'choir', gen: 'saComms', opt: { h: 76, sanctum: true }, anims: 2, old: ['comms', { h: 60 }] },
+    { k: 'shieldgen', w: 1, pal: 'choir', gen: 'saShieldGen', anims: 4, old: ['shieldgen', {}] },
+    { k: 'power', w: 1, pal: 'choir', gen: 'saWell', old: ['power', {}] },
+    { k: 'reactor W6', w: 6, pal: 'choir', gen: 'saWell', opt: { style: 'reactor' }, old: ['power', {}] },
+    { k: 'reactor W9', w: 9, pal: 'choir', gen: 'saWell', opt: { style: 'reactor' } },
+  ],
+  halls: [
+    { k: 'factory W6', w: 6, pal: 'choir', gen: 'saFoundry', old: ['factory', {}] },
+    { k: 'factory W8', w: 8, pal: 'choir', gen: 'saFoundry' },
+    { k: 'barracks W1', w: 1, pal: 'choir', gen: 'saBarracks', old: ['barracks', {}] },
+    { k: 'hive W3', w: 3, pal: HIVE, gen: 'saHive', opt: { style: 'hive', seed: 9 }, old: ['nest', { r: 22, seed: 9 }] },
+    { k: 'nest W8', w: 8, pal: 'native', gen: 'saHive', opt: { style: 'burrow', r: 20, seed: 3 }, old: ['nest', { r: 20, seed: 3 }] },
+    { k: 'sporeroot W7', w: 7, pal: { a: '#6a3a7a', b: '#a060b8', g: '#9ffff0', d: '#22142a', t: '#d0a0e0' }, gen: 'saHive', opt: { style: 'root', r: 18, seed: 11 } },
+  ],
+  organic: [
+    { k: 'sporetower W1', w: 1, pal: SPORE, gen: 'saFungus', opt: { style: 'spore' }, old: ['sporeTower', {}] },
+    { k: 'specimen W3', w: 3, pal: SPEC, gen: 'saFungus', opt: { style: 'specimen', h: 24 }, old: ['sporeTower', { h: 24 }] },
+    { k: 'pheromone W3', w: 3, pal: AMBER, gen: 'saFungus', opt: { style: 'resin', h: 30 }, anims: 2 },
+    { k: 'growth W3', w: 3, pal: GROW, gen: 'saPods', opt: { style: 'eggs' }, anims: 2, old: ['pods', {}] },
+    { k: 'cocoon W3', w: 3, pal: SILK, gen: 'saPods', opt: { style: 'cocoon', n: 3, seed: 5 }, old: ['pods', { n: 3, seed: 5 }] },
+    { k: 'coupling W9', w: 9, pal: 'choir', gen: 'saEmitter', opt: { style: 'coupling', h: 20 }, old: ['node', { h: 20 }] },
+    { k: 'sonar W5', w: 5, pal: 'choir', gen: 'saEmitter', opt: { style: 'sonar', h: 8 } },
+    { k: 'weaponcore W10', w: 10, pal: 'choir', gen: 'saLanceCore', anims: 4, old: ['core', {}] },
   ],
 };
 window.SETS = SETS;
@@ -73,11 +117,14 @@ function run() {
   strips.forEach((w, j) => {
     ground(j * sw, topH, sw, 1000 - topH, GROUND[w]);
     c.fillStyle = '#000a'; c.fillRect(j * sw, topH, 60, 16); c.fillStyle = '#fff'; c.fillText('W' + w + ' 1.8x', j * sw + 4, topH + 12);
+    let x = j * sw + 8, y = topH + 24, rowH = 0;
     list.forEach((e, i) => {
-      const per = Math.ceil(list.length / 2);
-      const col = i % per, row = Math.floor(i / per);
       const e2 = Object.assign({}, e, { w: typeof e.pal === 'string' ? w : e.w });
-      drawEnt(e2, j * sw + 30 + col * ((sw - 40) / per) + 10, topH + 120 + row * 180, 1.8, 0.6 * i, 0);
+      const { sh } = sheets(e2);
+      const ww = sh.w * 1.8, hh = sh.h * 1.8;
+      if (x + ww > (j + 1) * sw - 4) { x = j * sw + 8; y += rowH + 4; rowH = 0; }
+      drawEnt(e2, x + sh.ax * 1.8, y + sh.ay * 1.8, 1.8, 0.6 * i, 0);
+      x += ww - 6; rowH = Math.max(rowH, hh);
     });
   });
   document.title = 'ready';
