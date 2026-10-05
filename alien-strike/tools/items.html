@@ -1,0 +1,97 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Items preview</title>
+<style>body{background:#15130f;margin:0;color:#ddd;font:13px monospace}canvas{display:block}</style></head><body>
+<canvas id="c" width="1600" height="400"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../src/gfx/models_items.js"></script>
+<script>
+/* Items package preview (src/gfx/models_items.js): pickups, cargo and props.
+ * Large renders (?big=4) on a neutral strip, then game-scale (1.8 px/unit) rows on the
+ * W1 ochre, W4 snow and W6 basalt grounds with the engine's shadow (pickups bob 3u).
+ * ?sec=pk,cg,pr,fl picks sections; ?old=1 adds the original model after each new one;
+ * ?ang=0.6 rotates the 8-direction props. */
+const q = new URLSearchParams(location.search);
+const SEC = (q.get('sec') || 'pk,cg,pr,fl').split(',');
+const BIG = +(q.get('big') || 4), SMALL = +(q.get('small') || 1.8), OLD = q.get('old'), ANG = +(q.get('ang') || 0);
+const F = AS.Forge, M = AS.Models, W = AS.Data.worlds;
+const errors = [];
+const PK = ['fuel', 'ammo', 'missiles', 'repair', 'shield', 'special', 'tech', 'salvage', 'intel'];
+const CG = ['blackbox', 'datacore', 'artifact', 'fuelcore', 'sample', 'charge', 'powercell'];
+const PR = q.get('kinds') ? q.get('kinds').split(',') : ['crate', 'barrel', 'container', 'fence', 'mast', 'pipe', 'wreck', 'lamp', 'gearbit'];
+const WSET = q.get('w') ? q.get('w').split(',').map(Number) : null;
+const FL = ['plant', 'crystals', 'shroom', 'coral'];
+const DIR8 = { container: 1, fence: 1, pipe: 1, wreck: 1 };
+const GROUNDS = [{ n: 'W1 ochre', col: '#a87444', w: 0 }, { n: 'W4 snow', col: '#cbdae6', w: 3 }, { n: 'W6 basalt', col: '#3a3133', w: 5 }];
+function render(gen, args, ang) {
+  if (!M[gen]) { errors.push('missing ' + gen); return null; }
+  try { const m = M[gen].apply(null, args); const f = F.renderModel(m, ang || 0, 0); f.sil = F.silhouette(f.img, 1.8); f.model = m; return f; }
+  catch (err) { errors.push(gen + ' ' + args[0] + ': ' + err.message); console.error(err); return null; }
+}
+const rows = [];
+function addRow(label, ground, items, sc) { rows.push({ label, ground, items: items.filter(Boolean), sc }); }
+function item(gen, args, ang, kind, tag) { const f = render(gen, args, ang); if (f) { f.kind = kind; f.tag = tag || ''; } return f; }
+if (SEC.includes('pk')) {
+  const bigs = []; for (const k of PK) { bigs.push(item('pickup2', [k], 0, 'pk', k)); if (OLD) bigs.push(item('pickup', [k], 0, 'pk', 'old')); }
+  addRow('PICKUPS pickup2(kind) — large', '#8a6a4a', bigs, BIG);
+  for (const g of GROUNDS) addRow('pickups @1.8 on ' + g.n, g.col, PK.map((k) => item('pickup2', [k], 0, 'pk')).concat(OLD ? PK.map((k) => item('pickup', [k], 0, 'pk')) : []), SMALL);
+}
+if (SEC.includes('cg')) {
+  const bigs = []; for (const k of CG) { bigs.push(item('cargo2', [k], 0, 'cg', k)); if (OLD) bigs.push(item('cargo', [k], 0, 'cg', 'old')); }
+  addRow('CARGO cargo2(kind) — large', '#8a6a4a', bigs, BIG);
+  for (const g of GROUNDS) addRow('cargo @1.8 on ' + g.n + '   (+ pickups for size)', g.col, CG.map((k) => item('cargo2', [k], 0, 'cg')).concat([item('pickup2', ['fuel'], 0, 'pk'), item('pickup2', ['shield'], 0, 'pk')]), SMALL);
+}
+if (SEC.includes('pr')) {
+  for (const g of GROUNDS) {
+    if (WSET && !WSET.includes(g.w)) continue;
+    const pal = W[g.w].propPal;
+    const bigs = []; for (const k of PR) for (let s = 1; s <= (q.get('allseeds') ? 3 : 1); s++) { bigs.push(item('prop2', [k, pal, { seed: s }], DIR8[k] ? ANG - 0.4 : 0, 'pr', k)); if (OLD) bigs.push(item('prop', [k, pal, { seed: 1 }], DIR8[k] ? ANG - 0.4 : 0, 'pr', 'old')); }
+    addRow('PROPS prop2(kind, ' + W[g.w].key + ' propPal) — large', g.col, bigs, BIG * 0.6);
+    const sm = []; for (const k of PR) for (let s = 1; s <= 3; s++) sm.push(item('prop2', [k, pal, { seed: s }], DIR8[k] ? ANG + s * 0.78 : 0, 'pr'));
+    addRow('props @1.8 seeds 1-3 on ' + g.n, g.col, sm, SMALL);
+  }
+}
+if (SEC.includes('fl')) {
+  const homes = { plant: [2, 9], crystals: [3, 6, 9], shroom: [6], coral: [4], gearbit: [5, 8] };
+  for (const k of Object.keys(homes)) {
+    const bigs = [], sm = [];
+    for (const wi of homes[k]) { const w = W[wi]; for (let s = 1; s <= 3; s++) { const ff = item('prop2', [k, w.propPal, { seed: s }], 0, 'pr', s === 1 ? w.key : ''); if (ff) { ff.ground = w.terrain.ramp[2]; bigs.push(ff); } const f2 = item('prop2', [k, w.propPal, { seed: s }], 0, 'pr'); if (f2) { f2.ground = w.terrain.ramp[2]; sm.push(f2); } } }
+    if (OLD) for (const wi of homes[k]) { const ff = item('prop', [k, W[wi].propPal, { seed: 1 }], 0, 'pr', 'old'); if (ff) { ff.ground = W[wi].terrain.ramp[2]; bigs.push(ff); } }
+    addRow('FLORA ' + k + ' on home worlds — large', '#444', bigs, BIG * 0.6);
+    addRow(k + ' @1.8 on home worlds', '#444', sm, SMALL);
+  }
+}
+// layout
+const cv = document.getElementById('c'), c = cv.getContext('2d');
+let Y = 6;
+for (const r of rows) { r.up = Math.max(10, ...r.items.map((f) => f.ay * r.sc)); r.dn = Math.max(4, ...r.items.map((f) => (f.h - f.ay) * r.sc)); r.h = r.up + r.dn + 34; r.y = Y; Y += r.h; }
+cv.height = Y + 10;
+for (const r of rows) {
+  c.fillStyle = r.ground; c.fillRect(0, r.y, 1600, r.h);
+  // per-item grounds (flora rows)
+  let x = 14;
+  for (const f of r.items) { const w = f.w * r.sc + 8; if (f.ground) { c.fillStyle = f.ground; c.fillRect(x - 4, r.y, w, r.h); } x += w; }
+  for (let i = 0; i < 500; i++) { c.fillStyle = i % 2 ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'; c.fillRect(Math.random() * 1600, r.y + Math.random() * r.h, 2, 2); }
+  c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, r.y, 1600, 16); c.fillStyle = '#fff'; c.font = '12px monospace'; c.fillText(r.label, 6, r.y + 12);
+  x = 14;
+  const gy = r.y + 30 + r.up;
+  for (const f of r.items) {
+    const sc = r.sc, ax = x + f.ax * sc;
+    const lift = f.kind === 'pk' ? 3 : 0;
+    c.save(); c.globalAlpha = 0.32;
+    if (f.kind === 'pk' || f.kind === 'cg') { c.fillStyle = '#000'; c.beginPath(); c.ellipse(ax, gy + sc, 6 * sc, 3 * sc, 0, 0, Math.PI * 2); c.fill(); }
+    else c.drawImage(f.sil, ax - f.ax * sc + 2 * sc, gy - f.ay * sc + 1 * sc, f.w * sc, f.h * sc);
+    c.restore();
+    c.drawImage(f.img, ax - f.ax * sc, gy - lift * sc - f.ay * sc, f.w * sc, f.h * sc);
+    if (f.tag) { c.fillStyle = 'rgba(255,255,255,0.85)'; c.font = '11px monospace'; c.fillText(f.tag, x, r.y + 28); }
+    x += f.w * sc + 8;
+  }
+}
+if (errors.length) { c.fillStyle = '#f44'; c.font = '16px monospace'; errors.forEach((e, i) => c.fillText(e, 10, 40 + i * 18)); }
+window.ERRORS = errors;
+window.READY = true;
+</script></body></html>
