@@ -125,8 +125,8 @@
   M.boMaw = function (pal, opt) {
     pal = pal || {}; opt = opt || {};
     const A = pal.a || '#3a3034', B = pal.b || '#6a5a5a', G = pal.g || '#ff8a3a';
-    const plateS = mix(A, '#1e1c24', 0.5), plateT = mix(B, '#4a4048', 0.45);
-    const plateT2 = mix(plateT, '#6a5a58', 0.25);
+    const plateS = mix(A, '#1e1c24', 0.4), plateT = mix(B, '#5a5058', 0.3);
+    const plateT2 = mix(plateT, '#9a8a86', 0.3);
     const hot = '#ffe08a', deep = '#8a2408';
     const seam = 'rgba(14,10,12,0.6)';
     const tooth = '#efe2c4';
@@ -224,7 +224,7 @@
           S.lines(c, 'rgba(255,255,255,0.22)', 0.5, [hl[0], hl[1], P(r0 + L * 0.8, -w * 0.4)[0], P(r0 + L * 0.8, -w * 0.4)[1]]);
         }
       } });
-    return { r: 52, h: HZ + 11, parts, style: 'unit', mouth: [hx, 0, HZ] };
+    return { r: 52, h: HZ + 11, parts, style: 'unit', scale: opt.scale || 1.3 };
   };
 
   /* ==================================================================
@@ -290,7 +290,7 @@
     parts.push({ z0: NZ - 2, z1: NZ + 4, side: boneS, top: '#fbf2dc', ao: 0.3,
       shape: (c, zt) => { const k = 1 - 0.15 * zt; S.poly(c, tf(tusk.map((v) => v * k), hx - 2, 0, 0)); S.poly(c, tf(tusk.map((v, i) => (i % 2 ? -v : v) * k), hx - 2, 0, 0)); },
       detail: (c) => { S.lines(c, 'rgba(60,30,20,0.5)', 0.45, [hx + 20, 13.4, hx + 26, 11, hx + 20, -13.4, hx + 26, -11]); } });
-    return { r: 40, h: NZ + 10, parts, style: 'unit' };
+    return { r: 40, h: NZ + 10, parts, style: 'unit', scale: opt.scale || 1.35 };
   };
 
   /* Kharad body segment: drawn unrotated in a trailing chain, so it is radially
@@ -298,7 +298,7 @@
   M.boKharadSeg = function (pal, opt) {
     pal = pal || {}; opt = opt || {};
     const A = pal.a || '#2e2a33', B = pal.b || '#5c5462', T = pal.t || '#eadcbc', G = pal.g || '#ffcc44';
-    const R = (opt.rad || 13);
+    const R = (opt.rad || 16);
     const boneS = mix(T, A, 0.5);
     const parts = [
       { z0: 0, z1: 8, side: A, top: B, ao: 0.5, shape: (c, zt) => S.circ(c, 0, 0, R * (1 - 0.05 * zt)) },
@@ -335,7 +335,7 @@
     parts.push({ z0: 6, z1: 13, side: chS, top: chT, ao: 0.3,
       shape: (c, zt) => { const k = 1 - 0.5 * zt; S.poly(c, [acx - arx + 6, -6 * k, acx - arx - 14 + zt * 6, 0, acx - arx + 6, 6 * k]); } });
     // glowing egg sac
-    parts.push({ z0: AZ0, z1: AZ1, side: mix(G, '#b05a10', 0.45), top: G, ao: 0.55,
+    parts.push({ z0: AZ0, z1: AZ1, side: mix(G, '#d08a10', 0.3), top: G, ao: 0.6, flat: true,
       shape: (c, zt) => { const k = dk(zt); S.ell(c, acx, 0, arx * k, ary * k); },
       detail: (c) => {
         const k = dk(1);
@@ -343,9 +343,9 @@
         for (let i = 0; i < 9; i++) { const x = acx - 14 + U.hash2(i, 1, 9) * 28, y = (U.hash2(i, 2, 9) - 0.5) * 14; S.dot(c, 'rgba(160,90,10,0.45)', x, y, 1.6); S.dot(c, '#fffbe0', x - 0.4, y - 0.4, 0.6); }
       } });
     // chitin bands across the sac (slightly proud of it)
-    const bands = [[-62, -54], [-46, -37], [-28, -19], [-10, -2]];
-    parts.push({ z0: AZ0 - 1, z1: AZ1 + 1, side: chS, top: chT, ao: 0.4,
-      shape: (c, zt) => { const k = dk(zt * 0.97) * 1.05; for (const b of bands) ellStrip(c, acx, 0, arx * k, ary * k, b[0], b[1], 8); },
+    const bands = [[-62, -55], [-46, -38], [-29, -21], [-12, -4]];
+    parts.push({ z0: AZ1 - 7, z1: AZ1 + 1, side: chS, top: chT, ao: 0.2,
+      shape: (c, zt) => { const z = AZ1 - 7 + zt * 8, k = dk(Math.min(1, (z - AZ0) / (AZ1 - AZ0))) * 0.98; for (const b of bands) ellStrip(c, acx, 0, arx * k, ary * k, b[0], b[1], 8); },
       detail: (c) => { const k = dk(1) * 1.05; for (const b of bands) { const x = (b[0] + b[1]) / 2; S.lines(c, 'rgba(255,255,255,0.3)', 0.5, [x - 1, -ary * k * 0.8, x - 1, -ary * k * 0.2]); } } });
     // wings: drawn as translucent membranes, raised and foreshortened across the beat
     function wing(c, rx, ry, ang, L, wd, f, lift, ghost) {
@@ -405,7 +405,7 @@
           S.poly(c, [px + ca * l, py + sa * l, px - sa * w, py + ca * w, px - ca * l, py - sa * l, px + sa * w, py - ca * w]);
         }
       } });
-    return { r: 62, h: 46, parts, style: 'unit' };
+    return { r: 62, h: 46, parts, style: 'unit', scale: opt.scale || 1.2 };
   };
 
   /* ==================================================================
@@ -418,14 +418,14 @@
   M.boPrism = function (pal, opt) {
     pal = pal || {}; opt = opt || {};
     const A = pal.a || '#2a3c7c', B = pal.b || '#6a8ee0', T = pal.t || '#e4fbff', G = pal.g || '#7ff6ff', D = pal.d || '#141c3a';
-    const iceS = mix(D, A, 0.45), iceT = mix(A, '#8aa4cc', 0.35);
+    const iceS = mix(D, A, 0.5), iceT = mix(A, '#a8bcd8', 0.5);
     const parts = [];
     // cracked ice plinth
     parts.push({ z0: 0, z1: 3, side: iceS, top: iceT, ao: 0.4,
-      shape: (c) => S.blob(c, 0, 0, 40, 41, 12, 0.18),
+      shape: (c) => S.blob(c, 0, 0, 33, 41, 12, 0.2),
       detail: (c) => {
         const cr = [];
-        for (let i = 0; i < 9; i++) { const a = (i / 9) * TAU + 0.2, r1 = 22 + U.hash2(i, 1, 4) * 6, r2 = 36; cr.push(Math.cos(a) * r1, Math.sin(a) * r1, Math.cos(a + 0.12) * r2, Math.sin(a + 0.12) * r2); }
+        for (let i = 0; i < 9; i++) { const a = (i / 9) * TAU + 0.2, r1 = 20 + U.hash2(i, 1, 4) * 5, r2 = 30; cr.push(Math.cos(a) * r1, Math.sin(a) * r1, Math.cos(a + 0.12) * r2, Math.sin(a + 0.12) * r2); }
         S.lines(c, C.str(G, 0.35), 1.4, cr); S.lines(c, '#e8ffff', 0.4, cr);
       } });
     // legs: heavy hex crystals leaning in from the feet to the hips
@@ -485,7 +485,7 @@
       shape: (c, zt) => S.poly(c, hexPts(0, 0, 7 * (zt < 0.7 ? 1 - zt * 0.25 : (1 - 0.175) * (1 - (zt - 0.7) * 2.2)), 0)),
       detail: (c) => facetCap(c, hexPts(0, 0, 7 * 0.825 * 0.34, 0), -0.5, -0.5, C.hex(T), 0.4, 'rgba(230,255,255,0.6)') });
     parts.push(halo(true));
-    return { r: 50, h: 76, parts, style: 'unit' };
+    return { r: 50, h: 76, parts, style: 'unit', scale: opt.scale || 1.25 };
   };
 
   /* ==================================================================
@@ -723,6 +723,340 @@
     // claws
     parts.push({ z0: 18, z1: 27, side: steelS, top: '#9a9aa2', ao: 0.35,
       shape: (c, zt) => { for (const sg of [1, -1]) S.poly(c, [58, sg * 32, 68, sg * (34 - zt * 2), 72, sg * 40, 66, sg * 38, 62, sg * 42, 56, sg * 38]); } });
-    return { r: 74, h: 60, parts, style: 'unit' };
+    return { r: 74, h: 60, parts, style: 'unit', scale: opt.scale || 1.35 };
+  };
+
+  /* ==================================================================
+   * W7 — THE MYCELIAL MIND (dirs 1). A giant two-lobed fungal brain, folded
+   * gyri across its crown and a glowing fissure down the middle, ringed by
+   * shelf fungi, with root tendrils sprawling over the ground studded with
+   * glowing nodes and three spore stalks rising behind. Pulses across the
+   * cycle (lobes swell, nodes brighten).
+   * ================================================================== */
+  M.boMind = function (pal, opt) {
+    pal = pal || {}; opt = opt || {};
+    const A = pal.a || '#8a4a5a', B = pal.b || '#e8b8b0', T = pal.t || '#fff0e0', G = pal.g || '#7affd0', D = pal.d || '#3a1a26';
+    const pulse = (an) => 1 + 0.03 * Math.sin(an * TAU);
+    const glowA = (an) => 0.75 + 0.25 * Math.sin(an * TAU);
+    const parts = [];
+    // branching root tendrils over a mycelium mat
+    const roots = [];
+    for (let i = 0; i < 13; i++) {
+      const a = (i / 13) * TAU + U.hash2(i, 1, 21) * 0.35, L = 34 + U.hash2(i, 2, 21) * 22, bend = (U.hash2(i, 3, 21) - 0.5) * 1.6;
+      const pts = [];
+      for (let k = 0; k <= 7; k++) { const t = k / 7, d = 26 + L * t, aa = a + Math.sin(t * 3.4 + i) * bend * 0.35 + t * bend * 0.3; pts.push(Math.cos(aa) * d, Math.sin(aa) * d); }
+      roots.push([pts, 5.5, 0.6]);
+      if (i % 2 === 0) { // a fork from the middle
+        const fp = [pts[6], pts[7]], fa = a + (bend > 0 ? -0.5 : 0.5);
+        for (let k = 1; k <= 4; k++) { const d = Math.hypot(pts[6], pts[7]) + k * 6; fp.push(Math.cos(fa) * d + Math.sin(k) * 1.5, Math.sin(fa) * d); }
+        roots.push([fp, 3, 0.5]);
+      }
+    }
+    const mat = [];
+    for (let i = 0; i < 18; i++) { const a = (i / 18) * TAU, r = 34 + (U.hash2(i, 9, 23) - 0.5) * 9; mat.push(Math.cos(a) * r, Math.sin(a) * r * 0.92); }
+    parts.push({ z0: 0, z1: 1.5, side: D, top: mix(A, D, 0.45), ao: 0.3, bevel: false,
+      shape: (c) => { for (const r of roots) ribbon(c, r[0], r[1], r[2]); S.poly(c, mat); },
+      detail: (c, an) => {
+        for (const r of roots) { const p = r[0]; S.lines(c, C.str(sh(A, 0.3), 0.55), 0.5, p.slice(0, 4).concat(p.slice(2, 6))); }
+        for (let i = 0; i < roots.length; i += 2) { const p = roots[i][0], k = p.length - 6; glowDot(c, p[k], p[k + 1], 2 * glowA(an) + 0.6, G, '#f0fff8'); }
+        for (let i = 0; i < 10; i++) { const a = U.hash2(i, 4, 24) * TAU, d = 20 + U.hash2(i, 5, 24) * 12; S.dot(c, C.str(G, 0.7), Math.cos(a) * d, Math.sin(a) * d, 0.8); }
+      } });
+    // shelf fungi around the base
+    const shelves = [];
+    for (let i = 0; i < 9; i++) { const a = (i / 9) * TAU + 0.35, d = 30 + U.hash2(i, 5, 22) * 3; shelves.push([Math.cos(a) * d, Math.sin(a) * d * 0.95, 4.5 + U.hash2(i, 6, 22) * 2.5, a]); }
+    parts.push({ z0: 2, z1: 7, side: mix(A, B, 0.3), top: T, ao: 0.4,
+      shape: (c, zt) => { for (const s of shelves) S.ell(c, s[0], s[1], s[2] * (0.7 + zt * 0.4), s[2] * (0.55 + zt * 0.3), s[3] + Math.PI / 2); },
+      detail: (c) => { for (const s of shelves) { S.dot(c, C.str(G, 0.8), s[0], s[1], 0.9); } } });
+    // spore stalks behind the brain
+    const stalks = [[-28, -14, 50], [-34, 8, 44], [-18, 24, 40]];
+    parts.push({ z0: 6, z1: 50, side: mix(A, D, 0.3), top: A, ao: 0.4,
+      shape: (c, zt) => { const z = 6 + zt * 44; for (const s of stalks) if (z <= s[2] - 4) S.circ(c, s[0] - (z - 6) * 0.12, s[1], 2.6 - zt * 0.7); } });
+    parts.push({ z0: 38, z1: 54, side: mix(A, B, 0.2), top: B, ao: 0.4,
+      shape: (c, zt, an) => { const z = 38 + zt * 16; for (const s of stalks) { const t = (z - (s[2] - 6)) / 8; if (t < 0 || t > 1) continue; const r = 7.5 * Math.sqrt(Math.max(0, 1 - t * t)) * (t < 0.2 ? 0.6 + t * 2 : 1) * pulse(an); S.circ(c, s[0] - (s[2] - 8) * 0.12, s[1], r); } },
+      detail: (c, an) => { for (const s of stalks) { c.save(); liftZ(c, s[2] + 2 - 54); const x = s[0] - (s[2] - 8) * 0.12; S.dot(c, C.str(G, 0.9 * glowA(an)), x, s[1], 2.4); S.dot(c, C.str(G, 0.8), x + 3, s[1] - 2, 1); S.dot(c, C.str(G, 0.8), x - 2.5, s[1] + 3, 1); c.restore(); } } });
+    // brain: six lobes (three per hemisphere), drawn back to front
+    const lobes = [
+      [-14, -15, 15, 12, 22], [6, -16, 16, 12.5, 25], [-12, 15, 15, 12, 22], [8, 16, 16, 12.5, 25], [-24, -5, 11, 9, 18], [-24, 6, 11, 9, 18],
+    ].sort((p, q) => p[1] - q[1]);
+    const lobe = (L, i) => ({ z0: 5, z1: L[4], side: mix(A, B, 0.42 + (i % 2) * 0.06), top: i % 2 ? sh(B, -0.03) : B, ao: 0.5,
+      shape: (c, zt, an) => { const k = Math.sqrt(1 - zt * zt * 0.5) * pulse(an); S.ell(c, L[0], L[1] * pulse(an), L[2] * k, L[3] * k, 0.1 * Math.sign(L[1])); },
+      detail: (c, an) => {
+        const k = Math.sqrt(0.5) * pulse(an), rx = L[2] * k, ry = L[3] * k, x0 = L[0], y0 = L[1] * pulse(an);
+        radial(c, x0 - rx * 0.3, y0 - ry * 0.35, rx * 1.1, [[0, C.str(T, 0.6)], [0.55, C.str(B, 0)], [1, C.str(B, 0)]]);
+        c.save(); c.beginPath(); S.ell(c, x0, y0, rx, ry, 0.1 * Math.sign(L[1])); c.clip();
+        for (let j = 0; j < 4; j++) {
+          const yy = y0 - ry + (j + 0.5) * (ry * 2 / 4), pts = [];
+          for (let x = x0 - rx; x <= x0 + rx; x += 1.5) pts.push(x, yy + Math.sin(x * 0.7 + j * 2.1 + L[1]) * 1.5);
+          c.strokeStyle = 'rgba(110,36,56,0.6)'; c.lineWidth = 0.9; c.beginPath(); c.moveTo(pts[0], pts[1]); for (let q = 2; q < pts.length; q += 2) c.lineTo(pts[q], pts[q + 1]); c.stroke();
+          c.strokeStyle = 'rgba(255,240,230,0.4)'; c.lineWidth = 0.5; c.beginPath(); c.moveTo(pts[0], pts[1] - 1); for (let q = 2; q < pts.length; q += 2) c.lineTo(pts[q], pts[q + 1] - 1); c.stroke();
+        }
+        c.restore();
+      } });
+    lobes.forEach((L, i) => { parts.push(lobe(L, i)); });
+    // glowing fissure down the middle + glowing nodes on the crown
+    parts.push({ z0: 25, z1: 25.5, side: sh(G, -0.4), top: G, flat: true, bevel: false,
+      shape: () => {},
+      detail: (c, an) => {
+        const pts = []; for (let x = -26; x <= 22; x += 3) pts.push(x, Math.sin(x * 0.4) * 1.2);
+        c.save(); c.lineJoin = 'round';
+        c.strokeStyle = C.str(G, 0.45 * glowA(an)); c.lineWidth = 4; c.beginPath(); c.moveTo(pts[0], pts[1]); for (let q = 2; q < pts.length; q += 2) c.lineTo(pts[q], pts[q + 1]); c.stroke();
+        c.strokeStyle = '#e8fff6'; c.lineWidth = 1.1; c.stroke();
+        c.restore();
+      } });
+    const nodes = [[10, -14, 2.4, 25], [-12, -14, 2, 22], [12, 14, 2.4, 25], [-12, 14, 2.6, 22], [-24, 0, 1.8, 18]];
+    parts.push({ z0: 25, z1: 27, side: sh(G, -0.35), top: G, flat: true, bevel: false,
+      shape: () => {},
+      detail: (c, an) => { for (const n of nodes) { c.save(); liftZ(c, n[3] - 27); glowDot(c, n[0], n[1] * pulse(an), n[2] * (1.6 + 0.5 * glowA(an)), G, '#f4fff8'); c.restore(); } } });
+    return { r: 66, h: 56, parts, style: 'unit', scale: opt.scale || 1.4 };
+  };
+
+  /* ==================================================================
+   * W8 — THE TEMPEST LEVIATHAN. A sky-serpent head: a long armoured skull
+   * with a glowing electric maw, cyan eyes, swept horns, a storm crest of
+   * four back-swept blades crackling with arcs, and two broad pectoral fins
+   * that undulate across the cycle. The neck trails toward -x, where the
+   * boTempestSeg body chain follows.
+   * ================================================================== */
+  M.boTempest = function (pal, opt) {
+    pal = pal || {}; opt = opt || {};
+    const A = pal.a || '#1c2246', B = pal.b || '#3e4c8c', T = pal.t || '#d8ecff', G = pal.g || '#7ff8ff', D = pal.d || '#0c1024';
+    const parts = [];
+    // pectoral fins (opaque-ish membranes with glowing ribs), undulating
+    function fin(c, sg, an) {
+      const f = 0.75 + 0.25 * Math.cos(an * TAU), lift = (1 - f) * 10;
+      const L = 40 * f, ang = sg * (Math.PI / 2 + 0.75), ca = Math.cos(ang), sa = Math.sin(ang), rx = -6, ry = 10 * sg;
+      const loc = [0, -4 * sg, L * 0.45, -12 * sg, L, -9 * sg, L * 0.86, -2 * sg, L * 0.95, 3 * sg, L * 0.6, 5 * sg, L * 0.3, 8 * sg, 0, 5 * sg];
+      const P = (u, v) => [rx + u * ca - v * sa, ry + u * sa + v * ca];
+      const pts = []; for (let i = 0; i < loc.length; i += 2) { const p = P(loc[i], loc[i + 1]); pts.push(p[0], p[1]); }
+      c.save(); liftZ(c, lift);
+      const g = c.createLinearGradient(rx, ry, rx + L * ca, ry + L * sa);
+      g.addColorStop(0, cs(sh(B, 0.05))); g.addColorStop(1, C.str(sh(A, 0.1), 0.85));
+      c.fillStyle = g; c.beginPath(); S.poly(c, pts); c.fill();
+      c.strokeStyle = cs(D); c.lineWidth = 0.6; c.stroke();
+      const s = [];
+      for (const t of [[0.45, -12], [1, -9], [0.95, 3], [0.3, 8]]) { const p = P(L * t[0], t[1] * sg); s.push(rx, ry, p[0], p[1]); }
+      S.lines(c, C.str(G, 0.75), 0.6, s);
+      const tip = P(L, -9 * sg); S.dot(c, C.str(G, 0.9), tip[0], tip[1], 1.2);
+      c.restore();
+    }
+    parts.push({ z0: 9, z1: 9, side: A, top: A, flat: true, bevel: false, shape: () => {},
+      detail: (c, an) => { fin(c, 1, an); fin(c, -1, an + 0.15); } });
+    // neck
+    parts.push({ z0: 3, z1: 13, side: A, top: B, ao: 0.45,
+      shape: (c, zt) => { const k = Math.sqrt(1 - zt * zt * 0.6); S.ell(c, -20, 0, 20 * k, 12 * k); },
+      detail: (c) => { const s = []; for (let x = -32; x < -8; x += 6) s.push(x, -9, x + 2, 9); S.lines(c, 'rgba(0,0,10,0.45)', 0.5, s); } });
+    // lower jaw
+    parts.push({ z0: 4, z1: 9, side: D, top: A, ao: 0.4,
+      shape: (c) => S.poly(c, S.sym([44, 0, 40, 4, 26, 9.5, 8, 11])),
+    });
+    // electric maw glow between the jaws
+    parts.push({ z0: 8, z1: 10, side: sh(G, -0.3), top: G, flat: true, bevel: false,
+      shape: (c, zt, an) => S.poly(c, S.sym([43 - wave(an) * 2, 0, 38, 3.4, 24, 7.6, 14, 8])),
+      detail: (c, an) => radial(c, 30, 0, 12, [[0, '#ffffff'], [0.4, C.str(G, 0.9)], [1, C.str(G, 0)]]) });
+    // skull
+    parts.push({ z0: 9, z1: 19, side: A, top: B, ao: 0.4,
+      shape: (c, zt) => { const k = 1 - zt * 0.28; S.poly(c, S.sym([46 - zt * 6, 0, 42 - zt * 5, 4 * k, 30, 8.5 * k, 14, 13 * k, 2, 13.5 * k, -6, 10 * k])); },
+      detail: (c) => {
+        S.lines(c, 'rgba(0,0,10,0.5)', 0.5, [36, 0, 4, 0, 26, -6, 12, -9, 26, 6, 12, 9]);
+        S.lines(c, 'rgba(220,240,255,0.4)', 0.6, [38, -2, 22, -7]);
+      } });
+    // eyes
+    parts.push({ z0: 18, z1: 19.5, side: sh(G, -0.4), top: G, flat: true, bevel: false,
+      shape: (c) => { for (const sg of [1, -1]) S.poly(c, [27, 6.5 * sg, 21, 9 * sg, 17, 8 * sg, 22, 6 * sg]); },
+      detail: (c) => { S.dot(c, '#ffffff', 22, 7.3, 0.7); S.dot(c, '#ffffff', 22, -7.3, 0.7); } });
+    // swept horns
+    parts.push({ z0: 14, z1: 26, side: A, top: T, ao: 0.35,
+      shape: (c, zt) => { for (const sg of [1, -1]) { const x = 4 - zt * 28, y = sg * (11 + zt * 13), w = 3.4 * (1 - zt) + 0.5; S.poly(c, [x + 4, y, x, y + w * sg, x - 4 * (1 - zt) - 1, y, x, y - w * sg]); } } });
+    // storm crest: four back-swept blades along the spine
+    const crest = [[26, 34], [14, 48], [0, 44], [-14, 34]];
+    parts.push({ z0: 16, z1: 48, side: mix(A, B, 0.55), top: T, ao: 0.35,
+      shape: (c, zt) => {
+        const z = 16 + zt * 32;
+        for (const b of crest) {
+          if (z > b[1]) continue;
+          const t = (z - 16) / (b[1] - 16), x = b[0] - t * 14, l = 9 * (1 - t * 0.75) + 0.6, w = 2.2 * (1 - t * 0.6) + 0.3;
+          S.poly(c, [x + l * 0.5, 0, x - l * 0.2, w, x - l, 0, x - l * 0.2, -w]);
+        }
+      },
+      detail: (c, an) => {
+        for (let i = 0; i < crest.length; i++) {
+          const b = crest[i]; c.save(); liftZ(c, b[1] - 48); glowDot(c, b[0] - 14, 0, 3.2, G, '#ffffff'); c.restore();
+        }
+        // crackling arcs between blade tips (different every frame)
+        const fr = Math.floor(an * 4);
+        c.save(); c.strokeStyle = '#ffffff'; c.lineWidth = 0.7; c.shadowColor = cs(G);
+        for (let i = 0; i < crest.length - 1; i++) {
+          if ((i + fr) % 2) continue;
+          const a = crest[i], b = crest[i + 1];
+          c.save(); liftZ(c, (a[1] + b[1]) / 2 - 48);
+          c.beginPath(); c.moveTo(a[0] - 14, 0);
+          const steps = 4;
+          for (let k = 1; k <= steps; k++) { const t = k / steps; c.lineTo(a[0] - 14 + (b[0] - a[0]) * t, (U.hash2(i, k, fr) - 0.5) * 6 * (k < steps ? 1 : 0)); }
+          c.strokeStyle = C.str(G, 0.6); c.lineWidth = 1.8; c.stroke(); c.strokeStyle = '#ffffff'; c.lineWidth = 0.6; c.stroke();
+          c.restore();
+        }
+        c.restore();
+      } });
+    return { r: 52, h: 50, parts, style: 'unit', scale: opt.scale || 1.3 };
+  };
+
+  /* Tempest body segment: drawn unrotated in the trailing chain, so it is
+   * radially balanced — an armoured disc with a frill of six swept fins, a
+   * glowing band and a dorsal spine. */
+  M.boTempestSeg = function (pal, opt) {
+    pal = pal || {}; opt = opt || {};
+    const A = pal.a || '#1c2246', B = pal.b || '#3e4c8c', T = pal.t || '#d8ecff', G = pal.g || '#7ff8ff', D = pal.d || '#0c1024';
+    const R = opt.rad || 12;
+    const parts = [
+      { z0: 3, z1: 5, side: A, top: mix(B, A, 0.3), ao: 0.3,
+        shape: (c) => { for (let i = 0; i < 6; i++) { const a = (i / 6) * TAU, ca = Math.cos(a), sa = Math.sin(a), b = a + 0.5; S.poly(c, [ca * R * 0.6 - sa * 3, sa * R * 0.6 + ca * 3, Math.cos(b) * R * 1.75, Math.sin(b) * R * 1.75, ca * R * 0.6 + sa * 3, sa * R * 0.6 - ca * 3]); } },
+        detail: (c) => { const s = []; for (let i = 0; i < 6; i++) { const b = (i / 6) * TAU + 0.5; s.push(Math.cos(b - 0.3) * R * 0.7, Math.sin(b - 0.3) * R * 0.7, Math.cos(b) * R * 1.65, Math.sin(b) * R * 1.65); } S.lines(c, C.str(G, 0.8), 0.5, s); } },
+      { z0: 0, z1: 9, side: A, top: B, ao: 0.5, shape: (c, zt) => S.circ(c, 0, 0, R * Math.sqrt(1 - zt * zt * 0.5)),
+        detail: (c) => { S.lines(c, 'rgba(220,240,255,0.35)', 0.6, [-R * 0.5, -R * 0.3, -R * 0.1, -R * 0.62]); } },
+      { z0: 5, z1: 6, side: sh(G, -0.3), top: G, flat: true, bevel: false, shape: (c) => { S.circ(c, 0, 0, R * 0.9); c.moveTo(R * 0.76, 0); c.arc(0, 0, R * 0.76, TAU, 0, true); } },
+      { z0: 8, z1: 22, side: mix(A, B, 0.55), top: T, ao: 0.3, shape: (c, zt) => S.poly(c, [4.5 * (1 - zt) + 0.6 - zt * 4, 0, -zt * 4, 1.8 * (1 - zt) + 0.3, -4.5 * (1 - zt) - 0.6 - zt * 4, 0, -zt * 4, -1.8 * (1 - zt) - 0.3]),
+        detail: (c) => glowDot(c, -4, 0, 1.6, G, '#ffffff') },
+    ];
+    return { r: R * 1.8 + 1, h: 23, parts, style: 'unit' };
+  };
+
+  /* ==================================================================
+   * W9 — THE WARDEN. An ancient four-legged machine guardian: a heavy
+   * plated gunmetal carapace with gold trim, twin mortar tubes on its back,
+   * a wedge helm with a single red beam eye, and four armoured legs with
+   * raised knees walking a diagonal trot across the cycle.
+   * ================================================================== */
+  M.boWarden = function (pal, opt) {
+    pal = pal || {}; opt = opt || {};
+    const A = pal.a || '#2c2a32', B = pal.b || '#5c5a68', T = pal.t || '#c89a4a', G = pal.g || '#ff3a24', D = pal.d || '#141218';
+    const armS = mix(A, B, 0.3), armT = mix(B, '#c8c6d6', 0.3);
+    const parts = [];
+    const KZ = 34, HZ = 20;
+    const legs = [[18, 16, 0], [18, -16, 0.5], [-18, 16, 0.5], [-18, -16, 0]].map((l) => ({ hx: l[0], hy: l[1], ph: l[2], sx: Math.sign(l[0]), sy: Math.sign(l[1]) }));
+    const gait = (l, an) => {
+      const p = (an + l.ph) * TAU, st = Math.cos(p) * 7, lift = Math.max(0, Math.sin(p)) * 7;
+      return { fx: l.sx * 42 + st, fy: l.sy * 38, lift, kx: l.sx * 33 + st * 0.5, ky: l.sy * 31 };
+    };
+    // armoured feet
+    parts.push({ z0: 0, z1: 13, side: D, top: mix(A, B, 0.4), ao: 0.4,
+      shape: (c, zt, an) => { const z = zt * 13; for (const l of legs) { const g = gait(l, an); if (z < g.lift || z > g.lift + 5) continue; S.poly(c, ngon(g.fx, g.fy, 9 - (z - g.lift) * 0.5, 6, 0.5)); } },
+      detail: (c, an) => { for (const l of legs) { const g = gait(l, an); c.save(); liftZ(c, g.lift + 5 - 13); S.dot(c, cs(T), g.fx, g.fy, 1.6); c.restore(); } } });
+    // shanks: foot -> knee
+    parts.push({ z0: 3, z1: KZ, side: armS, top: armT, ao: 0.35,
+      shape: (c, zt, an) => { const z = 3 + zt * (KZ - 3); for (const l of legs) { const g = gait(l, an); if (z < g.lift + 4) continue; const t = (z - g.lift - 4) / (KZ - g.lift - 4); S.poly(c, ngon(g.fx + (g.kx - g.fx) * t, g.fy + (g.ky - g.fy) * t, 4.6 + t * 1.8, 6, 0.3)); } } });
+    // thighs: hip -> knee
+    parts.push({ z0: HZ, z1: KZ, side: armS, top: armT, ao: 0.3,
+      shape: (c, zt, an) => { for (const l of legs) { const g = gait(l, an); S.poly(c, ngon(l.hx + (g.kx - l.hx) * zt, l.hy + (g.ky - l.hy) * zt, 6.2 - zt * 0.8, 6, 0.3)); } } });
+    // shoulder pauldrons over the hips
+    parts.push({ z0: 24, z1: 33, side: armS, top: armT, ao: 0.35,
+      shape: (c, zt) => { const k = 1 - zt * 0.2; for (const l of legs) S.ell(c, l.sx * 20, l.sy * 21, 10 * k, 7.5 * k, l.sx * l.sy * 0.6); },
+      detail: (c) => { for (const l of legs) { c.save(); c.strokeStyle = cs(T); c.lineWidth = 0.8; c.beginPath(); S.ell(c, l.sx * 20, l.sy * 21, 6.6, 4.8, l.sx * l.sy * 0.6); c.stroke(); c.restore(); S.dot(c, C.str(G, 0.85), l.sx * 21, l.sy * 22, 1.1); } } });
+    // helm
+    parts.push({ z0: 14, z1: 28, side: armS, top: armT, ao: 0.45,
+      shape: (c, zt) => { const k = 1 - zt * 0.25; S.poly(c, S.sym([48 - zt * 4, 0, 44 - zt * 3, 7 * k, 33, 13 * k, 22, 13 * k])); },
+      detail: (c) => { S.lines(c, cs(T), 0.9, [26, -9.5, 40, -4.5, 26, 9.5, 40, 4.5]); S.lines(c, 'rgba(0,0,0,0.45)', 0.5, [24, 0, 32, 0]); } });
+    // carapace
+    const hull = [30, -12, 18, -24, -18, -25, -30, -14, -30, 14, -18, 25, 18, 24, 30, 12];
+    parts.push({ z0: 12, z1: 31, side: armS, top: armT, ao: 0.5,
+      shape: (c, zt) => { const k = zt < 0.6 ? 1 : 1 - (zt - 0.6) * 0.45; S.poly(c, hull.map((v) => v * k)); },
+      detail: (c) => {
+        const k = 0.82;
+        c.save(); c.strokeStyle = cs(T); c.lineWidth = 1; c.beginPath(); S.poly(c, hull.map((v) => v * k * 0.97)); c.stroke(); c.restore();
+        S.lines(c, 'rgba(0,0,0,0.5)', 0.55, [-24, 0, 20, 0, 4, -20, 4, 20, -14, -20, -14, 20]);
+        const rv = [[-20, -10], [-20, 10], [12, -12], [12, 12], [-6, -16], [-6, 16]];
+        for (const p of rv) S.dot(c, cs(sh(T, -0.2)), p[0], p[1], 0.8);
+      } });
+    // dorsal plates + mortar tubes
+    parts.push({ z0: 30, z1: 35, side: armS, top: mix(B, T, 0.15), ao: 0.3,
+      shape: (c, zt) => { for (const x of [10, -2]) S.poly(c, S.sym([x + 6 - zt, 0, x + 3, 5 - zt, x - 5, 5 - zt, x - 6, 0])); } });
+    parts.push({ z0: 28, z1: 40, side: D, top: mix(A, B, 0.5), ao: 0.35,
+      shape: (c) => { S.circ(c, -18, -8, 4.3); S.circ(c, -18, 8, 4.3); },
+      detail: (c) => { for (const y of [-8, 8]) { S.dot(c, '#0a0808', -18, y, 2.6); S.dot(c, C.str(G, 0.6), -18, y, 1.2); } S.lines(c, cs(T), 0.9, [-22.3, -8, -22.3, 8]); } });
+    // knee caps (gold-trimmed)
+    parts.push({ z0: KZ - 3, z1: KZ + 3, side: armS, top: T, ao: 0.35,
+      shape: (c, zt, an) => { for (const l of legs) { const g = gait(l, an); S.circ(c, g.kx, g.ky, 5.6 - zt * 1.8); } } });
+    // single red beam eye
+    parts.push({ z0: 27, z1: 29, side: '#701008', top: G, flat: true, bevel: false,
+      shape: (c) => S.circ(c, 38, 0, 5),
+      detail: (c) => { radial(c, 38, 0, 5, [[0, '#ffffff'], [0.3, '#ffd0b0'], [0.6, G], [1, cs(sh(G, -0.3))]]); S.lines(c, 'rgba(255,200,180,0.8)', 0.4, [35, -5.8, 41, -5.8]); } });
+    return { r: 66, h: 44, parts, style: 'unit', scale: opt.scale || 1 };
+  };
+
+  /* ==================================================================
+   * W10 — THE HEART OF THE CHOIR (dirs 1). The planetary lance core: a
+   * stepped octagonal dais with glowing glyph channels, four bone claws
+   * cradling a pulsing violet heart, a crystal lance spire rising out of it,
+   * and two concentric glyph rings turning in opposite directions across the
+   * cycle (split into back and front halves around the heart).
+   * ================================================================== */
+  M.boHeart = function (pal, opt) {
+    pal = pal || {}; opt = opt || {};
+    const A = pal.a || '#3a3346', B = pal.b || '#6c6286', T = pal.t || '#e6d6b0', G = pal.g || '#c09aff', D = pal.d || '#1e1a28';
+    const boneS = mix(T, A, 0.45), boneT = T;
+    const cryS = mix(G, D, 0.3), cryT = mix(G, '#ffffff', 0.55);
+    const heartS = mix(G, '#ffffff', 0.15);
+    const pulse = (an) => 1 + 0.06 * Math.sin(an * TAU);
+    const parts = [];
+    // dais tiers
+    parts.push({ z0: 0, z1: 6, side: mix(A, D, 0.3), top: B, ao: 0.5,
+      shape: (c) => S.poly(c, ngon(0, 0, 50, 8, Math.PI / 8)),
+      detail: (c, an) => {
+        const s = []; for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU; s.push(Math.cos(a) * 38, Math.sin(a) * 38, Math.cos(a) * 47, Math.sin(a) * 47); }
+        S.lines(c, C.str(G, 0.5 + 0.3 * Math.sin(an * TAU)), 1.6, s); S.lines(c, '#f4eaff', 0.5, s);
+        c.save(); c.strokeStyle = cs(T); c.lineWidth = 0.7; c.beginPath(); S.poly(c, ngon(0, 0, 48, 8, Math.PI / 8)); c.stroke(); c.restore();
+      } });
+    parts.push({ z0: 6, z1: 11, side: mix(A, D, 0.2), top: mix(B, T, 0.15), ao: 0.45,
+      shape: (c) => S.poly(c, ngon(0, 0, 37, 8, 0)),
+      detail: (c) => { const s = []; for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU + Math.PI / 8; s.push(Math.cos(a) * 22, Math.sin(a) * 22, Math.cos(a) * 34, Math.sin(a) * 34); } S.lines(c, 'rgba(20,14,30,0.45)', 0.5, s); } });
+    // rotating glyph rings: [radius, width, z0, z1, segments, direction]
+    const ring = (R, W, z0, z1, n, dir, front) => ({ z0, z1, side: boneS, top: boneT, ao: 0.3,
+      shape: (c, zt, an) => {
+        const off = dir * an * (TAU / n), gap = 0.22;
+        for (let i = 0; i < n; i++) {
+          const a0 = off + (i / n) * TAU, a1 = a0 + TAU / n - gap, am = (a0 + a1) / 2;
+          if ((scrY(c, Math.cos(am), Math.sin(am)) > 0) !== front) continue;
+          c.moveTo(Math.cos(a0) * (R + W), Math.sin(a0) * (R + W)); c.arc(0, 0, R + W, a0, a1); c.arc(0, 0, R, a1, a0, true); c.closePath();
+        }
+      },
+      detail: (c, an) => {
+        const off = dir * an * (TAU / n);
+        for (let i = 0; i < n; i++) {
+          const am = off + (i + 0.5) / n * TAU - 0.11;
+          if ((scrY(c, Math.cos(am), Math.sin(am)) > 0) !== front) continue;
+          glowDot(c, Math.cos(am) * (R + W / 2), Math.sin(am) * (R + W / 2), W * 0.55, G, '#ffffff');
+        }
+      } });
+    parts.push(ring(54, 4, 12, 15, 7, 1, false));
+    // claws behind the heart
+    const claws = [Math.PI * 0.25, Math.PI * 0.75, Math.PI * 1.25, Math.PI * 1.75];
+    const claw = (front) => ({ z0: 10, z1: 46, side: boneS, top: boneT, ao: 0.4,
+      shape: (c, zt) => {
+        for (const a of claws) {
+          if ((scrY(c, Math.cos(a), Math.sin(a)) > 0) !== front) continue;
+          const d = 27 - Math.sin(zt * Math.PI * 0.9) * -5 - zt * 12, w = 5.5 * (1 - zt * 0.6), l = 4;
+          const ca = Math.cos(a), sa = Math.sin(a), x = ca * d, y = sa * d;
+          S.poly(c, [x + ca * l, y + sa * l, x - sa * w, y + ca * w, x - ca * l, y - sa * l, x + sa * w, y - ca * w]);
+        }
+      },
+      detail: (c) => { for (const a of claws) { if ((scrY(c, Math.cos(a), Math.sin(a)) > 0) !== front) continue; glowDot(c, Math.cos(a) * 15.5, Math.sin(a) * 15.5, 2, G, '#ffffff'); } } });
+    parts.push(claw(false));
+    parts.push(ring(36, 3.5, 28, 30, 5, -1, false));
+    // the heart
+    parts.push({ z0: 12, z1: 44, side: heartS, top: '#ffffff', flat: true, bevel: false,
+      shape: (c, zt, an) => S.circ(c, 0, 0, 15 * pulse(an) * Math.sqrt(Math.max(0.04, 1 - Math.pow(zt * 2 - 1, 2)))),
+      detail: (c, an) => {
+        radial(c, 0, 0, 15 * pulse(an), [[0, '#ffffff'], [0.45, '#f6eeff'], [0.8, mix(G, '#ffffff', 0.3)], [1, C.str(G, 0.4)]]);
+      } });
+    // spire collar + crystal lance
+    parts.push({ z0: 40, z1: 47, side: mix(A, D, 0.3), top: B, ao: 0.4,
+      shape: (c, zt) => { S.poly(c, ngon(0, 0, 9 - zt * 2, 8, 0)); },
+      detail: (c) => { c.save(); c.strokeStyle = cs(T); c.lineWidth = 0.8; c.beginPath(); S.poly(c, ngon(0, 0, 6.6, 8, 0)); c.stroke(); c.restore(); } });
+    parts.push({ z0: 47, z1: 100, side: cryS, top: cryT, ao: 0.25,
+      shape: (c, zt) => S.poly(c, hexPts(0, 0, zt < 0.75 ? 5.5 - zt * 1.5 : (5.5 - 1.125) * (1 - (zt - 0.75) * 3.6), 0.2)),
+      detail: (c) => glowDot(c, 0, 0, 3, G, '#ffffff') });
+    parts.push(claw(true));
+    parts.push(ring(36, 3.5, 28, 30, 5, -1, true));
+    parts.push(ring(54, 4, 12, 15, 7, 1, true));
+    return { r: 62, h: 102, parts, style: 'unit', scale: opt.scale || 1.25 };
   };
 })(window.AS);

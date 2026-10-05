@@ -76,7 +76,7 @@
       ...L.fob('fob', 3000, 3400),
       { t: 'struct', k: 'refinery', id: 'rf1', x: 2000, y: 2000, noFlat: true }, { t: 'struct', k: 'refinery', id: 'rf2', x: 4400, y: 2600, noFlat: true }, { t: 'struct', k: 'refinery', id: 'rf3', x: 3800, y: 4600, noFlat: true },
       { t: 'struct', k: 'flak', x: 2200, y: 1850, noFlat: true }, { t: 'struct', k: 'flak', x: 1800, y: 2200, noFlat: true }, { t: 'struct', k: 'flak', x: 4600, y: 2450, noFlat: true }, { t: 'struct', k: 'flak', x: 4250, y: 2800, noFlat: true }, { t: 'struct', k: 'flak', x: 3950, y: 4800, noFlat: true },
-      { t: 'convoy', id: 'tankers', units: ['skimmer', 'skimmer', 'skimmer', 'skimmer'], team: 'enemy', x: 4700, y: 2900, spacing: 70, start: false, speedMul: 0.65,
+      { t: 'convoy', id: 'tankers', units: ['tanker', 'tanker', 'tanker', 'tanker'], team: 'enemy', x: 4700, y: 2900, spacing: 70, start: false, speedMul: 0.65,
         path: [[4400, 3300], [3700, 3900], [2700, 4100], [1700, 3600], [1100, 2600], [700, 1600], [300, 700]] },
       { t: 'unit', k: 'gull', x: 4600, y: 3000, n: 3, active: true },
       { t: 'zone', id: 'wreck', x: 5800, y: 5400, r: 220 }, ...L.cache(5800, 5400, ['tech', 'tech', 'special'], { hidden: true }),

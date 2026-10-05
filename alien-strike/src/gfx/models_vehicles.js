@@ -635,7 +635,7 @@
       { z0: 5, z1: 6.8, side: '#a02a10', top: '#ff5a2a', flat: true, bevel: false, shape: (c) => S.ell(c, 7.6, 0, 0.9, 1.6),
         detail: (c) => { glow(c, '#ff5a2a', 7.7, 0, 1, 2.2); S.dot(c, '#ffe8c8', 7.9, -0.5, 0.35); } },
     ];
-    return { r: 14, h: 11, parts };
+    return { r: 14, h: 11, parts, scale: 1.15 };
   };
 
   /* ======================================================================
@@ -817,5 +817,158 @@
       { z0: 11, z1: 11.8, side: brassS, top: brass, bevel: false, shape: (c) => ring(c, -L + 1.2, W - 3.6, 1.9, 1.2) },
     ];
     return { r: 20, h: 13, parts };
+  };
+  /* FRC / colony livery shared by the friendly hauler, tank and gunship
+   * (matches the hero craft: gunmetal walls, light panels, amber trim, cyan). */
+  const FRC = { hullS: '#565e69', hullT: '#a6aeb8', panel: '#7d8590', dark: '#262b33', darker: '#181c22', metal: '#3a414b', trim: '#de9c3a', glow: '#5fe6ff', ringT: '#a7bacb', ringS: '#323b45' };
+  const frcGlow = (p) => { const g = p && p.g; if (!g) return FRC.glow; const k = C.hex(g); return k[2] > k[0] ? g : FRC.glow; };
+  // rectangular frame (outer CW, inner CCW) for rails and cages
+  function frame(c, x, y, w, h, t) {
+    S.poly(c, [x, y, x + w, y, x + w, y + h, x, y + h]);
+    S.poly(c, [x + t, y + t, x + t, y + h - t, x + w - t, y + h - t, x + w - t, y + t]);
+  }
+
+  /* ======================================================================
+   * ORE HAULER — friendly colony convoy truck: six big wheels, off-white
+   * cab with cyan roof lights, twin stacks, railed flatbed of ore crates
+   * (opt.cargoSide / opt.cargoTop) and a heap of ore.
+   * ==================================================================== */
+  M.veHauler = function (p, o) {
+    o = o || {};
+    const g = frcGlow(p), trim = (p && p.t) || FRC.trim;
+    const cabT = '#dcdfd8', cabS = '#8a9098', cS = o.cargoSide || '#7a5a3a', cT = o.cargoTop || '#a8825a';
+    const axles = [14.5, -7.5, -14];
+    const parts = [
+      // wheels
+      { z0: 0, z1: 4.6, side: '#141618', top: '#2e3236', shape: (c) => { for (const x of axles) for (const sg of [1, -1]) S.rrect(c, x - 2.8, sg > 0 ? 6.4 : -9.4, 5.6, 3, 1.2); },
+        detail: (c) => { for (const x of axles) for (const sg of [1, -1]) { S.lines(c, 'rgba(0,0,0,0.55)', 0.45, [x - 1.6, (sg > 0 ? 6.6 : -9.2), x - 1.6, (sg > 0 ? 9.2 : -6.6), x, (sg > 0 ? 6.6 : -9.2), x, (sg > 0 ? 9.2 : -6.6), x + 1.6, (sg > 0 ? 6.6 : -9.2), x + 1.6, (sg > 0 ? 9.2 : -6.6)]); } } },
+      // chassis
+      { z0: 1.8, z1: 4.4, side: FRC.darker, top: FRC.metal, shape: (c) => S.rrect(c, -20.5, -6.4, 41.5, 12.8, 1.6) },
+      // fenders
+      { z0: 4.4, z1: 5.4, side: FRC.metal, top: FRC.panel, shape: (c) => { for (const sg of [1, -1]) { S.rrect(c, 11.2, sg > 0 ? 5.8 : -9.8, 6.6, 4, 1.4); S.rrect(c, -17.4, sg > 0 ? 5.8 : -9.8, 13.2, 4, 1.4); } },
+        detail: (c) => { for (const sg of [1, -1]) hazard(c, -17.2, sg > 0 ? 8.6 : -9.6, 2.6, 1, trim, FRC.dark, 0.6); } },
+      // flatbed deck
+      { z0: 4.4, z1: 5.8, side: FRC.dark, top: '#4a525c', shape: (c) => S.rrect(c, -20.5, -6.8, 29, 13.6, 1),
+        detail: (c) => { hazard(c, -20.3, -6.4, 1.4, 12.8, trim, FRC.dark, 0.9); S.dot(c, '#ff4a3a', -20, 5.6, 0.5); S.dot(c, '#ff4a3a', -20, -5.6, 0.5); } },
+      // cargo: two crates + ore heap
+      { z0: 5.8, z1: 10.4, side: cS, top: cT, shape: (c) => { S.rrect(c, -19.4, -6, 8.4, 12, 0.8); S.rrect(c, -1.6, -6, 8.4, 5.4, 0.8); },
+        detail: (c) => { S.lines(c, 'rgba(30,20,10,0.55)', 0.55, [-15.2, -6, -15.2, 6, -19.4, 0, -11, 0, 2.6, -6, 2.6, -0.6]); S.fillPoly(c, trim, [-13.6, -4.8, -12, -4.8, -12, -3.2, -13.6, -3.2]); S.fillPoly(c, trim, [4.6, -5, 6, -5, 6, -3.6, 4.6, -3.6]); } },
+      { z0: 5.8, z1: 9.6, side: '#4a3a2c', top: '#7a6450', shape: (c, zt) => S.blob(c, -5.4, 2, 5.2 - zt * 2.6, 12, 10, 0.25),
+        detail: (c) => { for (const q of [[-6.4, 1.2, 0.9], [-4.2, 2.8, 0.7], [-5.6, 3.6, 0.6], [-3.8, 0.6, 0.5]]) { S.dot(c, '#3a2c20', q[0] + 0.2, q[1] + 0.2, q[2]); S.dot(c, '#9a8268', q[0], q[1], q[2] * 0.75); } S.dot(c, g, -5, 1.6, 0.35); } },
+      // bed rails
+      { z0: 5.8, z1: 8.6, side: FRC.ringS, top: FRC.ringT, bevel: false, shape: (c) => frame(c, -20.4, -6.8, 28.8, 13.6, 0.7) },
+      // cab
+      { z0: 4.4, z1: 11.6, side: cabS, top: cabT, shape: (c) => S.poly(c, S.sym([20.6, 0, 20.4, 5.4, 19, 6.8, 9.8, 6.8, 9, 5.6, 9, 0])),
+        detail: (c) => {
+          S.fillPoly(c, '#16242c', [20.2, 5, 18.2, 5.4, 18.2, -5.4, 20.2, -5]);
+          S.lines(c, 'rgba(170,240,255,0.7)', 0.4, [19.6, -4, 18.8, -1.6]);
+          S.lines(c, SEAM, 0.4, [14, -6.6, 14, 6.6]);
+          S.fillPoly(c, trim, [17.6, 6.7, 10.2, 6.7, 10.2, 5.6, 17.6, 5.6]); S.fillPoly(c, trim, [17.6, -6.7, 10.2, -6.7, 10.2, -5.6, 17.6, -5.6]);
+          S.fillPoly(c, FRC.dark, [13, -2.6, 10.2, -2.6, 10.2, 2.6, 13, 2.6]);
+        } },
+      // roof light bar (friendly cyan)
+      { z0: 11.6, z1: 12.6, side: FRC.dark, top: FRC.metal, bevel: false, shape: (c) => S.rrect(c, 16, -4.6, 1.8, 9.2, 0.6),
+        detail: (c) => { glow(c, g, 16.9, -3.4, 0.55, 2); glow(c, g, 16.9, 3.4, 0.55, 2); S.dot(c, '#ffd36b', 16.9, 0, 0.5); } },
+      // headlights
+      { z0: 4.8, z1: 6.6, side: FRC.dark, top: FRC.metal, bevel: false, shape: (c) => { S.rrect(c, 20, 3, 1.4, 2.6, 0.5); S.rrect(c, 20, -5.6, 1.4, 2.6, 0.5); },
+        detail: (c) => { glow(c, '#fff4d8', 21, 4.3, 0.7, 2.2); glow(c, '#fff4d8', 21, -4.3, 0.7, 2.2); } },
+      // twin exhaust stacks behind the cab
+      { z0: 5.8, z1: 15, side: FRC.metal, top: '#9aa2ac', shape: (c) => { S.circ(c, 8, 5.4, 0.95); S.circ(c, 8, -5.4, 0.95); },
+        detail: (c) => { S.dot(c, '#101214', 8, 5.4, 0.55); S.dot(c, '#101214', 8, -5.4, 0.55); } },
+    ];
+    return { r: 25, h: 16, parts };
+  };
+
+  /* ======================================================================
+   * FRC WARDEN TANK — friendly heavy hover tank in the hero's livery:
+   * gunmetal wedge hull, four anti-grav rings with cyan cores (like the
+   * Vesper's), amber chevrons, cyan running lights. Heavy gun on top.
+   * ==================================================================== */
+  M.veWarden = function (p, o) {
+    const g = frcGlow(p), trim = FRC.trim;
+    const rings = [[10.5, 10.6], [10.5, -10.6], [-10.5, 10.6], [-10.5, -10.6]];
+    const hull = S.sym([20, 0, 17, 4.6, 13, 8.4, -13, 8.8, -17, 6.6, -18, 0]);
+    const parts = [
+      // ventral skirt
+      { z0: 0, z1: 1.6, side: FRC.darker, top: '#2c323b', bevel: false, shape: (c) => S.poly(c, S.sym([17, 0, 12, 7.6, -14, 8, -16, 0])) },
+      // anti-grav ring glow cores
+      { z0: 1.6, z1: 1.6, side: g, top: css(g, -0.2), flat: true, shape: (c) => { for (const q of rings) S.circ(c, q[0], q[1], 2.6); },
+        detail: (c) => { for (const q of rings) { S.dot(c, css(g, 0.45), q[0], q[1], 1.3); S.lines(c, 'rgba(20,40,50,0.5)', 0.35, [q[0] - 2.2, q[1], q[0] + 2.2, q[1], q[0], q[1] - 2.2, q[0], q[1] + 2.2]); } } },
+      // anti-grav rings
+      { z0: 1.2, z1: 4.4, side: FRC.ringS, top: FRC.ringT, stroke: 1.5, bevel: false, shape: (c) => { for (const q of rings) S.circ(c, q[0], q[1], 3.6); } },
+      // ring struts
+      { z0: 2.4, z1: 4.2, side: FRC.dark, top: FRC.metal, bevel: false, shape: (c) => { for (const q of rings) S.rrect(c, q[0] - 1.1, q[1] > 0 ? 6.8 : -8.2, 2.2, 1.4, 0.4); } },
+      // hull
+      { z0: 1.6, z1: 6, side: FRC.hullS, top: FRC.hullT, shape: (c) => S.poly(c, hull),
+        detail: (c) => {
+          S.lines(c, 'rgba(24,28,34,0.55)', 0.45, [12, -8.2, 12, 8.2, -8, -8.6, -8, 8.6, 16, 0, 9, 0]);
+          S.lines(c, 'rgba(255,255,255,0.28)', 0.5, [19.4, -0.4, 16.6, -4.6, 16.6, -4.6, 13, -8.2]);
+          for (const sg of [1, -1]) { S.fillPoly(c, trim, [18.4, 1.2 * sg, 15.6, 4.6 * sg, 14.8, 4 * sg, 17.4, 0.8 * sg]); glow(c, g, 16.2, 5.6 * sg, 0.5, 2.2); }
+          S.fillPoly(c, FRC.darker, [-11, -6.6, -16.4, -5, -16.4, 5, -11, 6.6]);
+        } },
+      // side armour sponsons between the rings
+      { z0: 3, z1: 6.6, side: FRC.metal, top: FRC.panel, shape: (c) => { S.rrect(c, -6.4, 7.4, 12.8, 4.4, 1.4); S.rrect(c, -6.4, -11.8, 12.8, 4.4, 1.4); },
+        detail: (c) => { for (const sg of [1, -1]) { S.lines(c, 'rgba(24,28,34,0.55)', 0.4, [0, 7.6 * sg, 0, 11.6 * sg]); S.fillPoly(c, trim, [5.6, (sg > 0 ? 10.8 : -11.2), -5.6, (sg > 0 ? 10.8 : -11.2), -5.6, (sg > 0 ? 11.2 : -10.8), 5.6, (sg > 0 ? 11.2 : -10.8)]); } } },
+      // rear engine deck with twin cyan exhausts
+      { z0: 6, z1: 8.4, side: FRC.metal, top: '#7c8693', shape: (c) => S.rrect(c, -17, -5.6, 8.4, 11.2, 1.6),
+        detail: (c) => { for (const sg of [1, -1]) { S.dot(c, '#0d1014', -16.4, 3 * sg, 1.5); S.dot(c, css(g, -0.2), -16.4, 3 * sg, 1); S.dot(c, '#e8ffff', -16.5, 3 * sg, 0.45); } for (let i = 0; i < 3; i++) S.lines(c, 'rgba(10,12,16,0.6)', 0.45, [-13.6 + i * 1.5, -2, -13.6 + i * 1.5, 2]); } },
+      // turret ring
+      { z0: 6, z1: 7, side: FRC.darker, top: FRC.dark, bevel: false, shape: (c) => S.circ(c, 0, 0, 7.4) },
+      // sensor mast
+      { z0: 8.4, z1: 13, side: '#8b939c', top: '#d6dde3', bevel: false, shape: (c) => S.circ(c, -14.4, 4.2, 0.45) },
+      { z0: 12.6, z1: 13.6, side: css(g, -0.3), top: g, flat: true, bevel: false, shape: (c) => S.circ(c, -14.4, 4.2, 0.8), detail: (c) => glow(c, g, -14.4, 4.2, 0.6, 2.2) },
+    ];
+    return { r: 24, h: 14, parts };
+  };
+
+  /* ======================================================================
+   * FRC LANCER GUNSHIP — friendly gunship in the hero's livery but its own
+   * silhouette: long fuselage with a lance nose cannon, tandem cyan canopy,
+   * stub wings ending in ducted fan rings, rocket pods, canted twin fins.
+   * ==================================================================== */
+  M.veLancer = function (p, o) {
+    const g = frcGlow(p), trim = FRC.trim, seam = 'rgba(24,28,34,0.55)';
+    const fans = [[-2, 13.6], [-2, -13.6]], FR = 4.2;
+    const wing = [6, 2.6, 2.6, 11, -5.6, 11, -7.4, 2.6];
+    const parts = [
+      // stub wings
+      { z0: 2.2, z1: 3.8, side: FRC.hullS, top: FRC.hullT, shape: (c) => { S.poly(c, wing); S.poly(c, mir(wing)); },
+        detail: (c) => { for (const sg of [1, -1]) { S.lines(c, seam, 0.4, [-1, 3 * sg, -1, 10.6 * sg]); S.fillPoly(c, trim, [2.2, 9.6 * sg, -5.2, 9.6 * sg, -5.4, 10.6 * sg, 2.4, 10.6 * sg]); } } },
+      // rocket pods under the wings
+      { z0: 1, z1: 3.6, side: FRC.dark, top: FRC.metal, shape: (c) => { S.rrect(c, -3, 5.4, 10.4, 3, 1.2); S.rrect(c, -3, -8.4, 10.4, 3, 1.2); },
+        detail: (c) => { for (const sg of [1, -1]) { for (const y of [6.2, 7.6]) S.dot(c, '#101418', 7, y * sg, 0.45); S.fillPoly(c, trim, [5.2, 5.5 * sg, 4.2, 5.5 * sg, 4.2, 8.3 * sg, 5.2, 8.3 * sg]); } } },
+      // ducted fan cores
+      { z0: 2.8, z1: 2.8, side: g, top: css(g, -0.25), flat: true, shape: (c) => { for (const q of fans) S.circ(c, q[0], q[1], FR - 1.2); },
+        detail: (c) => { for (const q of fans) { S.dot(c, css(g, 0.45), q[0], q[1], FR * 0.42); S.lines(c, 'rgba(20,40,50,0.5)', 0.35, [q[0] - FR + 1.4, q[1], q[0] + FR - 1.4, q[1], q[0], q[1] - FR + 1.4, q[0], q[1] + FR - 1.4]); } } },
+      // fan shrouds
+      { z0: 2, z1: 5.8, side: FRC.ringS, top: FRC.ringT, stroke: 1.9, bevel: false, shape: (c) => { for (const q of fans) S.circ(c, q[0], q[1], FR); } },
+      // fuselage
+      { z0: 1.6, z1: 7.2, side: FRC.hullS, top: FRC.hullT, shape: (c) => S.poly(c, S.sym([17, 0, 14, 2.4, 7, 3.9, -8, 3.7, -15, 2.6, -18.5, 0])),
+        detail: (c) => {
+          S.lines(c, seam, 0.45, [3, -3.8, 3, 3.8, -6, -3.7, -6, 3.7, -13, -2.9, -13, 2.9]);
+          S.lines(c, 'rgba(255,255,255,0.24)', 0.5, [16.4, -0.4, 7, -3.4]);
+          for (const sg of [1, -1]) S.fillPoly(c, trim, [15.4, 1 * sg, 12, 2.9 * sg, 11.4, 2.4 * sg, 14.6, 0.7 * sg]);
+        } },
+      // lance cannon
+      { z0: 3.6, z1: 5, side: FRC.dark, top: '#9aa3ac', bevel: false, shape: (c) => { S.rrect(c, 14, -0.8, 9.2, 1.6, 0.6); S.rrect(c, 22, -1.2, 2.2, 2.4, 0.6); },
+        detail: (c) => { S.dot(c, '#0d1014', 24, 0, 0.5); S.lines(c, 'rgba(255,255,255,0.3)', 0.3, [15, -0.5, 21.6, -0.5]); } },
+      // canopy frame + glass
+      { z0: 7.2, z1: 8.2, side: FRC.dark, top: '#2f3640', shape: (c) => S.ell(c, 9.4, 0, 5.4, 2.6) },
+      { z0: 8.2, z1: 9.1, side: '#123040', top: '#123040', flat: true, shape: (c) => S.ell(c, 9.6, 0, 4.6, 2),
+        detail: (c) => {
+          const gr = c.createLinearGradient(5.6, -2, 14, 2); gr.addColorStop(0, '#7ff6ff'); gr.addColorStop(0.45, '#1b4a5c'); gr.addColorStop(1, '#0d1c26');
+          c.fillStyle = gr; c.beginPath(); S.ell(c, 9.6, 0, 4.6, 2); c.fill();
+          S.lines(c, 'rgba(10,14,18,0.7)', 0.4, [9, -2, 9, 2]); c.fillStyle = 'rgba(255,255,255,0.7)'; c.beginPath(); S.ell(c, 11.4, -0.8, 1.8, 0.4, -0.2); c.fill();
+        } },
+      // dorsal engine hump
+      { z0: 7.2, z1: 10, side: FRC.metal, top: '#8f98a3', shape: (c) => S.poly(c, S.sym([3, 0, 1.6, 2.6, -11, 2.6, -13, 1.6, -13, 0])),
+        detail: (c) => { for (let i = 0; i < 4; i++) S.lines(c, 'rgba(10,12,16,0.6)', 0.45, [-2 - i * 1.5, -1.6, -2 - i * 1.5, 1.6]); S.dot(c, '#101418', -12.4, 0, 1.2); S.dot(c, css(g, -0.2), -12.4, 0, 0.8); } },
+      // canted twin tail fins
+      { z0: 7, z1: 12.4, side: FRC.hullS, top: trim, shape: (c) => { S.poly(c, [-12, 2, -18.4, 5.8, -19.6, 5, -13.6, 1.4]); S.poly(c, [-12, -2, -18.4, -5.8, -19.6, -5, -13.6, -1.4]); } },
+      // nav lights: port red, starboard green, white tail strobe
+      { z0: 5.8, z1: 6.4, side: '#202428', top: '#202428', flat: true, bevel: false, shape: (c) => { S.circ(c, -2, 13.6 + FR, 0.5); S.circ(c, -2, -13.6 - FR, 0.5); },
+        detail: (c) => { glow(c, '#5aff7a', -2, 13.6 + FR, 0.5, 2.2); glow(c, '#ff4a4a', -2, -13.6 - FR, 0.5, 2.2); } },
+    ];
+    return { r: 25, h: 13, parts };
   };
 })(window.AS);

@@ -22,11 +22,11 @@ const LIST = [
   { k: 'prism', gen: 'boPrism', ground: '#cbdae6', pal: { a: '#2a3c7c', b: '#6a8ee0', t: '#e4fbff', g: '#7ff6ff', d: '#141c3a' }, dirs: 16, anims: 4 },
   { k: 'refinery', gen: 'boRefinery', ground: '#1e5a6a', pal: { a: '#3e3848', b: '#c8bca4', t: '#e89a3a', g: '#c07aff', d: '#1a1620' }, dirs: 1, anims: 1,
     core: { gen: 'boRefCore', opt: {} } },
-  { k: 'foundry', gen: 'boFoundry', ground: '#3a3133', pal: { a: '#5a4632', b: '#a8865a', t: '#ffb03a', g: '#ff7a1a', d: '#1a1210' }, dirs: 16, anims: 4 },
+  { k: 'foundry', gen: 'boFoundry', ground: '#3a3133', pal: { a: '#5a4632', b: '#a8865a', t: '#ffb03a', g: '#ff7a1a', d: '#1a1210' }, dirs: 16, anims: 2 },
   { k: 'mind', gen: 'boMind', ground: '#4a3a6a', pal: { a: '#8a4a5a', b: '#e8b8b0', t: '#fff0e0', g: '#7affd0', d: '#3a1a26' }, dirs: 1, anims: 4 },
   { k: 'tempest', gen: 'boTempest', ground: '#8a9ad0', pal: { a: '#1c2246', b: '#3e4c8c', t: '#d8ecff', g: '#7ff8ff', d: '#0c1024' }, dirs: 16, anims: 4, z: 60,
     seg: { gen: 'boTempestSeg', opt: {}, every: 7, speed: 3.3, scl: 160 } },
-  { k: 'warden', gen: 'boWarden', ground: '#6a6458', pal: { a: '#2c2a32', b: '#5c5a68', t: '#c89a4a', g: '#ff3a24', d: '#141218' }, dirs: 16, anims: 4 },
+  { k: 'warden', gen: 'boWarden', ground: '#6a6458', pal: { a: '#34323e', b: '#7c7a8c', t: '#e0b050', g: '#ff3a24', d: '#16141c' }, dirs: 16, anims: 4 },
   { k: 'heart', gen: 'boHeart', ground: '#bfb39c', pal: { a: '#3a3346', b: '#6c6286', t: '#e6d6b0', g: '#c09aff', d: '#1e1a28' }, dirs: 1, anims: 4 },
 ];
 const only = Q.get('k') ? Q.get('k').split(',') : null;
@@ -81,9 +81,9 @@ items.forEach((e, i) => {
   const m = sh.model;
   const fw = sh.frames[0][0].width, fh = sh.frames[0][0].height;
   const mb = (sh.dirs * sh.anims * fw * fh * 4 / 1048576).toFixed(1);
-  info.push(e.k + ' r' + m.r + ' h' + m.h + ' parts' + m.parts.length + ' ' + e.ms + 'ms ' + mb + 'MB');
+  info.push(e.k + ' r' + m.r + (m.scale ? 'x' + m.scale : '') + ' h' + m.h + ' parts' + m.parts.length + ' ' + e.ms + 'ms ' + mb + 'MB');
   // large view
-  const L = Math.min(3, 210 / (m.r + (e.z ? 10 : 0))) * big;
+  const L = Math.min(3, 210 / (m.r * (m.scale || 1) + (e.z ? 10 : 0))) * big;
   const ang = e.dirs === 1 ? 0 : -0.6;
   drawBoss(e, sh, ang, 0, 250 * big, y0 + RH * 0.5 + (m.h * 0.4) * L, L);
   // game scale 1.8 with the craft for size

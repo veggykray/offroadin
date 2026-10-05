@@ -93,6 +93,8 @@
   E.skimmer = { name: 'Skimmer Boat', world: 5, cls: 'vehicle', ai: 'tank', hp: 90, armor: 2, r: 14, hc: 5, speed: 140, turn: 2.4, mech: true, waterOnly: true, amphibious: true, sight: 480,
     weapon: W('bullet', { dmg: 6, range: 320, rate: 1.6, burst: 2, speed: 440, col: '#ffd27a' }), model: { gen: 'boat', pal: { a: '#4a5a5a', b: '#8aa0a0', t: '#e8a02a', g: '#ffd36b', d: '#1a2424' } }, gun: { kind: 'twin', size: 0.8 },
     keepDist: 220, salvage: 16, drop: 0.3, threat: 1, sfx: { die: 'explode_med' } };
+  // convoy tanker: a skimmer's stats with a longer tank hull (art: src/gfx/art_map.js)
+  E.tanker = Object.assign({}, E.skimmer, { name: 'Skimmer Tanker' });
   E.floatturret = { name: 'Buoy Turret', world: 5, cls: 'air', ai: 'floater', hp: 70, armor: 2, r: 12, hc: 4, alt: 16, speed: 20, turn: 2, mech: true, sight: 460,
     weapon: W('flak', { dmg: 7, range: 400, rate: 0.6, radius: 32, speed: 320, col: '#ffe0a0' }), model: { gen: 'sentinel', pal: { a: '#4a5a5a', b: '#8aa0a0', g: '#ffd36b', d: '#1a2424' } },
     salvage: 14, drop: 0.3, threat: 0.9, sfx: { die: 'explode_med' } };

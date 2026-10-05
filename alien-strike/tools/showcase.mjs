@@ -13,14 +13,15 @@ for (const sc of scenes) {
   await p.waitForTimeout(900);
   const where = await p.evaluate((sc) => {
     const g = AS.game; let x, y;
-    if (Array.isArray(sc.at)) [x, y] = sc.at;
+    if (sc.boss && g.bossList && g.bossList[0]) { const b = g.bossList[0]; if (b.bossAct) b.bossAct('activate'); x = b.x; y = b.y - 40; }
+    else if (Array.isArray(sc.at)) [x, y] = sc.at;
     else if (sc.at) {
       const s = g.structures.find((q) => q.kind === sc.at || q.def === AS.Data.structures[sc.at]) || (g.landmarks || []).find((l) => l.kind === sc.at);
       if (s) { x = s.x; y = s.y; }
     }
     if (x === undefined) { x = g.mission.start.x; y = g.mission.start.y - 300; }
     x += sc.dx || 0; y += sc.dy || 0;
-    AS.Debug.tp(x, y + 110);
+    AS.Debug.tp(x, y + (sc.near || 110));
     for (const u of g.units) if (Math.hypot(u.x - x, u.y - y) < 700) { u.alerted = false; u.target = null; }
     (sc.units || []).forEach((k, i) => {
       const a = (i / Math.max(1, sc.units.length)) * Math.PI * 2, r = 120 + (i % 2) * 40;

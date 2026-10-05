@@ -398,7 +398,7 @@
         AS.Renderer.light(b.x, b.y - 50, 90, '#9ffff0', 0.3 + Math.sin(b.t * 2) * 0.1);
       },
       status(b) { return b.isShielded() ? 'ROOT-SHIELDED — BURN THE SPORE ROOTS' : 'EXPOSED'; },
-      draw(b, ctx, ox, oy, R) { const sh = b.sheet; ctx.drawImage(sh.frames[0][0], b.x - ox - sh.ax, b.y - oy - sh.ay, sh.w, sh.h); if (b.flash > 0) R.flashSprite(ctx, sh, 0, 0, b.x, b.y, 0, ox, oy); },
+      draw(b, ctx, ox, oy, R) { const sh = b.sheet, ai = Math.floor(b.anim) % sh.anims; ctx.drawImage(sh.frames[ai][0], b.x - ox - sh.ax, b.y - oy - sh.ay, sh.w, sh.h); if (b.flash > 0) R.flashSprite(ctx, sh, 0, ai, b.x, b.y, 0, ox, oy); },
       drawShadow() {},
     },
 

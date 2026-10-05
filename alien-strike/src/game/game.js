@@ -38,6 +38,12 @@
     load() {
       const m = this.mission;
       if (AS.ArtMap) AS.ArtMap.apply();
+      // sprite sheets are cached for reuse; when the campaign moves to another world,
+      // drop the previous world's sheets (bosses and big vehicles run to 25-35 MB each)
+      if (AS.Forge.world !== this.world.key) {
+        if (AS.Forge.world) for (const k of Array.from(AS.Forge.cache.keys())) if (!/^(craft|pod|glow|flat)/.test(k)) AS.Forge.cache.delete(k);
+        AS.Forge.world = this.world.key;
+      }
       AS.Proj.init(); AS.Proj.clear();
       AS.Particles.clear();
       AS.Renderer.flares.length = 0;

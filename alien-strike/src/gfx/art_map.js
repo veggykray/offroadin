@@ -145,5 +145,45 @@
     gun: {"gen": "gun2"},
   });
 
+  /* ---- integrated packages: bosses, vehicles ---- */
+  Object.assign(ArtMap.enemies, {
+    raider: {"gen": "veRaider", "opt": {}, "pal": {"a": "#1c1a1c", "b": "#ebe1cb", "t": "#d8322a", "g": "#ff8a2a", "d": "#121012"}, "anims": 1, "dirs": 24},
+    dragoon: {"gen": "veDragoon", "opt": {"len": 15, "wid": 10}, "pal": {"a": "#3a3532", "b": "#d6c8aa", "t": "#e8a02a", "g": "#ff7a2a", "d": "#1c1918"}, "anims": 2, "dirs": 24, "gunZ": 7},
+    scarab: {"gen": "veScarab", "opt": {}, "pal": {"a": "#2e2a28", "b": "#cfc0a0", "t": "#f0b020", "g": "#ff6a2a", "d": "#161312"}, "anims": 2, "dirs": 24, "gunZ": 7.6},
+    mender: {"gen": "veMender", "opt": {}, "pal": {"a": "#2a2628", "b": "#e6dcc4", "t": "#e8a02a", "g": "#7dff8a", "d": "#141214"}, "anims": 1, "dirs": 24},
+    crawler: {"gen": "veCrawler", "opt": {}, "pal": {"a": "#46403a", "b": "#d9a83a", "t": "#e8742a", "g": "#ffd36b", "d": "#1e1a16"}, "anims": 4, "dirs": 32},
+    strider: {"gen": "veStrider", "opt": {}, "pal": {"a": "#2c3442", "b": "#56637a", "t": "#e8742a", "g": "#ff8a2a", "d": "#161b24"}, "anims": 4, "dirs": 24},
+    frostdrone: {"gen": "veRimeDrone", "opt": {}, "pal": {"a": "#34445e", "b": "#6a7e9c", "t": "#e6f4ff", "g": "#6ff2ff", "d": "#1a2232"}, "anims": 1, "dirs": 24},
+    gull: {"gen": "veGull", "opt": {}, "pal": {"a": "#8a9494", "b": "#eef0ea", "t": "#ff8a2a", "g": "#ffb84a", "d": "#2a3030"}, "anims": 1, "dirs": 24},
+    skimmer: {"gen": "veSkimmer", "opt": {}, "pal": {"a": "#5e6a6c", "b": "#e4e6e0", "t": "#ff7a2a", "g": "#ffb04a", "d": "#232a2c"}, "anims": 1, "dirs": 24, "gunZ": 5.6},
+    floatturret: {"gen": "veBuoy", "opt": {}, "pal": {"a": "#2e383a", "b": "#9aa4a4", "t": "#e0302a", "g": "#ffb84a", "d": "#1a2224"}, "anims": 2, "dirs": 24},
+    forgedrone: {"gen": "veForgeDrone", "opt": {}, "pal": {"a": "#4a4440", "b": "#a0968c", "t": "#ff7a2a", "g": "#ff8a2a", "d": "#1a1210"}, "anims": 1, "dirs": 24},
+    magma: {"gen": "veMagma", "opt": {}, "pal": {"a": "#3a3230", "b": "#9a8c80", "t": "#ff7a2a", "g": "#ff9a3a", "d": "#120c0a"}, "anims": 2, "dirs": 24, "gunZ": 7.2},
+    forgetank: {"gen": "veAnvil", "opt": {}, "pal": {"a": "#3a3230", "b": "#9a8c80", "t": "#ff7a2a", "g": "#ff9a3a", "d": "#120c0a"}, "anims": 1, "dirs": 24, "gunZ": 7.6},
+    infected: {"gen": "veInfected", "opt": {}, "pal": {"a": "#6a6e76", "b": "#c4c8cc", "t": "#c0306a", "g": "#7fffd0", "d": "#22202c"}, "anims": 4, "dirs": 24},
+    gearcrawler: {"gen": "veGearCrawler", "opt": {"len": 14, "wid": 10}, "pal": {"a": "#5a4c3e", "b": "#a89a80", "t": "#ff6a3a", "g": "#ff9a3a", "d": "#1e1c18"}, "anims": 4, "dirs": 24, "gunZ": 7.2},
+    hauler: {"gen": "veHauler", "opt": {"cargoSide": "#7a5a3a", "cargoTop": "#a8825a"}, "anims": 1, "dirs": 24},
+    ally_tank: {"gen": "veWarden", "opt": {}, "pal": {"a": "#5a6470", "b": "#9aa6b4", "t": "#e8a02a", "g": "#7fe8ff", "d": "#262c34"}, "anims": 1, "dirs": 24, "gunZ": 7},
+    ally_gunship: {"gen": "veLancer", "opt": {}, "pal": {"a": "#5a6470", "b": "#9aa6b4", "t": "#e8a02a", "g": "#7fe8ff", "d": "#262c34"}, "anims": 1, "dirs": 24},
+    tanker: {"gen": "veSkimmer", "opt": {"tanker": 1}, "pal": {"a": "#5e6a6c", "b": "#e4e6e0", "t": "#ff7a2a", "g": "#ffb04a", "d": "#232a2c"}, "anims": 1, "dirs": 24, "gunZ": 5.6},
+  });
+  Object.assign(ArtMap.bosses, {
+    maw: {"gen": "boMaw", "opt": {}, "anims": 4, "dirs": 16},
+    kharad: {"gen": "boKharad", "opt": {}, "pal": {"a": "#2e2a33", "b": "#5c5462", "t": "#eadcbc", "g": "#ffcc44", "d": "#140f14"}, "anims": 4, "dirs": 16},
+    queen: {"gen": "boQueen", "opt": {}, "anims": 4, "dirs": 16},
+    prism: {"gen": "boPrism", "opt": {}, "pal": {"a": "#2a3c7c", "b": "#6a8ee0", "t": "#e4fbff", "g": "#7ff6ff", "d": "#141c3a"}, "anims": 4, "dirs": 16},
+    refinery: {"gen": "boRefinery", "opt": {}, "pal": {"a": "#3e3848", "b": "#c8bca4", "t": "#e89a3a", "g": "#c07aff", "d": "#1a1620"}, "anims": 1, "dirs": 1},
+    foundry: {"gen": "boFoundry", "opt": {}, "pal": {"a": "#5a4632", "b": "#a8865a", "t": "#ffb03a", "g": "#ff7a1a", "d": "#1a1210"}, "anims": 2, "dirs": 16},
+    mind: {"gen": "boMind", "opt": {}, "pal": {"a": "#8a4a5a", "b": "#e8b8b0", "t": "#fff0e0", "g": "#7affd0", "d": "#3a1a26"}, "anims": 4, "dirs": 1},
+    tempest: {"gen": "boTempest", "opt": {}, "pal": {"a": "#1c2246", "b": "#3e4c8c", "t": "#d8ecff", "g": "#7ff8ff", "d": "#0c1024"}, "anims": 4, "dirs": 16},
+    warden: {"gen": "boWarden", "opt": {}, "pal": {"a": "#34323e", "b": "#7c7a8c", "t": "#e0b050", "g": "#ff3a24", "d": "#16141c"}, "anims": 4, "dirs": 16},
+    heart: {"gen": "boHeart", "opt": {}, "pal": {"a": "#3a3346", "b": "#6c6286", "t": "#e6d6b0", "g": "#c09aff", "d": "#1e1a28"}, "anims": 4, "dirs": 1},
+  });
+  Object.assign(ArtMap.other, {
+    kharad_seg: {"gen": "boKharadSeg", "opt": {}},
+    tempest_seg: {"gen": "boTempestSeg", "opt": {}},
+    refcore: {"gen": "boRefCore", "opt": {}},
+  });
+
   AS.ArtMap = ArtMap;
 })(window.AS);
