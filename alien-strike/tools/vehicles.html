@@ -1,0 +1,96 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Vehicle preview</title>
+<style>body{background:#111;margin:0;color:#ddd;font:12px monospace}canvas{display:block}</style></head><body>
+<canvas id="c"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/models_vehicles.js"></script>
+<script>
+// Vehicle preview. Each cell: the unit large (left) plus game scale (1.8 px/unit):
+// 4 headings on the top row, anim frames below, on the unit's world ground (or its
+// water for boats/buoys). Units with a rotating gun get the gun sheet drawn on top at
+// gunZ. ?k=raider,scarab limits cells; ?cols=N sets columns; ?big=1 enlarges.
+const Q = new URLSearchParams(location.search);
+const W = (id) => AS.Data.worldById(id);
+const FRC = { a: '#5a6470', b: '#9aa6b4', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' };
+const LIST = [
+  { k: 'raider', gen: 'veRaider', w: 2, pal: { a: '#1c1a1c', b: '#ebe1cb', t: '#d8322a', g: '#ff8a2a', d: '#121012' } },
+  { k: 'dragoon', gen: 'veDragoon', w: 2, pal: { a: '#3a3532', b: '#d6c8aa', t: '#e8a02a', g: '#ff7a2a', d: '#1c1918' }, opt: { len: 15, wid: 10 }, gun: { kind: 'long' } },
+  { k: 'scarab', gen: 'veScarab', w: 2, pal: { a: '#2e2a28', b: '#cfc0a0', t: '#f0b020', g: '#ff6a2a', d: '#161312' }, gun: { kind: 'heavy' } },
+  { k: 'mender', gen: 'veMender', w: 2, pal: 'colony' },
+  { k: 'crawler', gen: 'veCrawler', w: 2, pal: { a: '#46403a', b: '#d9a83a', t: '#e8742a', g: '#ffd36b', d: '#1e1a16' }, anims: 4, dirs: 32 },
+  { k: 'strider', gen: 'veStrider', w: 4, pal: { a: '#2c3442', b: '#4e5a6c', t: '#e8742a', g: '#ff8a2a', d: '#161b24' }, anims: 4 },
+  { k: 'frostdrone', gen: 'veRimeDrone', w: 4, pal: { a: '#34445e', b: '#6a7e9c', t: '#e6f4ff', g: '#6ff2ff', d: '#1a2232' }, air: 36 },
+  { k: 'gull', gen: 'veGull', w: 5, pal: { a: '#8a9494', b: '#eef0ea', t: '#ff8a2a', g: '#ffb84a', d: '#2a3030' }, air: 40, water: 1 },
+  { k: 'skimmer', gen: 'veSkimmer', w: 5, pal: { a: '#5e6a6c', b: '#e4e6e0', t: '#ff7a2a', g: '#ffb04a', d: '#232a2c' }, gun: { kind: 'twin', size: 0.8 }, water: 1 },
+  { k: 'tanker', gen: 'veSkimmer', w: 5, pal: { a: '#5e6a6c', b: '#e4e6e0', t: '#ff7a2a', g: '#ffb04a', d: '#232a2c' }, opt: { tanker: 1 }, gun: { kind: 'twin', size: 0.8 }, water: 1 },
+  { k: 'floatturret', gen: 'veBuoy', w: 5, pal: { a: '#3a4446', b: '#9aa4a4', t: '#d8322a', g: '#ffb84a', d: '#1a2224' }, air: 16, water: 1, anims: 2 },
+  { k: 'forgedrone', gen: 'veForgeDrone', w: 6, pal: { a: '#4a4440', b: '#a0968c', t: '#ff7a2a', g: '#ff8a2a', d: '#1a1210' }, air: 34 },
+  { k: 'magma', gen: 'veMagma', w: 6, pal: { a: '#3a3230', b: '#9a8c80', t: '#ff7a2a', g: '#ff9a3a', d: '#120c0a' }, gun: { kind: 'mortar' } },
+  { k: 'forgetank', gen: 'veAnvil', w: 6, pal: { a: '#3a3230', b: '#9a8c80', t: '#ff7a2a', g: '#ff9a3a', d: '#120c0a' }, gun: { kind: 'heavy' } },
+  { k: 'infected', gen: 'veInfected', w: 7, pal: { a: '#6a6e76', b: '#c4c8cc', t: '#c0306a', g: '#7fffd0', d: '#22202c' }, anims: 4 },
+  { k: 'gearcrawler', gen: 'veGearCrawler', w: 9, pal: { a: '#5a4c3e', b: '#a89a80', t: '#ff6a3a', g: '#ff9a3a', d: '#1e1c18' }, gun: { kind: 'twin' }, anims: 4 },
+  { k: 'hauler', gen: 'veHauler', w: 2, pal: 'colony', opt: { cargoSide: '#7a5a3a', cargoTop: '#a8825a' } },
+  { k: 'ally_tank', gen: 'veWarden', w: 10, pal: FRC, gun: { kind: 'heavy' } },
+  { k: 'ally_gunship', gen: 'veLancer', w: 10, pal: FRC, air: 52 },
+];
+const only = Q.get('k') ? Q.get('k').split(',') : null;
+const items = LIST.filter((e) => (!only || only.includes(e.k)) && AS.Models[e.gen]);
+const cols = +(Q.get('cols') || 3), CW = 560, CH = 360;
+const cv = document.getElementById('c');
+cv.width = cols * CW; cv.height = Math.ceil(items.length / cols) * CH;
+const c = cv.getContext('2d');
+const F = AS.Forge;
+const errs = [];
+function ground(x, y, w, h, world, water) {
+  const ramp = world.terrain.ramp;
+  const wt = world.terrain.water;
+  const base = water && wt ? wt.deep : ramp[1], spk = water && wt ? [wt.shallow, wt.deep] : [ramp[0], ramp[2]];
+  c.fillStyle = base; c.fillRect(x, y, w, h);
+  let s = 1;
+  const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 900; i++) { c.fillStyle = spk[rnd() < 0.5 ? 0 : 1] + '66'; c.fillRect(x + rnd() * w, y + rnd() * h, 3, 3); }
+}
+function put(sh, ang, ai, x, y, sc, air) {
+  const di = F.frameIndex(sh, ang), lift = (air || 0) * 0.35;
+  c.globalAlpha = 0.32; c.drawImage(sh.shadows[di], x - sh.ax * sc + (4 + lift) * sc, y - sh.ay * sc + (6 + lift) * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[ai % sh.anims][di], x - sh.ax * sc, y - sh.ay * sc - lift * sc, sh.w * sc, sh.h * sc);
+}
+function putGun(gun, ang, x, y, sc, gz) {
+  const di = F.frameIndex(gun, ang);
+  c.drawImage(gun.frames[0][di], x - gun.ax * sc, y - gun.ay * sc - gz * sc, gun.w * sc, gun.h * sc);
+}
+items.forEach((e, i) => {
+  const x0 = (i % cols) * CW, y0 = Math.floor(i / cols) * CH;
+  const world = W(e.w);
+  ground(x0, y0, CW, CH, world, e.water);
+  const pal = typeof e.pal === 'string' ? world[e.pal] : e.pal;
+  let sh, gun;
+  const dirs = e.dirs || 24, anims = e.anims || 1;
+  try {
+    const t0 = performance.now();
+    sh = F.sheet('ve:' + e.k, () => AS.Models[e.gen](pal, e.opt || {}), dirs, anims);
+    e.ms = Math.round(performance.now() - t0);
+    if (e.gun) gun = F.sheet('vegun:' + e.k, () => AS.Models.gun(pal, e.gun), 24, 1);
+  } catch (err) { errs.push(e.k + ': ' + err.message); c.fillStyle = '#f44'; c.fillText(e.k + ' ERR ' + err.message, x0 + 8, y0 + 20); return; }
+  const m = sh.model, gz = (e.gunZ || 7) * ((e.gun && e.gun.size) || 1);
+  const big = Math.min(5.5, 150 / m.r) * (Q.get('big') ? 1.6 : 1);
+  const ang = -0.55;
+  const bx = x0 + 150, by = y0 + 175 + m.h * big * 0.3;
+  put(sh, ang, 0, bx, by, big, e.air);
+  if (gun) putGun(gun, ang + 0.35, bx, by - (e.air || 0) * 0.35 * big, big, gz);
+  const gs = 1.8, heads = [0, Math.PI / 2, Math.PI, -Math.PI / 2];
+  heads.forEach((a, j) => { const x = x0 + 330 + j * 58, y = y0 + 95; put(sh, a, 0, x, y, gs, e.air); if (gun) putGun(gun, a, x, y - (e.air || 0) * 0.35 * gs, gs, gz); });
+  for (let a = 0; a < sh.anims; a++) put(sh, -0.3, a, x0 + 330 + a * 58, y0 + 200, gs, e.air);
+  for (let a = 0; a < Math.min(4, sh.anims); a++) put(sh, -Math.PI / 2 + 0.2, a, x0 + 320 + a * 60, y0 + 300, 2.6, e.air);
+  const f = sh.frames[0][0];
+  const mb = (dirs * anims * f.width * f.height * 4 / 1e6).toFixed(1);
+  c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(x0, y0, CW, 18);
+  c.fillStyle = '#fff'; c.fillText(e.k + ' · ' + e.gen + ' · r' + m.r + ' h' + m.h + ' · parts ' + m.parts.length + ' · ' + dirs + 'x' + anims + ' · ' + e.ms + 'ms · ' + mb + 'MB · W' + e.w, x0 + 6, y0 + 13);
+});
+window.__errs = errs; window.__done = true;
+</script></body></html>

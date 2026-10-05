@@ -14,6 +14,8 @@
 
   /* ---------------- helpers ---------------- */
   const PAL = (p, def) => Object.assign({}, def, p || {});
+  // World palette, then an explicit opt.pal (mapping override) on top of the generator defaults.
+  const pickPal = (pal, o, def) => Object.assign({}, def, pal || {}, (o && o.pal) || {});
   const rngOf = (seed, salt) => new U.RNG(((seed | 0) * 7919 + (salt || 0) * 104729 + 17) >>> 0);
   const lerp = (a, b, t) => a + (b - a) * t;
   const hexS = (c, f) => { const v = C.shade(c, f); return '#' + v.map((x) => ('0' + Math.round(Math.max(0, Math.min(255, x))).toString(16)).slice(-2)).join(''); };
@@ -75,8 +77,8 @@
    * ochre dust caps and a scree apron.
    * ================================================================== */
   M.obsBasalt = function (pal, o) {
-    const p = PAL(pal, { a: '#463a33', b: '#857262', t: '#c99a62', d: '#211a16', g: '#ffb04a' });
     o = o || {};
+    const p = pickPal(pal, o, { a: '#463a33', b: '#857262', t: '#c99a62', d: '#211a16', g: '#ffb04a' });
     const H = (o.h || 90) * 0.86, R = o.r || 16, seed = o.seed || 1, rg = rngOf(seed, 1);
     const cr = R * 0.37;                                   // column hex radius
     const step = cr * 1.74;

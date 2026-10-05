@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Boss preview</title>
+<style>body{background:#111;margin:0;color:#ddd;font:12px monospace}canvas{display:block}</style></head><body>
+<canvas id="c"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/models_bosses.js"></script>
+<script>
+// Boss preview. One row per boss on its world ground: large view (left), game
+// scale 1.8 px/unit next to the hero craft (middle, 2 headings), and the anim
+// frames at 1 px/unit (right). ?k=maw,kharad limits rows; ?big=1 enlarges.
+const Q = new URLSearchParams(location.search);
+const LIST = [
+  { k: 'maw', gen: 'boMaw', ground: '#a87444', pal: { a: '#3a3034', b: '#6a5a5a', t: '#d0a060', g: '#ff8a3a', d: '#1a1214' }, dirs: 16, anims: 4, emerge: 1 },
+  { k: 'kharad', gen: 'boKharad', ground: '#a8442a', pal: { a: '#2e2a33', b: '#5c5462', t: '#eadcbc', g: '#ffcc44', d: '#140f14' }, dirs: 16, anims: 4, z: 26,
+    seg: { gen: 'boKharadSeg', opt: {}, every: 9, speed: 4.3, scl: 140 } },
+  { k: 'queen', gen: 'boQueen', ground: '#335e26', pal: { a: '#4a3a5a', b: '#8a6aa0', t: '#e0c0ff', g: '#ffef4a', d: '#1a1020' }, dirs: 16, anims: 4, z: 54 },
+  { k: 'prism', gen: 'boPrism', ground: '#cbdae6', pal: { a: '#2a3c7c', b: '#6a8ee0', t: '#e4fbff', g: '#7ff6ff', d: '#141c3a' }, dirs: 16, anims: 4 },
+  { k: 'refinery', gen: 'boRefinery', ground: '#1e5a6a', pal: { a: '#3e3848', b: '#c8bca4', t: '#e89a3a', g: '#c07aff', d: '#1a1620' }, dirs: 1, anims: 1,
+    core: { gen: 'boRefCore', opt: {} } },
+  { k: 'foundry', gen: 'boFoundry', ground: '#3a3133', pal: { a: '#5a4632', b: '#a8865a', t: '#ffb03a', g: '#ff7a1a', d: '#1a1210' }, dirs: 16, anims: 4 },
+  { k: 'mind', gen: 'boMind', ground: '#4a3a6a', pal: { a: '#8a4a5a', b: '#e8b8b0', t: '#fff0e0', g: '#7affd0', d: '#3a1a26' }, dirs: 1, anims: 4 },
+  { k: 'tempest', gen: 'boTempest', ground: '#8a9ad0', pal: { a: '#1c2246', b: '#3e4c8c', t: '#d8ecff', g: '#7ff8ff', d: '#0c1024' }, dirs: 16, anims: 4, z: 60,
+    seg: { gen: 'boTempestSeg', opt: {}, every: 7, speed: 3.3, scl: 160 } },
+  { k: 'warden', gen: 'boWarden', ground: '#6a6458', pal: { a: '#2c2a32', b: '#5c5a68', t: '#c89a4a', g: '#ff3a24', d: '#141218' }, dirs: 16, anims: 4 },
+  { k: 'heart', gen: 'boHeart', ground: '#bfb39c', pal: { a: '#3a3346', b: '#6c6286', t: '#e6d6b0', g: '#c09aff', d: '#1e1a28' }, dirs: 1, anims: 4 },
+];
+const only = Q.get('k') ? Q.get('k').split(',') : null;
+const items = LIST.filter((e) => (!only || only.includes(e.k)) && AS.Models[e.gen]);
+const big = Q.get('big') ? 1.5 : 1;
+const RW = Math.round(1240 * big), RH = Math.round(520 * big);
+const cv = document.getElementById('c');
+cv.width = RW; cv.height = Math.max(1, items.length) * RH;
+const c = cv.getContext('2d');
+const F = AS.Forge;
+const errs = [], info = [];
+function ground(x, y, w, h, col) {
+  c.fillStyle = col; c.fillRect(x, y, w, h);
+  let s = 7;
+  const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const rgb = AS.U.C.hex(col);
+  for (let i = 0; i < 1400; i++) { const k = rnd() < 0.5 ? -0.12 : 0.1; c.fillStyle = AS.U.C.str(AS.U.C.shade(rgb, k), 0.5); c.fillRect(x + rnd() * w, y + rnd() * h, 2 + rnd() * 3, 2 + rnd() * 2); }
+}
+function put(sh, ang, ai, x, y, sc, z) {
+  const di = F.frameIndex(sh, ang), lift = z || 0;
+  c.globalAlpha = 0.3; c.drawImage(sh.shadows[di], x - sh.ax * sc + (4 + lift * 0.15) * sc, y - sh.ay * sc + 4 * sc, sh.w * sc, sh.h * sc); c.globalAlpha = 1;
+  c.drawImage(sh.frames[ai % sh.anims][di], x - sh.ax * sc, y - sh.ay * sc - lift * sc, sh.w * sc, sh.h * sc);
+}
+function drawBoss(e, sh, ang, ai, x, y, sc) {
+  const z = e.z || 0;
+  if (e.seg) {
+    const ss = e.seg.sheet;
+    const n = 8;
+    for (let j = n; j >= 1; j--) {
+      const i = j * e.seg.every, d = i * e.seg.speed, s2 = 1 - i / e.seg.scl;
+      const sz = z * Math.max(0, 1 - j / 6) + (e.k === 'tempest' ? z * 0.8 : 0);
+      const sx = x - Math.cos(ang) * d * sc + Math.sin(j * 0.9) * 6 * sc * (e.k === 'tempest' ? 1 : 0), sy = y - Math.sin(ang) * d * sc;
+      if (sz < -2) continue;
+      c.drawImage(ss.frames[0][0], sx - ss.ax * s2 * sc, sy - sz * sc - ss.ay * s2 * sc, ss.w * s2 * sc, ss.h * s2 * sc);
+    }
+  }
+  put(sh, ang, ai, x, y, sc, z);
+  if (e.core) { const cs = e.core.sheet; c.drawImage(cs.frames[0][0], x - cs.ax * sc, y - (cs.ay + 8) * sc, cs.w * sc, cs.h * sc); }
+}
+const craft = F.sheet('pv:craft', () => AS.Models.craft({}), 24, 1);
+items.forEach((e, i) => {
+  const y0 = i * RH;
+  ground(0, y0, RW, RH, e.ground);
+  let sh;
+  try {
+    const t0 = performance.now();
+    sh = F.sheet('bo:' + e.k, () => AS.Models[e.gen](e.pal, e.opt || {}), e.dirs, e.anims);
+    if (e.seg) e.seg.sheet = F.sheet('bo:' + e.k + ':seg', () => AS.Models[e.seg.gen](e.pal, e.seg.opt), 1, 1);
+    if (e.core) e.core.sheet = F.sheet('bo:' + e.k + ':core', () => AS.Models[e.core.gen](e.pal, e.core.opt), 1, 1);
+    e.ms = Math.round(performance.now() - t0);
+  } catch (err) { errs.push(e.k + ': ' + err.message + ' ' + (err.stack || '').split('\n')[1]); c.fillStyle = '#f44'; c.font = '16px monospace'; c.fillText(e.k + ' ERR ' + err.message, 10, y0 + 20); return; }
+  const m = sh.model;
+  const fw = sh.frames[0][0].width, fh = sh.frames[0][0].height;
+  const mb = (sh.dirs * sh.anims * fw * fh * 4 / 1048576).toFixed(1);
+  info.push(e.k + ' r' + m.r + ' h' + m.h + ' parts' + m.parts.length + ' ' + e.ms + 'ms ' + mb + 'MB');
+  // large view
+  const L = Math.min(3, 210 / (m.r + (e.z ? 10 : 0))) * big;
+  const ang = e.dirs === 1 ? 0 : -0.6;
+  drawBoss(e, sh, ang, 0, 250 * big, y0 + RH * 0.5 + (m.h * 0.4) * L, L);
+  // game scale 1.8 with the craft for size
+  const gs = 1.8;
+  const gx = 560 * big;
+  put(craft, -0.3, 0, gx, y0 + RH - 50 * big, gs, 0);
+  drawBoss(e, sh, ang, 0, gx + 150 * big, y0 + RH * 0.55 + m.h * 0.5, gs);
+  if (e.dirs > 1) drawBoss(e, sh, Math.PI * 0.75, 0, gx + 150 * big, y0 + RH * 0.18 + m.h * 0.5, gs * 0.6);
+  // anim frames at 1x
+  for (let a = 0; a < sh.anims; a++) put(sh, ang + 0.3, a, (930 + (a % 2) * 150) * big, y0 + (150 + Math.floor(a / 2) * 220) * big, 1 * big, 0);
+  c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, y0, 560, 18);
+  c.fillStyle = '#fff'; c.font = '13px monospace'; c.fillText(info[info.length - 1], 6, y0 + 13);
+});
+window.__errs = errs; window.__info = info; window.__done = true;
+</script></body></html>

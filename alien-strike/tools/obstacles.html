@@ -1,0 +1,89 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Obstacles preview</title>
+<style>body{background:#15130f;margin:0;color:#ddd;font:13px monospace}canvas{display:block}</style></head><body>
+<canvas id="c" width="1600" height="400"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../src/gfx/models_obstacles.js"></script>
+<script>
+/* Obstacle + LZ dropship preview. Each row = one world: its obstacle generator on the
+ * world's ground ramp, large renders (scale `big`) of several seeds, then game-scale
+ * (1.8 px/unit) renders with the engine's down-right cast shadow.
+ * ?set=ashen,crimson,dropship limits rows; ?big=3 changes the large scale; ?old=1 adds the
+ * world's original obstacle for comparison. */
+const GEN = {
+  ashen: 'obsBasalt', crimson: 'obsHoodoo', verdant: 'obsCanopyTree', frost: 'obsSerac', drowned: 'obsDrownedTower',
+  obsidian: 'obsObsidian', spore: 'obsMushroom', storm: 'obsSkyPillar', machine: 'obsGearTower', first: 'obsChoirColumn',
+};
+const q = new URLSearchParams(location.search);
+const only = q.get('set') ? q.get('set').split(',') : null;
+const BIG = +(q.get('big') || 2.2), SMALL = 1.8, OLD = q.get('old');
+const F = AS.Forge, M = AS.Models, W = AS.Data.worlds;
+const errors = [], TIMES = [];
+const SEEDS = [{ h: 100, r: 18, seed: 7 }, { h: 70, r: 14, seed: 23 }, { h: 88, r: 16, seed: 41 }];
+const SMALLS = [{ h: 110, r: 20, seed: 3 }, { h: 60, r: 12, seed: 55 }, { h: 84, r: 16, seed: 67 }, { h: 96, r: 18, seed: 80 }, { h: 74, r: 13, seed: 90 }];
+function render(gen, pal, opt, ang, anim) {
+  if (!M[gen]) { errors.push('missing ' + gen); return null; }
+  try { const t0 = performance.now(); const m = M[gen](pal, Object.assign({}, opt)); const f = F.renderModel(m, ang || 0, anim || 0); TIMES.push(performance.now() - t0); f.sil = F.silhouette(f.img, 2); f.model = m; return f; }
+  catch (err) { errors.push(gen + ': ' + err.message); console.error(err); return null; }
+}
+const rows = [];
+for (const w of W) {
+  if (only && !only.includes(w.key)) continue;
+  const gen = GEN[w.key], ob = w.obstacle;
+  const base = { glowVein: !!ob.glowVein };
+  const anim = gen === 'obsGearTower' ? [0, 0.25, 0.5, 0.75] : [0];
+  const bigs = SEEDS.map((o) => render(gen, ob.pal, Object.assign({}, base, o), 0, 0));
+  const smalls = SMALLS.map((o, i) => render(gen, ob.pal, Object.assign({}, base, o), 0, anim[i % anim.length]));
+  if (OLD) smalls.push(render(ob.kind, ob.pal, Object.assign({}, base, SMALLS[0]), 0, 0));
+  const ms = TIMES.splice(0).reduce((a, b) => a + b, 0) / (bigs.length + smalls.length);
+  rows.push({ label: w.id + ' ' + w.key + ' · ' + gen + ' · ' + ms.toFixed(1) + ' ms/model · parts ' + (bigs[0] ? bigs[0].model.parts.length : '?'), ground: w.terrain.ramp, shadow: w.light.shadow || 0.3, bigs, smalls });
+}
+if (!only || only.includes('dropship')) {
+  const pal = W[0].colony;
+  const ds = [render('dropship', null, {}, -0.5), render('dropship', null, {}, 0.6)];
+  const craft = F.renderModel(M.craft({}), -0.5, 0); craft.sil = F.silhouette(craft.img, 2);
+  const smalls = [render('dropship', null, {}, 0), render('dropship', null, {}, Math.PI * 0.75), craft];
+  rows.push({ label: 'LZ dropship (+ hero craft for scale)', ground: W[0].terrain.ramp, shadow: 0.32, bigs: ds.concat([craft]), smalls, unit: true });
+}
+// layout
+const cv = document.getElementById('c'), c = cv.getContext('2d');
+let H = 30;
+for (const r of rows) {
+  const bh = Math.max(...r.bigs.filter(Boolean).map((f) => f.h)) * BIG;
+  const sh = Math.max(...r.smalls.filter(Boolean).map((f) => f.h)) * SMALL;
+  r.y = H; r.bh = bh; r.sh = sh; H += Math.max(bh, sh) + 34;
+}
+cv.height = H;
+for (const r of rows) {
+  const ramp = r.ground;
+  const g = c.createLinearGradient(0, r.y, 1600, r.y + Math.max(r.bh, r.sh) + 34);
+  g.addColorStop(0, ramp[Math.min(1, ramp.length - 1)]); g.addColorStop(1, ramp[Math.min(2, ramp.length - 1)]);
+  c.fillStyle = g; c.fillRect(0, r.y, 1600, Math.max(r.bh, r.sh) + 34);
+  for (let i = 0; i < 900; i++) { c.fillStyle = i % 2 ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.07)'; c.fillRect(Math.random() * 1600, r.y + Math.random() * (Math.max(r.bh, r.sh) + 34), 2, 2); }
+  c.fillStyle = '#fff'; c.font = '13px monospace'; c.fillText(r.label, 8, r.y + 14);
+  let x = 20;
+  const base = r.y + 24;
+  const put = (f, sc, x, top, hRow) => {
+    if (!f) return;
+    const gx = x + f.ax * sc, gy = top + hRow - (f.h - f.ay) * sc;     // ground anchor
+    if (!r.unit) {
+      c.save(); c.globalAlpha = 0.8 * Math.max(0.25, r.shadow); c.translate(gx, gy); c.scale(sc, sc);
+      c.transform(1, 0, -0.5, -0.32, 0, 0); c.drawImage(f.sil, -f.ax, -f.ay, f.w, f.h); c.restore();
+    } else {
+      c.save(); c.globalAlpha = 0.35; c.drawImage(f.sil, gx - f.ax * sc + 5 * sc, gy - f.ay * sc + 9 * sc, f.w * sc, f.h * sc); c.restore();
+    }
+    c.drawImage(f.img, gx - f.ax * sc, gy - f.ay * sc, f.w * sc, f.h * sc);
+  };
+  for (const f of r.bigs) { if (!f) continue; put(f, BIG, x, base, r.bh); x += f.w * BIG + 8; }
+  x += 20;
+  for (const f of r.smalls) { if (!f) continue; put(f, SMALL, x, base, r.sh); x += f.w * SMALL + 6; }
+}
+if (errors.length) { c.fillStyle = '#f44'; c.font = '16px monospace'; errors.forEach((e, i) => c.fillText(e, 10, 20 + i * 18)); }
+window.ERRORS = errors;
+window.READY = true;
+</script></body></html>
