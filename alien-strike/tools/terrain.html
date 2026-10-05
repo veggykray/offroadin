@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{background:#000;margin:0}canvas{image-rendering:pixelated}</style></head><body>
+<canvas id="c" width="1024" height="1280"></canvas>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script>
+<script src="../src/gfx/models2.js"></script>
+<script src="../src/gfx/models3.js"></script>
+<script src="../src/gfx/models4.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/terrain.js"></script>
+<script>
+const c=document.getElementById('c').getContext('2d');
+const t0=performance.now(); let n=0;
+const only = +(new URLSearchParams(location.search).get('w')||0);
+AS.Data.worlds.forEach((w,i)=>{
+  if(only && w.id!==only) return;
+  const T=new AS.Terrain(w,{w:6000,h:6000,seed:1,zones:[]});
+  const ox=(i%2)*512, oy=Math.floor(i/2)*256;
+  const bx = 8+i, by= 6;
+  for(let a=0;a<2;a++){ c.drawImage(T.getChunk(bx+a,by),ox+a*256,oy); n++; }
+  c.fillStyle='#fff';c.font='12px monospace';c.fillText(w.name,ox+6,oy+14);
+});
+console.log('chunks',n,'ms/chunk',((performance.now()-t0)/n).toFixed(1));
+const t1=performance.now();let n2=0;
+AS.Data.worlds.forEach((w,i)=>{ const T=new AS.Terrain(w,{w:6000,h:6000,seed:2,zones:[]}); T.decorSheets=null; for(let a=0;a<3;a++){T.getChunk(3+a,3);n2++;} });
+console.log('warm ms/chunk',((performance.now()-t1)/n2).toFixed(1));
+AS.Data.worlds.forEach((w,i)=>{ const T=new AS.Terrain(w,{w:6000,h:6000,seed:3,zones:[]}); const t=performance.now(); for(let a=0;a<3;a++){T.getChunk(13+a,13);} console.log(w.key, ((performance.now()-t)/3).toFixed(1)); });
+document.title='done';
+</script></body></html>

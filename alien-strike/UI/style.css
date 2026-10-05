@@ -1,0 +1,146 @@
+/* ALIEN STRIKE — interface styling (retro-futuristic military, cyan/amber on deep slate). */
+@font-face { font-family: 'Chakra Petch'; src: url('../assets/fonts/ChakraPetch-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Chakra Petch'; src: url('../assets/fonts/ChakraPetch-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Chakra Petch'; src: url('../assets/fonts/ChakraPetch-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Share Tech Mono'; src: url('../assets/fonts/ShareTechMono-Regular.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Orbitron'; src: url('../assets/fonts/Orbitron-Variable.ttf') format('truetype'); font-weight: 400 900; font-display: swap; }
+
+:root {
+  --bg: #05090d; --panel: rgba(8, 16, 22, 0.86); --panel2: rgba(14, 26, 34, 0.9);
+  --line: rgba(127, 232, 255, 0.45); --line2: rgba(127, 232, 255, 0.18);
+  --cyan: #7fe8ff; --amber: #ffc35a; --red: #ff5a3a; --green: #7dff9a; --violet: #c58aff;
+  --text: #dcecf2; --dim: rgba(200, 225, 235, 0.55);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; color: var(--text); font-family: 'Chakra Petch', 'Segoe UI', sans-serif; }
+canvas#game { position: fixed; inset: 0; display: block; image-rendering: auto; cursor: crosshair; }
+#boot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font: 600 18px 'Share Tech Mono', monospace; letter-spacing: 4px; color: var(--cyan); background: var(--bg); }
+#ui { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+#ui .screen { position: absolute; inset: 0; display: none; pointer-events: auto; overflow: auto; }
+#ui .screen.show { display: flex; }
+#ui .screen.scan::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0 1px, transparent 1px 3px); }
+
+/* ---------- generic ---------- */
+.panel { background: var(--panel); border: 1px solid var(--line); clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); padding: 22px 26px; position: relative; }
+.panel h2 { margin: 0 0 12px; font: 700 22px 'Chakra Petch'; letter-spacing: 3px; color: var(--cyan); }
+.panel h3 { margin: 18px 0 8px; font: 700 14px 'Chakra Petch'; letter-spacing: 2px; color: var(--amber); }
+.dim { color: var(--dim); }
+.mono { font-family: 'Share Tech Mono', monospace; }
+.btn { pointer-events: auto; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 220px; padding: 11px 22px; margin: 5px 0; background: linear-gradient(90deg, rgba(127,232,255,0.08), rgba(127,232,255,0.02)); color: var(--text); border: 1px solid var(--line2); border-left: 3px solid var(--cyan); font: 600 15px 'Chakra Petch'; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background .12s, color .12s, transform .12s, border-color .12s; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); }
+.btn:hover:not(:disabled), .btn:focus-visible { background: linear-gradient(90deg, rgba(127,232,255,0.28), rgba(127,232,255,0.06)); color: #fff; border-color: var(--line); transform: translateX(4px); outline: none; }
+.btn.primary { border-left-color: var(--amber); background: linear-gradient(90deg, rgba(255,195,90,0.22), rgba(255,195,90,0.03)); }
+.btn.primary:hover:not(:disabled) { background: linear-gradient(90deg, rgba(255,195,90,0.42), rgba(255,195,90,0.08)); }
+.btn.danger { border-left-color: var(--red); }
+.btn.small { min-width: 0; padding: 6px 12px; font-size: 12px; letter-spacing: 2px; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn .sub { font: 400 11px 'Share Tech Mono'; letter-spacing: 1px; color: var(--dim); text-transform: none; }
+.row { display: flex; gap: 18px; }
+.col { display: flex; flex-direction: column; }
+.grow { flex: 1; }
+.tag { display: inline-block; padding: 2px 8px; border: 1px solid var(--line2); font: 400 11px 'Share Tech Mono'; letter-spacing: 1px; color: var(--dim); }
+.tag.amber { color: var(--amber); border-color: rgba(255,195,90,0.4); }
+.tag.green { color: var(--green); border-color: rgba(125,255,154,0.4); }
+.tag.red { color: var(--red); border-color: rgba(255,90,58,0.4); }
+.tag.violet { color: var(--violet); border-color: rgba(197,138,255,0.4); }
+
+/* ---------- main menu ---------- */
+#menu { align-items: center; justify-content: flex-start; padding-left: 7vw; background: radial-gradient(ellipse at 20% 50%, rgba(5,9,13,0.75), rgba(5,9,13,0.1) 60%); }
+#menu .title { font: 900 clamp(48px, 7vw, 108px) 'Orbitron', sans-serif; letter-spacing: 0.08em; line-height: 0.95; margin: 0; background: linear-gradient(180deg, #ffffff 0%, #bfefff 40%, #5fb8d8 60%, #ffc35a 61%, #ff8a3a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 18px rgba(95,200,255,0.35)); }
+#menu .subtitle { font: 600 clamp(12px, 1.2vw, 16px) 'Share Tech Mono'; letter-spacing: 0.6em; color: var(--amber); margin: 12px 0 40px 4px; }
+#menu .buttons { display: flex; flex-direction: column; width: 340px; }
+#menu .foot { position: absolute; left: 7vw; bottom: 26px; font: 400 12px 'Share Tech Mono'; color: var(--dim); letter-spacing: 1px; }
+#menu .stat { position: absolute; right: 4vw; bottom: 26px; text-align: right; font: 400 12px 'Share Tech Mono'; color: var(--dim); }
+
+/* ---------- mission select ---------- */
+#select { flex-direction: column; padding: 32px 4vw; gap: 18px; background: rgba(4,8,12,0.55); }
+#select .worlds { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: 12px; }
+.world-card { position: relative; padding: 12px; min-height: 150px; background: var(--panel2); border: 1px solid var(--line2); cursor: pointer; transition: border-color .12s, transform .12s; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.world-card:hover { border-color: var(--line); transform: translateY(-2px); }
+.world-card.sel { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); }
+.world-card.locked { opacity: 0.35; cursor: not-allowed; filter: grayscale(0.8); }
+.world-card canvas { width: 64px; height: 64px; image-rendering: pixelated; float: right; }
+.world-card .num { font: 700 11px 'Share Tech Mono'; color: var(--amber); letter-spacing: 2px; }
+.world-card .nm { font: 700 15px 'Chakra Petch'; letter-spacing: 1px; margin: 4px 0; }
+.world-card .reg { font: 400 11px 'Share Tech Mono'; color: var(--dim); }
+.world-card .prog { position: absolute; left: 12px; bottom: 10px; font: 400 11px 'Share Tech Mono'; color: var(--green); }
+#select .detail { display: flex; gap: 18px; min-height: 260px; }
+.mission-row { display: flex; align-items: center; gap: 14px; padding: 12px 14px; margin-bottom: 8px; background: rgba(127,232,255,0.04); border: 1px solid var(--line2); cursor: pointer; }
+.mission-row:hover { background: rgba(127,232,255,0.1); border-color: var(--line); }
+.mission-row.locked { opacity: 0.35; cursor: not-allowed; }
+.mission-row .idx { font: 700 22px 'Orbitron'; color: var(--amber); width: 34px; }
+.mission-row .mn { font: 700 16px 'Chakra Petch'; letter-spacing: 1px; }
+.mission-row .md { font: 400 12px 'Share Tech Mono'; color: var(--dim); }
+
+/* ---------- briefing ---------- */
+#briefing { align-items: stretch; padding: 3vh 4vw; gap: 20px; background: rgba(4,8,12,0.6); }
+#briefing .left { flex: 1.25; display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+#briefing .right { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+#briefing .planet { font: 700 13px 'Share Tech Mono'; letter-spacing: 4px; color: var(--amber); }
+#briefing .mname { font: 900 clamp(26px, 3vw, 42px) 'Orbitron'; letter-spacing: 2px; margin: 4px 0 2px; color: #fff; }
+#briefing p { line-height: 1.55; margin: 0 0 8px; font-size: 15px; }
+#briefing ul { margin: 4px 0 8px; padding-left: 20px; line-height: 1.6; }
+#briefing .danger span { display: inline-block; width: 18px; height: 8px; margin-right: 4px; background: rgba(255,90,58,0.2); clip-path: polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%); }
+#briefing .danger span.on { background: var(--red); }
+#briefing canvas.mapprev { width: 100%; aspect-ratio: 1; image-rendering: pixelated; border: 1px solid var(--line2); background: #000; }
+.typing::after { content: '▌'; animation: blink 1s steps(1) infinite; color: var(--cyan); }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- hangar ---------- */
+#hangar { padding: 2.5vh 2.5vw; gap: 18px; background: rgba(3,6,9,0.7); }
+#hangar .left { flex: 1.05; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+#hangar .right { flex: 1.2; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+#hangar canvas.bay { width: 100%; height: auto; aspect-ratio: 16 / 10; image-rendering: pixelated; border: 1px solid var(--line2); background: #06090c; }
+#hangar .res { display: flex; gap: 18px; font: 700 18px 'Share Tech Mono'; }
+#hangar .res .s { color: #e8c24a; } #hangar .res .t { color: var(--violet); }
+#hangar .tabs { display: flex; gap: 6px; }
+#hangar .tabs .btn { min-width: 0; flex: 1; }
+#hangar .tabs .btn.on { border-left-color: var(--amber); color: #fff; background: linear-gradient(90deg, rgba(255,195,90,0.3), rgba(255,195,90,0.05)); }
+#hangar .list { overflow: auto; flex: 1; padding-right: 6px; }
+.upg { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 10px 12px; margin-bottom: 7px; background: rgba(127,232,255,0.035); border: 1px solid var(--line2); }
+.upg .nm { font: 700 14px 'Chakra Petch'; letter-spacing: 1px; }
+.upg .ds { grid-column: 1 / 2; font: 400 12px 'Chakra Petch'; color: var(--dim); }
+.upg .pips span { display: inline-block; width: 14px; height: 6px; margin-right: 3px; background: rgba(127,232,255,0.15); }
+.upg .pips span.on { background: var(--cyan); }
+.upg .buy { grid-row: 1 / 4; grid-column: 2; align-self: center; text-align: right; }
+.upg .cost { font: 400 12px 'Share Tech Mono'; color: #e8c24a; margin-bottom: 4px; }
+.upg .cost .t { color: var(--violet); }
+.cat-title { font: 700 12px 'Share Tech Mono'; letter-spacing: 3px; color: var(--amber); margin: 14px 0 8px; }
+.statgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 14px; font: 400 12px 'Share Tech Mono'; }
+.statgrid b { display: block; font: 700 16px 'Share Tech Mono'; color: #fff; }
+
+/* ---------- options / controls ---------- */
+#options, #controls { align-items: center; justify-content: center; background: rgba(3,6,9,0.78); }
+.opt-row { display: grid; grid-template-columns: 220px 1fr 70px; align-items: center; gap: 14px; margin: 10px 0; font: 600 14px 'Chakra Petch'; letter-spacing: 1px; }
+.opt-row input[type=range] { width: 100%; accent-color: var(--cyan); }
+.opt-row .val { font: 400 13px 'Share Tech Mono'; color: var(--dim); text-align: right; }
+.seg { display: inline-flex; border: 1px solid var(--line2); }
+.seg button { background: transparent; border: 0; color: var(--dim); padding: 6px 14px; font: 600 12px 'Chakra Petch'; letter-spacing: 2px; cursor: pointer; }
+.seg button.on { background: rgba(127,232,255,0.2); color: #fff; }
+.bind-row { display: grid; grid-template-columns: 1fr 130px 130px; gap: 10px; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(127,232,255,0.07); font: 500 14px 'Chakra Petch'; }
+.bind-row button { background: rgba(127,232,255,0.06); border: 1px solid var(--line2); color: var(--text); font: 400 13px 'Share Tech Mono'; padding: 5px 8px; cursor: pointer; }
+.bind-row button:hover { border-color: var(--line); }
+.bind-row button.wait { color: var(--amber); border-color: var(--amber); }
+
+/* ---------- pause / results / loading ---------- */
+#pause, #results, #loading, #modal { align-items: center; justify-content: center; background: rgba(3,6,9,0.72); }
+#results .big { font: 900 clamp(30px, 4vw, 54px) 'Orbitron'; letter-spacing: 3px; margin: 0 0 4px; }
+#results .big.ok { color: var(--green); text-shadow: 0 0 20px rgba(125,255,154,0.4); }
+#results .big.fail { color: var(--red); text-shadow: 0 0 20px rgba(255,90,58,0.4); }
+.res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 32px; font: 400 14px 'Share Tech Mono'; margin: 14px 0; }
+.res-grid div { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(127,232,255,0.08); padding: 3px 0; }
+.res-grid b { color: #fff; font-weight: 400; }
+.obj-list div { font: 500 14px 'Chakra Petch'; padding: 2px 0; }
+.obj-list .done { color: var(--green); } .obj-list .failed { color: var(--red); } .obj-list .open { color: var(--dim); }
+#loading .ld { text-align: center; }
+#loading .ld .t { font: 900 34px 'Orbitron'; letter-spacing: 4px; }
+#loading .ld .bar { width: 360px; height: 4px; margin: 18px auto; background: rgba(127,232,255,0.15); overflow: hidden; }
+#loading .ld .bar i { display: block; height: 100%; width: 40%; background: var(--cyan); animation: load 1s linear infinite; }
+@keyframes load { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.tip { font: 400 13px 'Share Tech Mono'; color: var(--dim); max-width: 560px; margin: 0 auto; line-height: 1.5; }
+.weapon-card { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 10px 12px; margin-bottom: 7px; border: 1px solid var(--line2); background: rgba(127,232,255,0.03); }
+.weapon-card.eq { border-color: var(--amber); background: rgba(255,195,90,0.06); }
+.weapon-card.locked { opacity: 0.4; }
+.weapon-card .nm { font: 700 14px 'Chakra Petch'; letter-spacing: 1px; }
+.weapon-card .ds { font: 400 12px 'Chakra Petch'; color: var(--dim); grid-column: 1; }
+.weapon-card .act { grid-row: 1 / 3; grid-column: 2; align-self: center; }
+@media (max-width: 1100px) { #select .worlds { grid-template-columns: repeat(3, 1fr); } #hangar { flex-direction: column; overflow: auto; } }

@@ -1,0 +1,17 @@
+<!doctype html><html><body>
+<script src="../src/core/util.js"></script>
+<script src="../src/gfx/forge.js"></script>
+<script src="../src/gfx/models.js"></script><script src="../src/gfx/models2.js"></script><script src="../src/gfx/models3.js"></script><script src="../src/gfx/models4.js"></script>
+<script src="../data/worlds.js"></script>
+<script src="../src/gfx/terrain.js"></script>
+<script>
+function run(){
+const wi = +(new URLSearchParams(location.search).get('w')||1)-1;
+const w=AS.Data.worlds[wi]; const T=new AS.Terrain(w,{w:9000,h:9000,seed:1,zones:[]});
+const it0=T.genChunk(0,0); let r; do{r=it0.next();}while(!r.done);
+const t=performance.now(); let n=0;
+for(let k=0;k<30;k++){ const it=T.genChunk(1+(k%6),1+(k/6|0)); do{r=it.next();}while(!r.done); n++; }
+console.log(w.key,'avg chunk ms', ((performance.now()-t)/n).toFixed(2));
+}
+setTimeout(run,100);
+</script></body></html>
