@@ -14,6 +14,12 @@
 (function (AS) {
   const U = AS.U, TAU = U.TAU;
   const W = (k, o) => Object.assign({ k }, o);
+  /* extra boss sheets (body segments, exposed cores): redesigned when the art map provides them */
+  const segSheet = (slot, pal, fallback) => {
+    const alt = AS.ArtMap && AS.ArtMap.gen(slot);
+    return alt ? AS.Forge.sheet(slot + '2', () => AS.Models[alt.gen](alt.pal || pal, alt.opt || {}), alt.dirs || 1, alt.anims || 1)
+      : AS.Forge.sheet(slot, fallback, 1, 1);
+  };
 
   const DEFS = {
     maw: { name: 'THE BASALT MAW', cls: 'creature', ai: 'none', hp: 1500, r: 30, hc: 12, speed: 120, turn: 2, organic: true, boss: true, sight: 2000,
@@ -208,7 +214,7 @@
     kharad: {
       init(b) {
         b.st = 'under'; b.stT = 3; b.targetable = false; b.burrowed = true; b.trail = []; b.segs = 9;
-        b.segSheet = AS.Forge.sheet('kharad_seg', () => AS.Models.puff({ a: '#6a3a24', b: '#a8603a', g: '#e8c890' }, { rad: 11 }), 1, 1);
+        b.segSheet = segSheet('kharad_seg', b.def.model.pal, () => AS.Models.puff({ a: '#6a3a24', b: '#a8603a', g: '#e8c890' }, { rad: 11 }));
       },
       dmgMul(b) { return b.vulnT > 0 ? 1.5 : b.st === 'breach' ? 0.45 : 0.2; },
       update(b, dt, g) {
@@ -325,7 +331,7 @@
           const s = g.spawnStructure('turret_heavy', b.x + of[0], b.y + of[1], { id: (o.id || 'boss') + '_pump' + i, noFlat: true });
           s.ox = of[0]; s.oy = of[1]; s.label = 'Pump Turret'; b.parts.push(s); b.shieldedBy.push(s.id);
         });
-        b.coreSheet = AS.Forge.sheet('refcore', () => AS.Models.refinery({ a: '#3a4a4a', b: '#7a9090', t: '#e8a02a', g: '#ffd36b', d: '#141c1c' }), 1, 1);
+        b.coreSheet = segSheet('refcore', b.def.model.pal, () => AS.Models.refinery({ a: '#3a4a4a', b: '#7a9090', t: '#e8a02a', g: '#ffd36b', d: '#141c1c' }));
       },
       update(b, dt, g) {
         if (b.path && b.path.length) { const p = b.path[b.pi % b.path.length]; if (moveTo(b, p[0], p[1], b.def.speed, dt) < 40) b.pi++; }
@@ -398,7 +404,7 @@
 
     /* ---------------- W8: THE TEMPEST LEVIATHAN ---------------- */
     tempest: {
-      init(b) { b.trail = []; b.segSheet = AS.Forge.sheet('tempest_seg', () => AS.Models.puff({ a: '#2a3a6a', b: '#5a7ac0', g: '#9ff' }, { rad: 9 }), 1, 1); b.charged = []; },
+      init(b) { b.trail = []; b.segSheet = segSheet('tempest_seg', b.def.model.pal, () => AS.Models.puff({ a: '#2a3a6a', b: '#5a7ac0', g: '#9ff' }, { rad: 9 })); b.charged = []; },
       dmgMul(b) { return b.vulnT > 0 ? 1.6 : 0.3; },
       update(b, dt, g) {
         const t = b.target;

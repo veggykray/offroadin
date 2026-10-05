@@ -25,21 +25,25 @@
     gun(def, world, palKey) {
       if (!def.gun) return null;
       const pal = this.pal(palKey || (def.model && def.model.pal), world);
-      const key = 'gun:' + JSON.stringify(def.gun) + JSON.stringify(pal);
-      return AS.Forge.sheet(key, () => AS.Models.gun(pal, def.gun), 24, 1);
+      const alt = AS.ArtMap && AS.ArtMap.gen('gun'), gen = alt ? alt.gen : 'gun';
+      const key = 'gun:' + gen + JSON.stringify(def.gun) + JSON.stringify(pal);
+      return AS.Forge.sheet(key, () => AS.Models[gen](pal, def.gun), 24, 1);
     },
     prop(kind, world, seed) {
       const pal = world.propPal;
-      return AS.Forge.sheet('prop:' + world.key + ':' + kind + ':' + (seed % 3), () => AS.Models.prop(kind, pal, { seed: seed % 3 + 1 }), kind === 'fence' || kind === 'pipe' || kind === 'container' || kind === 'wreck' ? 8 : 1, 1);
+      const alt = AS.ArtMap && AS.ArtMap.gen('prop'), gen = alt ? alt.gen : 'prop';
+      return AS.Forge.sheet('prop:' + gen + ':' + world.key + ':' + kind + ':' + (seed % 3), () => AS.Models[gen](kind, pal, { seed: seed % 3 + 1 }), kind === 'fence' || kind === 'pipe' || kind === 'container' || kind === 'wreck' ? 8 : 1, 1);
     },
     obstacle(kind, world, o) {
       const ob = world.obstacle;
       const pal = ob.pal;
-      const opt = Object.assign({ glowVein: ob.glowVein }, o || {});
-      return AS.Forge.sheet('obs:' + world.key + ':' + kind + ':' + JSON.stringify(opt), () => AS.Models[kind](pal, opt), 1, kind === 'gearTower' ? 4 : 1);
+      let gen = kind, opt = Object.assign({ glowVein: ob.glowVein }, o || {}), anims = kind === 'gearTower' ? 4 : 1;
+      // redesigned obstacle for this world (see src/gfx/art_map.js)
+      if (ob.gen && kind === ob.kind0) { gen = ob.gen; opt = Object.assign({}, ob.genOpt, opt); anims = ob.genOpt && ob.genOpt.anims || 1; }
+      return AS.Forge.sheet('obs:' + world.key + ':' + gen + ':' + JSON.stringify(opt), () => AS.Models[gen](pal, opt), 1, anims);
     },
-    pickup(kind) { return AS.Forge.sheet('pickup:' + kind, () => AS.Models.pickup(kind), 1, 1); },
-    cargo(kind) { return AS.Forge.sheet('cargo:' + kind, () => AS.Models.cargo(kind), 1, 1); },
+    pickup(kind) { const a = AS.ArtMap && AS.ArtMap.gen('pickup'), gen = a ? a.gen : 'pickup'; return AS.Forge.sheet('pickup:' + gen + ':' + kind, () => AS.Models[gen](kind), 1, 1); },
+    cargo(kind) { const a = AS.ArtMap && AS.ArtMap.gen('cargo'), gen = a ? a.gen : 'cargo'; return AS.Forge.sheet('cargo:' + gen + ':' + kind, () => AS.Models[gen](kind), 1, 1); },
     rubble(world, r, seed) {
       const rr = Math.round(r / 6) * 6;
       return AS.Forge.sheet('rubble:' + world.key + ':' + rr + ':' + (seed % 3), () => AS.Models.rubble(world.choir, { r: rr, seed: seed % 3 + 1 }), 1, 1);

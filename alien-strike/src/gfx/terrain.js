@@ -476,9 +476,11 @@
             // dense canopy of individual tree crowns seen from above: each crown is
             // a rounded dome lit from the top-left, with dark gaps between crowns
             const t = U.clamp((ex - 0.02) * 5, 0, 1);
-            const CELL = 24, gx = Math.floor(x / CELL), gy = Math.floor(y / CELL), sd = this.seed;
+            const CELL = 24, fx = x / CELL, fy = y / CELL, gx = Math.floor(fx), gy = Math.floor(fy), sd = this.seed;
+            // only the 2x2 cells toward this texel's quadrant can own the nearest crown
+            const ox = fx - gx < 0.5 ? -1 : 0, oy = fy - gy < 0.5 ? -1 : 0;
             let best = 1e9, bx = 0, by = 0, br = 1, bh = 0;
-            for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
+            for (let j = oy; j <= oy + 1; j++) for (let i = ox; i <= ox + 1; i++) {
               const cx = gx + i, cy = gy + j, hh = U.hash2(cx, cy, sd + 71);
               const px = (cx + 0.15 + U.hash2(cx, cy, sd + 72) * 0.7) * CELL, py = (cy + 0.15 + U.hash2(cx, cy, sd + 73) * 0.7) * CELL;
               const r = CELL * (0.55 + hh * 0.4), dd = Math.hypot(x - px, y - py) / r;
@@ -583,20 +585,28 @@
           break;
         }
         case 'sanctum': {
-          const g = 32;
-          const lx = ((x % g) + g) % g, ly = ((y % g) + g) % g;
-          const v = (U.hash2(Math.floor(x / g), Math.floor(y / g), this.seed) - 0.5) * 0.1;
+          // per-tile and per-channel-cell hashes are memoised: texels arrive in rows,
+          // so neighbours almost always share them
+          const g = 32, cg = T.channel.grid, mc = this._sanc || (this._sanc = { tx: NaN, ty: NaN, v: 0, cx: NaN, cy: NaN, ring: false, colB: false, lx: false, ly: false, lxk: 0, lyk: 0 });
+          const tx = Math.floor(x / g), ty = Math.floor(y / g);
+          if (tx !== mc.tx || ty !== mc.ty) { mc.tx = tx; mc.ty = ty; mc.v = (U.hash2(tx, ty, this.seed) - 0.5) * 0.1; }
+          const lx = x - tx * g, ly = y - ty * g, v = mc.v;
           out[0] *= 1 + v; out[1] *= 1 + v; out[2] *= 1 + v;
-          if (lx === 0 || ly === 0) { out[0] *= 0.82; out[1] *= 0.82; out[2] *= 0.8; }
-          const cg = T.channel.grid;
-          const ax = Math.abs(((x % cg) + cg) % cg - cg / 2), ay = Math.abs(((y % cg) + cg) % cg - cg / 2);
+          if (lx < 0.8 || ly < 0.8) { out[0] *= 0.9; out[1] *= 0.9; out[2] *= 0.88; }
           const cxi = Math.floor(x / cg), cyi = Math.floor(y / cg);
-          const ring = U.hash2(cxi, cyi, this.seed + 12) > 0.82 ? Math.abs(Math.hypot(ax, ay) - cg * 0.3) : 9;
-          const onLine = (ax < 1.2 && U.hash2(cxi, 7, this.seed) > 0.72 && U.hash2(cxi, cyi, 5) > 0.3) || (ay < 1.2 && U.hash2(7, cyi, this.seed) > 0.72 && U.hash2(cxi, cyi, 6) > 0.3) || ring < 1;
-          if (onLine && l >= 1) { const cc = U.hash2(Math.floor(x / cg), Math.floor(y / cg), 11) > 0.6 ? col.channel.b : col.channel.a; out[0] = cc[0]; out[1] = cc[1]; out[2] = cc[2]; }
+          if (cxi !== mc.cx || cyi !== mc.cy) {
+            mc.cx = cxi; mc.cy = cyi;
+            mc.ring = U.hash2(cxi, cyi, this.seed + 12) > 0.82;
+            mc.colB = U.hash2(cxi, cyi, 11) > 0.6;
+            mc.lx = U.hash2(cxi, 7, this.seed) > 0.72 && U.hash2(cxi, cyi, 5) > 0.3;
+            mc.ly = U.hash2(7, cyi, this.seed) > 0.72 && U.hash2(cxi, cyi, 6) > 0.3;
+          }
+          const ax = Math.abs(x - cxi * cg - cg / 2), ay = Math.abs(y - cyi * cg - cg / 2);
+          const onLine = (ax < 1.2 && mc.lx) || (ay < 1.2 && mc.ly) || (mc.ring && Math.abs(Math.sqrt(ax * ax + ay * ay) - cg * 0.3) < 1);
+          if (onLine && l >= 1) { const cc = mc.colB ? col.channel.b : col.channel.a; out[0] = cc[0]; out[1] = cc[1]; out[2] = cc[2]; }
           if (ex > 0.18 && !onLine) {
             const t = U.clamp((ex - 0.18) * 4, 0, 0.9);
-            const vein = U.ridged(x / 30, y / 30, 2, this.seed + 7) > 0.88;
+            const vein = U.ridged(x / 30, y / 30, 1, this.seed + 7) > 0.88;
             out[0] = U.lerp(out[0], vein ? 150 : 96, t); out[1] = U.lerp(out[1], vein ? 70 : 42, t); out[2] = U.lerp(out[2], vein ? 100 : 58, t);
           }
           break;

@@ -37,6 +37,7 @@
     /* ================= loading ================= */
     load() {
       const m = this.mission;
+      if (AS.ArtMap) AS.ArtMap.apply();
       AS.Proj.init(); AS.Proj.clear();
       AS.Particles.clear();
       AS.Renderer.flares.length = 0;
@@ -51,7 +52,10 @@
       this.extraction = { x: m.extraction.x, y: m.extraction.y, r: m.extraction.r || 70, active: false, t: 0, hotWarned: false };
       // landing zone at extraction: always accepts survivors and cargo
       this.lz = this.spawnStructure('pad', m.extraction.x, m.extraction.y, { id: 'lz', pad: { dropoff: true, repair: !!m.extraction.repair, refuel: !!m.extraction.refuel, rearm: !!m.extraction.rearm, lz: true } });
-      this.dropship = AS.Forge.sheet('dropship', () => AS.Models.gunship({ a: '#5a6470', b: '#a0acba', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' }, { size: 1.7 }), 1, 1);
+      const dsPal = { a: '#5a6470', b: '#a0acba', t: '#e8a02a', g: '#7fe8ff', d: '#262c34' }, dsAlt = AS.ArtMap && AS.ArtMap.gen('dropship');
+      this.dropship = dsAlt
+        ? AS.Forge.sheet('dropship2', () => AS.Models[dsAlt.gen](dsAlt.pal || dsPal, dsAlt.opt || {}), 1, 1, { angle: -0.45 })
+        : AS.Forge.sheet('dropship', () => AS.Models.gunship(dsPal, { size: 1.7 }), 1, 1);
       this.reinforce = Object.assign({ enabled: !!m.reinforcements, comms: [], squads: [], from: [], delay: 8, cooldown: 45, max: 4, sent: 0, cd: 0, announced: false }, m.reinforcements || {});
       this.script = new AS.Script(this, m);
       this.spawnSpecs(m.entities || []);
