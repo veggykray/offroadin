@@ -86,7 +86,7 @@
       { t: 'struct', k: 'power', id: 'lr1', x: 2000, y: 3900, hp: 320 }, { t: 'struct', k: 'turret_heavy', x: 1900, y: 3700 }, { t: 'struct', k: 'turret_heavy', x: 2200, y: 4000 },
       { t: 'struct', k: 'power', id: 'lr2', x: 3800, y: 2200, hp: 320 }, { t: 'struct', k: 'turret_heavy', x: 3700, y: 2000 }, { t: 'struct', k: 'turret_heavy', x: 4000, y: 2300 },
       { t: 'struct', k: 'power', id: 'lr3', x: 5300, y: 1700, hp: 320 }, { t: 'struct', k: 'turret_heavy', x: 5200, y: 1500 }, { t: 'struct', k: 'turret_heavy', x: 5500, y: 1800 },
-      { t: 'struct', k: 'column', x: 1700, y: 4700, noFlat: true }, { t: 'struct', k: 'obelisk', x: 2600, y: 4000 }, { t: 'struct', k: 'obelisk', x: 3400, y: 2700 }, { t: 'struct', k: 'obelisk', x: 4500, y: 2000 }, { t: 'struct', k: 'obelisk', x: 5100, y: 1300 },
+      { t: 'obstacle', k: 'column', x: 1700, y: 4700 }, { t: 'struct', k: 'obelisk', x: 2600, y: 4000 }, { t: 'struct', k: 'obelisk', x: 3400, y: 2700 }, { t: 'struct', k: 'obelisk', x: 4500, y: 2000 }, { t: 'struct', k: 'obelisk', x: 5100, y: 1300 },
       { t: 'zone', id: 'ossuary', x: 6000, y: 6000, r: 220 }, ...L.cache(6000, 6000, ['tech', 'tech', 'special'], { hidden: true }),
       ...L.fill(223, { w: 6400, h: 6400, units: [['choirlancer', 3, [1, 2]], ['seraph', 3, [2, 2]], ['behemoth', 2, [1, 1]], ['thrall', 4, [3, 5]]], obstacles: 26 }),
     ],

@@ -89,6 +89,64 @@
     const f = ICON[kind] || ICON.pulse;
     ctx.save(); ctx.fillStyle = col; ctx.strokeStyle = col; f(ctx, x, y, s); ctx.restore();
   }
+
+  /* ---------- objective categories: one colour + glyph per category, used everywhere
+   * (objective card, TAB list, world markers, destination arrow, radar, hover labels) ---------- */
+  const CAT = {
+    primary: { col: '#ffbf47', rgb: '255,191,71', name: 'PRIMARY', glyph: 'dia' },
+    secondary: { col: '#7fe8ff', rgb: '127,232,255', name: 'OPTIONAL', glyph: 'odia' },
+    hidden: { col: '#ffe27a', rgb: '255,226,122', name: 'HIDDEN', glyph: 'star' },
+    extract: { col: '#7dff9a', rgb: '125,255,154', name: 'EXTRACTION', glyph: 'lz' },
+    dropoff: { col: '#7dff9a', rgb: '125,255,154', name: 'DROP-OFF', glyph: 'lz' },
+    place: { col: '#9ff6ff', rgb: '159,246,255', name: 'CARGO', glyph: 'odia' },
+  };
+  const catOf = (k) => CAT[k] || CAT.secondary;
+  // category glyph centred at (x, y); sz ≈ half-height. Dark keyline keeps it readable on sand and snow.
+  function glyph(ctx, kind, x, y, sz, col, keyline) {
+    const kl = keyline === undefined ? Math.max(1.2, sz * 0.32) : keyline;
+    const path = () => {
+      ctx.beginPath();
+      if (kind === 'dia' || kind === 'odia') { ctx.moveTo(x, y - sz); ctx.lineTo(x + sz * 0.8, y); ctx.lineTo(x, y + sz); ctx.lineTo(x - sz * 0.8, y); ctx.closePath(); }
+      else if (kind === 'star') { for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? sz * 0.46 : sz * 1.08; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.closePath(); }
+      else ctx.arc(x, y, sz * 0.86, 0, TAU);
+    };
+    const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+    path();
+    if (kl > 0) { ctx.strokeStyle = 'rgba(4,8,12,0.78)'; ctx.lineWidth = kl * 2 + (kind === 'odia' || kind === 'lz' ? sz * 0.34 : 0); ctx.stroke(); }
+    if (kind === 'odia' || kind === 'lz') {
+      ctx.strokeStyle = col; ctx.lineWidth = sz * 0.34; ctx.stroke();
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, sz * (kind === 'lz' ? 0.3 : 0.24), 0, TAU); ctx.fill();
+    } else { ctx.fillStyle = col; ctx.fill(); }
+    ctx.shadowBlur = sb;
+  }
+  // text with a dark keyline under it: legible over bright terrain without a box
+  function keyText(ctx, txt, x, y, col, lw, maxW) {
+    const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+    ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(3,7,11,0.82)'; ctx.lineWidth = lw || 3;
+    if (maxW) ctx.strokeText(txt, x, y, maxW); else ctx.strokeText(txt, x, y);
+    ctx.fillStyle = col;
+    if (maxW) ctx.fillText(txt, x, y, maxW); else ctx.fillText(txt, x, y);
+    ctx.shadowBlur = sb;
+  }
+  function fmtDist(d) { return d < 995 ? Math.max(10, Math.round(d / 10) * 10) + ' m' : (d / 1000).toFixed(1) + ' km'; }
+  function fitText(ctx, txt, maxW) {
+    maxW += 0.5; // float slack: text measured for this exact width must not be clipped
+    if (ctx.measureText(txt).width <= maxW) return txt;
+    while (txt.length > 4 && ctx.measureText(txt + '…').width > maxW) txt = txt.slice(0, -1);
+    return txt.replace(/[\s—·,-]+$/, '') + '…';
+  }
+  // dark glass card with a thin rim and an optional category accent bar on the left
+  function glass(ctx, x, y, w, h, r, accent, glow) {
+    const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+    const gr = ctx.createLinearGradient(0, y, 0, y + h);
+    gr.addColorStop(0, 'rgba(10,18,26,0.84)'); gr.addColorStop(1, 'rgba(5,10,16,0.78)');
+    rrect(ctx, x, y, w, h, r); ctx.fillStyle = gr; ctx.fill();
+    if (glow > 0.01 && accent) { ctx.save(); ctx.shadowColor = 'rgba(' + accent.rgb + ',' + (0.85 * glow) + ')'; ctx.shadowBlur = 18 * glow + 4; ctx.strokeStyle = 'rgba(' + accent.rgb + ',' + (0.35 + 0.6 * glow) + ')'; ctx.lineWidth = 1.5 + glow * 1.5; ctx.stroke(); ctx.restore(); }
+    else { ctx.strokeStyle = 'rgba(127,232,255,0.30)'; ctx.lineWidth = 1; ctx.stroke(); }
+    ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(x + r, y + 1, w - r * 2, 1);
+    if (accent) { ctx.save(); rrect(ctx, x, y, w, h, r); ctx.clip(); ctx.fillStyle = accent.col; ctx.fillRect(x, y, Math.max(2, r * 0.45), h); ctx.restore(); }
+    ctx.shadowBlur = sb;
+  }
   function keycap(ctx, x, y, txt, s, col) {
     ctx.font = M(Math.round(10 * s));
     const w = Math.max(16 * s, ctx.measureText(txt).width + 8 * s), h = 15 * s;
@@ -118,7 +176,9 @@
     t: 0, damageFlash: 0, lastHull: null, hullGhost: 1, shieldGhost: 1,
     objExpanded: false, objSticky: false, tabHeld: 0, tabPressing: false,
     hint: null, hintT: 0, hintCd: 4, salvageShown: 0, salvageT: 0, objFlash: 0, lastObjKey: '', moveAcc: 0,
-    COL, F, M, panel, icon, keycap, rrect,
+    objSeen: {}, objPulse: {}, chipPulse: { secondary: 0, hidden: 0 }, cardHold: null, cardId: null, countPulse: 0,
+    dest: null, cardRect: null, panelRect: null, layoutS: 1,
+    COL, F, M, panel, icon, keycap, rrect, CAT, glyph, keyText, fmtDist, glass, fitText, bar,
 
     /* TAB: hold to peek, tap to pin open, tap again to close */
     tabPress() {
@@ -136,6 +196,9 @@
       this.objExpanded = false; this.objSticky = false; this.tabPressing = false;
       this.hint = null; this.hintT = 0; this.hintCd = 4; this.lastHull = null; this.hullGhost = 1; this.shieldGhost = 1;
       this.salvageShown = 0; this.salvageT = 0; this.lastObjKey = ''; this.objFlash = 0; this.damageFlash = 0;
+      this.objSeen = {}; this.objPulse = {}; this.chipPulse = { secondary: 0, hidden: 0 }; this.cardHold = null; this.cardId = null; this.countPulse = 0;
+      this.dest = null; this.cardRect = null;
+      if (AS.Inspect && AS.Inspect.reset) AS.Inspect.reset();
     },
     used(id) {
       const P = AS.Save.profile;
@@ -169,15 +232,20 @@
       this.vignette(ctx, g, W, H, dt);
       if (!p) { ctx.restore(); return; }
       this.trackUsage(g);
+      this.layoutS = s;
+      this.trackObjectives(g, dt);
+      this.dest = this.destination(g);
       this.markers(ctx, g, s, W, H);
+      this.destArrow(ctx, g, s, W, H);
       this.prompts(ctx, g, s);
-      this.reticle(ctx, g, s);
       this.status(ctx, g, s, dt);
       this.objectives(ctx, g, s, W, dt);
       this.radar(ctx, g, s, H);
       this.weapons(ctx, g, s, W, H, dt);
       this.center(ctx, g, s, W, H);
       this.hints(ctx, g, s, W, H, dt);
+      if (AS.Inspect && !(AS.App && AS.App.overlay)) AS.Inspect.draw(ctx, g, s, W, H, dt);
+      this.reticle(ctx, g, s);
       ctx.restore();
     },
 
@@ -249,86 +317,220 @@
       textShadow(ctx, false);
     },
 
-    /* ---------- objectives: one line, TAB expands ---------- */
-    currentObjective(g) {
-      if (g.extraction.active) return { text: 'EXTRACT AT THE LANDING ZONE', count: '', col: COL.green, extraction: true, more: 0 };
-      const list = g.script.visibleObjectives().filter((o) => o.state === 'active' && o.cat === 'primary');
-      if (!list.length) return null;
-      const o = list[0];
+    /* ---------- objectives: a compact card (current primary), TAB expands the full list ---------- */
+    // remember each objective's state/progress so changes pulse the card, the TAB rows and the chips
+    trackObjectives(g, dt) {
+      const seen = this.objSeen;
+      for (const k in this.objPulse) { this.objPulse[k] -= dt; if (this.objPulse[k] <= 0) delete this.objPulse[k]; }
+      for (const k in this.chipPulse) this.chipPulse[k] = Math.max(0, this.chipPulse[k] - dt);
+      this.countPulse = Math.max(0, this.countPulse - dt);
+      for (const o of g.script.objs) {
+        const timed = o.type === 'defend' || o.type === 'survive';
+        const key = o.state + '|' + (o.revealed ? 1 : 0) + '|' + (timed ? (o.running ? 1 : 0) : Math.min(o.progress, o.required));
+        const was = seen[o.id];
+        seen[o.id] = key;
+        if (was === undefined || was === key) continue;
+        this.objPulse[o.id] = 1.6;
+        if (o.cat !== 'primary') this.chipPulse[o.cat === 'hidden' ? 'hidden' : 'secondary'] = 1.6;
+        if (o.id === this.cardId) this.countPulse = 0.8;
+      }
+    },
+    // split "Rescue the crew (2/5)" / "Hold the line — 1:20" into text + count
+    splitText(g, o) {
       let txt = g.script.text(o), count = '';
       const m = txt.match(/^(.*?)\s*\((\d+\/\d+)\)\s*$/);
       if (m) { txt = m[1]; count = m[2]; }
       const m2 = txt.match(/^(.*?)\s+—\s+(\d+:\d+)$/);
       if (m2) { txt = m2[1]; count = m2[2]; }
-      return { text: txt.toUpperCase(), count, col: COL.white, o, more: list.length - 1 };
+      return { txt, count };
+    },
+    objFrac(o) {
+      if (o.state === 'done') return 1;
+      if (!(o.required > 1) && o.type !== 'defend' && o.type !== 'survive') return null;
+      return U.clamp(Math.min(o.progress, o.required) / (o.required || 1), 0, 1);
+    },
+    currentObjective(g) {
+      if (g.extraction.active) return { text: 'EXTRACT AT THE LANDING ZONE', count: '', col: CAT.extract.col, cat: 'extract', extraction: true, more: 0, id: 'extract', frac: g.extraction.hold > 0 ? Math.min(1, g.extraction.hold / 3) : null };
+      const list = g.script.visibleObjectives().filter((o) => o.state === 'active' && o.cat === 'primary');
+      if (!list.length) return null;
+      const o = list[0];
+      const sp = this.splitText(g, o);
+      return { text: sp.txt.toUpperCase(), count: sp.count, col: COL.white, cat: 'primary', o, id: o.id, more: list.length - 1, frac: this.objFrac(o) };
     },
     objectives(ctx, g, s, W, dt) {
-      const cur = this.currentObjective(g);
-      const xR = W - 18 * s, y = 22 * s;
-      const key = cur ? cur.text + cur.count : '';
-      if (key !== this.lastObjKey) { if (this.lastObjKey) this.objFlash = 1; this.lastObjKey = key; }
-      this.objFlash = Math.max(0, this.objFlash - dt * 1.2);
-      if (cur) {
-        ctx.font = F(Math.round(13 * s), '700');
-        const cw = cur.count ? ctx.measureText(cur.count).width + 12 * s : 0;
-        ctx.font = F(Math.round(13 * s), '600');
-        let txt = cur.text;
-        const maxW = Math.min(W * 0.36, 440 * s);
-        while (ctx.measureText(txt).width > maxW && txt.length > 6) txt = txt.slice(0, -2);
-        if (txt !== cur.text) txt += '…';
-        const tw = ctx.measureText(txt).width;
-        const total = 18 * s + tw + cw;
-        wash(ctx, xR - total - 24 * s, y - 12 * s, total + 34 * s, 24 * s, 'left', 0.45 + this.objFlash * 0.3);
-        textShadow(ctx, true);
-        const mx = xR - total;
-        ctx.fillStyle = cur.extraction ? (Math.sin(this.t * 4) > 0 ? COL.green : '#bfffd0') : COL.amber;
-        ctx.beginPath(); ctx.moveTo(mx, y - 5 * s); ctx.lineTo(mx + 5 * s, y); ctx.lineTo(mx, y + 5 * s); ctx.lineTo(mx - 5 * s, y); ctx.closePath(); ctx.fill();
-        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.fillStyle = this.objFlash > 0 && Math.sin(this.t * 14) > 0 ? COL.cyan : cur.col;
-        ctx.fillText(txt, mx + 12 * s, y + 0.5 * s);
-        if (cur.count) { ctx.font = F(Math.round(13 * s), '700'); ctx.fillStyle = COL.amber; ctx.textAlign = 'right'; ctx.fillText(cur.count, xR, y + 0.5 * s); }
-        if (cur.more > 0 && !this.objExpanded) { ctx.font = M(Math.round(10 * s)); ctx.fillStyle = COL.faint; ctx.textAlign = 'right'; ctx.fillText('+' + cur.more + ' MORE  ·  TAB', xR, y + 17 * s); }
-        textShadow(ctx, false);
+      let cur = this.currentObjective(g);
+      // completion beat: a finished primary stays on the card for a moment, in green, before the next one slides in
+      if (this.cardHold) { this.cardHold.t -= dt; if (this.cardHold.t <= 0) this.cardHold = null; }
+      else if (this.cardId && this.cardId !== 'extract' && (!cur || cur.id !== this.cardId)) {
+        const po = g.script.obj(this.cardId);
+        if (po && po.state === 'done') this.cardHold = { t: 1.7, cur: { text: this.splitText(g, po).txt.toUpperCase(), count: '', cat: 'primary', o: po, id: po.id, more: 0, frac: 1, done: true } };
       }
-      if (this.objExpanded) this.objectivesPanel(ctx, g, s, W, y + 22 * s);
+      this.cardId = cur ? cur.id : null; // always the live objective
+      if (this.cardHold) cur = this.cardHold.cur;
+      const key = cur ? cur.id + '|' + cur.text : '';
+      if (key !== this.lastObjKey) { if (this.lastObjKey) this.objFlash = 1; this.lastObjKey = key; }
+      this.objFlash = Math.max(0, this.objFlash - dt * 0.9);
+      const xR = W - 16 * s, top = 14 * s;
+      let cardBottom = top;
+      if (cur) {
+        const cat = cur.done ? CAT.extract : catOf(cur.cat);
+        const pad = 14 * s, inner = pad + 4 * s;
+        const fT = F(Math.round(17 * s), '700'), fC = F(Math.round(19 * s), '700'), fH = F(Math.round(10.5 * s), '700'), fS = F(Math.round(11 * s), '700');
+        // footer chips: other objectives, colour-coded
+        const vis = g.script.visibleObjectives().filter((o) => o.state === 'active');
+        const nSec = vis.filter((o) => o.cat === 'secondary').length;
+        const nHid = vis.filter((o) => o.cat === 'hidden').length + g.script.hiddenCount();
+        const chips = [];
+        if (cur.more > 0) chips.push({ c: CAT.primary, t: '+' + cur.more + ' PRIMARY', p: 0 });
+        if (nSec) chips.push({ c: CAT.secondary, t: nSec + ' OPTIONAL', p: this.chipPulse.secondary });
+        if (nHid) chips.push({ c: CAT.hidden, t: nHid + ' HIDDEN', p: this.chipPulse.hidden });
+        // width from content
+        ctx.font = fC; const cw = cur.count ? ctx.measureText(cur.count).width + 14 * s : 0;
+        const maxW = Math.max(250 * s, Math.min(500 * s, W / 2 - 215 * s));
+        // long briefing-style text: use the objective's short form rather than truncating
+        ctx.font = fT;
+        let title = cur.text;
+        if (inner + ctx.measureText(title).width + cw + pad > maxW && cur.o && cur.o.short) title = cur.o.short.toUpperCase();
+        const tw0 = ctx.measureText(title).width;
+        ctx.font = fS; let chipW = 0; for (const c of chips) chipW += ctx.measureText(c.t).width + 26 * s;
+        const tabW = 92 * s;
+        const w = U.clamp(Math.max(inner + tw0 + cw + pad + 4 * s, inner + chipW + tabW + pad, 300 * s), 250 * s, maxW);
+        const hasBar = cur.frac !== null && cur.frac !== undefined;
+        const h = (hasBar ? 84 : 76) * s;
+        const x = xR - w, y = top;
+        const pulse = Math.max(this.objFlash, this.countPulse * 0.8);
+        const fl = pulse > 0 ? pulse * (0.65 + 0.35 * Math.sin(this.t * 18)) : 0;
+        glass(ctx, x, y, w, h, 7 * s, cat, fl);
+        this.cardRect = { x, y, w, h };
+        // header: category tag + distance to it
+        ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+        const hy = y + 15 * s;
+        glyph(ctx, cat.glyph, x + inner + 5 * s, hy, 5.5 * s, cat.col, 0);
+        ctx.font = fH; ctx.fillStyle = cat.col;
+        const head = cur.done ? 'OBJECTIVE COMPLETE' : cur.extraction ? 'EXTRACTION' : (this.objFlash > 0.25 && !this.countPulse ? 'NEW ' : '') + 'PRIMARY OBJECTIVE';
+        ctx.fillText(head, x + inner + 15 * s, hy + 0.5 * s);
+        const d = this.dest;
+        if (d && !cur.done && ((cur.o && d.o === cur.o) || (cur.extraction && d.cat === 'extract'))) {
+          ctx.font = M(Math.round(11 * s)); ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(214,236,244,0.78)';
+          const dt2 = (d.label && d.via ? d.label + '  ' : '') + fmtDist(U.dist(g.player.x, g.player.y, d.x, d.y));
+          ctx.fillText(dt2, x + w - pad, hy + 0.5 * s);
+        }
+        // title + count
+        const ty = y + 37 * s;
+        ctx.font = fT; ctx.textAlign = 'left';
+        const txt = fitText(ctx, title, w - inner - pad - cw);
+        textShadow(ctx, true);
+        ctx.fillStyle = cur.done ? '#c8ffd6' : this.objFlash > 0.4 && Math.sin(this.t * 16) > 0 ? cat.col : COL.white;
+        ctx.fillText(txt, x + inner, ty + 0.5 * s);
+        if (cur.done) { ctx.font = fC; ctx.textAlign = 'right'; ctx.fillStyle = CAT.extract.col; ctx.fillText('✔', x + w - pad, ty + 0.5 * s); }
+        else if (cur.count) {
+          const k = 1 + this.countPulse * 0.35;
+          ctx.save(); ctx.translate(x + w - pad, ty + 0.5 * s); ctx.scale(k, k);
+          ctx.font = fC; ctx.textAlign = 'right'; ctx.fillStyle = this.countPulse > 0 ? '#ffffff' : cat.col; ctx.fillText(cur.count, 0, 0);
+          ctx.restore();
+        }
+        textShadow(ctx, false);
+        let fy = y + 62 * s;
+        if (hasBar) {
+          const by = y + 52 * s;
+          bar(ctx, x + inner, by, w - inner - pad, 5 * s, cur.frac, cur.done ? CAT.extract.col : cat.col);
+          fy = y + 70 * s;
+        }
+        // footer: what else is going on + TAB
+        ctx.font = fS; ctx.textAlign = 'left';
+        let cx = x + inner;
+        for (const c of chips) {
+          const tw = ctx.measureText(c.t).width;
+          if (c.p > 0) { const sb = ctx.shadowBlur; ctx.shadowBlur = 0; rrect(ctx, cx - 6 * s, fy - 9 * s, tw + 25 * s, 18 * s, 9 * s); ctx.fillStyle = 'rgba(' + c.c.rgb + ',' + (0.28 * Math.min(1, c.p)) + ')'; ctx.fill(); ctx.shadowBlur = sb; }
+          glyph(ctx, c.c.glyph, cx + 4 * s, fy, 4.6 * s, c.c.col, 0);
+          ctx.fillStyle = c.c.col; ctx.fillText(c.t, cx + 13 * s, fy + 0.5 * s);
+          cx += tw + 26 * s;
+        }
+        const kw = keycap(ctx, x + w - pad - 28 * s - 52 * s, fy, 'TAB', s * 1.05, 'rgba(190,228,240,0.8)');
+        ctx.font = F(Math.round(10 * s), '600'); ctx.fillStyle = COL.dim; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(this.objExpanded ? (this.objSticky ? 'CLOSE' : 'LIST') : 'ALL', x + w - pad - 52 * s + kw - 22 * s, fy + 0.5 * s);
+        cardBottom = y + h;
+      } else this.cardRect = null;
+      this.panelRect = null;
+      if (this.objExpanded) this.objectivesPanel(ctx, g, s, W, cardBottom + 8 * s);
     },
     objectivesPanel(ctx, g, s, W, top) {
-      const w = 372 * s, x = W - w - 14 * s;
+      const w = Math.max(this.cardRect ? this.cardRect.w : 0, Math.min(460 * s, W * 0.4)), x = W - 16 * s - w;
       const rows = [];
-      const sect = (title, cat, col) => {
+      const sect = (cat) => {
         const list = g.script.objs.filter((o) => o.cat === cat && o.state !== 'locked' && (o.revealed || o.state === 'done'));
         if (!list.length) return;
-        rows.push({ head: title, col });
+        rows.push({ head: catOf(cat), cat });
         for (const o of list) rows.push({ o });
       };
-      sect('PRIMARY', 'primary', COL.amber); sect('OPTIONAL', 'secondary', '#cfe6ee'); sect('DISCOVERED', 'hidden', '#ffd36b');
+      sect('primary'); sect('secondary'); sect('hidden');
       const hid = g.script.hiddenCount();
-      const h = 46 * s + rows.length * 19 * s + (hid ? 20 * s : 0) + (g.extraction.active ? 20 * s : 0);
-      const gr = ctx.createLinearGradient(x, 0, x + w, 0);
-      gr.addColorStop(0, 'rgba(5,10,16,0.3)'); gr.addColorStop(0.25, 'rgba(5,10,16,0.72)'); gr.addColorStop(1, 'rgba(5,10,16,0.8)');
-      rrect(ctx, x, top, w, h, 8 * s); ctx.fillStyle = gr; ctx.fill();
-      ctx.strokeStyle = 'rgba(127,232,255,0.22)'; ctx.lineWidth = 1; ctx.stroke();
+      const rowH = 24 * s, headH = 22 * s;
+      let h = 40 * s + (hid ? 24 * s : 0) + (g.extraction.active ? 24 * s : 0) + 6 * s;
+      for (const r of rows) h += r.head ? headH : rowH;
+      glass(ctx, x, top, w, h, 8 * s, null, 0);
+      this.panelRect = { x, y: top, w, h };
+      const pad = 16 * s;
       ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-      ctx.font = F(Math.round(11 * s), '700'); ctx.fillStyle = COL.cyan;
-      ctx.fillText(g.mission.name + '  ·  ' + g.world.name.toUpperCase(), x + 14 * s, top + 15 * s);
-      ctx.font = M(Math.round(10 * s)); ctx.fillStyle = COL.faint; ctx.textAlign = 'right';
-      ctx.fillText('T+' + U.fmtTime(g.time) + (this.objSticky ? '  ·  TAB CLOSE' : ''), x + w - 12 * s, top + 15 * s);
-      let yy = top + 38 * s;
-      ctx.textAlign = 'left';
+      ctx.font = F(Math.round(12 * s), '700'); ctx.fillStyle = COL.cyan;
+      ctx.fillText(fitText(ctx, g.mission.name.toUpperCase() + '  ·  ' + g.world.name.toUpperCase(), w - 150 * s), x + pad, top + 18 * s);
+      ctx.font = M(Math.round(11 * s)); ctx.fillStyle = COL.dim; ctx.textAlign = 'right';
+      ctx.fillText('T+' + U.fmtTime(g.time), x + w - pad, top + 18 * s);
+      ctx.fillStyle = 'rgba(127,232,255,0.16)'; ctx.fillRect(x + pad, top + 31 * s, w - pad * 2, 1);
+      let yy = top + 40 * s;
+      const p = g.player;
       for (const r of rows) {
-        if (r.head) { ctx.font = F(Math.round(10 * s), '700'); ctx.fillStyle = r.col; ctx.fillText(r.head, x + 14 * s, yy); yy += 19 * s; continue; }
-        const o = r.o, done = o.state === 'done', failed = o.state === 'failed';
-        ctx.font = F(Math.round(12 * s), o.cat === 'primary' ? '600' : '500');
-        ctx.fillStyle = done ? COL.green : failed ? COL.red : o.cat === 'primary' ? COL.white : 'rgba(215,232,240,0.85)';
-        let txt = (done ? '✔ ' : failed ? '✖ ' : '○ ') + g.script.text(o);
-        const maxW = w - 70 * s;
-        while (ctx.measureText(txt).width > maxW && txt.length > 6) txt = txt.slice(0, -2);
-        ctx.fillText(txt, x + 22 * s, yy);
-        if (o.reward && !done && !failed) { ctx.font = M(Math.round(10 * s)); ctx.fillStyle = 'rgba(232,194,74,0.8)'; ctx.textAlign = 'right'; ctx.fillText('+' + o.reward, x + w - 12 * s, yy); ctx.textAlign = 'left'; }
-        yy += 19 * s;
+        ctx.textAlign = 'left';
+        if (r.head) {
+          const c = r.head, cy = yy + headH / 2 + 1 * s;
+          glyph(ctx, c.glyph, x + pad + 4 * s, cy, 4.6 * s, c.col, 0);
+          ctx.font = F(Math.round(11 * s), '700'); ctx.fillStyle = c.col;
+          const lbl = r.cat === 'hidden' ? 'DISCOVERED' : c.name;
+          ctx.fillText(lbl, x + pad + 14 * s, cy + 0.5 * s);
+          const lw = ctx.measureText(lbl).width;
+          ctx.fillStyle = 'rgba(' + c.rgb + ',0.22)'; ctx.fillRect(x + pad + 22 * s + lw, cy, w - pad * 2 - 22 * s - lw, 1);
+          yy += headH; continue;
+        }
+        const o = r.o, c = catOf(o.cat), done = o.state === 'done', failed = o.state === 'failed';
+        const cy = yy + rowH / 2;
+        const pu = this.objPulse[o.id] || 0;
+        if (pu > 0) { rrect(ctx, x + 6 * s, yy + 1 * s, w - 12 * s, rowH - 2 * s, 5 * s); ctx.fillStyle = 'rgba(' + (done ? CAT.extract.rgb : c.rgb) + ',' + (0.24 * Math.min(1, pu)) + ')'; ctx.fill(); }
+        if (done) { ctx.font = F(Math.round(13 * s), '700'); ctx.fillStyle = COL.green; ctx.textAlign = 'center'; ctx.fillText('✔', x + pad + 4 * s, cy + 0.5 * s); }
+        else if (failed) { ctx.font = F(Math.round(13 * s), '700'); ctx.fillStyle = COL.red; ctx.textAlign = 'center'; ctx.fillText('✖', x + pad + 4 * s, cy + 0.5 * s); }
+        else glyph(ctx, c.glyph, x + pad + 4 * s, cy, 5.2 * s, c.col, 0);
+        const sp = this.splitText(g, o);
+        // right column: count (category colour) · reward · distance
+        let rx = x + w - pad;
+        ctx.textAlign = 'right';
+        if (!done && !failed) {
+          const pts = this.objectivePoints(g, o);
+          let bd = 1e9; for (const q of pts) bd = Math.min(bd, U.dist(p.x, p.y, q.x, q.y));
+          if (bd < 1e9) { ctx.font = M(Math.round(11 * s)); ctx.fillStyle = COL.dim; ctx.fillText(fmtDist(bd), rx, cy + 0.5 * s); rx -= 58 * s; }
+          const pay = o.cat === 'secondary' && o.state !== 'done' ? AS.Campaign.optionalValue(g.mission.id, o) : 0;
+          if (pay) { ctx.font = M(Math.round(11 * s)); ctx.fillStyle = 'rgba(232,194,74,0.85)'; ctx.fillText('+' + pay, rx, cy + 0.5 * s); rx -= ctx.measureText('+' + pay).width + 10 * s; }
+          if (sp.count) { ctx.font = F(Math.round(13 * s), '700'); ctx.fillStyle = c.col; ctx.fillText(sp.count, rx, cy + 0.5 * s); rx -= ctx.measureText(sp.count).width + 10 * s; }
+        }
+        ctx.textAlign = 'left';
+        ctx.font = F(Math.round(14.5 * s), o.cat === 'primary' ? '700' : '600');
+        ctx.fillStyle = done ? 'rgba(160,240,180,0.75)' : failed ? 'rgba(255,120,100,0.8)' : o.cat === 'primary' ? COL.white : 'rgba(226,240,246,0.92)';
+        const room = rx - (x + pad + 16 * s);
+        const t = fitText(ctx, ctx.measureText(sp.txt).width > room && o.short ? o.short : sp.txt, room);
+        ctx.fillText(t, x + pad + 16 * s, cy + 0.5 * s);
+        if (done) { const tw = ctx.measureText(t).width; ctx.fillStyle = 'rgba(160,240,180,0.45)'; ctx.fillRect(x + pad + 16 * s, cy + 1 * s, tw, Math.max(1, 1.2 * s)); }
+        yy += rowH;
       }
-      if (hid) { ctx.font = F(Math.round(11 * s), '500'); ctx.fillStyle = 'rgba(255,211,107,0.7)'; ctx.fillText('★ ' + hid + ' hidden objective' + (hid > 1 ? 's' : '') + ' — explore', x + 14 * s, yy); yy += 20 * s; }
-      if (g.extraction.active) { ctx.font = F(Math.round(11 * s), '700'); ctx.fillStyle = COL.green; ctx.fillText('Extraction available — land at the LZ', x + 14 * s, yy); }
+      if (hid) {
+        const cy = yy + 12 * s;
+        glyph(ctx, 'star', x + pad + 4 * s, cy, 5 * s, 'rgba(255,226,122,0.7)', 0);
+        ctx.font = F(Math.round(12.5 * s), '600'); ctx.fillStyle = 'rgba(255,226,122,0.8)'; ctx.textAlign = 'left';
+        ctx.fillText(hid + ' hidden objective' + (hid > 1 ? 's' : '') + ' — explore to discover', x + pad + 16 * s, cy + 0.5 * s); yy += 24 * s;
+      }
+      if (g.extraction.active) {
+        const cy = yy + 12 * s;
+        glyph(ctx, 'lz', x + pad + 4 * s, cy, 5 * s, COL.green, 0);
+        ctx.font = F(Math.round(12.5 * s), '700'); ctx.fillStyle = COL.green; ctx.textAlign = 'left';
+        ctx.fillText('Extraction available — land at the LZ', x + pad + 16 * s, cy + 0.5 * s);
+      }
     },
 
     /* ---------- radar ---------- */
@@ -355,11 +557,16 @@
       const sw = (this.t * 1.4) % TAU;
       if (ctx.createConicGradient) { const grd = ctx.createConicGradient(sw - 0.7, cx, cy); grd.addColorStop(0, 'rgba(127,232,255,0)'); grd.addColorStop(0.11, 'rgba(127,232,255,0.16)'); grd.addColorStop(0.112, 'rgba(127,232,255,0)'); ctx.fillStyle = grd; ctx.fillRect(cx - r, cy - r, r * 2, r * 2); }
       if (g.hazards && (g.hazards.sand > 0.3 || g.hazards.whiteout > 0.3)) { for (let i = 0; i < 40; i++) { ctx.fillStyle = 'rgba(200,230,240,' + Math.random() * 0.25 + ')'; ctx.fillRect(cx - r + Math.random() * r * 2, cy - r + Math.random() * r * 2, 2 * s, 2 * s); } }
-      const blip = (x, y, col, size, shape, clampEdge) => {
+      const rpos = (x, y, clampEdge, inset) => {
         let dx = (x - p.x) * k, dy = (y - p.y) * k;
-        const d2 = dx * dx + dy * dy, lim = r - 4 * s;
-        if (d2 > lim * lim) { if (!clampEdge) return; const d = Math.sqrt(d2); dx *= (lim - 2 * s) / d; dy *= (lim - 2 * s) / d; }
-        const bx = cx + dx, by = cy + dy, sz = size * s;
+        const d2 = dx * dx + dy * dy, lim = r - (inset || 4) * s;
+        if (d2 > lim * lim) { if (!clampEdge) return null; const d = Math.sqrt(d2); dx *= (lim - 2 * s) / d; dy *= (lim - 2 * s) / d; }
+        return { x: cx + dx, y: cy + dy };
+      };
+      const blip = (x, y, col, size, shape, clampEdge) => {
+        const bp = rpos(x, y, clampEdge);
+        if (!bp) return;
+        const bx = bp.x, by = bp.y, sz = size * s;
         ctx.fillStyle = col; ctx.strokeStyle = col;
         if (shape === 'sq') ctx.fillRect(bx - sz, by - sz, sz * 2, sz * 2);
         else if (shape === 'tri') { ctx.beginPath(); ctx.moveTo(bx, by - sz * 1.3); ctx.lineTo(bx + sz * 1.1, by + sz); ctx.lineTo(bx - sz * 1.1, by + sz); ctx.closePath(); ctx.fill(); }
@@ -386,11 +593,24 @@
         blip(u.x, u.y, u.air ? '#ff7ad8' : '#ff4a3a', u.boss ? 3.6 : u.r > 16 ? 2.2 : 1.5, u.air ? 'tri' : 'dot');
       }
       for (const gr of g.groups) if (gr.remaining > 0) blip(gr.x, gr.y, COL.cyan, 2.2, 'person', true);
-      for (const o of g.script.objs) {
-        if (o.state !== 'active' || !o.revealed || o.cat !== 'primary') continue;
-        for (const q of this.objectivePoints(g, o)) blip(q.x, q.y, COL.amber, 2.2, 'dia', true);
-      }
       if (g.extraction) blip(g.extraction.x, g.extraction.y, g.extraction.active ? COL.green : 'rgba(125,255,154,0.6)', 3, 'ring', g.extraction.active);
+      // objectives in their category colours (primaries pinned to the rim when out of range)
+      for (const cat of ['hidden', 'secondary', 'primary']) {
+        for (const o of g.script.objs) {
+          if (o.cat !== cat || o.state !== 'active' || !o.revealed) continue;
+          const c = catOf(cat);
+          for (const q of this.objectivePoints(g, o)) { const bp = rpos(q.x, q.y, cat === 'primary', 6); if (bp) glyph(ctx, c.glyph, bp.x, bp.y, (cat === 'primary' ? 4.2 : 3.6) * s, c.col, 0.8 * s); }
+        }
+      }
+      // destination: pulsing ring around its blip
+      const D = this.dest;
+      if (D) {
+        const bp = rpos(D.x, D.y, true, 7), c = catOf(D.cat), ph = (this.t * 1.2) % 1;
+        ctx.strokeStyle = c.col; ctx.lineWidth = 1.5 * s;
+        ctx.globalAlpha = 1 - ph; ctx.beginPath(); ctx.arc(bp.x, bp.y, (4 + ph * 7) * s, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.beginPath(); ctx.arc(bp.x, bp.y, 5.5 * s, 0, TAU); ctx.stroke();
+        if (D.cat === 'extract' || D.cat === 'dropoff' || D.via) glyph(ctx, c.glyph, bp.x, bp.y, 3.6 * s, c.col, 0.8 * s);
+      }
       ctx.restore();
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.strokeStyle = 'rgba(127,232,255,0.45)'; ctx.lineWidth = 1.2 * s; ctx.stroke();
       ctx.beginPath(); ctx.arc(cx, cy, r + 3 * s, -Math.PI / 2 - 0.5, -Math.PI / 2 + 0.5); ctx.strokeStyle = 'rgba(127,232,255,0.25)'; ctx.stroke();
@@ -529,6 +749,7 @@
       // hovered target: name + health right above the target
       let hov = null, bd = 30;
       for (const e of g.queryEnemies(p.aimX, p.aimY, 60)) { if (!e.alive || e.isProp || !e.targetable) continue; const d = U.dist(e.x, e.py, p.aimX, p.aimY) - e.r; if (d < bd) { bd = d; hov = e; } }
+      if (hov && AS.Inspect && AS.Inspect.isShowing && AS.Inspect.isShowing(hov)) hov = null; // the hover card already says it
       if (hov) {
         const q = toScr(hov.x, hov.py), top = q.y - (hov.r + 8) * ws;
         const shielded = hov.isShielded && hov.isShielded();
@@ -545,56 +766,162 @@
       textShadow(ctx, false);
     },
 
-    /* ---------- world markers: small, assistive ---------- */
+    /* ---------- destination: where to fly next (always shown as an arrow around the craft) ---------- */
+    destination(g) {
+      const p = g.player;
+      if (!p) return null;
+      const near = (list) => { let best = null, bd = 1e9; for (const q of list) { const d = U.dist(p.x, p.y, q.x, q.y); if (d < bd) { bd = d; best = q; } } return best; };
+      const lz = { x: g.extraction.x, y: g.extraction.y, h: 8, r: 40, cat: 'extract', label: 'LZ', ent: g.lz };
+      if (g.extraction.active) return lz;
+      const dropoff = (o) => {
+        let best = g.lz, bd = U.dist(p.x, p.y, g.lz.x, g.lz.y);
+        for (const pad of g.pads) if (pad.def.dropoff && pad.alive !== false && U.dist(p.x, p.y, pad.x, pad.y) < bd) { best = pad; bd = U.dist(p.x, p.y, pad.x, pad.y); }
+        return { x: best.x, y: best.y, h: 8, r: 40, cat: 'dropoff', label: 'DROP-OFF', ent: best, o };
+      };
+      for (const o of g.script.objs) {
+        if (o.state !== 'active' || o.cat !== 'primary' || !o.revealed) continue;
+        // a boss that cannot be hurt right now: point at whatever exposes it (thumpers, shield nodes)
+        if (o.targets && (o.type === 'boss' || o.type === 'kill')) {
+          const b = o.targets.map((id) => g.byId.get(id)).find((e) => e && e.alive);
+          if (b && b.boss && (b.targetable === false || (b.isShielded && b.isShielded()))) {
+            let ents = (o.hint || []).map((id) => g.byId.get(id)).filter((e) => e && e.alive !== false);
+            if (!ents.length && b.shieldedBy) ents = b.shieldedBy.map((id) => g.byId.get(id)).filter((e) => e && e.alive);
+            if (ents.length) {
+              const ready = ents.filter((e) => !(e.role === 'console' && (e.activated || e.locked)));
+              const e = near(ready.length ? ready : ents);
+              return { x: e.x, y: e.y, h: (e.hc || 10) * 2 + 10, r: e.r || 14, cat: 'primary', o, ent: e, via: b, label: String(e.label || (e.def && e.def.name) || '').toUpperCase() };
+            }
+          }
+        }
+        const pts = this.objectivePoints(g, o);
+        // survivors / cargo aboard with nowhere else to go (or the bay is full): drop them off
+        if (o.type === 'rescue' && p.passengers.length && (!pts.length || p.passengers.length >= p.s.rescueCap)) return dropoff(o);
+        if ((o.type === 'collect' || o.type === 'deliver') && !o.to && o.items && p.cargo.some((c) => o.items.includes(c.id)) && (!pts.length || p.cargo.length >= p.s.cargoCap)) return dropoff(o);
+        if (pts.length) { const q = near(pts); return { x: q.x, y: q.y, h: q.h, r: 18, cat: 'primary', o }; }
+      }
+      return lz;
+    },
+
+    /* ---------- world markers: category glyphs on targets, chevrons at the screen edge ---------- */
     markers(ctx, g, s, W, H) {
       const p = g.player, cam = g.camera, R = AS.Renderer;
       const targets = this.trackedTargets(g);
       const ws = R.worldScale(cam);
-      textShadow(ctx, true);
+      const cr = this.cardRect;
       for (const t of targets) {
+        const cat = catOf(t.cat);
         const q = R.worldToScreen(t.x, t.y, cam), sx = q.x, sy = q.y;
         const m = 34 * s;
-        const d = Math.round(U.dist(p.x, p.y, t.x, t.y));
+        const d = U.dist(p.x, p.y, t.x, t.y);
         if (sx > m && sy > m && sx < W - m && sy < H - m) {
+          if (d < 90 && !t.dest) continue;
+          // ground ring under the destination
+          if (t.dest) {
+            const rr = U.clamp((t.r || 18) * ws * 1.25, 18 * s, 52 * s), ph = (this.t * 0.9) % 1;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(4,8,12,0.55)'; ctx.lineWidth = 4 * s; ctx.beginPath(); ctx.ellipse(sx, sy, rr, rr * 0.62, 0, 0, TAU); ctx.stroke();
+            ctx.strokeStyle = cat.col; ctx.lineWidth = 2 * s; ctx.setLineDash([7 * s, 5 * s]); ctx.lineDashOffset = -this.t * 14 * s;
+            ctx.beginPath(); ctx.ellipse(sx, sy, rr, rr * 0.62, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+            ctx.globalAlpha = 0.7 * (1 - ph); ctx.lineWidth = 2 * s;
+            ctx.beginPath(); ctx.ellipse(sx, sy, rr * (1 + ph * 0.6), rr * 0.62 * (1 + ph * 0.6), 0, 0, TAU); ctx.stroke();
+            ctx.restore();
+          }
           if (d < 90) continue;
           const bob = Math.sin(this.t * 3 + t.x) * 2 * s;
-          const yy = sy - (t.h || 30) * ws - 10 * s + bob;
-          ctx.fillStyle = t.col; ctx.globalAlpha = 0.85;
-          ctx.beginPath(); ctx.moveTo(sx, yy + 5 * s); ctx.lineTo(sx + 4.5 * s, yy); ctx.lineTo(sx, yy - 5 * s); ctx.lineTo(sx - 4.5 * s, yy); ctx.closePath(); ctx.fill();
-          ctx.beginPath(); ctx.moveTo(sx, yy + 11 * s); ctx.lineTo(sx + 3 * s, yy + 7.5 * s); ctx.lineTo(sx - 3 * s, yy + 7.5 * s); ctx.closePath(); ctx.fill();
+          const big = t.dest ? 1.25 : 1;
+          const yy = sy - (t.h || 30) * ws - 14 * s * big + bob;
+          ctx.globalAlpha = t.dest ? 1 : 0.9;
+          // stem pointer + glyph
+          const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+          ctx.beginPath(); ctx.moveTo(sx, yy + 15 * s * big); ctx.lineTo(sx + 4 * s * big, yy + 10 * s * big); ctx.lineTo(sx - 4 * s * big, yy + 10 * s * big); ctx.closePath();
+          ctx.strokeStyle = 'rgba(4,8,12,0.7)'; ctx.lineWidth = 2.5 * s; ctx.stroke(); ctx.fillStyle = cat.col; ctx.fill();
+          ctx.shadowBlur = sb;
+          glyph(ctx, cat.glyph, sx, yy, 7 * s * big, cat.col);
           ctx.globalAlpha = 1;
           continue;
         }
+        if (t.dest) continue; // the destination already has the arrow around the craft
         const a = Math.atan2(sy - H / 2, sx - W / 2);
         const ex = W / 2 + Math.cos(a) * (W / 2 - m), ey = H / 2 + Math.sin(a) * (H / 2 - m);
         const low = ey > H / 2;
-        const cx2 = U.clamp(ex, m + (low ? 160 * s : 0), W - m - (low ? 200 * s : 0)), cy2 = U.clamp(ey, m + 70 * s, H - m - 30 * s);
+        let cx2 = U.clamp(ex, m + (low ? 170 * s : 0), W - m - (low ? 210 * s : 0)), cy2 = U.clamp(ey, m + 64 * s, H - m - 30 * s);
+        // keep edge chevrons clear of the objective card and the TAB list
+        const inR = (r) => r && cx2 > r.x - 30 * s && cx2 < r.x + r.w + 30 * s && cy2 > r.y - 20 * s && cy2 < r.y + r.h + 24 * s;
+        if (inR(cr)) cy2 = cr.y + cr.h + 24 * s;
+        if (inR(this.panelRect)) cy2 = this.panelRect.y + this.panelRect.h + 24 * s;
+        if (cy2 > H - m - 30 * s) continue;
         ctx.save(); ctx.translate(cx2, cy2); ctx.rotate(a);
-        ctx.fillStyle = t.col; ctx.beginPath(); ctx.moveTo(9 * s, 0); ctx.lineTo(-5 * s, 6 * s); ctx.lineTo(-2 * s, 0); ctx.lineTo(-5 * s, -6 * s); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(11 * s, 0); ctx.lineTo(-5 * s, 7.5 * s); ctx.lineTo(-1.5 * s, 0); ctx.lineTo(-5 * s, -7.5 * s); ctx.closePath();
+        ctx.strokeStyle = 'rgba(4,8,12,0.75)'; ctx.lineWidth = 3 * s; ctx.stroke(); ctx.fillStyle = cat.col; ctx.fill();
         ctx.restore();
-        ctx.font = M(Math.round(10 * s)); ctx.fillStyle = t.col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText((t.label ? t.label + ' ' : '') + d, cx2 - Math.cos(a) * 24 * s, cy2 - Math.sin(a) * 16 * s);
+        const lx = cx2 - Math.cos(a) * 26 * s, ly = cy2 - Math.sin(a) * 18 * s;
+        ctx.font = M(Math.round(11 * s)); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const lbl = (t.label ? t.label + ' ' : '') + fmtDist(d);
+        const tw = ctx.measureText(lbl).width;
+        glyph(ctx, cat.glyph, lx - tw / 2 - 8 * s, ly, 4.6 * s, cat.col);
+        keyText(ctx, lbl, lx + 1 * s, ly + 0.5 * s, cat.col, 3 * s);
       }
-      textShadow(ctx, false);
     },
     trackedTargets(g) {
-      const out = [], p = g.player;
-      if (g.extraction.active) out.push({ x: g.extraction.x, y: g.extraction.y, col: COL.green, label: 'EXTRACT', h: 8 });
-      else if (p.passengers.length || p.cargo.some((c) => c.deliver === 'pad')) {
+      const out = [], p = g.player, D = this.dest;
+      const same = (a, b) => a && b && Math.abs(a.x - b.x) < 2 && Math.abs(a.y - b.y) < 2;
+      if (D) out.push(Object.assign({}, D, { dest: true }));
+      const push = (t) => { if (!same(t, D) && !out.some((q) => same(q, t))) out.push(t); };
+      if (!g.extraction.active && (p.passengers.length || p.cargo.some((c) => c.deliver === 'pad'))) {
         let best = g.lz, bd = U.dist(p.x, p.y, g.lz.x, g.lz.y);
         for (const pad of g.pads) if (pad.def.dropoff && U.dist(p.x, p.y, pad.x, pad.y) < bd) { best = pad; bd = U.dist(p.x, p.y, pad.x, pad.y); }
-        out.push({ x: best.x, y: best.y, col: '#ffc35a', label: 'DROP-OFF', h: 8 });
+        push({ x: best.x, y: best.y, cat: 'dropoff', label: 'DROP-OFF', h: 8, r: 40 });
       }
-      for (const c of p.cargo) if (c.deliver !== 'pad') { const z = g.zones.get(c.deliver) || g.byId.get(c.deliver); if (z) out.push({ x: z.x, y: z.y, col: '#9ff6ff', label: 'PLACE', h: 8 }); }
+      for (const c of p.cargo) if (c.deliver !== 'pad') { const z = g.zones.get(c.deliver) || g.byId.get(c.deliver); if (z) push({ x: z.x, y: z.y, cat: 'place', label: 'PLACE', h: 8 }); }
       for (const o of g.script.objs) {
-        if (o.state !== 'active' || !o.revealed || o.cat === 'hidden') continue;
+        if (o.state !== 'active' || !o.revealed) continue;
         const pts = this.objectivePoints(g, o);
         let best = null, bd = 1e9;
         for (const q of pts) { const d = U.dist(p.x, p.y, q.x, q.y); if (d < bd) { bd = d; best = q; } }
-        if (best && (o.cat === 'primary' || bd < 1600)) out.push({ x: best.x, y: best.y, h: best.h, col: o.cat === 'primary' ? COL.amber : 'rgba(200,230,240,0.8)', label: '' });
-        if (out.length > 4) break;
+        if (best && (o.cat === 'primary' || bd < 1600)) push({ x: best.x, y: best.y, h: best.h, cat: o.cat, o, label: '' });
+        if (out.length > 5) break;
       }
       return out;
+    },
+    destArrow(ctx, g, s, W, H) {
+      const D = this.dest, p = g.player;
+      if (!D || !p.alive || p.dying > 0) return;
+      const R = AS.Renderer, cam = g.camera, ws = R.worldScale(cam);
+      const dist = U.dist(p.x, p.y, D.x, D.y);
+      if (dist < 70) return;
+      const cat = catOf(D.cat);
+      const c = R.worldToScreen(p.x, p.py, cam), q = R.worldToScreen(D.x, D.y, cam);
+      const m = 30 * s;
+      const onScreen = q.x > m && q.y > m && q.x < W - m && q.y < H - m;
+      const a = Math.atan2(q.y - c.y, q.x - c.x);
+      const rad = Math.max(60 * s, 42 * ws);
+      const k = onScreen ? 0.78 : 1.12;
+      const pulse = onScreen ? 0 : 0.5 + 0.5 * Math.sin(this.t * 4);
+      const ax = c.x + Math.cos(a) * rad, ay = c.y + Math.sin(a) * rad;
+      ctx.save();
+      ctx.translate(ax, ay); ctx.rotate(a);
+      const L = 17 * s * k, Wd = 12 * s * k;
+      const path = () => { ctx.beginPath(); ctx.moveTo(L * 0.8, 0); ctx.lineTo(-L * 0.5, Wd); ctx.lineTo(-L * 0.18, 0); ctx.lineTo(-L * 0.5, -Wd); ctx.closePath(); };
+      // trailing ghost chevrons give it motion without extra clutter
+      if (!onScreen) for (let i = 1; i <= 2; i++) { ctx.save(); ctx.translate(-i * 10 * s * k, 0); ctx.scale(0.7, 0.7); path(); ctx.strokeStyle = 'rgba(4,8,12,' + (0.5 - i * 0.15) + ')'; ctx.lineWidth = 4 * s; ctx.stroke(); ctx.fillStyle = 'rgba(' + cat.rgb + ',' + (0.6 - i * 0.18) + ')'; ctx.fill(); ctx.restore(); }
+      path();
+      ctx.strokeStyle = 'rgba(4,8,12,0.85)'; ctx.lineWidth = 5.5 * s; ctx.lineJoin = 'round'; ctx.stroke();
+      ctx.shadowColor = 'rgba(' + cat.rgb + ',0.9)'; ctx.shadowBlur = (8 + pulse * 8) * s;
+      ctx.fillStyle = cat.col; ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.moveTo(L * 0.8, 0); ctx.lineTo(-L * 0.5, -Wd); ctx.lineTo(-L * 0.18, 0); ctx.closePath(); ctx.globalAlpha = 0.35; ctx.fill();
+      ctx.restore();
+      // distance (and what it is) just outside the arrow, kept upright
+      ctx.font = F(Math.round(11.5 * s), '700'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const lbl = (D.label ? D.label + '  ' : '') + fmtDist(dist);
+      const tw = ctx.measureText(lbl).width;
+      const off = rad + 20 * s * k + Math.abs(Math.cos(a)) * (tw / 2 + 4 * s) + Math.abs(Math.sin(a)) * 4 * s;
+      const lx = c.x + Math.cos(a) * off, ly = c.y + Math.sin(a) * off;
+      const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+      rrect(ctx, lx - tw / 2 - 7 * s, ly - 9 * s, tw + 14 * s, 18 * s, 9 * s); ctx.fillStyle = 'rgba(4,9,14,' + (onScreen ? 0.5 : 0.62) + ')'; ctx.fill();
+      ctx.strokeStyle = 'rgba(' + cat.rgb + ',0.45)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.shadowBlur = sb;
+      ctx.fillStyle = cat.col; ctx.fillText(lbl, lx, ly + 0.5 * s);
     },
     objectivePoints(g, o) {
       const pts = [];

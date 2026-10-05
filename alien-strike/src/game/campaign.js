@@ -2,6 +2,11 @@
 'use strict';
 (function (AS) {
   const Campaign = {
+    optionalPay: 150, // salvage for each optional objective the first time it is completed
+    hiddenPay: 250,
+    /* what an optional objective pays at the end of the mission: its own bonus plus the
+       first-completion payment (shown identically on the briefing and in flight) */
+    optionalValue(missionId, o) { const rec = this.profile().missions[missionId]; return (o.reward || 0) + (rec && rec.objectives && rec.objectives[o.id] ? 0 : this.optionalPay); },
     profile() { return AS.Save.profile || AS.Save.loadProfile() || AS.Save.newProfile(); },
     order() { return AS.Levels.ordered().map((m) => m.id); },
     isUnlocked(id) { if (AS.Settings && AS.Settings.testMode) return true; const p = this.profile(); return p.unlockedMissions.includes(id); },
@@ -36,8 +41,8 @@
           if (o.cat === 'hidden' && !rec.objectives[o.id]) hid++;
           rec.objectives[o.id] = true;
         }
-        if (opt) { r.lines.push(['Optional objectives (' + opt + ')', opt * 150]); r.salvage += opt * 150; }
-        if (hid) { r.lines.push(['Hidden objectives (' + hid + ')', hid * 250]); r.salvage += hid * 250; r.tech += hid; }
+        if (opt) { r.lines.push(['Optional objectives (' + opt + ')', opt * this.optionalPay]); r.salvage += opt * this.optionalPay; }
+        if (hid) { r.lines.push(['Hidden objectives (' + hid + ')', hid * this.hiddenPay]); r.salvage += hid * this.hiddenPay; r.tech += hid; }
         const techBase = r.firstClear ? ((m.rewards && m.rewards.tech) || 1) : 0;
         r.tech += techBase + st.tech;
         if (r.firstClear && m.rewards && m.rewards.unlock) for (const w of m.rewards.unlock) if (!p.unlockedWeapons.includes(w)) { p.unlockedWeapons.push(w); r.unlocks.push(w); }

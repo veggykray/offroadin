@@ -269,7 +269,7 @@
       { id: 'cores', type: 'collect', items: ['coreA', 'coreB', 'coreC'], required: 3, text: 'Deliver the archive data cores', short: 'Recover all three data cores', desc: 'Deliver cores at the LZ or forward pad. Cargo holds two.', marker: 'CORE' },
       { id: 'hack', type: 'interact', targets: ['datarelay'], text: 'Hack the data relay to open the vault', short: 'Hack the vault relay' },
       { id: 'overseer', type: 'kill', targets: ['overseer'], text: 'Destroy Overseer Ka-Thel', short: 'Destroy Overseer Ka-Thel' },
-      { id: 'maw', type: 'boss', targets: ['maw'], hint: ['th1', 'th2', 'th3'], text: 'Kill the Basalt Maw: stun it with a seismic thumper, then attack', short: 'Stun the Maw at a thumper (hold E), then attack', desc: 'Hold E at one of the three thumpers. The Maw bursts up under it, stunned and glowing: that is when your shots hurt it.', locked: true },
+      { id: 'maw', type: 'boss', targets: ['maw'], hint: ['th1', 'th2', 'th3'], text: 'Kill the Basalt Maw: stun it with a seismic thumper, then attack', short: 'Stun the Maw: hold E at a thumper', desc: 'Hold E at one of the three thumpers. The Maw bursts up under it, stunned and glowing: that is when your shots hurt it.', locked: true },
       { id: 'researchers', type: 'rescue', groups: ['researchers'], required: 2, text: 'Rescue the Thessaly researchers', short: 'Rescue the researchers', cat: 'secondary', reward: 200 },
       { id: 'comms', type: 'destroy', targets: ['v_comms'], text: 'Destroy the vault comm relay', short: 'Destroy the comm relay', cat: 'secondary', reward: 120 },
       { id: 'echo', type: 'discover', zone: 'echo', text: 'Find the echo chamber', short: 'Find the echo chamber', cat: 'hidden' },

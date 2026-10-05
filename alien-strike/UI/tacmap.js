@@ -91,7 +91,7 @@
       // objective markers, labelled once per objective
       for (const o of g.script.objs) {
         if (o.state !== 'active' || !o.revealed) continue;
-        const pts = AS.HUD.objectivePoints(g, o), col = o.cat === 'primary' ? COL.amber : 'rgba(220,230,240,0.9)';
+        const pts = AS.HUD.objectivePoints(g, o), col = ((AS.HUD.CAT && AS.HUD.CAT[o.cat]) || { col: COL.amber }).col;
         pts.forEach((pt, i) => icon(pt.x, pt.y, col, 'diamond', 4, i === 0 ? (o.short || o.text || '').toUpperCase().slice(0, 34) : null));
       }
       for (const mk of g.markers) icon(mk.x, mk.y, mk.col || '#5fffe0', 'diamond', 4, mk.label);
@@ -138,7 +138,8 @@
       ctx.font = F(12 * s, '700'); ctx.fillStyle = COL.dim; ctx.fillText('LEGEND', lx, ly); ly += 20 * s;
       const leg = (shape, col, txt) => { icon((lx + 6 * s - ox) / sc, (ly - 4 * s - oy) / sc, col, shape, 3.6); ctx.font = M(11.5 * s); ctx.fillStyle = '#cfe6ee'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(txt, lx + 22 * s, ly); ly += 22 * s; };
       labels.length = 0;
-      leg('diamond', COL.amber, 'Primary objective'); leg('diamond', 'rgba(220,230,240,0.9)', 'Optional objective');
+      const CAT = AS.HUD.CAT || {};
+      leg('diamond', (CAT.primary || { col: COL.amber }).col, 'Primary objective'); leg('diamond', (CAT.secondary || { col: '#7fe8ff' }).col, 'Optional objective');
       leg('sq', '#ff8a4a', 'Enemy structure'); leg('ring', COL.green, 'Pad / LZ: repair, drop-off');
       leg('tri', '#7fe8ff', 'Survivors'); leg('sq', '#9ff6ff', 'Cargo'); leg('dot', '#ffb04a', 'Fuel');
       leg('dot', '#ffffff', 'Repair'); leg('dot', '#e8c24a', 'Ammo / salvage'); leg('sq', '#7fe8ff', 'Console');
@@ -179,7 +180,7 @@
       const sect = (title, cat) => {
         const list = g.script.objs.filter((o) => o.cat === cat && o.state !== 'locked' && (o.revealed || o.state === 'done'));
         if (!list.length) return;
-        ctx.font = F(14 * s, '700'); ctx.fillStyle = cat === 'primary' ? COL.amber : cat === 'hidden' ? '#ffd36b' : '#cfe6ee';
+        ctx.font = F(14 * s, '700'); ctx.fillStyle = (AS.HUD.CAT && AS.HUD.CAT[cat] ? AS.HUD.CAT[cat].col : COL.amber);
         ctx.fillText(title, x + 24 * s, y); y += 26 * s;
         for (const o of list) {
           const st = o.state === 'done' ? '✔' : o.state === 'failed' ? '✖' : '○';
