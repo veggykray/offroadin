@@ -1,5 +1,10 @@
 # Prehistoric Off-Road — Track 1 prototype
 
+> **Looking for ALIEN STRIKE?** It lives in the [`alien-strike/`](alien-strike/) folder and
+> runs without any install: open `alien-strike/index.html` in Chrome, Edge or Firefox (see
+> [`alien-strike/README.md`](alien-strike/README.md)). The rest of this README is about the
+> separate Prehistoric Off-Road racing prototype, which needs Node.js.
+
 Arcade four-racer off-road racing in the spirit of *Super Off Road*, in 3D.
 Three.js rendering, Rapier physics, TypeScript, Vite. See `DESIGN.md` for the game
 rules and `PROJECT_PLAN.md` / `PROGRESS.md` for architecture and status.

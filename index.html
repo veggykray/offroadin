@@ -11,6 +11,26 @@
     <div id="app"></div>
     <div id="hud"></div>
     <div id="loading">Loading…</div>
+    <script>
+      // Opened straight from disk (double-clicked)? This project only runs through its
+      // dev server, so explain that instead of hanging on "Loading…", and point to
+      // ALIEN STRIKE, which does run from disk.
+      if (location.protocol === 'file:') {
+        document.addEventListener('DOMContentLoaded', function () {
+          var el = document.getElementById('loading');
+          if (!el) return;
+          el.setAttribute('style', 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#05080c;color:#cfe8f0;font:16px/1.5 system-ui,sans-serif;padding:24px');
+          el.innerHTML =
+            '<div style="max-width:640px">' +
+            '<h1 style="margin:0 0 16px;font:700 22px system-ui,sans-serif;color:#ffc35a">Looking for ALIEN STRIKE?</h1>' +
+            '<p style="margin:0 0 14px">ALIEN STRIKE is in the <b>alien-strike</b> folder: open it and double-click <b>index.html</b> there, or ' +
+            '<a style="color:#7fe8ff" href="alien-strike/index.html">click here to start it</a>.</p>' +
+            '<p style="margin:0;color:#8aa3ad">This page is a different project (the Prehistoric Off-Road racing prototype). It cannot run from a double-click; ' +
+            'it needs Node.js: run <code>npm install</code> then <code>npm run dev</code> in this folder.</p>' +
+            '</div>';
+        });
+      }
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -41,21 +41,22 @@
     available: storageOK(),
     profile: null,
     settings: null,
-    hasProfile() {
-      if (!this.available) return !!this.profile;
-      try { return !!localStorage.getItem(PROFILE_KEY); } catch (e) { return false; }
-    },
+    hasProfile() { return !!(this.profile || this.loadProfile()); },
     loadProfile() {
       let p = null;
       if (this.available) {
         try { const raw = localStorage.getItem(PROFILE_KEY); if (raw) p = JSON.parse(raw); } catch (e) { p = null; }
       }
-      if (!p) return null;
-      // Merge onto defaults so older saves gain new fields.
-      const d = newProfile();
-      for (const k in d) if (p[k] === undefined) p[k] = d[k];
-      for (const k in d.stats) if (p.stats[k] === undefined) p.stats[k] = d.stats[k];
-      for (const k in d.loadout) if (!p.loadout[k]) p.loadout[k] = d.loadout[k];
+      if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
+      // Merge onto defaults so older saves gain new fields. A damaged save is treated
+      // as no save rather than stopping the game from starting.
+      try {
+        const d = newProfile();
+        for (const k in d) if (p[k] === undefined || p[k] === null) p[k] = d[k];
+        for (const k of ['stats', 'loadout', 'upgrades', 'missions']) if (typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = d[k];
+        for (const k in d.stats) if (p.stats[k] === undefined) p.stats[k] = d.stats[k];
+        for (const k in d.loadout) if (!p.loadout[k]) p.loadout[k] = d.loadout[k];
+      } catch (e) { return null; }
       this.profile = p;
       return p;
     },
