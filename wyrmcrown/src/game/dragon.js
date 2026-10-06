@@ -24,7 +24,7 @@
 (function (AS) {
   const U = AS.U, TAU = U.TAU;
 
-  const LOOP = { dur: 1.25, cd: 3.5, cost: 6, evade: [0.08, 0.86] }; // seconds, seconds, energy, fraction of the loop that dodges
+  const LOOP = { dur: 1.35, cd: 3.5, cost: 6, evade: [0.08, 0.86] }; // seconds, seconds, energy, fraction of the loop that dodges
   const FLIGHT = {
     cruise: 185, flapMax: 300, sprintMax: 415, diveMax: 480, hover: 34,
     flapAcc: 300,      // peak downstroke thrust (u/s²); averaged ≈ 95
@@ -127,6 +127,7 @@
       this.hurt = Math.max(0, this.hurt - dt);
       this.cast = Math.max(0, this.cast - dt * 4);
       this.layoutRig(dt);
+      if (this.loop) this.layoutLoop();
       this.fx(dt);
     }
 
@@ -269,7 +270,7 @@
         return false;
       }
       const v = U.clamp(this.speed, 170, 360);
-      this.loop = { t: 0, dur: LOOP.dur, a: this.angle, x0: this.x, y0: this.y, z0: Math.max(this.z, 26), R: U.clamp(v * LOOP.dur / TAU, 46, 70), drift: v * 0.2, v, th: 0 };
+      this.loop = { t: 0, dur: LOOP.dur, a: this.angle, x0: this.x, y0: this.y, z0: Math.max(this.z, 26), R: U.clamp(v * LOOP.dur / TAU, 50, 74), drift: v * 0.22, v, th: 0, k: 0 };
       this.energy -= LOOP.cost; this.loopCd = LOOP.cd;
       this.landing = false; this.angVel = 0;
       this.phase = 0.05; this.freq = 2.6; this.onBeat();
@@ -282,62 +283,80 @@
       const L = this.loop, W = this.wing;
       L.t += dt;
       const k = Math.min(1, L.t / L.dur);
-      const th = TAU * (k + 0.07 * Math.sin(TAU * k)); // a touch slower over the top
-      L.th = th;
+      // eased: quick pull-up and pull-out, a hang over the top so the inversion reads
+      const th = TAU * (k + 0.075 * Math.sin(TAU * k));
+      L.th = th; L.k = k;
       const f = L.R * Math.sin(th) + L.drift * L.t, h = L.R * (1 - Math.cos(th));
-      const nx = L.x0 + Math.cos(L.a) * f, ny = L.y0 + Math.sin(L.a) * f, nz = L.z0 + h;
-      const idt = dt > 0 ? 1 / dt : 0;
-      this.vx = (nx - this.x) * idt; this.vy = (ny - this.y) * idt; this.vz = 0;
-      this.x = nx; this.y = ny; this.z = nz;
+      // the body travels round the loop on the ground plane; most of the height is
+      // visual (layoutLoop), so the camera does not chase the climb and swallow it
+      this.x = L.x0 + Math.cos(L.a) * f; this.y = L.y0 + Math.sin(L.a) * f; this.z = L.z0 + h * 0.3;
+      this.vx = Math.cos(L.a) * L.v; this.vy = Math.sin(L.a) * L.v; this.vz = 0;
       this.angle = this.velA = L.a; this.angVel = 0; this.pitch = 0;
       this.bank = U.damp(this.bank, 0, 8, dt);
       this.speed = L.v;
       this.diving = this.powerDive = this.braking = this.sprinting = false;
       this.brakeT = 0;
-      // wings: hard beats up the climb, then held wide (the silhouette reads as a
-      // dragon even when its body points straight up or down the screen), cupped to pull out
+      // wings: hard beats up the climb, swept back and wide over the top, cupped to pull out
       let elev, fold = 0, sweep = 0, cup = 0;
-      if (k < 0.28) {
+      if (k < 0.3) {
         this.freq = 2.6; this.amp = 0.7;
         const prev = Math.sin(this.phase * TAU);
         this.phase = (this.phase + this.freq * dt) % 1;
         const stroke = Math.sin(this.phase * TAU);
         if (prev <= 0 && stroke > 0) this.onBeat();
         elev = 0.22 + Math.cos(this.phase * TAU) * 0.7; if (stroke < 0) fold = -stroke * 0.4;
-      } else if (k < 0.72) { this.freq = 0; elev = 0.12 + Math.sin(this.t * 9) * 0.04; sweep = 0.05; }
-      else { this.freq = 0; elev = 0.1; sweep = 0.2; cup = 0.4; }
-      W.elev = U.damp(W.elev, elev, k < 0.28 ? 30 : 8, dt);
+      } else if (k < 0.72) { this.freq = 0; elev = 0.14 + Math.sin(this.t * 9) * 0.04; sweep = -0.2; }
+      else { this.freq = 0; elev = 0.1; sweep = 0.2; cup = 0.45; }
+      W.elev = U.damp(W.elev, elev, k < 0.3 ? 30 : 8, dt);
       W.fold = U.damp(W.fold, fold, 12, dt);
       W.sweep = U.damp(W.sweep, sweep, 7, dt);
       W.cup = U.damp(W.cup, cup, 6, dt);
       this.wingsDown = 0;
       this.bounds(dt);
       if (k >= 1) {
-        this.loop = null; this.z = L.z0; this.speed = L.v * 1.04;
+        this.loop = null; this.loopPose = null; this.z = L.z0; this.speed = L.v * 1.04;
         this.layoutRig(0, true);
       }
     }
-    /* the loop is drawn by tilting the whole top-down dragon about its chest:
-     * its nose axis swings up the screen (height) and back over, the wings stay
-     * level. shadow: the ground shadow, which only foreshortens */
-    loopTransform(ctx, ox, oy, shadow) {
-      const L = this.loop, ch = this.nodes[AS.DragonArt.CHEST];
-      const c = Math.cos(L.a), s = Math.sin(L.a), ct = Math.cos(L.th), st = shadow ? 0 : Math.sin(L.th);
-      let px = ch.x - ox, py = ch.y - ch.z - oy;
-      if (shadow) { const off = 2 + ch.z * 0.12; px = ch.x - ox + off + ch.z * 0.15; py = ch.y - oy + off * 0.5; }
-      // nose axis (c, s) → ct·(c, s) + (0, −st); wing axis (−s, c) unchanged: M = B·R(−a)
-      let b11 = ct * c, b21 = ct * s - st;
-      const b12 = -s, b22 = c;
-      // twice a loop the tilted camera sees the wing plane edge-on and the dragon
-      // would shrink to a line: keep at least a third of its area, flipping through
-      const det = b11 * b22 - b21 * b12, dmin = 0.34;
-      if (Math.abs(det) < dmin) {
-        const mu = (det < 0 || (det === 0 && ct < 0) ? -dmin : dmin) - det;
-        b11 += mu * b22; b21 -= mu * b12;
+    /* the loop as the camera sees it: every spine node sits at its own point on
+     * a vertical ellipse along the heading (the neck a little ahead, the tail
+     * trailing behind, so the body curves round the arc). Each node's sprite
+     * heading is the screen direction of its travel: up the screen on the climb,
+     * reversed over the top, down the screen on the dive. When the heading runs
+     * up or down the screen the loop would flatten to a line, so it leans
+     * sideways by up to half its height. Length is never foreshortened below
+     * 0.55, the dragon grows a little as it rises toward the camera, and the
+     * inverted stretch shows its belly. */
+    layoutLoop() {
+      const L = this.loop;
+      if (!L) { this.loopPose = null; return; }
+      const C = AS.DragonArt.chainFor ? AS.DragonArt.chainFor(this.fk) : AS.DragonArt.CHAIN, CH = AS.DragonArt.CHEST, n = this.nodes.length, s = this.scale;
+      const a = L.a, ca = Math.cos(a), sa = Math.sin(a), lean = -sa * 0.5;
+      const P = this.loopPose || (this.loopPose = { nodes: [], spanK: [1, 1] });
+      const out = P.nodes;
+      // arc length from the chest to each node (ahead positive)
+      const dist = this._loopDist || (this._loopDist = new Float32Array(n));
+      dist[CH] = 0;
+      for (let i = CH - 1; i >= 0; i--) dist[i] = dist[i + 1] + C[i + 1].d * s;
+      for (let i = CH + 1; i < n; i++) dist[i] = dist[i - 1] - C[i].d * s;
+      for (let i = 0; i < n; i++) {
+        const th = L.th + dist[i] / L.R * 0.6;
+        const ct = Math.cos(th), st = Math.sin(th);
+        const f = L.R * st + L.drift * L.t, h = L.R * (1 - ct);
+        const nd = out[i] || (out[i] = {});
+        nd.x = L.x0 + ca * f + lean * h; nd.y = L.y0 + sa * f; nd.z = L.z0 + h;
+        const dx = ca * ct + lean * st, dy = sa * ct - st;
+        nd.a = Math.atan2(dy, dx);
+        nd.len = U.clamp(Math.hypot(dx, dy), 0.55, 1);
+        nd.inv = U.smoothstep(0.42, 0.92, (1 - ct) / 2);
+        nd.sc = 1 + 0.12 * h / (2 * L.R);
       }
-      ctx.translate(px, py);
-      ctx.transform(b11 * c - b12 * s, b21 * c - b22 * s, b11 * s + b12 * c, b21 * s + b22 * c, 0, 0);
-      ctx.translate(-px, -py);
+      const ch = out[CH];
+      P.inv = ch.inv; P.sc = ch.sc;
+      // the wing nearer the camera (lower on screen) looks larger mid-loop
+      const mid = Math.sin(L.th) * Math.sin(L.th), q = Math.cos(ch.a) * mid * 0.14;
+      P.spanK[0] = 1 - q; P.spanK[1] = 1 + q;
+      P.rise = (ch.z - L.z0) / (2 * L.R);
     }
 
     canLand() {
@@ -644,9 +663,14 @@
     }
     drawShadow(ctx, ox, oy) {
       if (this.hidden) return;
-      if (this.loop) { ctx.save(); this.loopTransform(ctx, ox, oy, true); }
+      if (this.loop && this.loopPose) {
+        // the shadow stays on the ground under the body and fades as the dragon climbs away from it
+        ctx.save(); ctx.globalAlpha *= 1 - 0.55 * this.loopPose.rise;
+        AS.DragonArt.drawShadow(ctx, this.syncDraw(), ox, oy);
+        ctx.restore();
+        return;
+      }
       AS.DragonArt.drawShadow(ctx, this.syncDraw(), ox, oy);
-      if (this.loop) ctx.restore();
     }
     draw(ctx, ox, oy, R) {
       if (this.hidden) {
@@ -654,10 +678,9 @@
         return;
       }
       const st = this.syncDraw();
-      if (this.loop) { ctx.save(); this.loopTransform(ctx, ox, oy, false); }
-      AS.DragonArt.draw(ctx, st, ox, oy, R);
-      if (this.carry && this.carryPos) AS.Life.drawCarried(this.carry, ctx, this.carryPos.x, this.carryPos.y, this.carryPos.z, ox, oy, R, this.angle);
-      if (this.loop) ctx.restore();
+      if (this.loop && this.loopPose) AS.DragonArt.drawLoop(ctx, st, ox, oy, R, this.loopPose);
+      else AS.DragonArt.draw(ctx, st, ox, oy, R);
+      if (this.carry && this.carryPos && !this.loop) AS.Life.drawCarried(this.carry, ctx, this.carryPos.x, this.carryPos.y, this.carryPos.z, ox, oy, R, this.angle);
       if (this.buffs.shield) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.25 + Math.sin(this.t * 6) * 0.08;
         ctx.strokeStyle = '#9fd8ff'; ctx.lineWidth = 1.5;

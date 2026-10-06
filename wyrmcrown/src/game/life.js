@@ -23,6 +23,27 @@
     boar: { gen: 'ani_boar', food: 28, hp: 28, speed: 36, run: 140, r: 6, col: '#4a3428', col2: '#2a1e18', len: 11, sfx: 'boar', wild: true },
     horse: { gen: 'ani_horse', food: 30, hp: 30, speed: 44, run: 190, r: 7, col: '#7a4a2a', col2: '#2a1a12', len: 15, sfx: 'horse', wild: true },
   };
+  // the stranger wildlife of each realm (models_beasts*.js); the biggest are
+  // too large to snatch, but they burn and they fall
+  Object.assign(ANIMALS, {
+    greatstag: { gen: 'bst_greatstag', food: 40, hp: 42, speed: 40, run: 185, r: 9, col: '#7a4a28', col2: '#e8dcc0', len: 16, sfx: null, wild: true, v: 3 },
+    aurochs: { gen: 'bst_aurochs', food: 46, hp: 54, speed: 30, run: 100, r: 10, col: '#2a2420', col2: '#d8c8a0', len: 16, sfx: 'cow', wild: true, v: 3 },
+    glimmerdeer: { gen: 'bst_glimmerdeer', food: 30, hp: 22, speed: 40, run: 180, r: 6, col: '#d8e8d0', col2: '#a0ffd0', len: 12, sfx: null, wild: true, v: 3, light: { col: '#a0ffd0', r: 14, a: 0.3 } },
+    marshcroaker: { gen: 'bst_marshcroaker', food: 24, hp: 26, speed: 24, run: 90, r: 7, col: '#4a6a3a', col2: '#c8e070', len: 11, sfx: null, wild: true, v: 3, light: { col: '#d8ff80', r: 10, a: 0.25 } },
+    elderhorn: { gen: 'bst_elderhorn', food: 0, hp: 220, speed: 20, run: 60, r: 16, col: '#4a5a3a', col2: '#8aa860', len: 28, sfx: null, wild: true, v: 3, nosnatch: true, light: { col: '#9aff9a', r: 18, a: 0.15 } },
+    rimeelk: { gen: 'bst_rimeelk', food: 44, hp: 46, speed: 36, run: 175, r: 9, col: '#3a3a40', col2: '#d8e8f0', len: 16, sfx: null, wild: true, v: 3 },
+    frosthulk: { gen: 'bst_frosthulk', food: 0, hp: 260, speed: 18, run: 70, r: 15, col: '#8a8070', col2: '#e8e4dc', len: 26, sfx: null, wild: true, v: 3, nosnatch: true },
+    woollytusker: { gen: 'bst_woollytusker', food: 0, hp: 240, speed: 20, run: 80, r: 14, col: '#5a3a28', col2: '#e8dcc0', len: 24, sfx: null, wild: true, v: 3, nosnatch: true },
+    bloatling: { gen: 'bst_bloatling', food: 0, hp: 180, speed: 14, run: 40, r: 12, col: '#5a4a60', col2: '#c8ff60', len: 18, sfx: null, wild: true, v: 3, nosnatch: true, light: { col: '#c8ff60', r: 14, a: 0.25 } },
+    stiltstrider: { gen: 'bst_stiltstrider', food: 0, hp: 160, speed: 26, run: 110, r: 10, col: '#4a4440', col2: '#8a8470', len: 20, sfx: null, wild: true, v: 3, nosnatch: true },
+  });
+  // tiny wildlife: hares, foxes, rats; not food, just life in the grass
+  const CRITTERS = {
+    hare: { gen: 'crt_hare', speed: 26, run: 150, hp: 3, r: 2.5, food: 0 },
+    fox: { gen: 'crt_fox', speed: 30, run: 130, hp: 4, r: 3.5, food: 0 },
+    rat: { gen: 'crt_rat', speed: 22, run: 90, hp: 2, r: 2, food: 0 },
+    snowhare: { gen: 'crt_snowhare', speed: 26, run: 150, hp: 3, r: 2.5, food: 0 },
+  };
   const SNATCH_SLOW = 235; // below this speed the dragon can snatch from higher up and further away
   const PEOPLE = { peasant: { gen: 'ppl_peasant' }, villager: { gen: 'ppl_villager' } };
 
@@ -45,11 +66,13 @@
   }
 
   const Life = {
-    ANIMALS,
+    ANIMALS, CRITTERS,
     init(g) {
-      const L = g.life = { animals: [], people: [], flocks: [], grid: new U.Grid(96), t: 0, coarse: 0 };
+      const L = g.life = { animals: [], people: [], critters: [], flocks: [], grid: new U.Grid(96), t: 0, coarse: 0 };
       // wild herds from the map
       for (const h of g.map.wild || []) if (ANIMALS[h.k]) this.herd(g, h.k, h.x, h.y, h.n || 4, null, h.r || 220);
+      // each realm's own wildlife, and the small creatures of the grass
+      this.wildByRegion(g);
       // livestock and villagers come from towns and villages (they call addHerd/addPeople)
       // bird flocks: spread over the map, kind by region
       const rng = new U.RNG(g.map.seed * 17 + 3);
@@ -66,9 +89,69 @@
         const a = Math.random() * TAU, d = Math.sqrt(Math.random()) * herd.r * 0.6;
         const px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
         if (!g.terrain.groundPassable(px, py)) continue;
-        L.animals.push({ kind: k, A, x: px, y: py, a: Math.random() * TAU, vx: 0, vy: 0, hp: A.hp, alive: true, dead: 0, owner: herd.owner, herd, state: 'graze', t: Math.random() * 4, anim: Math.random() * 4, scare: 0, tx: px, ty: py, roast: false, carried: false, burn: 0 });
+        L.animals.push({ kind: k, A, x: px, y: py, a: Math.random() * TAU, vx: 0, vy: 0, hp: A.hp, alive: true, dead: 0, owner: herd.owner, herd, state: 'graze', t: Math.random() * 4, anim: Math.random() * 4, scare: 0, tx: px, ty: py, roast: false, carried: false, burn: 0, v: A.v ? (Math.random() * A.v) | 0 : 0 });
       }
       return herd;
+    },
+    /* herds of the realm's own beasts in open country, and critters near woods and fields */
+    wildByRegion(g) {
+      const T = g.terrain, rng = new U.RNG((g.map.seed || 1) * 613 + 7);
+      const area = g.map.w * g.map.h / 1e8;
+      const WILD = {
+        human: [['greatstag', 2, 3], ['aurochs', 2, 4]], neutral: [['greatstag', 1, 2], ['aurochs', 1, 3]],
+        elf: [['glimmerdeer', 3, 4], ['marshcroaker', 2, 3], ['elderhorn', 2, 1]],
+        ice: [['rimeelk', 3, 4], ['frosthulk', 2, 2], ['woollytusker', 2, 2]],
+        undead: [['bloatling', 2, 1], ['stiltstrider', 2, 1]],
+      };
+      const CR = { human: ['hare', 'fox'], neutral: ['hare', 'fox'], elf: ['hare', 'fox'], ice: ['snowhare'], undead: ['rat'] };
+      const towns = g.factionList.map((F) => F.townPos), sites = g.sites || [];
+      const open = (x, y, water) => {
+        if (x < 300 || y < 300 || x > g.map.w - 300 || y > g.map.h - 300) return false;
+        if (!T.groundPassable(x, y) || T.kindFast(x, y) !== 0) return false;
+        const wd = T.gs(T.gWater, x, y);
+        if (wd < 40 || (water && wd > 200)) return false;
+        if (T.gs(T.gRoad, x, y) < 70 || T.gs(T.gMount, x, y) > 0.4) return false;
+        for (const t of towns) if (Math.hypot(t.x - x, t.y - y) < 950) return false;
+        for (const s of sites) if (Math.hypot(s.x - x, s.y - y) < (s.def.r || 40) + 180) return false;
+        return true;
+      };
+      for (const bk in WILD) for (const [k, per, n] of WILD[bk]) {
+        const A = ANIMALS[k];
+        if (!A || !AS.Models[A.gen]) continue;
+        const want = Math.max(1, Math.round(per * area));
+        let made = 0, tries = 0;
+        while (made < want && tries < 120) {
+          tries++;
+          const x = rng.range(300, g.map.w - 300), y = rng.range(300, g.map.h - 300);
+          if (T.biomeKey(x, y) !== bk || !open(x, y, k === 'marshcroaker' || k === 'bloatling')) continue;
+          if (T.gs(T.gForest, x, y) > (bk === 'elf' ? 0.75 : 0.45)) continue;
+          this.herd(g, k, x, y, n, null, 200);
+          made++;
+        }
+      }
+      for (const bk in CR) {
+        const want = Math.round(4 * area);
+        let made = 0, tries = 0;
+        while (made < want && tries < 80) {
+          tries++;
+          const x = rng.range(300, g.map.w - 300), y = rng.range(300, g.map.h - 300);
+          if (T.biomeKey(x, y) !== bk || !T.groundPassable(x, y) || T.kindFast(x, y) !== 0) continue;
+          const kinds = CR[bk].filter((c) => AS.Models[CRITTERS[c].gen]);
+          if (!kinds.length) break;
+          const k = kinds[(rng.next() * kinds.length) | 0];
+          this.critters(g, k, x, y, 2 + (rng.next() * 3 | 0));
+          made++;
+        }
+      }
+    },
+    critters(g, k, x, y, n) {
+      const L = g.life, A = CRITTERS[k];
+      const herd = { x, y, r: 120, owner: null, k };
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * TAU, d = Math.random() * 60, px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
+        if (!g.terrain.groundPassable(px, py)) continue;
+        L.critters.push({ kind: k, A, critter: true, x: px, y: py, a: Math.random() * TAU, vx: 0, vy: 0, hp: A.hp, alive: true, dead: 0, owner: null, herd, state: 'graze', t: Math.random() * 3, anim: Math.random() * 4, scare: 0, tx: px, ty: py, roast: false, carried: false, burn: 0, v: 0 });
+      }
     },
     // a settlement's people: n villagers wandering between the given spots
     addPeople(g, team, x, y, r, n, opts) {
@@ -97,8 +180,14 @@
 
     sheetFor(o) {
       if (o.kind in ANIMALS) {
-        const A = ANIMALS[o.kind];
-        if (!A.sheet) A.sheet = AS.Forge.sheet('ani:' + o.kind + (AS.Models[A.gen] ? '' : ':fb'), AS.Models[A.gen] ? () => AS.Models[A.gen]({}, {}) : fallbackAnimal(o.kind), 16, 4);
+        const A = ANIMALS[o.kind], v = o.v || 0;
+        A.sheets = A.sheets || [];
+        if (!A.sheets[v]) A.sheets[v] = AS.Forge.sheet('ani:' + o.kind + ':' + v + (AS.Models[A.gen] ? '' : ':fb'), AS.Models[A.gen] ? () => AS.Models[A.gen]({}, { v }) : fallbackAnimal(o.kind), 16, 4);
+        return A.sheets[v];
+      }
+      if (o.critter) {
+        const A = CRITTERS[o.kind];
+        if (!A.sheet) A.sheet = AS.Forge.sheet('crt:' + o.kind, () => AS.Models[A.gen]({}, {}), 16, 4);
         return A.sheet;
       }
       const key = 'ppl:' + o.kind + ':' + o.v + ':' + (o.team || 'n');
@@ -131,6 +220,14 @@
         if (o.dead) { o.dead += dt; if (o.dead > 30) o.alive = false; L.grid.insert(o); continue; }
         const full = near(o);
         if (full) this.updateAnimal(g, o, dt, threats);
+        else if (coarseTick) this.updateAnimal(g, o, 0.5, threats, true);
+        L.grid.insert(o);
+      }
+      for (let i = L.critters.length - 1; i >= 0; i--) {
+        const o = L.critters[i];
+        if (!o.alive) { L.critters.splice(i, 1); continue; }
+        if (o.dead) { o.dead += dt; if (o.dead > 12) o.alive = false; continue; }
+        if (near(o)) this.updateAnimal(g, o, dt, threats);
         else if (coarseTick) this.updateAnimal(g, o, 0.5, threats, true);
         L.grid.insert(o);
       }
@@ -253,8 +350,8 @@
     kill(g, o, roast) {
       if (o.dead) return;
       o.dead = 0.001; o.roast = !!roast; o.moving = false;
-      if (o.kind in ANIMALS) {
-        AS.FX.splat(o.x, o.y, 4, roast ? '#5a3a2a' : '#8a2a1a', 6);
+      if (o.kind in ANIMALS || o.critter) {
+        AS.FX.splat(o.x, o.y, 4, roast ? '#5a3a2a' : '#8a2a1a', o.critter ? 2 : 6);
         if (o.owner && g.factions[o.owner] && g.factions[o.owner].onLivestockLost) g.factions[o.owner].onLivestockLost(o);
       }
     },
@@ -271,7 +368,7 @@
     preyAt(g, x, y, r) {
       let best = null, bd = r * r;
       for (const o of g.life.grid.query(x, y, r + 8, [])) {
-        if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
+        if (!(o.kind in ANIMALS) || o.carried || !o.alive || o.A.nosnatch) continue;
         const dd = (o.x - x) * (o.x - x) + (o.y - 4 - y) * (o.y - 4 - y);
         if (dd < bd) { bd = dd; best = o; }
       }
@@ -287,7 +384,7 @@
       if (w && w.alive && !w.carried && (w.x - qx) * (w.x - qx) + (w.y - qy) * (w.y - qy) < R.r * R.r) return w;
       let best = null, bd = R.r * R.r;
       for (const o of g.life.grid.query(qx, qy, R.r + 8, [])) {
-        if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
+        if (!(o.kind in ANIMALS) || o.carried || !o.alive || o.A.nosnatch) continue;
         const dd = (o.x - qx) * (o.x - qx) + (o.y - qy) * (o.y - qy);
         if (dd < bd) { bd = dd; best = o; }
       }
@@ -378,7 +475,7 @@
       for (const o of g.life.grid.query(bi.mx + Math.cos(bi.a) * bi.L * 0.5, bi.my + Math.sin(bi.a) * bi.L * 0.5, bi.L, [])) {
         if (o.dead || o.carried || o.hidden > 0) continue;
         if (!AS.Combat.inCone(bi, o.x, o.y, 0, 5)) continue;
-        if (o.kind in ANIMALS) {
+        if (o.kind in ANIMALS || o.critter) {
           if (B.effect === 'freeze') { o.slow = 3; o.hp -= dmg * 0.8; }
           else { o.hp -= dmg; if (B.effect === 'burn') o.burn = 3; }
           if (o.hp <= 0) this.kill(g, o, B.effect === 'burn');
@@ -410,7 +507,7 @@
         if (o.dead || o.carried || o.hidden > 0) continue;
         if (Math.hypot(o.x - x, o.y - y) > R) continue;
         o.hp -= dmg * 0.6;
-        if (o.hp <= 0) { if (o.kind in ANIMALS) this.kill(g, o, dtype === 'fire'); else o.alive = false; }
+        if (o.hp <= 0) { if (o.kind in ANIMALS || o.critter) this.kill(g, o, dtype === 'fire'); else o.alive = false; }
       }
     },
     fieldTouch(g, f) {
@@ -423,6 +520,7 @@
     collect(g, list, x0, y0, x1, y1) {
       const L = g.life;
       for (const o of L.animals) if (!o.carried && o.x > x0 - 20 && o.x < x1 + 20 && o.y > y0 - 20 && o.y < y1 + 40) list.push(o.drawable || (o.drawable = makeDrawable(o)));
+      for (const o of L.critters) if (o.x > x0 - 20 && o.x < x1 + 20 && o.y > y0 - 20 && o.y < y1 + 40) list.push(o.drawable || (o.drawable = makeDrawable(o)));
       for (const o of L.people) if (!o.hidden && o.x > x0 - 20 && o.x < x1 + 20 && o.y > y0 - 20 && o.y < y1 + 40) list.push(o.drawable || (o.drawable = makeDrawable(o)));
     },
     drawSky(ctx, ox, oy, g, R) {
@@ -475,6 +573,8 @@
         const anim = o.moving || (o.work && o.state === 'idle') ? o.anim : 0;
         R.sprite(ctx, sh, o.a, anim, o.x, o.y, 0, ox, oy);
         if (o.burn > 0) AS.Renderer.light(o.x, o.y - 4, 14, '#ff8a3a', 0.3);
+        const L = o.A && o.A.light;
+        if (L) R.light(o.x, o.y - 6, L.r, L.col, L.a * (0.85 + 0.15 * Math.sin(o.anim * 2 + o.x)));
       },
     };
   }

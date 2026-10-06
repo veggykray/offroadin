@@ -167,6 +167,11 @@
         for (let q = 0; q < 5; q++) base += this.gBiome[k * 5 + q] * cover[BIOMES[q]];
         const n = U.fbm(x / 900, y / 900, 3, sd + 43);
         fo = Math.max(fo, U.clamp((n + base - 0.18) * 2.2, 0, 1) * Math.min(1, base * 2.2));
+        // glades: sunlit clearings opened in the woods, most of all in the old forest
+        const gl = U.fbm(x / 430, y / 430, 2, sd + 44);
+        const elfK = this.gBiome[k * 5 + 1];
+        const glade = U.smoothstep(0.32 - elfK * 0.12, 0.62, gl);
+        fo *= 1 - glade * (0.55 + elfK * 0.4);
         if (mt > 0.55) fo *= U.clamp(1.6 - mt * 1.4, 0, 1); // tree line
         this.gForest[k] = fo;
         // farmland and clearings keep trees out
@@ -228,6 +233,12 @@
       const wx = x + U.noise2(x / 1100, y / 1100, sd + 5) * 120;
       const wy = y + U.noise2(x / 1100 + 41.3, y / 1100, sd + 6) * 120;
       let h = 0.4 + 0.42 * U.fbm(wx / 1500, wy / 1500, 3, sd);
+      // landscape structure: rolling hills in the farmland and heartland, gentler
+      // swells under the forest, craggy broken ground in the north and the blight
+      const bw = this.biomeAt(x, y, this._bwh || (this._bwh = new Float32Array(5)));
+      const roll = U.fbm(wx / 560, wy / 560, 2, sd + 7);
+      const crag = U.ridged(x / 330, y / 330, 2, sd + 8) - 0.5;
+      h += roll * (0.095 * (bw[0] + bw[4]) + 0.06 * bw[1] + 0.05 * bw[2] + 0.04 * bw[3]) + crag * (0.07 * bw[2] + 0.075 * bw[3]);
       const mt = this.gs(this.gMount, x, y);
       h += mt * 0.62;
       const water = this.gs(this.gWater, x, y);
@@ -309,19 +320,69 @@
         r = U.lerp(r, 238, t); g = U.lerp(g, 243, t); b = U.lerp(b, 250, t);
         r = U.lerp(r, 86, ta); g = U.lerp(g, 80, ta); b = U.lerp(b, 88, ta);
       }
+      // ---- ground detail: nothing in the realm is one flat colour
+      const humW = w[0] + w[4];
+      const p1 = U.noise2(x / 96, y / 96, sd + 71), p2 = U.noise2(x / 38, y / 38, sd + 72);
+      const hh2 = U.hash2((x * 1.9) | 0, (y * 1.9) | 0, sd + 73);
+      if (s > 20 && l >= 0) {
+        if (humW > 0.2 && ex < 0.45) {
+          // flower meadows on the sunny patches, worn dry grass on the others
+          if (p1 > 0.4) {
+            const t = Math.min(1, (p1 - 0.4) * 3) * humW;
+            r = U.lerp(r, 138, t * 0.3); g = U.lerp(g, 160, t * 0.3); b = U.lerp(b, 70, t * 0.3);
+            if (hh2 > 0.972 - t * 0.02) { const pick = hh2 > 0.993 ? [240, 236, 210] : hh2 > 0.986 ? [236, 90, 110] : hh2 > 0.979 ? [250, 214, 70] : [130, 150, 236]; r = U.lerp(r, pick[0], 0.85); g = U.lerp(g, pick[1], 0.85); b = U.lerp(b, pick[2], 0.85); }
+          } else if (p1 < -0.5) {
+            const t = Math.min(1, (-0.5 - p1) * 3) * humW * 0.4;
+            r = U.lerp(r, 156, t); g = U.lerp(g, 150, t); b = U.lerp(b, 86, t);
+          }
+        }
+        if (elfW > 0.2) {
+          // bright moss cushions, dark loam, luminous ferns
+          if (p2 > 0.35) { const t = Math.min(1, (p2 - 0.35) * 3) * elfW * 0.4; r = U.lerp(r, 90, t); g = U.lerp(g, 170, t); b = U.lerp(b, 108, t); }
+          if (p1 < -0.45) { const t = Math.min(1, (-0.45 - p1) * 3) * elfW * 0.45; r = U.lerp(r, 44, t); g = U.lerp(g, 64, t); b = U.lerp(b, 38, t); }
+          if (hh2 > 0.991 && p2 > 0) { r = U.lerp(r, 168, 0.7 * elfW); g = U.lerp(g, 240, 0.7 * elfW); b = U.lerp(b, 190, 0.7 * elfW); }
+        }
+        if (deadW > 0.2) {
+          // dead grass tufts and bone chips on the dust; bog pools in the low ground near water
+          if (p1 < -0.35 && hh2 > 0.94) { r = U.lerp(r, 112, 0.6 * deadW); g = U.lerp(g, 98, 0.6 * deadW); b = U.lerp(b, 64, 0.6 * deadW); }
+          if (hh2 > 0.9965) { r = U.lerp(r, 200, 0.7 * deadW); g = U.lerp(g, 192, 0.7 * deadW); b = U.lerp(b, 170, 0.7 * deadW); }
+          if (l === 0 && s < 130 && p1 > -0.15) {
+            const t = Math.min(1, (p1 + 0.15) * 2.5) * Math.min(1, (130 - s) / 60) * deadW;
+            r = U.lerp(r, 42, t * 0.7); g = U.lerp(g, 52, t * 0.7); b = U.lerp(b, 36, t * 0.7);
+            if (p2 > 0.3) { const q = Math.min(1, (p2 - 0.3) * 4) * t; r = U.lerp(r, 50, q); g = U.lerp(g, 72, q); b = U.lerp(b, 66, q); if (hh2 > 0.985) { r += 30 * q; g += 36 * q; b += 30 * q; } }
+          }
+        }
+        if (iceW > 0.2) {
+          // rock showing through on the high ground, sheets of blue ice in the hollows, blue hollows in the snow
+          const rk = U.ridged(x / 150, y / 150, 1, sd + 74);
+          if (l >= 2 && rk > 0.7) { const t = Math.min(1, (rk - 0.7) * 6) * iceW * (l >= 3 ? 0.9 : 0.5); const dk = 1 - (hh2 > 0.93 ? 0.25 : 0) + (p2 > 0.3 ? 0.08 : 0); r = U.lerp(r, 118 * dk, t); g = U.lerp(g, 126 * dk, t); b = U.lerp(b, 140 * dk, t); }
+          if (l === 0 && s < 220 && p1 > 0.55) { const t = Math.min(1, (p1 - 0.55) * 5) * Math.min(1, (220 - s) / 100) * iceW * 0.55; r = U.lerp(r, 190, t); g = U.lerp(g, 218, t); b = U.lerp(b, 238, t); if (hh2 > 0.99) { r += 24 * t; g += 24 * t; b += 20 * t; } }
+        }
+        // the verges of the roads are trodden to dust; the banks are mud
+        const rd = this.gs(this.gRoad, x, y);
+        if (rd < 64 && iceW < 0.5) { const t = (1 - rd / 64) * (0.55 + p2 * 0.45) * 0.45; if (t > 0) { r = U.lerp(r, 150, t); g = U.lerp(g, 128, t); b = U.lerp(b, 88, t); } }
+        if (s > 26 && s < 58 && iceW < 0.5) { const t = (1 - (s - 26) / 32) * 0.35; r = U.lerp(r, 96, t); g = U.lerp(g, 80, t); b = U.lerp(b, 56, t); }
+      }
       // forest floor darkens under the canopy
       if (ex > 0.25 && s > 20) {
         const t = U.clamp((ex - 0.25) * 1.6, 0, 0.7);
         let fr = 0, fg = 0, fb = 0;
         for (let q = 0; q < 5; q++) { const F = LOOK_RGB[BIOMES[q]].floor, k = w[q]; fr += F[0] * k; fg += F[1] * k; fb += F[2] * k; }
         r = U.lerp(r, fr, t); g = U.lerp(g, fg, t); b = U.lerp(b, fb, t);
+        // leaf litter and the odd fallen branch under the trees
+        if (hh2 > 0.975 && iceW < 0.4) { const lit2 = humW > 0.5 ? [150, 104, 48] : elfW > 0.5 ? [120, 128, 60] : [78, 64, 56]; r = U.lerp(r, lit2[0], 0.6); g = U.lerp(g, lit2[1], 0.6); b = U.lerp(b, lit2[2], 0.6); }
       }
       // cursed blight: dark veins and a sickly sheen in the undead lands
       if (deadW > 0.3) {
-        const v = U.ridged(x / 90, y / 90, 1, sd + 61);
-        if (v > 0.95) { const t = (v - 0.95) * 11 * deadW; r = U.lerp(r, 74, t); g = U.lerp(g, 60, t); b = U.lerp(b, 88, t); }
+        // cracked earth, in patches: fine dark fissures where the ground has split
+        const ck = U.noise2(x / 420, y / 420, sd + 60);
+        if (ck > 0.05) {
+          const v = U.ridged(x / 70, y / 70, 1, sd + 61), m = Math.min(1, (ck - 0.05) * 3);
+          if (v > 0.965) { const t = Math.min(1, (v - 0.965) * 40) * deadW * m; r = U.lerp(r, 22, t * 0.7); g = U.lerp(g, 16, t * 0.7); b = U.lerp(b, 30, t * 0.7); }
+        }
         const ash = U.noise2(x / 220, y / 220, sd + 62);
-        if (ash > 0.35) { const t = (ash - 0.35) * 0.6 * deadW; r = U.lerp(r, 120, t); g = U.lerp(g, 116, t); b = U.lerp(b, 112, t); }
+        if (ash > 0.3) { const t = (ash - 0.3) * 0.9 * deadW; r = U.lerp(r, 128, t); g = U.lerp(g, 122, t); b = U.lerp(b, 116, t); }
+        if (ash < -0.35) { const t = (-0.35 - ash) * 0.9 * deadW; r = U.lerp(r, 92, t); g = U.lerp(g, 82, t); b = U.lerp(b, 52, t); } // dead yellow grass
       }
       // wind-scoured snow drifts and blue shadows in the north
       if (iceW > 0.3) {
@@ -347,6 +408,7 @@
           const k = 1 + crest * 0.12 + U.noise2(x / 300, y / 260, sd + 67) * 0.06;
           r *= k; g *= k; b *= k;
           if (U.hash2(x >> 1, y, sd + 68) > 0.994) { r += 40; g += 46; b += 46; }
+          if (elfW > 0.5 && d < 0.3 && U.noise2(x / 30, y / 30, sd + 75) > 0.55 && U.hash2((x * 0.5) | 0, (y * 0.5) | 0, sd + 76) > 0.6) { r = 70; g = 132; b = 60; }
         }
       } else if (s < 26) {
         // banks: wet earth, pebbles, a pale strand on lake shores
@@ -481,12 +543,17 @@
           const wd = this.gs(this.gWater, x, y);
           const hv = U.hash2(gx, gy, sd + 413);
           if (wd > 14 && wd < 60 && hv < 0.35) { const bk = biomeOf(x, y); if (bk !== 'ice') { items.push({ k: 'reeds', x, y, v: (hv * 50) | 0, r: 3, nearWater: true }); continue; } }
+          // boulders and pebbles along the banks
+          if (wd > 8 && wd < 44 && hv > 0.62 && hv < 0.78) { const bk = biomeOf(x, y); items.push({ k: bk === 'ice' ? 'rocksnow' : bk === 'undead' ? 'rockdark' : 'rock', x, y, v: (hv * 97) | 0, r: 3, nearWater: true }); continue; }
           if (this.gn(this.gField, x, y) === 1) continue;
           const mt = this.gs(this.gMount, x, y);
-          const p = 0.16 + mt * 0.5 + this.gs(this.gForest, x, y) * 0.2;
+          const fo2 = this.gs(this.gForest, x, y);
+          const edge = fo2 > 0.08 && fo2 < 0.5 ? 1 - Math.abs(fo2 - 0.29) / 0.21 : 0; // the scrubby fringe of a wood
+          const p = 0.16 + mt * 0.5 + fo2 * 0.2 + edge * 0.3;
           if (hv > p * q) continue;
           const bk = biomeOf(x, y);
           let k = this.pickW(ds.under[bk], U.hash2(gx, gy, sd + 414));
+          if (edge > 0.3 && bk !== 'ice' && bk !== 'undead' && U.hash2(gx, gy, sd + 417) < 0.6) k = U.hash2(gx, gy, sd + 418) < 0.3 ? 'berry' : 'bush';
           if (mt > 0.35 && U.hash2(gx, gy, sd + 415) < 0.6) k = bk === 'ice' ? 'rocksnow' : bk === 'undead' ? 'rockdark' : 'rock';
           items.push({ k, x, y, v: (U.hash2(gx, gy, sd + 416) * 97) | 0, r: 4 });
         }
@@ -503,6 +570,12 @@
         if (!list || !list.length) continue;
         const sh = list[it.v % list.length];
         const lx = it.x - x0, ly = it.y - y0;
+        if ((it.k === 'rocksnow' || it.k === 'snowpine' || it.k === 'shard') && this.frozenAt(it.x, it.y)) {
+          // a drift banked against the windward side, a blue hollow in the lee
+          const rr = sh.w * 0.55;
+          ctx.globalAlpha = 0.5; ctx.fillStyle = '#f7fbff'; ctx.beginPath(); ctx.ellipse(lx - rr * 0.25, ly + 1, rr, rr * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 0.22; ctx.fillStyle = '#7a9cc8'; ctx.beginPath(); ctx.ellipse(lx + rr * 0.45, ly + 2.5, rr * 0.7, rr * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+        }
         ctx.globalAlpha = 0.36; ctx.drawImage(sh.shadows[0], lx - sh.ax + 3.2, ly - sh.ay + 1.8, sh.w, sh.h);
         ctx.globalAlpha = 1; ctx.drawImage(sh.frames[0][0], lx - sh.ax, ly - sh.ay, sh.w, sh.h);
         if (++n % 140 === 0) { ctx.restore(); yield null; ctx.save(); ctx.scale(st.TD, st.TD); ctx.imageSmoothingEnabled = true; }

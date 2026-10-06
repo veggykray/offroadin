@@ -70,6 +70,22 @@
     troll: { name: 'Troll', hp: 380, r: 12, speed: 44, armor: 2, regen: 6, melee: { dmg: 30, rate: 0.7, range: 22, splash: 18 }, throwRock: { range: 280, rate: 0.2 }, hc: 14, gold: 55, gen: 'mon_troll' },
     giant: { name: 'Giant', hp: 900, r: 18, speed: 34, armor: 3, melee: { dmg: 52, rate: 0.45, range: 30, splash: 30 }, throwRock: { range: 380, rate: 0.28 }, hc: 22, gold: 120, gen: 'mon_giant', big: true },
     skeleton: { name: 'Risen', hp: 28, r: 6, speed: 46, armor: 0, melee: { dmg: 6, rate: 1, range: 14 }, hc: 6, gold: 2, gen: 'trp_undead_skeleton' },
+    // the wild beasts of each realm (team 'wild'; they hold a lair and chase what comes near it)
+    moorhound: { name: 'Moorhound', hp: 36, r: 6, speed: 96, armor: 0, melee: { dmg: 6, rate: 1.4, range: 13 }, hc: 5, gold: 3, gen: 'bst_moorhound', animal: true },
+    bear: { name: 'Bear', hp: 170, r: 9, speed: 62, armor: 1, melee: { dmg: 18, rate: 0.8, range: 16 }, hc: 8, gold: 10, gen: 'bst_bear', animal: true },
+    greatbeetle: { name: 'Great Beetle', hp: 90, r: 8, speed: 34, armor: 3, melee: { dmg: 8, rate: 0.9, range: 14 }, hc: 6, gold: 6, gen: 'bst_greatbeetle', animal: true },
+    spindlelurker: { name: 'Spindle Lurker', hp: 120, r: 9, speed: 74, armor: 0, melee: { dmg: 14, rate: 1, range: 18 }, hc: 12, gold: 12, gen: 'bst_spindlelurker', animal: true, light: { col: '#b0ffe0', r: 16, a: 0.3 } },
+    treeshambler: { name: 'Tree Shambler', hp: 420, r: 11, speed: 24, armor: 2, melee: { dmg: 26, rate: 0.6, range: 20, splash: 16 }, hc: 16, gold: 40, gen: 'bst_treeshambler', light: { col: '#9aff6a', r: 14, a: 0.3 } },
+    snowstalker: { name: 'Snow Stalker', hp: 95, r: 8, speed: 104, armor: 0, melee: { dmg: 12, rate: 1.2, range: 15 }, hc: 7, gold: 8, gen: 'bst_snowstalker', animal: true },
+    icecrawler: { name: 'Ice Crawler', hp: 150, r: 9, speed: 46, armor: 3, melee: { dmg: 11, rate: 0.9, range: 15 }, hc: 5, gold: 8, gen: 'bst_icecrawler', animal: true },
+    gravehound: { name: 'Gravehound', hp: 42, r: 6, speed: 92, armor: 0, melee: { dmg: 7, rate: 1.4, range: 13 }, hc: 5, gold: 3, gen: 'bst_gravehound', animal: true, light: { col: '#93ff6a', r: 12, a: 0.3 } },
+    carrioncrawler: { name: 'Carrion Crawler', hp: 140, r: 9, speed: 40, armor: 2, melee: { dmg: 10, rate: 0.9, range: 15 }, hc: 5, gold: 7, gen: 'bst_carrioncrawler', animal: true },
+    plagueboar: { name: 'Plague Boar', hp: 64, r: 7, speed: 72, armor: 0, melee: { dmg: 9, rate: 1.1, range: 14 }, hc: 6, gold: 4, gen: 'bst_plagueboar', animal: true },
+    // colossi: landmark-sized creatures that wander the far wilds and only fight when they are hurt
+    titan: { name: 'Wandering Titan', hp: 3200, r: 28, speed: 20, armor: 6, melee: { dmg: 90, rate: 0.35, range: 44, splash: 44 }, throwRock: { range: 420, rate: 0.2 }, hc: 34, gold: 300, gen: 'col_titan', big: true, passive: true, colossus: true, light: { col: '#ffb060', r: 30, a: 0.3 } },
+    spiderqueen: { name: 'Spider Queen', hp: 2200, r: 30, speed: 34, armor: 4, melee: { dmg: 60, rate: 0.6, range: 40, splash: 30 }, hc: 18, gold: 260, gen: 'col_spiderqueen', big: true, passive: true, colossus: true, light: { col: '#b0ffe0', r: 24, a: 0.35 } },
+    greatworm: { name: 'Great Worm', hp: 2600, r: 26, speed: 12, armor: 5, melee: { dmg: 80, rate: 0.4, range: 42, splash: 40 }, hc: 30, gold: 280, gen: 'col_greatworm', big: true, passive: true, colossus: true },
+    icebehemoth: { name: 'Ice Behemoth', hp: 3000, r: 32, speed: 24, armor: 6, melee: { dmg: 85, rate: 0.4, range: 44, splash: 42 }, throwRock: { range: 380, rate: 0.18 }, hc: 26, gold: 300, gen: 'col_icebehemoth', big: true, passive: true, colossus: true, light: { col: '#9fe8ff', r: 30, a: 0.25 } },
   };
 
   AS.Data.difficulty = {

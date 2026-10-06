@@ -223,14 +223,14 @@ await test('food: double-click an animal and the dragon hunts it down', async (k
 await test('flight: double-tap SPACE loops the loop and dodges fire', async (keep) => {
   const page = keep(await open('?map=sundered'));
   await ev(page, () => { const p = AS.game.player; AS.Debug.tp(3200, 6400, 60); p.angle = p.velA = 0.3; p.speed = 220; p.energy = 80; window.__peak = 0; window.__dodged = null;
-    const iv = setInterval(() => { if (!p.loop) return; __peak = Math.max(__peak, p.z); if (p.evading && __dodged === null) { const hp = p.hp; __dodged = p.targetable === false && p.takeDamage(25, 'magic', AS.game.factions.elf.dragon) === 0 && p.hp === hp; } }, 30); });
+    const iv = setInterval(() => { if (!p.loop) return; __peak = Math.max(__peak, p.loopPose && p.loopPose.nodes[3] ? p.loopPose.nodes[3].z : p.z); if (p.evading && __dodged === null) { const hp = p.hp; __dodged = p.targetable === false && p.takeDamage(25, 'magic', AS.game.factions.elf.dragon) === 0 && p.hp === hp; } }, 30); });
   await play(page, 0.3);
   await page.keyboard.press('Space'); await page.waitForTimeout(90); await page.keyboard.press('Space');
   await play(page, 0.25);
   ok(await ev(page, () => !!AS.game.player.loop), 'a double-tap started a loop');
   await play(page, 1.6);
   const r = await ev(page, () => { const p = AS.game.player; return { loop: !!p.loop, peak: __peak, dodged: __dodged, a: p.angle, z: p.z, hit: p.takeDamage(5, 'magic', AS.game.factions.elf.dragon) }; });
-  ok(!r.loop && r.peak > 130, 'climbed over the top and came back (peak ' + Math.round(r.peak) + ')');
+  ok(!r.loop && r.peak > 140, 'climbed over the top and came back (drawn peak ' + Math.round(r.peak) + ')');
   ok(r.dodged === true, 'nothing touches the dragon over the top of the loop');
   ok(Math.abs(r.a - 0.3) < 0.05 && r.hit > 0, 'back on its heading, and hittable again');
   return page;

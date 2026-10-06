@@ -41,6 +41,7 @@
       if (o && o.anims) B.sheet = AS.Building.sheetFor(gen, AS.Data.pal.neutral, { v: o.v || 0 }, 1, o.anims);
       if (o && o.solid === false) { const i = this.g.solids.indexOf(B); if (i >= 0) this.g.solids.splice(i, 1); B.solid = false; }
       B.sopt = { v: o && o.v || 0 }; B.sdirs = o && o.dirs || 1; B.sanims = o && o.anims || 1;
+      if (this.g.terrain.frozenAt && this.g.terrain.frozenAt(x, y) && B.r > 10 && !(o && o.dirs)) this.g.terrain.addDecal('drift', x, y + B.r * 0.35, B.r * 1.15, null, { static: true, seed: (x * 3 + y) | 0 });
       this.g.buildings.push(B); this.structures.push(B);
       return B;
     }

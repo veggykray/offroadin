@@ -31,6 +31,21 @@
     ] });
   }
 
+  /* the look of a monster depends on the land it haunts (models_giants.js);
+   * the stats are the same everywhere */
+  const LOOKS = {
+    giant: { human: 'gnt_hill', neutral: 'gnt_hill', elf: 'gnt_wood', ice: 'gnt_frost', undead: 'gnt_corpse' },
+    troll: { human: 'trl_cave', neutral: 'trl_moss', elf: 'trl_moss', ice: 'trl_frost', undead: 'trl_blight' },
+    ogre: { human: 'ogr_hill', neutral: 'ogr_hill', elf: 'ogr_hill', ice: 'ogr_hill', undead: 'ogr_swamp' },
+  };
+  function lookFor(g, role, def, x, y) {
+    const L = LOOKS[role];
+    if (!L) return def.gen;
+    const bk = g.terrain && g.terrain.biomeKey ? g.terrain.biomeKey(x, y) : 'neutral';
+    const gen = L[bk] || L.neutral;
+    return AS.Models[gen] ? gen : def.gen;
+  }
+
   class Troop extends AS.Entity {
     constructor(g, role, team, x, y, o) {
       o = o || {};
@@ -52,14 +67,22 @@
       this.hpBarT = 0;
       this.burnable = true;
       const pal = this.faction ? this.faction.def.pal : (o.pal || AS.Data.pal.neutral);
-      const gen = o.gen || def.gen || 'ppl_soldier';
+      const gen = o.gen || lookFor(g, role, def, x, y) || 'ppl_soldier';
       const dirs = def.dirs || 16;
-      if (role === 'cart') this.sheet = AS.Forge.sheet('cart:' + (AS.Models.prop_cart ? 'm' : 'fb') + team, AS.Models.prop_cart ? () => AS.Models.prop_cart(pal, {}) : cartModel(pal), 16, 1);
-      else this.sheet = AS.Forge.sheet('trp:' + gen + ':' + team + (AS.Models[gen] ? '' : ':fb'), AS.Models[gen] ? () => AS.Models[gen](pal, {}) : fallbackModel(role, pal, def.big ? 2.6 : def.hp > 250 ? 1.8 : 1), dirs, role === 'cart' ? 1 : 4);
+      // monsters and beasts come in visible variants: no two trolls are quite the same
+      this.v = o.v !== undefined ? o.v : (team === 'wild' && gen !== 'mon_bandit' ? (U.hash2(x | 0, y | 0, 77) * 3) | 0 : 0);
+      // the sheet is forged when the troop is first drawn, so a realm full of
+      // guardians does not stall the loading of the match
+      this._sheetFn = role === 'cart'
+        ? () => AS.Forge.sheet('cart:' + (AS.Models.prop_cart ? 'm' : 'fb') + team, AS.Models.prop_cart ? () => AS.Models.prop_cart(pal, {}) : cartModel(pal), 16, 1)
+        : () => AS.Forge.sheet('trp:' + gen + ':' + team + ':' + this.v + (AS.Models[gen] ? '' : ':fb'), AS.Models[gen] ? () => AS.Models[gen](pal, { v: this.v }) : fallbackModel(role, pal, def.big ? 2.6 : def.hp > 250 ? 1.8 : 1), dirs, role === 'cart' ? 1 : 4);
+      this._sheet = null;
       this.horse = role === 'cart' ? AS.Life.sheetFor({ kind: 'horse' }) : null;
       this.r = def.r;
       if (def.big || def.hp > 250) this.hitR = def.r * 1.4;
     }
+    get sheet() { return this._sheet || (this._sheet = this._sheetFn()); }
+    set sheet(v) { this._sheet = v; }
     get py() { return this.y - this.hc; }
     get sortY() { return this.y; }
     ignite(t, src) { this.burn = Math.max(this.burn, t); this.burnSrc = src; }
@@ -128,7 +151,7 @@
       if (this.scanT <= 0) {
         this.scanT = 0.45 + Math.random() * 0.3;
         const sight = this.tdef.ranged ? this.tdef.ranged.range + 60 : this.tdef.throwRock ? this.tdef.throwRock.range : 240;
-        const t = g.nearestFoe(this.team, this.x, this.y, this.state === 'guard' && !this.provoked ? Math.min(sight, 280) : sight, { prefer: this.tdef.ranged && this.tdef.ranged.buildingPref ? (e) => e.isBuilding : (e) => !e.isBuilding && !e.isDragon });
+        const t = this.tdef.passive && !this.provoked ? null : g.nearestFoe(this.team, this.x, this.y, this.state === 'guard' && !this.provoked ? Math.min(sight, 280) : sight, { prefer: this.tdef.ranged && this.tdef.ranged.buildingPref ? (e) => e.isBuilding : (e) => !e.isBuilding && !e.isDragon });
         if (t && (!this.target || this.target.isBuilding || U.dist(this.x, this.y, t.x, t.y) < U.dist(this.x, this.y, this.target.x, this.target.y) * 0.7)) this.target = t;
       }
       // leash for guards and garrisons
@@ -230,6 +253,16 @@
       const s = Math.hypot(this.vx, this.vy);
       this.anim += dt * (s > 4 ? 2 + s * 0.07 : 0);
       if (this.lunge > 0) this.lunge -= dt;
+      // the heavy tread of a giant: dust at the feet and a tremor for anyone close
+      if (this.tdef.big && s > 4) {
+        const ph = this.anim % 2;
+        if (this.lastStep === undefined) this.lastStep = ph;
+        if (ph < this.lastStep) {
+          const p = g.player, d = p ? Math.hypot(p.x - this.x, p.y - this.y) : 1e9;
+          if (d < 900) { AS.FX.dust(this.x + U.range(-this.r * 0.4, this.r * 0.4), this.y + this.r * 0.3, 3, g.groundDust ? g.groundDust(this.x, this.y) : '#9a8a6a', 40); if (this.tdef.colossus) { AS.Audio.sfx('giant_stomp', { x: this.x, y: this.y, vol: 0.5 }); if (d < 500 && g.camera) g.camera.shake(0.05 * (1 - d / 500)); } }
+        }
+        this.lastStep = ph;
+      }
     }
     passableDir(a) {
       const g = this.g, L = this.r + 16;
@@ -304,6 +337,8 @@
       if (this.horse) R.sprite(ctx, this.horse, this.angle, this.anim, x + Math.cos(this.angle) * 14, y + Math.sin(this.angle) * 14, 0, ox, oy);
       R.sprite(ctx, this.sheet, this.angle, this.anim, x, y, 0, ox, oy);
       if (this.flash > 0) R.flashSprite(ctx, this.sheet, this.angle, this.anim, x, y, 0, ox, oy);
+      const L = this.tdef.light;
+      if (L) R.light(x, y - this.hc, L.r, L.col, L.a * (0.85 + 0.15 * Math.sin(this.t * 5)));
       if (this.root > 0) { ctx.strokeStyle = 'rgba(80,180,90,0.8)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(x - ox, y - oy, this.r + 2, (this.r + 2) * 0.6, 0, 0, TAU); ctx.stroke(); }
       if (this.slow > 0 && this.g.time % 0.5 < 0.25) { ctx.fillStyle = 'rgba(200,240,255,0.5)'; ctx.beginPath(); ctx.arc(x - ox, y - oy - this.hc, 2, 0, TAU); ctx.fill(); }
       // faction pennant dot and a health bar when hurt

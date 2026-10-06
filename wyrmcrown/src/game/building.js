@@ -126,9 +126,14 @@
       const g = this.g;
       this.alive = false;
       const big = this.r > 24;
-      AS.FX.explosion(this.x, this.y, this.hc * 0.5, this.r * 0.6, { col: '#fff0d0', col2: '#c86030', debris: true, debrisCol: this.faction ? this.faction.def.pal.a : '#6a5a4a', dustCol: '#9a8a70' });
-      for (let i = 0; i < (big ? 10 : 5); i++) AS.FX.dust(this.x + U.range(-this.r, this.r), this.y + U.range(-this.r * 0.6, this.r * 0.6), 2, '#8a7a64', 70);
+      const pal = this.faction ? this.faction.def.pal : (this.palOverride || AS.Data.pal.neutral);
+      AS.FX.explosion(this.x, this.y, this.hc * 0.5, this.r * 0.7, { col: '#fff0d0', col2: '#c86030', debris: true, debrisCol: pal.a, dustCol: '#9a8a70' });
+      for (let i = 0; i < (big ? 14 : 7); i++) AS.FX.dust(this.x + U.range(-this.r, this.r), this.y + U.range(-this.r * 0.6, this.r * 0.6), 2, '#8a7a64', 80);
+      // tumbling masonry and roof tiles
+      for (let i = 0; i < (big ? 22 : 10); i++) { const a = Math.random() * TAU, sp = 40 + Math.random() * this.r * 4; AS.Particles.spawn({ x: this.x, y: this.y, z: this.hc + 4, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.8, vz: 70 + Math.random() * 140, grav: 300, bounce: 0.3, shape: AS.Particles.SHARD, col: Math.random() < 0.4 ? pal.t : pal.b, size: 2 + Math.random() * 3.5, life: 1.2 + Math.random(), vr: (Math.random() - 0.5) * 20 }); }
+      // the ruin stays on the ground for the rest of the war
       g.terrain.addDecal(big ? 'craterbig' : 'scorch', this.x, this.y + 2, this.r * (big ? 0.6 : 1));
+      g.terrain.addDecal('rubble', this.x, this.y + 3, this.r * 0.9, null, { static: true, pal: { a: pal.a, b: pal.b, d: pal.d, w: pal.w }, seed: (this.x * 7 + this.y) | 0 });
       AS.Audio.sfx(big ? 'collapse' : 'explode_med', { x: this.x, y: this.y });
       g.shakeNear(this.x, this.y, big ? 0.5 : 0.2);
       this.ruinT = 0;
@@ -147,8 +152,10 @@
       if (!this.alive) {
         // rubble lingers, then clears
         this.ruinT += dt;
-        if (this.ruinT < 3 && Math.random() < 0.3) AS.FX.smoke(this.x + U.range(-this.r * 0.6, this.r * 0.6), this.y, 4, this.r * 0.4, true);
-        if (this.ruinT > 4) this.removed = true;
+        if (this.ruinT < 6 && Math.random() < 0.35) AS.FX.smoke(this.x + U.range(-this.r * 0.6, this.r * 0.6), this.y, 4, this.r * 0.4, true);
+        if (this.ruinT < 4 && Math.random() < 0.3 * AS.Particles.density) AS.FX.fire(this.x + U.range(-this.r * 0.5, this.r * 0.5), this.y + U.range(-4, 4), 2, this.r * 0.3);
+        if (this.ruinT < 5) AS.Renderer.light(this.x, this.y - 4, this.r * 2, '#ff8a3a', 0.3 * (1 - this.ruinT / 5));
+        if (this.ruinT > 6) this.removed = true;
         return;
       }
       if (this.built < 1) {
@@ -163,9 +170,13 @@
       if (this.burn > 0) {
         this.burn -= dt;
         super.takeDamage(this.maxHp * 0.012 * dt + 3 * dt, 'fire', this.burnSrc);
-        if (Math.random() < 0.6 * AS.Particles.density) AS.FX.fire(this.x + U.range(-this.r * 0.6, this.r * 0.6), this.y + U.range(-4, 4), this.hc + U.range(0, this.hc), this.r * 0.4);
-        if (Math.random() < 0.18) AS.FX.smoke(this.x, this.y, this.hc * 1.5, this.r * 0.5, true);
-        AS.Renderer.light(this.x, this.y - this.hc, this.r * 2.4, '#ff8a3a', 0.35);
+        const dens = AS.Particles.density;
+        if (Math.random() < 0.8 * dens) AS.FX.fire(this.x + U.range(-this.r * 0.6, this.r * 0.6), this.y + U.range(-4, 4), this.hc + U.range(0, this.hc), this.r * 0.55);
+        // tongues of flame licking up from the roof, and rising embers
+        if (Math.random() < 0.5 * dens) AS.Particles.spawn({ x: this.x + U.range(-this.r * 0.5, this.r * 0.5), y: this.y + U.range(-3, 3), z: this.hc * 1.6, vz: 26 + Math.random() * 20, vx: U.range(-6, 6), shape: AS.Particles.SMOKE, col: '#ffd070', col2: '#ff3a10', size: 2.5 + this.r * 0.08, size2: 5 + this.r * 0.2, life: 0.5 + Math.random() * 0.3, add: true, alpha: 0.9, drag: 1.2 });
+        if (Math.random() < 0.35 * dens) AS.Particles.spawn({ x: this.x + U.range(-this.r * 0.5, this.r * 0.5), y: this.y, z: this.hc * 1.8, vz: 30 + Math.random() * 40, vx: U.range(-15, 15), vy: U.range(-8, 8), shape: AS.Particles.CIRCLE, col: '#ffe8a0', col2: '#ff6a2a', size: 1.2, size2: 0.3, life: 0.8 + Math.random() * 0.6, add: true, drag: 0.8 });
+        if (Math.random() < 0.28) AS.FX.smoke(this.x, this.y, this.hc * 1.8, this.r * 0.6, true);
+        AS.Renderer.light(this.x, this.y - this.hc, this.r * 2.6, '#ff8a3a', 0.38 + Math.sin(this.anim * 3) * 0.06);
       } else if (this.hp < this.maxHp * 0.4 && Math.random() < 0.06) AS.FX.smoke(this.x, this.y, this.hc * 1.4, this.r * 0.35, this.hp < this.maxHp * 0.2);
       // necrotic rot eats at timber and stone; frost leaves it brittle
       if (this.wither > 0) {
@@ -254,6 +265,7 @@
         return;
       }
       ctx.drawImage(img, this.x - ox - sh.ax, this.y - oy - sh.ay, sh.w, sh.h);
+      if (this.hp < this.maxHp * 0.65 && this.r > 10) this.drawDamage(ctx, ox, oy, sh);
       if (this.flash > 0) R.flashSprite(ctx, sh, ang, ai, this.x, this.y, 0, ox, oy);
       if (this.kind === 'keep' && this.faction && this.faction.wardUp()) this.drawWard(ctx, ox, oy);
       if (this.hpBarT > 0 && this.hp < this.maxHp) {
@@ -264,6 +276,24 @@
         ctx.globalAlpha = 1;
       }
       if (this.kind === 'magetower' || this.kind === 'wardstone') R.light(this.x, this.y - this.sheet.ay * 0.8, 40, this.faction ? this.faction.def.color : '#c08aff', 0.35 + Math.sin(this.anim) * 0.1);
+    }
+    /* soot smudges and cracks that spread as a building is worn down */
+    drawDamage(ctx, ox, oy, sh) {
+      const k = 1 - this.hp / (this.maxHp * 0.65), x0 = this.x - ox, y0 = this.y - oy, seed = ((this.x * 13 + this.y) | 0);
+      const n = Math.min(5, 1 + Math.floor(k * 5));
+      ctx.save();
+      for (let i = 0; i < n; i++) {
+        const hx = U.hash2(seed, i, 3) - 0.5, hy = U.hash2(seed, i, 4), hr = U.hash2(seed, i, 5);
+        const px = x0 + hx * this.r * 1.3, py = y0 - sh.ay * 0.15 - hy * sh.ay * 0.7, rr = 3 + hr * this.r * 0.35;
+        const g = ctx.createRadialGradient(px, py, 0, px, py, rr);
+        g.addColorStop(0, 'rgba(14,10,8,' + (0.45 * Math.min(1, k * 1.5)) + ')'); g.addColorStop(1, 'rgba(14,10,8,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(px, py, rr, rr * 0.7, 0, 0, TAU); ctx.fill();
+        if (i < 3 && k > 0.35) {
+          ctx.strokeStyle = 'rgba(10,6,4,' + (0.6 * k) + ')'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(px, py);
+          let cx = px, cy = py; for (let j = 0; j < 4; j++) { cx += (U.hash2(seed, i * 7 + j, 6) - 0.5) * 5; cy += 2 + U.hash2(seed, i * 7 + j, 7) * 4; ctx.lineTo(cx, cy); } ctx.stroke();
+        }
+      }
+      ctx.restore();
     }
     drawWard(ctx, ox, oy) {
       const F = this.faction, col = F.def.color, R = this.r * 1.9;

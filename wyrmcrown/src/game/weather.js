@@ -19,7 +19,9 @@
       this.g = g;
       this.fronts = [];
       this.nextT = 70 + Math.random() * 80;
-      this.rain = 0; this.storm = 0; this.snow = 0; this.ash = 0; this.motes = 0;
+      this.rain = 0; this.storm = 0; this.snow = 0; this.ash = 0; this.motes = 0; this.fog = 0; this.blow = 0; this.fogCol = '#a0a898';
+      this.banks = [];
+      for (let i = 0; i < 12; i++) this.banks.push({ x: Math.random() * 2400, y: Math.random() * 1600, w: 260 + Math.random() * 300, h: 90 + Math.random() * 110, p: Math.random() * 10, k: 0.6 + Math.random() * 0.6 });
       this.flash = 0; this.bolts = [];
       this.parts = [];
       for (let i = 0; i < N; i++) this.parts.push({ x: Math.random() * 2400, y: Math.random() * 1600, z: 0.6 + Math.random() * 0.8, p: Math.random() * 10 });
@@ -67,6 +69,13 @@
       this.snow += (U.clamp((ice - 0.35) * 1.2, 0, 0.7) + rain * ice - this.snow) * k;
       this.ash += (U.clamp((dead - 0.4) * 1.1, 0, 0.6) - this.ash) * k;
       this.motes += (U.clamp(elf * forest * 1.2, 0, 0.6) - this.motes) * k;
+      // mist: thick over the blight's bogs and in the forest glades, thin over the rain-soaked farmland
+      const low = g.terrain.gs ? U.clamp(1 - g.terrain.gs(g.terrain.gWater, p.x, p.y) / 400, 0, 1) : 0;
+      const fogT = U.clamp((dead - 0.3) * 1.3, 0, 0.75) * (0.55 + low * 0.45) + U.clamp(elf * (1 - forest) * 0.5, 0, 0.3) + rain * 0.12;
+      this.fog += (fogT - this.fog) * k;
+      this.fogCol = dead > 0.4 ? '#9aa88e' : elf > 0.4 ? '#cfe6cc' : '#d8dce0';
+      const wind = (g.world.atm && g.world.atm.wind) || [14, 5];
+      this.blow += (U.clamp((ice - 0.3) * 1.2, 0, 1) * U.clamp(Math.hypot(wind[0], wind[1]) / 22, 0.4, 1) * (0.45 + rain * 0.8) - this.blow) * k;
       if (this.flash > 0) this.flash = Math.max(0, this.flash - dt * 2.8);
       for (let i = this.bolts.length - 1; i >= 0; i--) { this.bolts[i].t -= dt; if (this.bolts[i].t <= 0) this.bolts.splice(i, 1); }
     }
@@ -125,7 +134,7 @@
           if (kind < 0) continue;
           let vx, vy, len = 0, col, a, size = 1;
           if (kind === 0) { vx = wind[0] * 1.5 * p.z - 25; vy = (270 + this.storm * 90) * p.z; len = (8 + this.storm * 4) * p.z; col = '#c4dcf0'; a = 0.4 + this.storm * 0.12; }
-          else if (kind === 1) { vx = wind[0] * 1.4 * p.z + Math.sin(t * 2 + p.p) * 10; vy = (34 + this.rain * 60) * p.z; col = '#ffffff'; a = 0.65; size = p.z > 1.1 ? 2 : 1.4; }
+          else if (kind === 1) { const bl = this.blow; vx = wind[0] * (1.4 + bl * 5) * p.z + Math.sin(t * 2 + p.p) * 10; vy = (34 + this.rain * 60) * p.z + wind[1] * bl * 3; col = '#ffffff'; a = 0.65; size = p.z > 1.1 ? 2 : 1.4; if (bl > 0.25) len = (4 + bl * 14) * p.z; }
           else if (kind === 2) { vx = wind[0] * 0.8 + Math.sin(t * 0.8 + p.p) * 9; vy = 16 * p.z; col = p.p > 7 ? '#d8a070' : '#4a4450'; a = 0.5; size = p.z > 1.1 ? 2 : 1.4; }
           else { vx = Math.sin(t * 0.4 + p.p) * 7; vy = -5 + Math.cos(t * 0.6 + p.p) * 3; col = '#e8ffc0'; a = 0.35 + 0.3 * Math.sin(t * 3 + p.p * 2); size = 2; }
           p.x += vx / 60; p.y += vy / 60;
@@ -142,6 +151,22 @@
             if (kind === 1) { ctx.globalAlpha = a * 0.45; ctx.fillStyle = '#5a6a84'; ctx.fillRect(p.x + 1, p.y + 1, size, size); ctx.globalAlpha = a; }
             ctx.fillStyle = col; ctx.fillRect(p.x, p.y, size, size);
           }
+        }
+        ctx.restore();
+      }
+      // mist: soft banks drifting over the ground, in view-local space
+      if (this.fog > 0.02) {
+        const W = vw / cam.zoom, H = vh / cam.zoom, wind = (g.world.atm && g.world.atm.wind) || [14, 5];
+        if (this.lastFX === undefined) { this.lastFX = cam.x; this.lastFY = cam.y; }
+        const dx = cam.x - this.lastFX, dy = cam.y - this.lastFY; this.lastFX = cam.x; this.lastFY = cam.y;
+        const img = AS.Forge.glow(this.fogCol, 64);
+        ctx.save();
+        for (const bk of this.banks) {
+          bk.x += (wind[0] * 0.35 + Math.sin(t * 0.3 + bk.p) * 4) / 60 - dx * 0.9; bk.y += (wind[1] * 0.3) / 60 - dy * 0.9;
+          if (bk.x < -bk.w) bk.x += W + bk.w * 2; if (bk.x > W + bk.w) bk.x -= W + bk.w * 2;
+          if (bk.y < -bk.h) bk.y += H + bk.h * 2; if (bk.y > H + bk.h) bk.y -= H + bk.h * 2;
+          ctx.globalAlpha = this.fog * 0.16 * bk.k * (0.8 + 0.2 * Math.sin(t * 0.5 + bk.p));
+          ctx.drawImage(img, bk.x - bk.w, bk.y - bk.h, bk.w * 2, bk.h * 2);
         }
         ctx.restore();
       }

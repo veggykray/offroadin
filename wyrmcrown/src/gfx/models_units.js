@@ -1288,6 +1288,16 @@
   };
 
   /* ================================================================
+   * kit: the rig and primitives, shared with the other creature files
+   * (models_beasts*.js, models_giants.js) so every creature is built the same way
+   * ================================================================ */
+  AS.UnitKit = { P, PDEF, HAIR, lerp, hex, sh, mx, css, cyc, lum, lift, viewA, dep, vis, probe, proxy, assemble, ball, sweep, zBounds, tube, gp, plane, capCut, shellCut,
+    profAt, stack, ringProf, visClip, band, patch, glow, clipped, blobs, HB, rig, legLines, armLines, torsoProf, person, headParts, hairCap, hairBack,
+    hatStraw, hatHelm, hatHood, hatWizard, hatKerchief, hatCap, handAt, gSpear, gShield, gBow, gQuiver, gSword, gAxe, gGlaive, gStaff, gHoe, gBasket, gCloak,
+    bodyK, bodyPt, bodyRing, bodyPart, quad, legSet, sideEye,
+    BOOT, LEATH, STEEL, STEEL_T, MAIL, MAIL_T, IRON, IRON_T, WOOD, WOOD_T, STRAW, STRAW_T, ROPE, ROPE_T, BONE, BONE_T, GOLD, GOLD_T };
+
+  /* ================================================================
    * gallery
    * ================================================================ */
   const A4 = { dirs: 16, anims: 4 };

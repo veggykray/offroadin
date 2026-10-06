@@ -568,6 +568,48 @@
       this.drawExtras(ctx, st, rg, ox, oy, R);
       return { ca, sa };
     },
+    /* the loop-the-loop: the pose comes from Dragon.layoutLoop (P.nodes with a
+     * screen heading, a length factor, an inversion amount and a scale per node).
+     * Each segment sprite is drawn at its node with its own heading, squashed
+     * along that heading by its length factor and scaled up as it rises; over
+     * the top the segments are tinted with the belly colour and the wings are
+     * drawn above the body, with the rider hidden beneath it. */
+    drawLoop(ctx, st, ox, oy, R, P) {
+      const rg = rig(st.fk, st.scale), lk = rg.lk, n = P.nodes;
+      const ch = n[CHEST];
+      const st2 = this._loopSt || (this._loopSt = {});
+      Object.assign(st2, st); st2.nodes = n;
+      const wl = this.wingPoly(st2, -1, rg, ch, P.spanK[0]), wr = this.wingPoly(st2, 1, rg, ch, P.spanK[1]);
+      const farFirst = Math.sin(ch.a) > 0 ? [wl, wr] : [wr, wl];
+      const over = P.inv > 0.5; // inverted: the wings hang below the body, nearer the camera
+      if (!over) { this.drawWing(ctx, farFirst[0], lk, st2, ox, oy); this.drawWing(ctx, farFirst[1], lk, st2, ox, oy); }
+      const order = this._order || (this._order = []);
+      order.length = 0;
+      for (let i = n.length - 1; i >= 0; i--) order.push(i);
+      order.sort((i, j) => (n[i].y - n[i].z * 0.02) - (n[j].y - n[j].z * 0.02) || j - i);
+      const belly = C.str(C.mix(lk.belly || lk.leaf2 || lk.bone2 || '#d8c8a0', '#f4ecdc', 0.45));
+      for (const i of order) {
+        const nd = n[i];
+        const shd = i === 0 && st.open ? rg.headOpen : rg.sheets[i];
+        const di = AS.Forge.frameIndex(shd, nd.a), img = shd.frames[0][di];
+        const px = nd.x - ox, py = nd.y - nd.z - oy;
+        ctx.save();
+        ctx.translate(px, py); ctx.rotate(nd.a); ctx.scale(nd.len * nd.sc, nd.sc); ctx.rotate(-nd.a);
+        if (st.alpha !== undefined && st.alpha < 1) ctx.globalAlpha = st.alpha;
+        ctx.drawImage(img, -shd.ax, -shd.ay, shd.w, shd.h);
+        if (nd.inv > 0.02) {
+          // the pale underside, in shadow
+          let f = shd.__belly;
+          if (!f) f = shd.__belly = shd.frames[0].map((im) => { const c = AS.Forge.canvas(im.width, im.height), x2 = c.getContext('2d'); x2.drawImage(im, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = belly; x2.fillRect(0, 0, c.width, c.height); return c; });
+          ctx.globalAlpha = nd.inv * 0.36; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
+          ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = nd.inv * 0.2; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
+        }
+        ctx.restore();
+        if (i === CHEST && st.rider && P.inv < 0.6) { ctx.save(); ctx.globalAlpha = 1 - P.inv / 0.6; this.drawRider(ctx, st2, ch, ox, oy, R); ctx.restore(); }
+      }
+      if (over) { this.drawWing(ctx, farFirst[0], lk, st2, ox, oy); this.drawWing(ctx, farFirst[1], lk, st2, ox, oy); }
+      this.drawExtras(ctx, st2, rg, ox, oy, R);
+    },
     // per-kind glows and glints drawn over the body
     drawExtras(ctx, st, rg, ox, oy, R) {
       const lk = rg.lk, n = st.nodes, s = st.scale, hd = n[0], ch = n[CHEST], t = st.t || 0;
@@ -629,12 +671,12 @@
       st.staffX = sx; st.staffY = sy - z - 9.5; st.staffZ = z + 9.5;
     },
     /* project one wing to screen points. side: -1 left, +1 right */
-    wingPoly(st, side, rg) {
-      const s = st.scale, ch = st.nodes[CHEST];
+    wingPoly(st, side, rg, chOver, spanK) {
+      const s = st.scale, ch = chOver || st.nodes[CHEST];
       const a = ch.a, ca = Math.cos(a), sa = Math.sin(a);
       const w = st.wing;
       const pts = this._wp || (this._wp = new Float32Array(16));
-      wingPoints(w.span || 1, w.fold, w.sweep, pts, WINGS[st.fk]);
+      wingPoints((w.span || 1) * (spanK || 1), w.fold, w.sweep, pts, WINGS[st.fk]);
       const elev = w.elev * 1.25;
       const ce = Math.cos(elev), se = Math.sin(elev);
       const bankK = st.bank * side;

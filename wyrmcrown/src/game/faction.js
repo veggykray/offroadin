@@ -48,22 +48,52 @@
       for (let i = 0; i < 8; i++) { const a = ga + Math.PI / 8 + i * Math.PI / 4; if (near(a, roostA, 0.45) || near(a, ga, 0.3)) continue; P.inner.push(at(a, 182)); }
       for (let i = 0; i < 6; i++) { const a = ga + Math.PI / 6 + i * Math.PI / 3; P.tower.push(at(a, 392)); }
       for (let i = 0; i < 6; i++) { const a = ga + i * Math.PI / 3 + (i === 0 ? 0.35 : 0); P.engine.push(at(a, 352)); }
-      // houses stand in four quarters between the lanes (the gate road, the
-      // roost lane and the two cross lanes), packed in three rows along the
-      // arcs so that even a small town reads as streets of houses
-      this.lanes = [ga, ga + Math.PI / 2, ga + Math.PI, ga - Math.PI / 2];
-      for (const [r, gap] of [[232, 0.2], [270, 0.17], [308, 0.15]]) {
-        for (let q = 0; q < 4; q++) {
-          const a0 = this.lanes[q] + gap, a1 = this.lanes[q] + Math.PI / 2 - gap;
-          const n = Math.max(1, Math.floor((a1 - a0) * r / 40));
-          for (let i = 0; i <= n; i++) {
-            const a = a0 + (a1 - a0) * i / n, s = at(a, r + ((i * 7) % 3 - 1) * 3);
-            if (P.engine.some((e) => Math.hypot(e.x - s.x, e.y - s.y) < 44)) continue;
-            s.gateD = Math.abs(U.wrapAngle(a - ga));
-            P.house.push(s);
-          }
+      // the streets: a main street from the square to the gate, a crooked ring
+      // street round the town, side lanes out to the walls; houses line them,
+      // cramped along the main street, looser toward the walls, with a couple of
+      // courtyards, so the town grows the way a real one does
+      const rng = new U.RNG((c.x * 31 + c.y * 17 + this.key.length) | 0);
+      const pt = (a, r) => [c.x + Math.cos(a) * r, c.y + Math.sin(a) * r * 0.86];
+      const ph1 = rng.next() * TAU, ph2 = rng.next() * TAU;
+      const ringR = (a) => 262 + 16 * Math.sin(3 * a + ph1) + 7 * Math.sin(5 * a + ph2);
+      const streets = [];
+      const main = [];
+      for (let i = 0; i <= 8; i++) { const t = i / 8, r = 150 + t * 246; main.push(pt(ga + Math.sin(t * Math.PI) * rng.range(-0.05, 0.05), r)); }
+      streets.push(main);
+      const ring = [];
+      for (let i = 0; i <= 56; i++) { const a = ga + i / 56 * TAU; ring.push(pt(a, ringR(a))); }
+      streets.push(ring);
+      const sideA = [ga + 1.25 + rng.range(-0.15, 0.15), ga - 1.2 + rng.range(-0.15, 0.15), ga + Math.PI + 0.75 + rng.range(-0.1, 0.1), ga + Math.PI - 0.9 + rng.range(-0.1, 0.1)];
+      for (const a of sideA) { const ln = []; for (let i = 0; i <= 4; i++) { const t = i / 4, r = ringR(a) + t * (348 - ringR(a)); ln.push(pt(a + Math.sin(t * Math.PI) * rng.range(-0.06, 0.06), r)); } streets.push(ln); }
+      this.streets = streets; this.lanes = [ga].concat(sideA);
+      const spots = P.inner.concat(P.engine, P.tower, [this.roost]);
+      const houses = [];
+      const house = (x, y, a, r) => {
+        for (const o of spots) if (Math.hypot(o.x - x, o.y - y) < (o === this.roost ? 60 : 46)) return;
+        for (const o of houses) if (Math.hypot(o.x - x, o.y - y) < 27) return;
+        const h = { x, y, a, used: null, gateD: Math.abs(U.wrapAngle(a - ga)) + Math.max(0, r - 300) / 300 };
+        houses.push(h);
+      };
+      const along = (a0, r0, r1, step, skipRing) => {
+        for (let r = r0; r <= r1; r += step + rng.range(-3, 3)) {
+          if (skipRing && Math.abs(r - ringR(a0)) < 24) continue;
+          for (const side of [-1, 1]) { const off = side * (21 + rng.range(0, 3)), a = a0 + off / r; const q = pt(a, r); house(q[0], q[1], a, r); }
         }
+      };
+      along(ga, 205, 332, 31, true);
+      for (const a of sideA) along(a, ringR(a) + 34, 346, 33, false);
+      for (let i = 0; i < 48; i++) {
+        const a = ga + i / 48 * TAU + rng.range(-0.02, 0.02);
+        if (Math.abs(U.wrapAngle(a - ga)) < 0.22) continue;
+        if (sideA.some((sa) => Math.abs(U.wrapAngle(a - sa)) < 0.16)) continue;
+        for (const side of [-1, 1]) { const r = ringR(a) + side * (23 + rng.range(0, 4)); const q = pt(a, r); house(q[0], q[1], a, r); }
       }
+      // courtyards: three houses round a small open square
+      for (const ca of [ga + Math.PI / 2 + 0.55, ga - Math.PI / 2 - 0.55]) {
+        const cr = 322, q0 = pt(ca, cr);
+        for (let i = 0; i < 3; i++) { const b = ca + 0.9 + i * 2.1; house(q0[0] + Math.cos(b) * 30, q0[1] + Math.sin(b) * 26, ca, cr); }
+      }
+      P.house = houses;
       for (const a of [ga + 0.95, ga - 0.95, ga + 2.25, ga - 2.25]) P.farm.push(at(a, 610));
       for (const a of [ga + Math.PI * 0.62, ga + Math.PI, ga - Math.PI * 0.62]) P.ward.push(at(a, 488));
       for (const a of [ga + 0.42, ga - 0.42]) P.watch.push(at(a, 830));
@@ -88,9 +118,10 @@
       this.buy('barracks', { free: true, instant: true });
       this.buy('tower', { free: true, instant: true });
       for (let i = 0; i < 3; i++) this.buy('wardstone', { free: true, instant: true });
-      // the town square
-      g.terrain.addDecal('lanes', c.x, c.y, 400, null, { static: true, fk: this.key, lanes: this.lanes, seed: c.y | 0 });
+      // the streets and the town square
+      g.terrain.addDecal('streets', c.x, c.y, 400, null, { static: true, fk: this.key, streets: this.streets.map((ln) => ln.map((q) => [q[0] - c.x, q[1] - c.y])), R: 392, gateA: this.gateA, seed: c.y | 0 });
       g.terrain.addDecal('plaza', c.x, c.y + 6, 150, null, { static: true, fk: this.key, seed: c.x | 0 });
+      this.dressTown();
       // townsfolk going about their business
       const fields = this.fieldList || [];
       AS.Life.addPeople(g, this.key, c.x, c.y, 330, 16, { pal: this.def.pal, spots: this.slots.house.concat(this.slots.inner), fields });
@@ -98,10 +129,22 @@
       // the opening garrison
       this.recruit('soldier', 4, true); this.recruit('archer', 2, true);
     }
+    /* banners and fires that make the stronghold a seat of power */
+    dressTown() {
+      const g = this.g, c = this.townPos, ga = this.gateA, pal = this.def.pal;
+      if (!AS.Scenery) return;
+      const fire = { human: '#ff9a40', elf: '#7affd8', ice: '#8ad8ff', undead: '#93ff6a' }[this.key] || '#ff9a40';
+      for (const a of [ga + 0.75, ga - 0.75, ga + 2.35, ga - 2.35]) AS.Scenery.add(g, 'prop_banner', c.x + Math.cos(a) * 82, c.y + Math.sin(a) * 70, { pal, anims: 4 });
+      const brazier = this.key === 'ice' && AS.Models.lm_brazier_huge ? 'lm_brazier_huge' : 'prop_campfire';
+      for (const a of [ga + 0.1, ga - 0.1]) AS.Scenery.add(g, brazier, c.x + Math.cos(a) * 352, c.y + Math.sin(a) * 302, { anims: 4, light: { col: fire, r: 46, a: 0.5, z: 6, pulse: true } });
+      for (const a of [ga + 0.55, ga - 0.55]) AS.Scenery.add(g, 'prop_statue', c.x + Math.cos(a) * 128, c.y + Math.sin(a) * 110, { pal });
+    }
     place(kind, slot, o) {
       const B = new AS.Building(this.g, kind, this.key, slot.x, slot.y, Object.assign({ slot, angle: slot.angle || 0, v: o && o.v !== undefined ? o.v : (Math.random() * 4) | 0, aim: slot.a || 0 }, o));
       slot.used = B;
       if (kind !== 'wall' && kind !== 'gate') this.g.terrain.clearAreas.push({ x: slot.x, y: slot.y, r: B.r * 1.25 + 6 });
+      // snow banks up against the buildings of the north
+      if (kind !== 'wall' && kind !== 'gate' && this.g.terrain.frozenAt && this.g.terrain.frozenAt(slot.x, slot.y)) this.g.terrain.addDecal('drift', slot.x, slot.y + B.r * 0.35, B.r * 1.15, null, { static: true, seed: (slot.x * 3 + slot.y) | 0 });
       this.g.buildings.push(B);
       this.buildings.push(B);
       this.counts[kind] = (this.counts[kind] || 0) + 1;
@@ -135,6 +178,7 @@
       const pa = ang0 + Math.PI * 0.5;
       const px = B.x + Math.cos(pa) * 110, py = B.y + Math.sin(pa) * 95;
       g.terrain.addDecal('pasture', px, py, 90, null, { static: true, seed: (px | 0), fk: this.key });
+      this.dressFarm(B, ang0, rng);
       const kinds = LIVESTOCK[this.key];
       const herd = AS.Life.herd(g, kinds[this.counts.farm % 2], px, py, B.built >= 1 || !this.g.time ? 4 : 2, this.key, 85);
       herd.farm = B;
@@ -142,6 +186,32 @@
       this.pastures = this.pastures || [];
       this.pastures.push(herd);
       this.pasture = { x: px, y: py, r: 110 };
+    }
+    dressFarm(B, ang0, rng) {
+      const g = this.g, Sc = AS.Scenery;
+      if (!Sc) return;
+      const fk = this.key;
+      // hedgerows (Aldermere) or fences round the nearest fields
+      const edgeGen = fk === 'human' && AS.Models.lm_hedgerow ? 'lm_hedgerow' : fk === 'elf' ? null : 'prop_fence';
+      const seg = edgeGen === 'lm_hedgerow' ? 30 : 24;
+      const mine = this.fieldList.filter((f) => Math.hypot(f.x - B.x, f.y - B.y) < 260).slice(0, 2);
+      for (const f of mine) {
+        if (!edgeGen) { for (let i = 0; i < 3; i++) Sc.add(g, 'flowers', f.x + rng.range(-f.w / 2, f.w / 2), f.y + f.h * 0.5 + 6, { opt: { seed: i } }); continue; }
+        const ca = Math.cos(f.rot), sa = Math.sin(f.rot), W = f.w + 10, H = f.h * 0.86 + 10;
+        const side = (u0, v0, u1, v1) => {
+          const x0 = f.x + u0 * ca - v0 * sa, y0 = f.y + u0 * sa + v0 * ca, x1 = f.x + u1 * ca - v1 * sa, y1 = f.y + u1 * sa + v1 * ca;
+          const L = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.round(L / seg)), a = Math.atan2(y1 - y0, x1 - x0);
+          for (let i = 0; i < n; i++) { const t = (i + 0.5) / n; if (g.terrain.roadDist(U.lerp(x0, x1, t), U.lerp(y0, y1, t)) < 26) continue; Sc.add(g, edgeGen, U.lerp(x0, x1, t), U.lerp(y0, y1, t), { angle: a, dirs: 16 }); }
+        };
+        side(-W / 2, -H / 2, W / 2, -H / 2); side(W / 2, H / 2, -W / 2, H / 2);
+        if (rng.next() < 0.6) side(-W / 2, H / 2, -W / 2, -H / 2);
+      }
+      // an orchard row, hay and a cart by the farmhouse
+      const oa = ang0 - Math.PI * 0.5;
+      if (fk === 'human' || fk === 'elf') for (let i = 0; i < 4; i++) Sc.add(g, 'tree_fruit', B.x + Math.cos(oa) * (70 + i * 26) + Math.cos(oa + 1.57) * 18, B.y + Math.sin(oa) * (62 + i * 24) + Math.sin(oa + 1.57) * 16, { opt: { seed: i + 2 } });
+      if (fk !== 'elf') { Sc.add(g, 'prop_haystack', B.x + Math.cos(ang0 + 2.6) * 52, B.y + Math.sin(ang0 + 2.6) * 46, {}); Sc.add(g, 'prop_haystack', B.x + Math.cos(ang0 + 2.9) * 70, B.y + Math.sin(ang0 + 2.9) * 60, {}); }
+      Sc.add(g, 'prop_cart', B.x + Math.cos(ang0 - 2.5) * 50, B.y + Math.sin(ang0 - 2.5) * 44, { angle: ang0 + 0.4, dirs: 16, pal: this.def.pal });
+      Sc.add(g, 'prop_logs', B.x + Math.cos(ang0 + Math.PI) * 44, B.y + Math.sin(ang0 + Math.PI) * 38, {});
     }
     herdFor(kind) { return this.herds[kind] || (this.pastures && this.pastures[0]) || { x: this.pasture.x, y: this.pasture.y, r: 100, owner: this.key, k: kind }; }
     pastureAt(x, y) {

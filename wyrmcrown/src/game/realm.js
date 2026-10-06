@@ -79,6 +79,8 @@
       if (AS.Sites) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
       if (AS.Roads) AS.Roads.lay(this);
       if (AS.Powerups) AS.Powerups.init(this);
+      // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
+      if (AS.Scenery) AS.Scenery.init(this);
       // weather drifts over the realm (drawn through the renderer's weather hook)
       if (AS.Weather) { this.weather = new AS.Weather(this); this.hazards = { drawWeather: (ctx, ox, oy, vw, vh, R) => this.weather.draw(ctx, ox, oy, vw, vh, R) }; }
       // explored fog for the war map
@@ -325,8 +327,10 @@
       for (const s of this.sites) if (s.collect && inV(s, s.viewR || 200)) s.collect(list, x0, y0, x1, y1);
       for (const q of this.pickups) if (q.alive && inV(q, 20)) list.push(q);
       if (AS.Life) AS.Life.collect(this, list, x0, y0, x1, y1);
+      if (AS.Scenery) AS.Scenery.collect(this, list, x0, y0, x1, y1);
     }
     drawGround(ctx, ox, oy, R) {
+      if (AS.Scenery) AS.Scenery.drawGround(ctx, ox, oy, R, this);
       for (const b of this.buildings) if (b.flat || b.drawGround) (b.drawGround || b.draw).call(b, ctx, ox, oy, R);
       for (const s of this.sites) if (s.drawGround) s.drawGround(ctx, ox, oy, R);
       if (AS.Fields && AS.Fields.drawGround) AS.Fields.drawGround(ctx, ox, oy, this);
