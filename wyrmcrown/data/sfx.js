@@ -20,6 +20,7 @@
     eat_crunch: { vol: 0.55, poly: 2, dur: 0.75, layers: [0, 0.18, 0.36, 0.52].map((at, i) => S('crackle', { at, dur: 0.16, density: 0.4, decay: 22, lp: 2600 - i * 200, gain: 1 })).concat([S('sine', { f: 140, f1: 70, decay: 10, gain: 0.5 }), S('sine', { at: 0.36, f: 120, f1: 60, decay: 10, gain: 0.4 })]) },
     gulp: { vol: 0.45, poly: 2, dur: 0.35, layers: [S('sine', { f: 320, f1: 110, sweep: 0.2, decay: 9, gain: 0.8 }), N({ lp: 500, decay: 12, gain: 0.3 })] },
     snatch: { vol: 0.5, poly: 2, dur: 0.4, layers: [N({ bp: [500, 2400], bpT: 0.2, q: 0.6, env: [0.01, 0.12, 0.3, 0.2], gain: 0.8 }), S('sine', { f: 160, f1: 90, decay: 10, gain: 0.6 })] },
+    air_rush: { vol: 0.42, loop: true, dur: 1.6, layers: [N({ bp: 650, q: 0.35, env: ON, trem: 0.7, gain: 1 }), N({ hp: 2400, env: ON, gain: 0.25 })] },
     // ---------------- breaths (loops while held) ----------------
     breath_fire: { vol: 0.5, loop: true, dur: 1.2, layers: [N({ lp: 1500, env: ON, gain: 1 }), S('crackle', { density: 0.09, env: ON, hp: 900, gain: 0.7 }), N({ bp: 260, q: 0.6, env: ON, trem: 7, gain: 0.5 })] },
     breath_magic: { vol: 0.45, loop: true, dur: 1.0, layers: [N({ lp: 2200, env: ON, gain: 0.8 }), S('sine', { f: 880, fm: 1.5, fmAmt: 0.4, env: ON, trem: 9, gain: 0.25 }), S('sine', { f: 1320, env: ON, trem: 13, gain: 0.15 })] },

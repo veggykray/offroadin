@@ -19,7 +19,7 @@
     human: { body: '#a32a20', top: '#c8402c', belly: '#e9a65a', horn: '#eadcc2', spine: '#5e1410', membrane: '#b83a26', bone: '#6e1c14', eye: '#ffd23a', tip: 'spade', horns: 'swept', mem: 'classic', breath: ['#fff2b0', '#ffb030', '#ff5a10'] },
     elf: { body: '#1f7a4c', top: '#38a866', belly: '#d8e8a0', horn: '#f0f4d8', spine: '#c8a84a', membrane: '#3fae6e', bone: '#1a5a3a', eye: '#a8fff0', tip: 'leaf', horns: 'antler', mem: 'leaf', breath: ['#f0fff0', '#7affc0', '#20c080'] },
     ice: { body: '#6f9cc8', top: '#a8d0f0', belly: '#e8f4ff', horn: '#ffffff', spine: '#d8f0ff', membrane: '#9ccff0', bone: '#4a78a8', eye: '#e0ffff', tip: 'crystal', horns: 'crown', mem: 'frost', breath: ['#ffffff', '#bfefff', '#5ab8ff'] },
-    undead: { body: '#3a3440', top: '#5a5262', belly: '#cfc6aa', horn: '#d8cfb4', spine: '#d8cfb4', membrane: '#4a3a52', bone: '#d8cfb4', eye: '#93ff6a', tip: 'bone', horns: 'ram', mem: 'tattered', breath: ['#f0ffe0', '#a8ff6a', '#5a2a8a'] },
+    undead: { body: '#5c4c66', top: '#8e7e9c', belly: '#ddd4b8', horn: '#ece4cc', spine: '#ece4cc', membrane: '#6a4a7c', bone: '#e4dcc4', eye: '#93ff6a', tip: 'bone', horns: 'ram', mem: 'tattered', breath: ['#f0ffe0', '#a8ff6a', '#5a2a8a'] },
   };
 
   /* ------------------------------------------------------- body segment models */

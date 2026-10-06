@@ -208,6 +208,7 @@
     }
     draw(ctx, ox, oy, R) {
       const sh = this.sheet;
+      if (this.hidden) return;
       if (!this.alive) {
         // smouldering rubble
         if (this.ruinT < 4) {

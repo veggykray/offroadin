@@ -30,6 +30,42 @@
     ctx.restore();
   };
 
+  /* the town's lanes: trampled ground between the house rows, the four
+   * radial streets and a ring road inside the walls (d.lanes = angles) */
+  const LANE = { human: ['#9a7a52', '#6a5034'], elf: ['#7e8a5a', '#56603a'], ice: ['#d4dce6', '#9aa8bc'], undead: ['#4c4450', '#2c2630'], neutral: ['#9a7a52', '#6a5034'] };
+  P.lanes = (ctx, d, x, y, rng) => {
+    const L = LANE[d.fk] || LANE.neutral;
+    ctx.save(); ctx.translate(x, y); ctx.scale(1, 0.86);
+    // worn ground under the houses
+    const g = ctx.createRadialGradient(0, 0, 150, 0, 0, 350);
+    g.addColorStop(0, C.str(L[0], 0)); g.addColorStop(0.25, C.str(L[0], 0.16)); g.addColorStop(0.8, C.str(L[0], 0.12)); g.addColorStop(1, C.str(L[0], 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 350, 0, TAU); ctx.fill();
+    ctx.lineCap = 'round';
+    const ring = (r, w, a) => {
+      ctx.strokeStyle = C.str(L[1], a * 0.6); ctx.lineWidth = w + 3; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = C.str(L[0], a); ctx.lineWidth = w; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+    };
+    ring(338, 14, d.fk === 'undead' ? 0.22 : 0.3);
+    (d.lanes || []).forEach((a, li) => {
+      const c = Math.cos(a), s = Math.sin(a), R = li === 0 ? 400 : 338;
+      const al = d.fk === 'undead' ? 0.6 : 1;
+      ctx.strokeStyle = C.str(L[1], 0.3 * al); ctx.lineWidth = 24;
+      ctx.beginPath(); ctx.moveTo(c * 150, s * 150); ctx.lineTo(c * R, s * R); ctx.stroke();
+      ctx.strokeStyle = C.str(L[0], 0.45 * al); ctx.lineWidth = 19;
+      ctx.beginPath(); ctx.moveTo(c * 150, s * 150); ctx.lineTo(c * R, s * R); ctx.stroke();
+      // cart ruts
+      ctx.strokeStyle = C.str(L[1], 0.3 * al); ctx.lineWidth = 1.3;
+      for (const o of [-5, 5]) { ctx.beginPath(); ctx.moveTo(c * 160 - s * o, s * 160 + c * o); ctx.lineTo(c * (R - 6) - s * o, s * (R - 6) + c * o); ctx.stroke(); }
+    });
+    // pebbles and tufts
+    for (let i = 0; i < 260; i++) {
+      const a = rng.next() * TAU, r = 160 + rng.next() * 190;
+      ctx.fillStyle = rng.next() < 0.5 ? 'rgba(255,245,220,0.16)' : 'rgba(30,20,10,0.14)';
+      ctx.fillRect(Math.cos(a) * r, Math.sin(a) * r, 1.6, 1.6);
+    }
+    ctx.restore();
+  };
+
   const CROPS = {
     wheat: ['#d8b452', '#b8902e'], barley: ['#c8b46a', '#9a8a44'], green: ['#6a9a3a', '#4a7a2a'], plough: ['#7a5a3a', '#5a4028'], flax: ['#8aa0c8', '#6a8a58'],
     frost: ['#b8c8b0', '#8a9a88'], bone: ['#6a5e50', '#4a4038'],

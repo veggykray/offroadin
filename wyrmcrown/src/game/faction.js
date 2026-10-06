@@ -46,12 +46,24 @@
       const roostA = ga + Math.PI;
       this.roost = at(roostA, 132); this.roost.y += 8;
       for (let i = 0; i < 8; i++) { const a = ga + Math.PI / 8 + i * Math.PI / 4; if (near(a, roostA, 0.45) || near(a, ga, 0.3)) continue; P.inner.push(at(a, 182)); }
-      for (let ring = 0; ring < 2; ring++) {
-        const r = ring ? 312 : 252, n = ring ? 12 : 9;
-        for (let i = 0; i < n; i++) { const a = ga + (i + (ring ? 0.5 : 0.25)) / n * TAU; if (near(a, ga, 0.26)) continue; P.house.push(at(a, r + (i % 2) * 8)); }
-      }
       for (let i = 0; i < 6; i++) { const a = ga + Math.PI / 6 + i * Math.PI / 3; P.tower.push(at(a, 392)); }
       for (let i = 0; i < 6; i++) { const a = ga + i * Math.PI / 3 + (i === 0 ? 0.35 : 0); P.engine.push(at(a, 352)); }
+      // houses stand in four quarters between the lanes (the gate road, the
+      // roost lane and the two cross lanes), packed in three rows along the
+      // arcs so that even a small town reads as streets of houses
+      this.lanes = [ga, ga + Math.PI / 2, ga + Math.PI, ga - Math.PI / 2];
+      for (const [r, gap] of [[232, 0.2], [270, 0.17], [308, 0.15]]) {
+        for (let q = 0; q < 4; q++) {
+          const a0 = this.lanes[q] + gap, a1 = this.lanes[q] + Math.PI / 2 - gap;
+          const n = Math.max(1, Math.floor((a1 - a0) * r / 40));
+          for (let i = 0; i <= n; i++) {
+            const a = a0 + (a1 - a0) * i / n, s = at(a, r + ((i * 7) % 3 - 1) * 3);
+            if (P.engine.some((e) => Math.hypot(e.x - s.x, e.y - s.y) < 44)) continue;
+            s.gateD = Math.abs(U.wrapAngle(a - ga));
+            P.house.push(s);
+          }
+        }
+      }
       for (const a of [ga + 0.95, ga - 0.95, ga + 2.25, ga - 2.25]) P.farm.push(at(a, 610));
       for (const a of [ga + Math.PI * 0.62, ga + Math.PI, ga - Math.PI * 0.62]) P.ward.push(at(a, 488));
       for (const a of [ga + 0.42, ga - 0.42]) P.watch.push(at(a, 830));
@@ -71,12 +83,13 @@
       const g = this.g, c = this.townPos;
       this.keep = this.place('keep', { x: c.x, y: c.y }, { instant: true });
       this.roostB = this.place('roost', this.roost, { instant: true });
-      for (let i = 0; i < 7; i++) this.addHouse(true);
+      for (let i = 0; i < 12; i++) this.addHouse(true);
       this.buy('farm', { free: true, instant: true });
       this.buy('barracks', { free: true, instant: true });
       this.buy('tower', { free: true, instant: true });
       for (let i = 0; i < 3; i++) this.buy('wardstone', { free: true, instant: true });
       // the town square
+      g.terrain.addDecal('lanes', c.x, c.y, 400, null, { static: true, fk: this.key, lanes: this.lanes, seed: c.y | 0 });
       g.terrain.addDecal('plaza', c.x, c.y + 6, 150, null, { static: true, fk: this.key, seed: c.x | 0 });
       // townsfolk going about their business
       const fields = this.fieldList || [];
@@ -98,7 +111,11 @@
     addHouse(instant) {
       const free = this.slots.house.filter((s) => !s.used || !s.used.alive);
       if (!free.length) return null;
-      const s = free[(Math.random() * Math.min(free.length, 4)) | 0];
+      const c = this.townPos;
+      // houses line the road in from the gate first, then wrap round the town
+      const score = (s) => Math.hypot(s.x - c.x, s.y - c.y) + s.gateD * 70 - (this.slots.house.some((o) => o !== s && o.used && o.used.alive && Math.hypot(o.x - s.x, o.y - s.y) < 50) ? 25 : 0) + Math.random() * 15;
+      let s = null, best = Infinity;
+      for (const f of free) { const v = score(f); if (v < best) { best = v; s = f; } }
       if (s.used && !s.used.alive) this.counts.house--;
       return this.place('house', s, { instant, buildTime: 6 });
     }
@@ -248,7 +265,7 @@
         this.taxT = 5;
         const houses = this.alive('house');
         const stock = this.livestock();
-        this.addGold(houses * 0.55 + stock * 0.22 * (this.has('market') ? 2 : 1));
+        this.addGold(houses * 0.34 + stock * 0.22 * (this.has('market') ? 2 : 1));
       }
       // income rate over the last minute (per-second buckets, for the HUD)
       this.rateT = (this.rateT || 0) - dt;
@@ -263,7 +280,7 @@
       this.prosperT -= dt;
       if (this.prosperT <= 0) {
         this.prosperT = 35;
-        const cap = 8 + (this.keepLevel - 1) * 5 + Math.min(4, this.sitesOwned);
+        const cap = 14 + (this.keepLevel - 1) * 8 + Math.min(6, this.sitesOwned);
         if (this.alive('house') < cap && g.time - this.attackedT > 30) this.addHouse(false);
       }
       // breeding

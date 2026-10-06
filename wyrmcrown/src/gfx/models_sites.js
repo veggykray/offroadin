@@ -344,20 +344,20 @@
     o = o || {};
     const c = pe.c, base = o.col || '#c79e52';
     c.save(); c.beginPath(); R.clipPath(c); c.clip();
-    const n = Math.max(2, Math.round(R.H / (o.step || 1.6)));
+    const n = Math.max(2, Math.round(R.H / (o.step || 2.3)));
     for (let i = 1; i < n; i++) {
-      const z = R.z0 + R.H * (1 - Math.pow(1 - i / n, 1)) - 0.2;
+      const z = R.z0 + R.H * (i / n) - 0.2;
       const q = R.contour(z);
-      c.beginPath(); pe.path(q); c.strokeStyle = al(sh(base, -0.55), 0.32); c.lineWidth = 0.55; c.stroke();
-      c.save(); c.translate(0, 0.55); c.beginPath(); pe.path(q); c.strokeStyle = al(sh(base, 0.5), 0.2); c.lineWidth = 0.45; c.stroke(); c.restore();
+      c.beginPath(); pe.path(q); c.strokeStyle = al(sh(base, -0.55), 0.22); c.lineWidth = 0.7; c.stroke();
+      c.save(); c.translate(0, 0.6); c.beginPath(); pe.path(q); c.strokeStyle = al(sh(base, 0.5), 0.16); c.lineWidth = 0.5; c.stroke(); c.restore();
     }
-    const r = rng(seed, 9), N = o.n || Math.round(R.L * R.W * 0.9);
+    const r = rng(seed, 9), N = o.n || Math.round(R.L * R.W * 1.5);
     c.lineWidth = 0.32;
     for (let i = 0; i < N; i++) {
       const u = r.range(-R.L, R.L), v = r.range(-R.W, R.W), s = R.surf(u, v);
-      const e = R.surf(u + s[3] * 1.1, v + s[4] * 1.1);
+      const e = R.surf(u + s[3] * r.range(0.9, 1.6), v + s[4] * r.range(0.9, 1.6));
       c.beginPath(); c.moveTo(s[0], s[1] - s[2]); c.lineTo(e[0], e[1] - e[2]);
-      c.strokeStyle = r.next() < 0.5 ? al(sh(base, -0.5), 0.3) : al(sh(base, 0.45), 0.28); c.stroke();
+      c.strokeStyle = r.next() < 0.5 ? al(sh(base, -0.5), 0.26) : al(sh(base, 0.45), 0.26); c.stroke();
     }
     // sunlit ridge and hip arrises
     { const rg = R.ridge(), zt = R.z0 + R.H - 0.15, cs = R.contour(R.z0 + 0.05);
@@ -367,6 +367,14 @@
     // darker band along the eave lip
     if (o.eave !== false) { c.beginPath(); const q = R.contour(R.z0 + 0.15); pe.path(q); c.strokeStyle = al(sh(base, -0.6), 0.35); c.lineWidth = 0.9; c.stroke(); }
     c.restore();
+  }
+  /* eyebrow dormer in a thatch roof: a lit window under a swelling curve of straw */
+  function eyebrow(pe, R, u, v, w, base) {
+    const s = R.surf(u, v), c = pe.c, x = s[0], y = s[1] + 0.02, z = s[2];
+    pe.ell(al(sh(base, -0.6), 0.55), x, y, z + 0.9, w * 0.62, 1.15);
+    win(pe, x, y + 0.02, z - 0.1, w * 0.62, 1.5, { sill: false, mull: true });
+    c.beginPath(); c.ellipse(x, y - z - 1.7, w * 0.6, 1.1, 0, Math.PI * 1.02, Math.PI * 1.98); c.strokeStyle = sh(base, -0.12); c.lineWidth = 1.1; c.stroke();
+    c.beginPath(); c.ellipse(x, y - z - 1.95, w * 0.56, 0.95, 0, Math.PI * 1.08, Math.PI * 1.92); c.strokeStyle = al(sh(base, 0.5), 0.7); c.lineWidth = 0.4; c.stroke();
   }
   /* shingles / slates: rows along contours with staggered joints */
   function paintShingles(pe, R, seed, o) {
@@ -513,6 +521,17 @@
       if (q.cren) pe.wall('rgba(255,250,230,0.16)', x0, x1, y - th + 0.04, q.h - 0.01, q.h);
     }
   }
+  /* ruined tower: a hollow shell (round, or square when sq) whose wall pieces break
+   * off at their own heights, lowest toward the breach direction (nx, ny) */
+  function ruinTower(x, y, r, h, cut, nx, ny, side, top, floor, sq) {
+    const run = [];
+    if (sq) { const e = r - 1.3; run.push([x - e, y - e], [x + e, y - e], [x + e, y + e], [x - e, y + e], [x - e, y - e]); }
+    else for (let i = 0; i <= 18; i++) { const a = (i / 18) * TAU; run.push([x + Math.cos(a) * (r - 1.3), y + Math.sin(a) * (r - 1.3)]); }
+    const segs = wallRun(run, (x * 7 + y) | 0, { H: h, gap: 0, low: 0, seg: 3.6, noCren: true });
+    for (const q of segs) { const mx_ = (q.x0 + q.x1) / 2 - x, my_ = (q.y0 + q.y1) / 2 - y, f = (mx_ * nx + my_ * ny) / r; q.h = Math.max(1.5, h - cut * U.clamp(0.5 + f * 0.9, 0, 1) - 2.5 * U.hash2(q.s0 | 0, 3, 7)); }
+    return [{ z0: 0, z1: 0.8, side: floor, top: mx(floor, '#6a6050', 0.5), ao: 0.2, bevel: false, shape: (c) => sq ? c.rect(x - r + 2, y - r + 2, 2 * r - 4, 2 * r - 4) : S.circ(c, x, y, r - 2) }, wallPart(segs, 2.6, side, top)];
+  }
+
   /* bones (ground decal) — femurs, ribs and a skull, painted (1-dir) */
   function paintBones(pe, list, col) {
     col = col || '#e6dcc4';
@@ -569,11 +588,12 @@
       parts.push(box(-2.4, Ww + 0.7, 4.2, 1.6, 0, 0.6, m.stoneD, m.stoneT, { bevel: false }));
       const R = roof({ x: 0, y: 0, L: Lw + 1.6, W: Ww + 1.7, Lr: Lw - 5, z: Hw, H: 7.5, ex: 0.78, fascia: 1.1, cols: m.thatchCols });
       parts.push(...R.parts);
-      parts.push(layer((pe) => paintThatch(pe, R, 11, { col: p.t })));
+      parts.push(layer((pe) => { paintThatch(pe, R, 11, { col: p.t }); eyebrow(pe, R, -4.5, 6.2, 4.2, p.t); }));
       // stone chimney rising out of the east hip
       parts.push(box(8.5, -1.5, 2.8, 2.8, 12.5, 19.5, m.stoneS, m.stoneT, { ao: 0.2, detail: (c) => { S.dot(c, '#1a1410', 8.5, -1.5, 0.8); } }));
       parts.push(layer((pe) => { stones(pe, 7.1, 9.9, -0.1, 12.5, 19.5, 7, { row: 1.2, w: 0.6 }); pe.wall('rgba(0,0,0,0.25)', 7.1, 9.9, -0.08, 18.6, 19.5); }));
-      parts.push(box(0, 0, 2.2, 2.2, 15.6, 16.8, sh(p.t, -0.3), sh(p.t, -0.1), { bevel: false, shape: (c) => S.rrect(c, -Lw + 4.4, -1.1, (Lw - 4.4) * 2, 2.2, 1) }));
+      parts.push(box(0, 0, 2, 2, 15.8, 16.9, sh(p.t, -0.14), sh(p.t, 0.12), { bevel: false, shape: (c) => S.rrect(c, -Lw + 4.6, -1, (Lw - 4.6) * 2, 2, 1),
+        detail: (c) => { const s = []; for (let x = -Lw + 5; x < Lw - 5; x += 1.2) s.push(x, -0.9, x + 0.6, 0.9, x + 0.6, 0.9, x + 1.2, -0.9); S.lines(c, al(sh(p.t, -0.5), 0.5), 0.22, s); } }));
       // woodpile + barrel
       parts.push({ z0: 0, z1: 3.2, side: m.woodD, top: m.woodL, ao: 0.3, shape: (c) => c.rect(Lw + 0.8, -3, 2.6, 7) });
       parts.push(layer((pe) => { for (let i = 0; i < 6; i++) pe.dot(i % 2 ? '#c8a070' : '#b08858', Lw + 1.4 + (i % 2) * 1.2, 4.05, 0.7 + Math.floor(i / 2) * 0.95, 0.5); }));
@@ -982,7 +1002,7 @@
     parts.push(cyl(0, HY + 0.2, 1.3, HZ - 1.2, HZ + 1.2, m.iron, m.ironL, { bevel: false }));
     // the sails, painted in their vertical plane in front of the tower
     parts.push(layer((pe, a) => {
-      const c = pe.c, th0 = a * (Math.PI / 2) + 0.42, y = HY + 1.2;
+      const c = pe.c, th0 = a * Math.PI + 0.42, y = HY + 1.2;
       const cloth = '#ece2c8', clothD = '#c8b894', lat = '#5a4030', stock = '#4a3424';
       for (let i = 0; i < 4; i++) {
         const th = th0 + (i * Math.PI) / 2, ux = Math.cos(th), uz = Math.sin(th), px = -uz, pz = ux;
@@ -1147,7 +1167,7 @@
     const seg = (z0, z1, k) => ({ z0, z1, side: stS, top: stT, ao: 0.3, shape: (c, zt) => S.poly(c, sect(z0 + zt * (z1 - z0), k)) });
     const band = (z) => ({ z0: z - 0.7, z1: z + 0.7, side: stD, top: stT, ao: 0.1, bevel: false, shape: (c) => S.poly(c, sect(z, 1.09)) });
     // orbiting rune shards
-    const shardAt = (a, i) => { const th = (a + i) * (TAU / 3) + 0.4, c0 = ax(40); return { x: c0[0] + Math.cos(th) * 12.5, y: c0[1] + Math.sin(th) * 12.5, z: 40 + Math.sin((a + i * 0.33) * TAU) * 1.4 + i * 2.2, front: Math.sin(th) > -0.05 }; };
+    const shardAt = (a, i) => { const th = (a + i) * (TAU / 3) + 0.4, c0 = ax(40); return { x: c0[0] + Math.cos(th) * 12.5, y: c0[1] + Math.sin(th) * 12.5, z: 42 + Math.sin(th * 3) * 2.2, front: Math.sin(th) > -0.05 }; };
     const shards = (front) => ({ z0: 36, z1: 50, side: mx(G1, '#2a1a5a', 0.35), top: GH, flat: true, ao: 0.2, bevel: false, shape: (c, zt, a) => {
       const z = 36 + zt * 14;
       for (let i = 0; i < 3; i++) { const s = shardAt(a, i); if (s.front !== front) continue; const q = (z - (s.z - 2.4)) / 4.8; if (q < 0 || q > 1) continue; S.poly(c, ngon(4, 1.35 * (1 - Math.abs(q * 2 - 1)) + 0.1, 0.5, s.x, s.y)); }
@@ -1178,7 +1198,6 @@
       // door
       const dx = ax(4)[0] - 1.2;
       door(pe, dx, fy(dx, 4.4), 3, 5, '#4a3a5a', { arch: true, frame: stD });
-      pe.poly('rgba(0,0,0,0)', []);
       // glowing slit windows up the shaft
       const wins = [[0.6, 14], [-2.4, 27], [2.1, 35], [-1.2, 47]];
       for (const w of wins) { const x = ax(w[1])[0] + w[0], y = fy(x, w[1]); archRect(pe, stD, x - 1.05, x + 1.05, y, w[1] - 0.4, w[1] + 3.6, true); archRect(pe, mx(G2, G1, 0.4 + 0.3 * gp), x - 0.65, x + 0.65, y + 0.01, w[1], w[1] + 3.1, true); pe.glow(G1, x, y, w[1] + 1.5, 3.2, 0.25 + 0.2 * gp); }
@@ -1214,7 +1233,7 @@
       pe.glow('#ffffff', T[0] - 0.5, T[1], OZ + 0.5, 1.1, 0.8);
       // sparkles around the shards (front ones)
       for (let i = 0; i < 3; i++) { const s = shardAt(a, i); if (!s.front) continue; pe.glow(G1, s.x, s.y, s.z, 3.4, 0.35 + 0.2 * gp); pe.dot(GH, s.x - 0.3, s.y, s.z + 0.5, 0.3); }
-      for (let i = 0; i < 6; i++) { const th = i * 1.05 + a * TAU * 0.5, rr = 3.5 + (i % 3); pe.dot(al(i % 2 ? G2 : G1, 0.4 + 0.5 * pulse(a, i * 0.17)), T[0] + Math.cos(th) * rr, T[1] + Math.sin(th) * rr * 0.5, OZ + Math.sin(th * 2) * 1.5, 0.3); }
+      for (let i = 0; i < 6; i++) { const th = i * 1.05 + a * TAU, rr = 3.5 + (i % 3); pe.dot(al(i % 2 ? G2 : G1, 0.4 + 0.5 * pulse(a, i * 0.17)), T[0] + Math.cos(th) * rr, T[1] + Math.sin(th) * rr * 0.5, OZ + Math.sin(th * 2) * 1.5, 0.3); }
     }));
     return { r: 22, h: OZ + 3, parts, style: 'prop', bevel: 0.7, spots: { orb: [T[0], T[1], OZ] } };
   };
@@ -1277,27 +1296,23 @@
       const c = pe.c, g = c.createRadialGradient(0, 0, 4, 0, 0, 52);
       g.addColorStop(0, 'rgba(120,94,60,0.22)'); g.addColorStop(0.75, 'rgba(120,94,60,0.16)'); g.addColorStop(1, 'rgba(120,94,60,0)');
       c.save(); c.scale(1, 0.82); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 52, 0, TAU); c.fill(); c.restore();
-      pe.lines('rgba(70,52,30,0.22)', 1, [-1.6, 52, 0, -4, 10, 0, 1.6, 52, 0, 3.4, 10, 0]);
     }));
     // north curtain + NW tower + NE collapsed corner
     const north = wallRun([[-45, -42], [45, -42]], 3, { H: 13, gap: 0.1, low: 0.35 });
     parts.push(wallPart(north, 5, stS, stT, { out: -1 }));
     parts.push(layer((pe) => paintWallFaces(pe, north, 5, 5, { slits: true })));
     const TR = 8.5, TH = 22;
-    parts.push({ z0: 0, z1: TH, side: stS, top: stT, ao: 0.32, shape: (c, zt) => { const z = zt * TH; let pts = ngon(18, TR - z * 0.03, 0, -52, -42); if (z > TH - 6) pts = clipHalf(pts, 0.75, 0.66, (z - (TH - 6)) * 2.2 - 6 + 0.75 * -52 + 0.66 * -42); polyOK(c, pts); } });
+    parts.push(...ruinTower(-52, -42, TR, TH, 11, 0.7, 0.7, stS, stT, stD));
     parts.push(layer((pe) => {
-      const c = pe.c;
-      c.save(); c.beginPath(); for (let z = 0; z <= TH; z += 0.5) { let pts = ngon(18, TR - z * 0.03, 0, -52, -42); if (z > TH - 6) pts = clipHalf(pts, 0.75, 0.66, (z - (TH - 6)) * 2.2 - 6 + 0.75 * -52 + 0.66 * -42); if (pts.length < 6) continue; c.moveTo(pts[0], pts[1] - z); for (let i = 2; i < pts.length; i += 2) c.lineTo(pts[i], pts[i + 1] - z); c.closePath(); } c.clip();
-      for (let z = 1.6; z < TH; z += 1.6) { c.beginPath(); c.arc(-52, -42 - z, TR - z * 0.03, 0.1, Math.PI - 0.1); c.strokeStyle = 'rgba(40,34,28,0.32)'; c.lineWidth = 0.3; c.stroke(); }
-      for (const q of [[-3, 6], [2.6, 12], [-1.5, 16.5]]) archRect(pe, '#1e1812', -52 + q[0] - 0.55, -52 + q[0] + 0.55, -42 + Math.sqrt(TR * TR - q[0] * q[0]) + 0.02, q[1], q[1] + 3, true);
-      c.restore();
+      for (const q of [[-3.5, 4], [3.2, 5.5]]) archRect(pe, '#1e1812', -52 + q[0] - 0.55, -52 + q[0] + 0.55, -42 + Math.sqrt(TR * TR - q[0] * q[0]) + 0.02, q[1], q[1] + 3, true);
       const r = rng(5, 1);
-      for (let i = 0; i < 4; i++) clump(pe, -55 + r.range(-2, 3), -38 + r.range(-1, 2), r.range(1, 6), 1.4, r);
+      for (let i = 0; i < 4; i++) clump(pe, -55 + r.range(-2, 3), -34.5 + r.range(-0.5, 0.5), r.range(1, 5), 1.3, r);
     }));
-    parts.push(...flagPole(-55, -44, TH - 1, 8, p));
-    parts.push(layer((pe, a) => paintFlag(pe, -54.55, -44, TH + 6.8, 7.5, 4.6, a, p.k, p.k2, { droop: 0.35 })));
+    parts.push(...flagPole(-56.5, -46.5, TH - 3, 8, p));
+    parts.push(layer((pe, a) => paintFlag(pe, -56.05, -46.5, TH + 4.8, 7.5, 4.6, a, p.k, p.k2, { droop: 0.35 })));
+    parts.push(...ruinTower(52, -42, 8, 12, 9, -0.6, 0.8, stS, stT, stD));
     const rub = [
-      { x: 52, y: -42, r: 9, h: 6, seed: 3, n: 12, rough: 0.4, top: 0.3 }, { x: 46, y: -35, r: 4, h: 3, seed: 4, n: 7, rough: 0.4 },
+      { x: 45, y: -33, r: 4.2, h: 3, seed: 4, n: 8, rough: 0.4 }, { x: 56, y: -33, r: 3.4, h: 2.4, seed: 3, n: 7, rough: 0.4 },
       { x: -52, y: 40, r: 7, h: 5.5, seed: 5, n: 11, rough: 0.4 }, { x: 58, y: -34, r: 3, h: 2.2, seed: 6, n: 7 },
     ];
     for (const q of north.concat()) if (q.h < 3) rub.push({ x: (q.x0 + q.x1) / 2, y: -40, r: 3.4, h: 2.4, seed: (q.x0 | 0) + 50, n: 7, rough: 0.45 });
@@ -1323,7 +1338,7 @@
     for (const q of west) if (q.h < 3) rub.push({ x: -49, y: (q.y0 + q.y1) / 2 + 1, r: 3.6, h: 2.6, seed: (q.y0 | 0) + 90, n: 7, rough: 0.45 });
     // east palisade
     const stakes = [], r = rng(13, 2), fallen = [];
-    for (let y = -36; y <= 36; y += 2.05) { if ((y > -12 && y < -4) || (y > 18 && y < 24)) { if (r.next() < 0.5) fallen.push([55 + r.range(1, 5), y, r.range(6, 9), r.range(-0.4, 0.4)]); continue; } const br = r.next() < 0.18; stakes.push({ x: 53 + r.range(-0.3, 0.3), y, h: br ? r.range(2.4, 5) : r.range(8.6, 10.8), lx: r.next() < 0.15 ? r.range(1, 2.4) : r.range(-0.3, 0.3), ly: r.range(-0.4, 0.4), r: r.range(1.1, 1.35) }); }
+    for (let y = -32; y <= 36; y += 2.05) { if ((y > -12 && y < -4) || (y > 18 && y < 24)) { if (r.next() < 0.6) fallen.push([56.5 + r.range(0.5, 2.5), y, r.range(6, 8.5), Math.PI / 2 + r.range(-0.35, 0.35)]); continue; } const br = r.next() < 0.18; stakes.push({ x: 53 + r.range(-0.3, 0.3), y, h: br ? r.range(2.4, 5) : r.range(8.6, 10.8), lx: r.next() < 0.15 ? r.range(1, 2.4) : r.range(-0.3, 0.3), ly: r.range(-0.4, 0.4), r: r.range(1.1, 1.35) }); }
     for (let x = 16; x <= 52; x += 2.05) { if (x > 30 && x < 37) { if (r.next() < 0.6) fallen.push([x, 44 + r.range(1, 4), r.range(6, 9), Math.PI / 2 + r.range(-0.5, 0.5)]); continue; } const br = r.next() < 0.2; stakes.push({ x, y: 41 + r.range(-0.3, 0.3), h: br ? r.range(2.4, 5) : r.range(8.6, 10.8), lx: r.range(-0.3, 0.3), ly: r.next() < 0.15 ? r.range(1, 2.2) : r.range(-0.3, 0.3), r: r.range(1.1, 1.35) }); }
     const stakePart = (list) => ({ z0: 0, z1: 11, side: wd, top: wdT, ao: 0.35, shape: (c, zt) => { const z = zt * 11; for (const s of list) { if (z > s.h) continue; const q = z / s.h; S.circ(c, s.x + s.lx * q, s.y + s.ly * q, s.r * Math.min(1, (s.h - z) / 1.7 + 0.08)); } } });
     parts.push(stakePart(stakes.filter((s) => s.y < 38)));
@@ -1338,18 +1353,19 @@
     const sw = wallRun([[-46, 41], [-14, 41]], 21, { H: 11, gap: 0.2, low: 0.6 });
     parts.push(wallPart(sw, 5, stS, stT, { out: 1 }));
     parts.push(layer((pe) => paintWallFaces(pe, sw, 5, 23)));
-    parts.push({ z0: 0, z1: 10, side: stS, top: stT, ao: 0.32, shape: (c, zt) => { const z = zt * 10; let pts = ngon(16, 6.6, 0, -52, 41); if (z > 5) pts = clipHalf(pts, -0.6, 0.8, (z - 5) * 1.6 - 6 - 0.6 * -52 + 0.8 * 41); polyOK(c, pts); } });
+    parts.push(...ruinTower(-52, 41, 6.8, 10, 7, 0.6, -0.8, stS, stT, stD));
     const GT = [{ x: -9.5, h: 18 }, { x: 9.5, h: 12.5, br: 1 }];
-    parts.push({ z0: 0, z1: 18, side: stS, top: stT, ao: 0.32, shape: (c, zt) => { const z = zt * 18; for (const g of GT) { if (z > g.h) continue; let pts = [g.x - 5, 35.5, g.x + 5, 35.5, g.x + 5, 46.5, g.x - 5, 46.5]; if (g.br && z > g.h - 4) pts = clipHalf(pts, -0.8, 0.6, (z - (g.h - 4)) * 2.4 - 7 - 0.8 * g.x + 0.6 * 41); polyOK(c, pts); } } });
-    parts.push(wallPart(wallRun([[-14.5, 35.5], [-4.5, 35.5], [-4.5, 46.5], [-14.5, 46.5], [-14.5, 35.5]], 1, { hs: [18], H: 18, seg: 2.5 }), 1.4, stS, stT, { out: -1, mh: 2.4 }));
+    parts.push(box(-9.5, 41, 10, 11, 0, 18, stS, stT, { ao: 0.32 }));
+    parts.push(wallPart(wallRun([[-13.8, 36.2], [-5.2, 36.2], [-5.2, 45.8], [-13.8, 45.8], [-13.8, 36.2]], 1, { hs: [18], H: 18, seg: 2.5 }), 1.4, stS, stT, { out: -1, mh: 2.4 }));
+    { const ts = ruinTower(9.5, 41, 5.6, 12.5, 8, 0.7, -0.7, stS, stT, stD, true); parts.push(ts[0], ts[1]); }
     const arch = ringQuads(0, 8, 4.5, 6.6, 4, Math.PI * 0.66, Math.PI);
     parts.push(xzPart(arch, 0, 14.8, stS, stT, { oy: 41, v0: -5, v1: 5 }, { ao: 0.3 }));
     parts.push(layer((pe) => {
-      for (const g of GT) { stones(pe, g.x - 5, g.x + 5, 46.52, 0, g.br ? g.h - 4 : g.h, (g.x | 0) + 7, { row: 1.6, w: 1.4, joint: 'rgba(40,34,28,0.32)' }); archRect(pe, '#1e1812', g.x - 0.55, g.x + 0.55, 46.54, 9, 12, true); }
+      for (const g of GT) { stones(pe, g.x - 5, g.x + 5, g.br ? 46.12 : 46.52, 0, g.br ? 4 : g.h, (g.x | 0) + 7, { row: 1.6, w: 1.4, joint: 'rgba(40,34,28,0.32)' }); if (!g.br) archRect(pe, '#1e1812', g.x - 0.55, g.x + 0.55, 46.54, 9, 12, true); }
       const s = []; for (let i = 1; i < 4; i++) { const a = Math.PI * (0.66 + 0.34 * i / 4); s.push(Math.cos(a) * 4.5, 46.05, 8 + Math.sin(a) * 4.5, Math.cos(a) * 6.6, 46.05, 8 + Math.sin(a) * 6.6); }
       pe.lines('rgba(40,34,28,0.42)', 0.3, s);
       const r2 = rng(9, 3);
-      for (let i = 0; i < 4; i++) clump(pe, 9.5 + r2.range(-4, 4), 41 + r2.range(-3, 3), 11.8, 1.1, r2);
+      for (let i = 0; i < 3; i++) clump(pe, 9.5 + r2.range(-4, 4), 46 + r2.range(-0.5, 0.5), r2.range(3, 6), 1, r2);
       // binding bands on the south palisade
       for (const st of stakes) if (st.y > 38 && st.h > 7) { pe.wall('rgba(40,28,18,0.7)', st.x - 1, st.x + 1, st.y + 1.05, 2.6, 3.2); pe.wall('rgba(40,28,18,0.7)', st.x - 1, st.x + 1, st.y + 1.05, 6.6, 7.2); }
     }));
@@ -1358,7 +1374,7 @@
     // the fallen gate leaf
     parts.push({ z0: 0, z1: 0.9, side: sh(wd, -0.3), top: wd, ao: 0.2, shape: (c) => S.poly(c, tf([-4, -3.2, 4, -3.2, 3.6, 3.2, -4, 3.2], 3, 52, 0.35)),
       detail: (c) => { c.save(); c.translate(3, 52); c.rotate(0.35); S.lines(c, 'rgba(30,20,12,0.55)', 0.3, [-2, -3.2, -2, 3.2, 0, -3.2, 0, 3.2, 2, -3.2, 2, 3.2]); S.lines(c, '#3a3634', 0.6, [-4, -1.8, 3.8, -1.8, -4, 1.8, 3.7, 1.8]); c.restore(); } });
-    return { r: 76, h: 32, parts, style: 'prop', bevel: 0.7, spots: { flag: [-55, -44, TH + 7], gate: [0, 44, 0] } };
+    return { r: 76, h: 32, parts, style: 'prop', bevel: 0.7, spots: { flag: [-56.5, -46.5, TH + 5], gate: [0, 44, 0] } };
   };
 
   /* ========================================================== site_bridge
@@ -1370,14 +1386,20 @@
     opt = opt || {};
     const p = P(pal, opt);
     const stS = mx(p.a, '#8c8678', 0.4), stT = mx(p.s, '#c6bea8', 0.4), stD = mx(p.a, '#5e5a52', 0.4), ring = mx(p.s, '#b0a890', 0.3), deck = mx(p.s, '#a89e86', 0.4);
-    const DZ = 7, L = 60, RX = 46, W = 12;
-    const arches = [[-31.5, 10.5, 4.6], [0, 15, 5.3], [31.5, 10.5, 4.6]];
+    // opt.len = half-length (default 60): longer bridges get more arches
+    const DZ = 7, L = Math.max(60, opt.len || 60), RX = L - 14, W = 12;
+    let arches = [[-31.5, 10.5, 4.6], [0, 15, 5.3], [31.5, 10.5, 4.6]], cw = [-21, 21];
+    if (L > 60) {
+      const n = Math.max(3, Math.round(RX * 2 / 31) | 1), span = RX * 2 / n;
+      arches = []; cw = [];
+      for (let i = 0; i < n; i++) { const mid = i === (n - 1) / 2; arches.push([-RX + span * (i + 0.5), span * (mid ? 0.42 : 0.34), mid ? 5.3 : 4.6]); }
+      for (let i = 1; i < n; i++) cw.push(-RX + span * i);
+    }
     const ell = (cu, hs, zc, t) => [cu + Math.cos(t) * hs, Math.sin(t) * zc];
     const prof = [-L, 0, -L, 1.2, -RX, DZ, RX, DZ, L, 1.2, L, 0];
     for (let k = arches.length - 1; k >= 0; k--) { const [cu, hs, zc] = arches[k]; prof.push(cu + hs, 0); for (let i = 1; i < 12; i++) { const q = ell(cu, hs, zc, (i / 12) * Math.PI); prof.push(q[0], q[1]); } prof.push(cu - hs, 0); }
     const parts = [];
     // cutwaters at the piers (both sides)
-    const cw = [-21, 21];
     parts.push({ z0: 0, z1: 5.2, side: stS, top: stT, ao: 0.35, shape: (c, zt) => { const k = 1 - zt * 0.15; for (const x of cw) for (const s of [1, -1]) S.poly(c, [x - 3 * k, s * (W - 0.5), x + 3 * k, s * (W - 0.5), x, s * (W + 4.6 * k)]); } });
     parts.push({ z0: 5.2, z1: 6.8, side: stD, top: stT, ao: 0.1, bevel: false, shape: (c, zt) => { for (const x of cw) for (const s of [1, -1]) S.poly(c, [x - 2.6 * (1 - zt), s * W, x + 2.6 * (1 - zt), s * W, x, s * (W + 4 * (1 - zt))]); } });
     parts.push(xzPart([prof], 0, DZ, stS, deck, { v0: -W, v1: W }, { ao: 0.38,
@@ -1406,7 +1428,7 @@
     // newel pillars at the deck ends and posts at the bank ends
     parts.push({ z0: 0, z1: DZ + 4.6, side: stS, top: stT, ao: 0.35, shape: (c, zt) => { const z = zt * (DZ + 4.6); for (const x of [-RX, RX]) for (const s of [1, -1]) c.rect(x - 1.7, s * (W - 0.9) - 1.7, 3.4, 3.4); if (z < 5.6) for (const x of [-L + 2, L - 2]) for (const s of [1, -1]) c.rect(x - 1.4, s * (W - 0.9) - 1.4, 2.8, 2.8); } });
     parts.push({ z0: DZ + 4.6, z1: DZ + 5.8, side: stD, top: stT, ao: 0.1, bevel: false, shape: (c, zt) => { const k = 1 - zt * 0.6; for (const x of [-RX, RX]) for (const s of [1, -1]) S.poly(c, ngon(4, 2.6 * k, Math.PI / 4, x, s * (W - 0.9))); } });
-    return { r: 63, h: DZ + 6.5, parts, style: 'prop', bevel: 0.7, deckZ: DZ };
+    return { r: L + 3, h: DZ + 6.5, parts, style: 'prop', bevel: 0.7, deckZ: DZ };
   };
 
   /* =========================================================== site_shrine
@@ -1458,7 +1480,8 @@
       const ap = 0.5 + 0.5 * pulse(a);
       for (let i = 0; i < 3; i++) rune(pe, -1.8 + i * 1.8, 1.72, 2.4, 1.5, G, i + 4, ap);
       const c = pe.c;
-      for (const [w0, w1, aa] of [[3, 7, 0.1], [1.4, 3.2, 0.2]]) { const g = c.createLinearGradient(0, -7, 0, -36); g.addColorStop(0, al(G, aa + 0.08 * ap)); g.addColorStop(1, al(G, 0)); c.fillStyle = g; c.beginPath(); c.moveTo(-w0, -7); c.lineTo(w0, -7); c.lineTo(w1, -36); c.lineTo(-w1, -36); c.closePath(); c.fill(); }
+      for (const [w0, w1, aa] of [[2.2, 5, 0.05], [0.9, 2.2, 0.1]]) { const g = c.createLinearGradient(0, -7, 0, -30); g.addColorStop(0, al(G, aa + 0.08 * ap)); g.addColorStop(1, al(G, 0)); c.fillStyle = g; c.beginPath(); c.moveTo(-w0, -7); c.lineTo(w0, -7); c.lineTo(w1, -30); c.lineTo(-w1, -30); c.closePath(); c.fill(); }
+      pe.glow(G, 0, 0, 8.5, 6, 0.25 + 0.15 * ap);
       pe.glow(GH, 0, 0, 7.4, 2.6, 0.9);
       for (let i = 0; i < 8; i++) { const ph = (a + i / 8) % 1, th = i * 2.3; pe.dot(al(i % 2 ? G : GH, 0.9 * (1 - ph)), Math.cos(th) * (1 + (i % 3)), Math.sin(th) * 1.2, 8 + ph * 18, 0.3); }
     }));
@@ -1643,7 +1666,7 @@
     if (M.prop_signpost) parts.push(...embed(M.prop_signpost(pal, {}), 37, -3, 0));
     if (M.prop_tent) parts.push(...embed(M.prop_tent(pal, { col: '#dfe6cc', trim: '#3e7a3a' }), -35, 4, 0));
     if (M.prop_stall) parts.push(...embed(M.prop_stall(pal, { v: 2 }), -9, 6, 0));
-    if (M.prop_cart) parts.push(...embed(M.prop_cart(pal, {}), 29, 17, 0, -0.45));
+    if (M.prop_cart) parts.push(...embed(M.prop_cart(pal, {}), 31, 23, 0, -0.45));
     if (M.prop_crates) parts.push(...embed(M.prop_crates(pal, {}), -24, 17, 0));
     if (M.prop_barrels) parts.push(...embed(M.prop_barrels(pal, {}), -16, 21, 0));
     return { r: 46, h: 30, parts, style: 'prop', bevel: 0.7, spots: { flag: [0, -4, 21] } };
@@ -1715,15 +1738,9 @@
       const c = pe.c, g = c.createRadialGradient(0, 4, 6, 0, 4, 60);
       g.addColorStop(0, 'rgba(110,96,62,0.2)'); g.addColorStop(0.7, 'rgba(110,96,62,0.12)'); g.addColorStop(1, 'rgba(110,96,62,0)');
       c.save(); c.scale(1, 0.8); c.fillStyle = g; c.beginPath(); c.arc(0, 5, 60, 0, TAU); c.fill(); c.restore();
-      pe.poly('rgba(110,90,58,0.16)', [-4, Y, 0, 4, Y, 0, 3, -6, 0, -3, -6, 0]);
     }));
     // ruined tower: a hollow shell whose wall pieces break off at their own heights (breach toward nx, ny)
-    const ragTower = (x, y, r, h, cut, nx, ny) => {
-      const run = []; for (let i = 0; i <= 18; i++) { const a = (i / 18) * TAU; run.push([x + Math.cos(a) * (r - 1.3), y + Math.sin(a) * (r - 1.3)]); }
-      const segs = wallRun(run, (x * 7 + y) | 0, { H: h, gap: 0, low: 0, seg: 3.6, noCren: true });
-      for (const q of segs) { const mx_ = (q.x0 + q.x1) / 2 - x, my_ = (q.y0 + q.y1) / 2 - y, f = (mx_ * nx + my_ * ny) / r; q.h = Math.max(1.5, h - cut * U.clamp(0.5 + f * 0.9, 0, 1) - 2.5 * U.hash2(q.s0 | 0, 3, 7)); }
-      return [{ z0: 0, z1: 0.8, side: stD, top: mx(stD, '#6a6050', 0.5), ao: 0.2, bevel: false, shape: (c) => S.circ(c, x, y, r - 2) }, wallPart(segs, 2.6, stS, stT)];
-    };
+    const ragTower = (x, y, r, h, cut, nx, ny) => ruinTower(x, y, r, h, cut, nx, ny, stS, stT, stD);
     const towerPaint = (pe, x, y, r, h, slits) => {
       const c = pe.c;
       for (let z = 1.8; z < h - 1; z += 1.8) { c.beginPath(); c.arc(x, y - z, r - z * 0.025 + 0.02, 0.25, Math.PI - 0.25); c.strokeStyle = 'rgba(40,34,28,0.28)'; c.lineWidth = 0.3; c.stroke(); }
@@ -1886,7 +1903,7 @@
       pe.lines(al(GOLD, 0.8), 0.3, [-1.6, 1.72, 6, 1.6, 1.72, 6]);
       // rays behind the relic
       c.save(); c.globalCompositeOperation = 'lighter';
-      for (let i = 0; i < 12; i++) { const t = (i / 12) * TAU + a * TAU / 12, L = i % 2 ? 9 : 13; c.beginPath(); c.moveTo(0, -zc); c.lineTo(Math.cos(t - 0.08) * L, -zc + Math.sin(t - 0.08) * L); c.lineTo(Math.cos(t + 0.08) * L, -zc + Math.sin(t + 0.08) * L); c.closePath(); c.fillStyle = al(GL, 0.1 + 0.07 * gp); c.fill(); }
+      for (let i = 0; i < 12; i++) { const t = (i / 12) * TAU + a * TAU / 6, L = i % 2 ? 9 : 13; c.beginPath(); c.moveTo(0, -zc); c.lineTo(Math.cos(t - 0.08) * L, -zc + Math.sin(t - 0.08) * L); c.lineTo(Math.cos(t + 0.08) * L, -zc + Math.sin(t + 0.08) * L); c.closePath(); c.fillStyle = al(GL, 0.1 + 0.07 * gp); c.fill(); }
       c.restore();
       pe.glow(GL, 0, 0, zc, 7 + 2 * gp, 0.35 + 0.2 * gp);
       // back half of the turning ring
@@ -1945,7 +1962,7 @@
       c.fillStyle = g; c.fillRect(-RI - 1, cy - RI - 4, 2 * RI + 2, 2 * RI + 8);
       for (let k = 0; k < 4; k++) {
         c.beginPath();
-        for (let i = 0; i <= 40; i++) { const t = i / 40, ang = (k / 4) * TAU + a * (TAU / 4) + t * 5.2, rr = 0.6 + t * (RI + 1); const xx = Math.cos(ang) * rr, yy = cy + Math.sin(ang) * rr; if (i) c.lineTo(xx, yy); else c.moveTo(xx, yy); }
+        for (let i = 0; i <= 40; i++) { const t = i / 40, ang = (k / 4) * TAU + a * (TAU / 2) + t * 5.2, rr = 0.6 + t * (RI + 1); const xx = Math.cos(ang) * rr, yy = cy + Math.sin(ang) * rr; if (i) c.lineTo(xx, yy); else c.moveTo(xx, yy); }
         c.strokeStyle = al(k % 2 ? PH : '#c8f8ff', 0.55); c.lineWidth = 1.1; c.stroke();
       }
       const r = rng(5, frame4(a));
@@ -1962,66 +1979,66 @@
   };
 
   /* ============================================================ site_grove
-   * Enchanted grove centre ~40: a vast ancient stump on spreading roots, its hollow
-   * crown cradling a glowing pool and a luminous sapling, glowing mushrooms, mossy
-   * stones and drifting fireflies (anims 4). */
+   * Enchanted grove centre ~40: a vast ancient stump on thick buttress roots, its
+   * hollow crown cradling a glowing pool and a luminous sapling, ferns, clusters of
+   * glowing mushrooms, mossy boulders and drifting fireflies (anims 4). */
   M.site_grove = function (pal, opt) {
     opt = opt || {};
     const p = P(pal, opt);
     const G = opt.glow || '#c8ff7a', G2 = opt.glow2 || '#7affd8', GH = '#f4ffe0';
-    const bark = mx(p.w, '#5a4a3a', 0.4), barkT = mx(p.w, '#9a8466', 0.5);
-    const parts = [stain(24, 18, 0.32, '#1c2414', 0, 2)];
+    const bark = mx(p.w, '#5e4c3a', 0.45), barkT = mx(p.w, '#a08a6a', 0.55), barkD = sh(bark, -0.35);
+    const parts = [stain(26, 19, 0.34, '#1c2414', 0, 2)];
     parts.push(layer((pe, a) => {
-      const c = pe.c, g = c.createRadialGradient(0, 0, 0, 0, 0, 22); g.addColorStop(0, al(G, 0.18 + 0.08 * pulse(a))); g.addColorStop(1, al(G, 0)); c.save(); c.scale(1, 0.74); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 22, 0, TAU); c.fill(); c.restore();
+      const c = pe.c, g = c.createRadialGradient(0, 0, 0, 0, 0, 24); g.addColorStop(0, al(G, 0.2 + 0.08 * pulse(a))); g.addColorStop(1, al(G, 0)); c.save(); c.scale(1, 0.74); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 24, 0, TAU); c.fill(); c.restore();
       const r = rng(7, 1);
-      for (let i = 0; i < 40; i++) { const t = r.range(0, TAU), d = r.range(11, 19); pe.dot(['#e8f0a0', '#f0b0d8', '#ffffff', '#b0d8ff'][i % 4], Math.cos(t) * d, Math.sin(t) * d * 0.78, 0.1, r.range(0.25, 0.45)); }
+      for (let i = 0; i < 46; i++) { const t = r.range(0, TAU), d = r.range(12, 21); pe.dot(['#e8f0a0', '#f0b0d8', '#ffffff', '#b0d8ff'][i % 4], Math.cos(t) * d, Math.sin(t) * d * 0.76, 0.1, r.range(0.25, 0.45)); }
+      // ferns: fans of fronds
+      for (const f of [[-17, -4], [15, -8], [-12, 12], [17, 9], [3, -15], [-3, 16]]) for (let k = 0; k < 6; k++) { const t = -Math.PI * 0.95 + (k / 5) * Math.PI * 0.9; pe.lines(k % 2 ? '#4a7a2a' : '#6a9a3a', 0.5, [f[0], f[1], 0.2, f[0] + Math.cos(t) * 3, f[1] + 0.3, 0.6 + Math.sin(-t) * 2.4]); }
     }));
-    const stones = [];
-    for (let i = 0; i < 6; i++) { const t = (i / 6) * TAU + 0.5; stones.push({ x: Math.cos(t) * 17, y: Math.sin(t) * 13, r: 2, h: 3.4 + (i % 3), seed: 160 + i, n: 7, rough: 0.2, top: 0.5, pw: 4, moss: 1 }); }
-    const sN = stones.filter((s) => s.y < 0), sS = stones.filter((s) => s.y >= 0);
-    parts.push(rockPart(sN, '#6e6a62', '#a8a49a'));
-    parts.push(layer((pe) => paintMoss(pe, sN, 3, { cracks: false })));
-    // roots
+    const boulders = [{ x: -18, y: -9, r: 3.2, h: 2.8, seed: 171, moss: 1.4 }, { x: 19, y: -2, r: 2.6, h: 2.4, seed: 172, moss: 1.4 }, { x: 10, y: 15, r: 2.8, h: 2.2, seed: 173, moss: 1.4 }];
+    parts.push(rockPart(boulders, '#6e6a62', '#a8a49a'));
+    parts.push(layer((pe) => paintMoss(pe, boulders, 3, { cracks: false })));
+    // thick buttress roots flaring from the stump
     const roots = [];
-    for (let i = 0; i < 7; i++) { const t = (i / 7) * TAU + 0.2 + 0.2 * Math.sin(i * 3); roots.push({ t, L: 10 + (i % 3) * 2.4, h: 3.8 - (i % 2) * 0.8, w: 2.6 - (i % 2) * 0.5, bend: (i % 2 ? 1 : -1) * 1.6 }); }
-    parts.push({ z0: 0, z1: 4, side: bark, top: barkT, ao: 0.4, shape: (c, zt) => {
-      const z = zt * 4;
-      for (const rt of roots) {
-        const tm = 1 - z / rt.h; if (tm <= 0.02) continue;
-        const ux = Math.cos(rt.t), uy = Math.sin(rt.t), nx = -uy, ny = ux, L = [], R = [];
-        for (let k = 0; k <= 6; k++) { const s = (k / 6) * tm, d = 5 + s * rt.L, off = Math.sin(s * Math.PI) * rt.bend, w = rt.w * (1 - s * 0.85) * Math.sqrt(Math.max(0.05, 1 - z / rt.h * 0.7)); L.push(ux * d + nx * (off + w), uy * d + ny * (off + w)); R.push(ux * d + nx * (off - w), uy * d + ny * (off - w)); }
-        const pts = []; for (const q of L) pts.push(q[0], q[1]); for (let k = R.length - 1; k >= 0; k--) pts.push(R[k][0], R[k][1]);
-        S.poly(c, pts);
-      }
-    } });
+    for (let i = 0; i < 9; i++) { const t = (i / 9) * TAU + 0.15 * Math.sin(i * 2.7); roots.push({ t, L: 6.5 + ((i * 5) % 4) * 1.4, h: 5.2 - (i % 3) * 0.6, w: 3.8 - (i % 2) * 0.8, bend: (i % 2 ? 1 : -1) * (1 + (i % 3) * 0.5) }); }
+    const rootPoly = (rt, z) => {
+      const tm = 1 - z / rt.h; if (tm <= 0.03) return null;
+      const ux = Math.cos(rt.t), uy = Math.sin(rt.t), nx = -uy, ny = ux, L = [], R = [];
+      for (let k = 0; k <= 6; k++) { const s = (k / 6) * tm, d = 6.6 + s * rt.L, off = Math.sin(s * Math.PI) * rt.bend, w = rt.w * Math.pow(1 - s, 0.8) * (0.55 + 0.45 * tm) + 0.25; L.push([ux * d + nx * (off + w), uy * d + ny * (off + w)]); R.push([ux * d + nx * (off - w), uy * d + ny * (off - w)]); }
+      const pts = [ux * 5 + nx * rt.w * 1.2, uy * 5 + ny * rt.w * 1.2]; for (const q of L) pts.push(q[0], q[1]); for (let k = R.length - 1; k >= 0; k--) pts.push(R[k][0], R[k][1]); pts.push(ux * 5 - nx * rt.w * 1.2, uy * 5 - ny * rt.w * 1.2);
+      return pts;
+    };
+    parts.push({ z0: 0, z1: 5.2, side: bark, top: barkT, ao: 0.42, shape: (c, zt) => { const z = zt * 5.2; for (const rt of roots) polyOK(c, rootPoly(rt, z)); } });
     // the stump
-    const stumpPts = (zt) => jag(16, 6.6 - zt * 0.6, 7, 0.16);
-    parts.push({ z0: 0, z1: 8.4, side: bark, top: barkT, ao: 0.4, shape: (c, zt) => S.poly(c, stumpPts(zt)),
-      detail: (c, a) => { const pts = stumpPts(1); c.save(); c.beginPath(); S.poly(c, pts); c.clip(); for (let r = 1; r < 6.2; r += 0.9) { c.beginPath(); c.arc(0.3, 0.2, r, 0, TAU); c.strokeStyle = 'rgba(90,64,40,0.45)'; c.lineWidth = 0.25; c.stroke(); } S.dot(c, '#2a2014', 0.3, 0.2, 2.9); const g = c.createRadialGradient(0.3, 0.2, 0, 0.3, 0.2, 2.6); g.addColorStop(0, GH); g.addColorStop(0.5, al(G, 0.95)); g.addColorStop(1, al(G2, 0.6)); c.fillStyle = g; c.beginPath(); c.arc(0.3, 0.2, 2.5, 0, TAU); c.fill(); c.restore(); } });
+    const stumpPts = (zt) => jag(18, 9.2 - zt * 1, 7, 0.14);
+    parts.push({ z0: 0, z1: 6.6, side: bark, top: barkT, ao: 0.42, shape: (c, zt) => S.poly(c, stumpPts(zt)),
+      detail: (c) => { const pts = stumpPts(1); c.save(); c.beginPath(); S.poly(c, pts); c.clip(); for (let r = 1.2; r < 8.4; r += 0.8) { c.beginPath(); c.ellipse(-0.6, -0.4, r * 1.05, r, 0.3, 0, TAU); c.strokeStyle = 'rgba(90,64,40,0.42)'; c.lineWidth = 0.25; c.stroke(); } S.lines(c, 'rgba(60,40,24,0.6)', 0.4, [-7, -2, -3, -1, 3, 2.5, 7.5, 4.5, -2, 4, -1, 7.5]); S.fillPoly(c, '#4a3a28', jag(11, 4.4, 4, 0.35, 0, -0.6, -0.6)); c.save(); c.beginPath(); S.poly(c, jag(11, 3.9, 4, 0.35, 0, -0.6, -0.6)); const g = c.createRadialGradient(-0.6, -0.6, 0, -0.6, -0.6, 4); g.addColorStop(0, GH); g.addColorStop(0.5, al(G, 0.95)); g.addColorStop(1, al(mx(G2, '#2a6a4a', 0.4), 0.95)); c.fillStyle = g; c.fill(); c.restore(); c.restore(); } });
     parts.push(layer((pe, a) => {
-      const r = rng(9, 3), s = [];
-      for (let i = 0; i < 16; i++) { const x = r.range(-5.6, 5.6), y = Math.sqrt(Math.max(0, 6.3 * 6.3 - x * x)) * 0.95 + 0.05; s.push(x, y, r.range(0.4, 2), x + r.range(-0.4, 0.4), y, r.range(5, 8)); }
-      pe.lines('rgba(40,28,18,0.5)', 0.35, s);
-      for (let i = 0; i < 5; i++) clump(pe, r.range(-5, 5), r.range(3, 6), r.range(1, 7.5), 1.2, r);
-      for (let i = 0; i < 4; i++) { const t = 0.4 + i * 0.7, x = Math.cos(t) * 6.2, y = Math.sin(t) * 6.2; clump(pe, x, y, 8.4, 1.1, r); }
-      pe.glow(G, 0.3, 0.2, 9, 5, 0.3 + 0.2 * pulse(a));
+      const r = rng(9, 3), s = [], s2 = [];
+      for (let i = 0; i < 24; i++) { const x = r.range(-8, 8), y = Math.sqrt(Math.max(0, 8.8 * 8.8 - x * x)) * 0.96 + 0.05; const z0 = r.range(0.3, 2), z1 = r.range(4, 6.3); s.push(x, y, z0, x + r.range(-0.5, 0.5), y, z1); s2.push(x - 0.35, y, z0, x - 0.35 + r.range(-0.4, 0.4), y, z1); }
+      pe.lines('rgba(30,20,12,0.55)', 0.4, s); pe.lines('rgba(220,200,160,0.18)', 0.3, s2);
+      // moss over the rim, trailing strands
+      for (let i = 0; i < 7; i++) { const t = -0.2 + i * 0.55, x = Math.cos(t) * 8.2, y = Math.sin(t) * 8.2; clump(pe, x, y, 6.4, 1.3, r); if (Math.sin(t) > 0.2) pe.lines('rgba(84,122,44,0.9)', 0.45, [x, y + 0.4, 6, x + r.range(-0.4, 0.4), y + 0.4, r.range(2.5, 4.5)]); }
+      for (const rt of roots) { const d = 7.5, x = Math.cos(rt.t) * d, y = Math.sin(rt.t) * d; if (r.next() < 0.6) clump(pe, x, y, rt.h * 0.75, 1.1, r); }
+      pe.glow(G, -0.6, -0.6, 7, 6, 0.32 + 0.2 * pulse(a));
     }));
     // luminous sapling
-    parts.push(beams([[0.3, 0.2, 8.4, 0.8, -0.2, 14], [0.7, -0.1, 12, -1.6, -0.5, 14.6], [0.7, -0.1, 12.6, 2.6, 0.2, 15]], 0.45, '#6a5a3a', '#a89060'));
-    parts.push({ z0: 13.4, z1: 17.6, side: mx(G, '#3a8a3a', 0.45), top: GH, flat: true, ao: 0.35, bevel: false, shape: (c, zt) => { const k = Math.sin(Math.PI * Math.min(1, zt * 1.1 + 0.05)); S.circ(c, 0.8, -0.3, 2.2 * k + 0.1); S.circ(c, -1.7, -0.5, 1.5 * k + 0.1); S.circ(c, 2.7, 0.2, 1.6 * k + 0.1); } });
-    // glowing mushrooms on the roots
-    const shrooms = [[-8, 5, 1.2], [-9.4, 6.4, 0.8], [9, 4, 1], [10.6, 2.6, 0.7], [3, 11, 0.9], [-2, -9.5, 0.8], [7, -7, 0.7]];
-    parts.push(beams(shrooms.map((q) => [q[0], q[1], 0, q[0], q[1], 1 + q[2]]), 0.4, '#d8d0b8', '#f0ead8'));
-    parts.push({ z0: 1.2, z1: 2.8, side: mx(G2, '#2a6a6a', 0.3), top: mx(G2, '#ffffff', 0.4), flat: true, ao: 0.3, bevel: false, shape: (c, zt) => { for (const q of shrooms) { const z = 1.2 + zt * 1.6; if (z > 1.2 + q[2] * 1.2) continue; S.circ(c, q[0], q[1], q[2] * (1.3 - (z - 1.2) / (q[2] * 1.2) * 0.8)); } } });
-    parts.push(rockPart(sS, '#6e6a62', '#a8a49a'));
+    parts.push(beams([[-0.6, -0.6, 6.6, 0.4, -0.8, 15.6], [0.2, -0.7, 12, -2.6, -1, 15.6], [0.3, -0.7, 13, 3, -0.3, 16.4]], 0.6, '#6a5a3a', '#b09868'));
+    const crown = [[0.4, -0.8, 3.6, 15, 21.6], [-2.9, -1, 2.5, 14.2, 18.8], [3.4, -0.3, 2.6, 14.8, 19.6], [-0.2, -2, 2.3, 17.4, 22.4]];
+    parts.push({ z0: 14, z1: 22.6, side: mx(G, '#3e8a3a', 0.5), top: GH, flat: true, ao: 0.38, bevel: false, shape: (c, zt) => { const z = 14 + zt * 8.6; for (const q of crown) { if (z < q[3] || z > q[4]) continue; const k = Math.sin(Math.PI * (z - q[3]) / (q[4] - q[3])); S.circ(c, q[0], q[1], Math.max(0.15, q[2] * Math.pow(k, 0.6))); } } });
+    // mushroom clusters near the root tips
+    const shrooms = [];
+    for (const i of [1, 4, 7]) { const rt = roots[i], d = 6.6 + rt.L * 0.9, x = Math.cos(rt.t) * d, y = Math.sin(rt.t) * d; shrooms.push([x, y, 1], [x + 1.3, y + 0.6, 0.7], [x - 0.9, y + 1, 0.6]); }
+    parts.push(beams(shrooms.map((q) => [q[0], q[1], 0, q[0], q[1], 0.8 + q[2]]), 0.38, '#d8d0b8', '#f0ead8'));
+    parts.push({ z0: 1, z1: 2.4, side: mx(G2, '#2a6a6a', 0.3), top: mx(G2, '#ffffff', 0.45), flat: true, ao: 0.3, bevel: false, shape: (c, zt) => { const z = 1 + zt * 1.4; for (const q of shrooms) { const top = 0.9 + q[2] * 1.3; if (z > top) continue; S.circ(c, q[0], q[1], q[2] * (1.25 - Math.max(0, z - 1) / (top - 1 + 0.01) * 0.75)); } } });
     parts.push(layer((pe, a) => {
-      paintMoss(pe, sS, 5, { cracks: false });
-      for (const q of shrooms) pe.glow(G2, q[0], q[1], 2, 2.4, 0.3 + 0.15 * pulse(a));
-      pe.glow(G, 0.6, -0.3, 15.5, 6, 0.3 + 0.15 * pulse(a));
+      for (const q of shrooms) pe.glow(G2, q[0], q[1], 1.8, 2.2, 0.28 + 0.14 * pulse(a));
+      pe.glow(G, 0.4, -0.8, 18, 7.5, 0.3 + 0.15 * pulse(a));
+      const r0 = rng(13, 2); for (let i = 0; i < 16; i++) { const q = crown[i % 4], t = r0.range(0, TAU), d = r0.range(0, q[2] * 0.8); pe.dot(al(GH, 0.7), q[0] + Math.cos(t) * d, q[1] + Math.sin(t) * d * 0.5 + q[2] * 0.4, (q[3] + q[4]) / 2 + r0.range(-1, 1.5), 0.3); }
       const r = rng(11, 4);
-      for (let i = 0; i < 14; i++) { const base = r.range(0, TAU), rr = r.range(5, 16), zb = r.range(4, 16), ph = (a + i / 14) * TAU; const x = Math.cos(base + Math.sin(ph) * 0.2) * rr, y = Math.sin(base + Math.sin(ph) * 0.2) * rr * 0.7, z = zb + Math.sin(ph * 2 + i) * 1.2; const on = 0.35 + 0.65 * Math.max(0, Math.sin(ph + i)); pe.glow(G, x, y, z, 1.6, 0.4 * on); pe.dot(al(GH, on), x, y, z, 0.32); }
+      for (let i = 0; i < 16; i++) { const base = r.range(0, TAU), rr = r.range(6, 18), zb = r.range(4, 18), ph = (a + i / 16) * TAU; const x = Math.cos(base + Math.sin(ph) * 0.2) * rr, y = Math.sin(base + Math.sin(ph) * 0.2) * rr * 0.7, z = zb + Math.sin(ph * 2 + i) * 1.2; const on = 0.35 + 0.65 * Math.max(0, Math.sin(ph + i)); pe.glow(G, x, y, z, 1.7, 0.42 * on); pe.dot(al(GH, on), x, y, z, 0.34); }
     }));
-    return { r: 24, h: 20, parts, style: 'prop', bevel: 0.6, spots: { glow: [0.3, 0.2, 9] } };
+    return { r: 26, h: 24, parts, style: 'prop', bevel: 0.6, spots: { glow: [-0.6, -0.6, 7] } };
   };
 
   /* ============================================================ site_chest
@@ -2050,7 +2067,7 @@
       pe.lines('rgba(40,20,10,0.4)', 0.25, [-3.6, y, 1.2, 3.6, y, 1.2, -3.6, y, 2.3, 3.6, y, 2.3]);
       // lid inner face: dark wood, velvet lining, bands
       const yi = yl(5.7) + 0.47;
-      pe.poly('#7a1e2a', [-3.2, yl(4) + 0.46, 4, 3.2, yl(4) + 0.46, 4, 3.2, yl(7.4) + 0.46, 7.4, -3.2, yl(7.4) + 0.46, 7.4]);
+      pe.poly('#6a1e26', [-2.6, yl(4.4) + 0.46, 4.4, 2.6, yl(4.4) + 0.46, 4.4, 2.6, yl(7) + 0.46, 7, -2.6, yl(7) + 0.46, 7]);
       pe.lines(iron, 0.5, [-3.5, yi, 3.7, -3.5, yi, 7.7, 3.5, yi, 3.7, 3.5, yi, 7.7]);
       // gems, goblet, coins over the rim
       pe.dot('#e83a4a', -1.4, 0.4, 4.7, 0.5); pe.dot('#ffd0d0', -1.55, 0.35, 4.85, 0.16);
@@ -2202,7 +2219,7 @@
       pe.poly(sh(cv, -0.12), [0, ys + 0.02, 5.6, 2.2, ys + 0.02, 0, 3.4, ys + 0.3, 0.4, 1.2, ys + 0.2, 4.6]);
       pe.lines(al(sh(cv, -0.5), 0.6), 0.3, [0, ys, 7.4, -5.6, ys, 0.1, 0, ys, 7.4, 5.6, ys, 0.1]);
     }));
-    parts.push(...flagPole(0, 5.2, 6.6, 3.4, p).map((q, i) => Object.assign(q, i ? {} : {})));
+    parts.push(...flagPole(0, 5.2, 6.6, 3.4, p));
     parts.push(layer((pe, a) => paintFlag(pe, 0.4, 5.2, 10, 3.2, 1.8, a, tr, sh(tr, 0.5), { amp: 0.5 })));
     return { r: 10, h: 12, parts, style: 'prop', bevel: 0.6 };
   };
@@ -2370,21 +2387,21 @@
     opt = opt || {};
     const p = P(pal, opt), w = woodOf(p), wl = mx(p.w, '#a07a50', 0.35), GOLD = '#e8b84a';
     const parts = [];
-    const WX = -1.6, WR = 3.3, WZ = 3.3, WY = 4.7;
-    const wheel = () => { const q = ringQuads(WX, WZ, WR - 0.65, WR, 14); for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI; q.push(barUZ(WX - Math.cos(a) * (WR - 0.4), WZ - Math.sin(a) * (WR - 0.4), WX + Math.cos(a) * (WR - 0.4), WZ + Math.sin(a) * (WR - 0.4), 0.42)); } const hub = []; for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU; hub.push(WX + Math.cos(a) * 0.8, WZ + Math.sin(a) * 0.8); } q.push(hub); return q; };
-    parts.push(xzPart(wheel(), 0, WZ + WR, w.d, w.t, { oy: -WY, v0: -0.4, v1: 0.4 }, { ao: 0.15, bevel: false }));
+    const WX = -1.6, WR = 3.8, WZ = 3.8, WY = 4.8;
+    const wheel = () => { const q = ringQuads(WX, WZ, WR - 0.85, WR, 16); for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI; q.push(barUZ(WX - Math.cos(a) * (WR - 0.5), WZ - Math.sin(a) * (WR - 0.5), WX + Math.cos(a) * (WR - 0.5), WZ + Math.sin(a) * (WR - 0.5), 0.5)); } const hub = []; for (let i = 0; i < 8; i++) { const a = (i / 8) * TAU; hub.push(WX + Math.cos(a) * 0.8, WZ + Math.sin(a) * 0.8); } q.push(hub); return q; };
+    parts.push(xzPart(wheel(), 0, WZ + WR, sh(w.d, -0.2), w.s, { oy: -WY, v0: -0.45, v1: 0.45 }, { ao: 0.15, bevel: false }));
     parts.push(beams([[WX, -WY, WZ, WX, WY, WZ]], 0.7, w.d, w.s));
-    parts.push(beams([[3.6, 2.6, 4.1, 11.2, 2.3, 3.4], [3.6, -2.6, 4.1, 11.2, -2.3, 3.4], [8.6, -2.4, 3.6, 8.6, 2.4, 3.6]], 0.55, w.d, w.l));
-    parts.push(box(-1.4, 0, 11.4, 7.8, 3.4, 4.3, w.d, wl, { ao: 0.2 }));
-    parts.push({ z0: 4.3, z1: 6.8, side: w.s, top: w.l, stroke: 0.6, ao: 0.25, bevel: false, shape: (c) => c.rect(-6.8, -3.6, 10.8, 7.2) });
+    parts.push(beams([[3.6, 2.6, 4.3, 11.2, 2.3, 3.5], [3.6, -2.6, 4.3, 11.2, -2.3, 3.5], [8.6, -2.4, 3.7, 8.6, 2.4, 3.7]], 0.6, w.d, w.l));
+    parts.push(box(-1.4, 0, 11.4, 7.8, 3.8, 4.6, w.d, wl, { ao: 0.2 }));
+    parts.push({ z0: 4.6, z1: 7, side: sh(w.d, 0.05), top: w.s, stroke: 0.7, ao: 0.25, bevel: false, shape: (c) => c.rect(-6.8, -3.6, 10.8, 7.2) });
     // goods: sacks, an open sack of gold, a small chest
-    parts.push({ z0: 4.3, z1: 8.6, side: '#a89070', top: '#d8c4a0', ao: 0.35, shape: (c, zt) => { const k = 1 - zt * zt * 0.55; S.blob(c, -4.4, -1.4, 1.9 * k, 3, 8, 0.2); S.blob(c, -4.6, 1.6, 1.8 * k, 5, 8, 0.2); if (zt < 0.8) S.blob(c, -1.4, 1.5, 1.8 * k, 7, 8, 0.2); },
+    parts.push({ z0: 4.6, z1: 8.8, side: '#b8a47c', top: '#e8dcbc', ao: 0.35, shape: (c, zt) => { const k = 1 - zt * zt * 0.55; S.blob(c, -4.4, -1.4, 1.9 * k, 3, 8, 0.2); S.blob(c, -4.6, 1.6, 1.8 * k, 5, 8, 0.2); if (zt < 0.8) S.blob(c, -1.4, 1.5, 1.8 * k, 7, 8, 0.2); },
       detail: (c) => { S.lines(c, 'rgba(90,70,40,0.6)', 0.3, [-5, -1.4, -3.8, -1.4]); S.dot(c, '#8a7050', -4.6, 1.6, 0.4); } });
-    parts.push({ z0: 7.2, z1: 8.2, side: '#b08a2a', top: GOLD, ao: 0.2, bevel: false, shape: (c, zt) => S.circ(c, -1.4, 1.5, 1.3 * (1 - zt * 0.5)),
+    parts.push({ z0: 7.2, z1: 8.6, side: '#c09030', top: '#f2c858', ao: 0.2, bevel: false, shape: (c, zt) => S.circ(c, -1.4, 1.5, 1.6 * (1 - zt * 0.5)),
       detail: (c) => { for (const q of [[-1.8, 1.2], [-1, 1.8], [-1.3, 1], [-0.9, 1.3]]) S.dot(c, '#fff0a8', q[0], q[1], 0.25); } });
-    parts.push(box(1.4, -1.2, 3.2, 2.6, 4.3, 6.6, '#6a3e22', '#9a6034', { ao: 0.2, detail: (c) => { S.lines(c, '#3a3634', 0.4, [-0.1, -2.5, -0.1, 0.1, 2.9, -2.5, 2.9, 0.1]); S.dot(c, GOLD, 1.4, -1.2, 0.35); } }));
-    parts.push(xzPart(wheel(), 0, WZ + WR, w.d, w.t, { oy: WY, v0: -0.4, v1: 0.4 }, { ao: 0.15, bevel: false }));
-    return { r: 12, h: 9, parts, style: 'prop', bevel: 0.6 };
+    parts.push(box(1.4, -1.2, 3.2, 2.6, 4.6, 6.9, '#6a3e22', '#9a6034', { ao: 0.2, detail: (c) => { S.lines(c, '#3a3634', 0.4, [-0.1, -2.5, -0.1, 0.1, 2.9, -2.5, 2.9, 0.1]); S.dot(c, GOLD, 1.4, -1.2, 0.35); } }));
+    parts.push(xzPart(wheel(), 0, WZ + WR, sh(w.d, -0.2), w.s, { oy: WY, v0: -0.45, v1: 0.45 }, { ao: 0.15, bevel: false }));
+    return { r: 12, h: 9.2, parts, style: 'prop', bevel: 0.6 };
   };
 
   /* ================================================================ gallery */
@@ -2413,6 +2430,9 @@
     { name: 'waygate', gen: 'site_waygate', pal: 'neutral', anims: 4 },
     { name: 'enchanted grove', gen: 'site_grove', pal: 'neutral', anims: 4 },
     { name: 'treasure chest', gen: 'site_chest', pal: 'neutral' },
+    { name: 'gold mine (owner elf)', gen: 'site_goldmine', pal: 'neutral', opt: { owner: 'elf' } },
+    { name: 'village hall (owner undead)', gen: 'site_villagehall', pal: 'neutral', opt: { owner: 'undead' } },
+    { name: 'fort (owner human)', gen: 'site_fort', pal: 'neutral', opt: { owner: 'human' } },
   ] }, { group: 'Props', bg: 'neutral', items: [
     { name: 'haystack', gen: 'prop_haystack', pal: 'neutral' },
     { name: 'crates', gen: 'prop_crates', pal: 'neutral' },

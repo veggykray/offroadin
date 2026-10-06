@@ -310,7 +310,7 @@
       // cursed blight: dark veins and a sickly sheen in the undead lands
       if (deadW > 0.3) {
         const v = U.ridged(x / 90, y / 90, 1, sd + 61);
-        if (v > 0.93) { const t = (v - 0.93) * 12 * deadW; r = U.lerp(r, 70, t); g = U.lerp(g, 54, t); b = U.lerp(b, 88, t); }
+        if (v > 0.95) { const t = (v - 0.95) * 11 * deadW; r = U.lerp(r, 74, t); g = U.lerp(g, 60, t); b = U.lerp(b, 88, t); }
         const ash = U.noise2(x / 220, y / 220, sd + 62);
         if (ash > 0.35) { const t = (ash - 0.35) * 0.6 * deadW; r = U.lerp(r, 120, t); g = U.lerp(g, 116, t); b = U.lerp(b, 112, t); }
       }
@@ -416,10 +416,15 @@
       for (const z of this.zones) { const dx = x - z.x, dy = y - z.y, rr = z.r * (z.treeR || 0.95) + r; if (dx * dx + dy * dy < rr * rr) return false; }
       for (const z of this.clearAreas) { const dx = x - z.x, dy = (y - z.y) / 0.8; if (dx * dx + dy * dy < (z.r + r) * (z.r + r)) return false; }
       const TD = st.TD, px = Math.round((x - st.x0) * TD) + st.ML, py = Math.round((y - st.y0) * TD) + st.top;
-      if (px < 2 || py < 2 || px >= st.NW - 2 || py >= st.rows - 2) return false;
-      const L = st.L, NW = st.NW, l = L[py * NW + px];
       const o = Math.max(2, Math.round(r * 0.7 * TD));
-      if (px - o < 0 || px + o >= NW || py - o * 2 < 0 || py + o >= st.rows) return false;
+      if (px - o < 0 || px + o >= st.NW || py - o * 2 < 0 || py + o >= st.rows) {
+        // rooted outside this chunk's level buffer (its canopy still reaches in):
+        // test the terrain directly so the neighbouring chunk agrees on the tree
+        const f = this._sf || (this._sf = new Float32Array(4)), lv = (xx, yy) => this.levelOf(this.field(xx, yy, f)[0]);
+        const l = lv(x, y), d = r * 0.7;
+        return lv(x - d, y) === l && lv(x + d, y) === l && lv(x, y + d) === l && lv(x, y - d * 2) === l;
+      }
+      const L = st.L, NW = st.NW, l = L[py * NW + px];
       if (L[py * NW + px - o] !== l || L[py * NW + px + o] !== l || L[(py + o) * NW + px] !== l || L[(py - o * 2) * NW + px] !== l) return false;
       return true;
     }

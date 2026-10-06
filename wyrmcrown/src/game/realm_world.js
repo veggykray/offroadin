@@ -9,7 +9,7 @@
     human: { atm: { cloud: 0.2, cloudCol: '#1a2208', wind: [16, 6], haze: '#f0e0b8', hazeA: 0.14, sun: '#fff0c0', sunA: 0.12, shade: '#283050', shadeA: 0.09 }, tint: 'rgba(255,200,120,0.035)', ambient: 1, label: 'Aldermere' },
     elf: { atm: { cloud: 0.26, cloudCol: '#061808', wind: [9, 4], haze: '#c8f0d0', hazeA: 0.13, sun: '#f0ffd0', sunA: 0.1, shade: '#0a2a30', shadeA: 0.12 }, tint: 'rgba(80,200,140,0.04)', ambient: 0.96, label: 'the Sylvaran forest' },
     ice: { atm: { cloud: 0.16, cloudCol: '#203050', wind: [24, 10], haze: '#eef6ff', hazeA: 0.22, sun: '#ffffff', sunA: 0.08, shade: '#203060', shadeA: 0.12 }, tint: 'rgba(150,200,255,0.05)', ambient: 1, label: 'Hrimgard' },
-    undead: { atm: { cloud: 0.3, cloudCol: '#100818', wind: [8, -4], haze: '#9a8ab0', hazeA: 0.16, sun: '#d8c8ff', sunA: 0.05, shade: '#180a28', shadeA: 0.18 }, tint: 'rgba(80,40,110,0.07)', ambient: 0.86, label: 'the Morgrave blight' },
+    undead: { atm: { cloud: 0.3, cloudCol: '#100818', wind: [8, -4], haze: '#9a8ab0', hazeA: 0.16, sun: '#d8c8ff', sunA: 0.05, shade: '#180a28', shadeA: 0.18 }, tint: 'rgba(80,40,110,0.05)', ambient: 0.91, label: 'the Morgrave blight' },
     neutral: { atm: { cloud: 0.2, cloudCol: '#1a1a08', wind: [14, 5], haze: '#f0e8c8', hazeA: 0.13, sun: '#fff4d0', sunA: 0.1, shade: '#283048', shadeA: 0.09 }, tint: null, ambient: 1, label: 'the heartland' },
   };
 

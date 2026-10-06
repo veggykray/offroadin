@@ -106,9 +106,15 @@
   /* ================================================================
    * geometry primitives
    * ================================================================ */
+  /* texels per world unit of the frame being drawn (forge res × model scale), read from the
+   * canvas transform. Thin tubes and plates are kept at least ~1 texel thick so they stay solid
+   * (and outlined) at every quality level and model scale. */
+  let PX = 2;
+  const px = (c) => { if (c && c.getTransform) { const m = c.getTransform(); PX = Math.max(0.5, Math.hypot(m.a, m.b)); } };
   // horizontal cross-section (height z) of a sphere at (x, y, zz) radius r
   function ball(c, z, x, y, zz, r) {
-    const rz = Math.max(r, 0.3), d = (z - zz) / rz;
+    r = Math.max(r, 0.55 / PX);
+    const rz = Math.max(r, 0.6 / PX, 0.3), d = (z - zz) / rz;
     if (d <= -1 || d >= 1) return;
     S.circ(c, x, y, r * Math.max(0.5, Math.sqrt(1 - d * d)));
   }
@@ -137,17 +143,18 @@
     const b = o.zr || zBounds(fn);
     return { z0: b[0], z1: b[1], side: hex(side), top: hex(top || side), bevel: o.bevel || false, ao: o.ao !== undefined ? o.ao : 0.18, flat: o.flat,
       detail: o.detail ? (c, an) => { if (!o.show || o.show(c, an)) o.detail(c, an); } : undefined,
-      shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; const z = lerp(b[0], b[1], zt); for (const pl of fn(an)) sweep(c, z, pl); } };
+      shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; px(c); const z = lerp(b[0], b[1], zt); for (const pl of fn(an)) sweep(c, z, pl); } };
   }
   /* generic part: fn(c, z, an) appends geometry for absolute height z */
   function gp(side, top, z0, z1, fn, o) {
     o = o || {};
     return { z0, z1, side: hex(side), top: hex(top || side), ao: o.ao !== undefined ? o.ao : 0.15, bevel: o.bevel || false, flat: o.flat, stroke: o.stroke,
       detail: o.detail ? (c, an) => { if (!o.show || o.show(c, an)) o.detail(c, an); } : undefined,
-      shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; fn(c, lerp(z0, z1, zt), an); } };
+      shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; px(c); fn(c, lerp(z0, z1, zt), an); } };
   }
   // quad of a vertical plate: in-plane axis (ux, uy), thickness w, from u0 to u1
   function quadU(c, ox, oy, ux, uy, w, u0, u1) {
+    w = Math.max(w, 1.05 / PX);
     const nx = -uy * w * 0.5, ny = ux * w * 0.5;
     c.moveTo(ox + ux * u0 + nx, oy + uy * u0 + ny); c.lineTo(ox + ux * u1 + nx, oy + uy * u1 + ny);
     c.lineTo(ox + ux * u1 - nx, oy + uy * u1 - ny); c.lineTo(ox + ux * u0 - nx, oy + uy * u0 - ny); c.closePath();
@@ -305,10 +312,12 @@
   }
 
   /* person(p, cfg) → model. cfg:
-   *  dims, pose {R, L}, legs, boots, torso (kind | profile), torsoSide, torsoTop, torsoDetail, jag,
-   *  bands [{col, t0, t1, z0, z1, out, inK}], sleeve, hands, skin, heldR/heldL [{under, over}],
-   *  head: { hair, style, beard, hat(D) → parts, eyes }, items [groups], core [extra core parts],
-   *  r, h, scale */
+   *  dims (overrides HB), pose {R, L}(an, rig, side) → {e, h}, legs, boots, torso (kind | profile),
+   *  torsoSide, torsoTop, torsoDetail, torsoAo, jag (ragged hem), bands [{col, t0, t1, z0, z1, out, inK}],
+   *  coreMid(D, prof) → parts after the torso, sleeve, hands, skin, pauldron(rig, side) → part,
+   *  heldR/heldL [{under, over}] (gear glued to a hand), items [sorted groups: cloaks, shields, quivers],
+   *  head: { hair, style, beard, beardLen, fringe, nose, mask, eyes, eyeR, eyeFlat, eyeGlow, hat(D) → parts },
+   *  noHead, r, h, scale */
   function person(p, c) {
     const D = Object.assign({}, HB, c.dims || {});
     const R = rig(D, c.pose || {});
@@ -512,23 +521,6 @@
     return { key: (a, an) => { const q = ctr(an); return dep(a, q[0], q[1]); }, shade: 0.05, parts };
   }
   const p2 = (o, k) => (o.pal ? o.pal[k] : PDEF[k]);
-  // heater shield (knights)
-  function gHeater(R, s, o) {
-    o = o || {};
-    const H = handAt(R, s), ang = o.ang !== undefined ? o.ang : 0.6, zc = o.zc || 5.9, W = o.w || 1.45, Hh = o.h || 2.1;
-    const ctr = (an) => { const h = H(an); return [h[0] + 0.15, h[1] + s * 0.45]; };
-    const th = s < 0 ? ang : -ang, nx = Math.sin(ang), ny = s < 0 ? -Math.cos(ang) : Math.cos(ang);
-    const faceOn = (c) => dep(viewA(c), nx, ny) > 0;
-    const inside = (k) => (u, z) => { const v = (z - zc) / Hh; if (v > 0.55 * k || v < -1 * k) return false; const half = v > 0 ? W * k : W * k * Math.sqrt(Math.max(0, 1 - Math.pow(-v / k, 2))); return Math.abs(u) < half; };
-    const rim = hex(o.rim), face = hex(o.face), back = hex(o.back || WOOD);
-    const parts = [
-      gp(rim, sh(rim, 0.2), zc - Hh, zc + Hh * 0.55, (c, z, an) => { const q = ctr(an); plane(c, z, q[0], q[1], th, 0.55, -W, W, inside(1)); }, { ao: 0.12 }),
-      gp(face, sh(face, 0.18), zc - Hh, zc + Hh * 0.55, (c, z, an) => { if (!faceOn(c)) return; const q = ctr(an); plane(c, z, q[0] + nx * 0.2, q[1] + ny * 0.2, th, 0.55, -W, W, inside(0.82)); }, { ao: 0.12 }),
-      gp(back, sh(back, 0.15), zc - Hh, zc + Hh * 0.55, (c, z, an) => { if (faceOn(c)) return; const q = ctr(an); plane(c, z, q[0] - nx * 0.2, q[1] - ny * 0.2, th, 0.55, -W, W, inside(0.85)); }, { ao: 0.12 }),
-      gp(rim, sh(rim, 0.2), zc - Hh, zc + Hh * 0.55, (c, z, an) => { if (!faceOn(c)) return; const q = ctr(an), ins = inside(0.82); plane(c, z, q[0] + nx * 0.36, q[1] + ny * 0.36, th, 0.55, -W, W, (u, zz) => ins(u, zz) && (Math.abs(u) < 0.26 || Math.abs(zz - zc - 0.15) < 0.26)); }, { ao: 0.05 }),
-    ];
-    return { key: (a, an) => { const q = ctr(an); return dep(a, q[0], q[1]); }, shade: 0.05, parts };
-  }
   // bow held upright in the hand, limbs curving forward, light string behind
   function gBow(R, s, o) {
     o = o || {};
@@ -836,7 +828,8 @@
       core.push(stack('#4a2c18', '#8a5a34', [[9.3, 1.25, 1.35, -0.1], [9.9, 1.15, 1.3, -0.1], [10.3, 0.75, 0.9, -0.1]], { ao: 0.2, bevel: true }));
       core.push(tube('#4a2c18', '#8a5a34', () => [[[0.95, 0, 10.0, 0.35], [1.1, 0, 10.6, 0.3]], [[-1.2, 0, 10.0, 0.45], [-1.3, 0, 10.5, 0.4]]], { ao: 0 }));
     }
-    const body = bodyPart(B, BY, BYT, { detail });
+    const sheen = clipped((c) => { c.save(); c.fillStyle = 'rgba(255,230,200,0.22)'; c.beginPath(); S.ell(c, -0.6, -0.55, 3.8, 0.55, -0.04); c.fill(); c.restore(); });
+    const body = bodyPart(B, BY, BYT, { detail: detail ? (c, an) => { sheen(c, an); detail(c, an); } : sheen });
     const bob = (an) => Math.cos(cyc(an) * 2) * 0.16;
     const head = { at: [6.6, 0], parts: [
       tube(BY, BYT, (an) => [[[3.8, 0, 8.3, 1.42], [5.3, 0, 10.4 + bob(an) * 0.5, 1.05], [5.95, 0, 11.75 + bob(an), 0.9]]], { ao: 0.3 }),
@@ -951,7 +944,7 @@
         { col: LEATH, top: '#9a7046', t0: -PI, t1: PI, z0: 4.35, z1: 4.75, out: 1.08, inK: 0.86 },
         { col: MAIL, top: MAIL_T, t0: -PI, t1: PI, z0: 6.95, z1: 7.7, out: 1.04, inK: 0.85 },
       ],
-      heldR: [gSpear(R, 1, { top: 14.0 })],
+      heldR: [gSpear(R, 1, { top: 14.0, pennant: opt.pennant ? p.k : null })],
       items: [gShield(R, -1, { face: k, rim: k2, boss: k2, emblem: opt.emblem || 'none', emblemCol: k2 })],
       head: { hair: HAIR.brown, hat: hatHelm({ ridge: true, nasal: true, low: -0.1, k: 1.06 }) },
       r: 4.5, h: 16.3,
@@ -1168,14 +1161,15 @@
       tube(SK, SKT, () => [[[D2.headX + 0.5, 0.7, D2.headZ + 0.2, 0.26], [D2.headX + 0.2, 1.55, D2.headZ + 0.45, 0.18], [D2.headX - 0.1, 1.95, D2.headZ + 0.6, 0.1]], [[D2.headX + 0.5, -0.7, D2.headZ + 0.2, 0.26], [D2.headX + 0.2, -1.55, D2.headZ + 0.45, 0.18], [D2.headX - 0.1, -1.95, D2.headZ + 0.6, 0.1]]], { ao: 0 }),
       gp(MOSS, MOSST, D2.headZ + 0.5, D2.headZ + 1.3, (c, z) => { const kk = 1 - (z - D2.headZ - 0.5) / 0.8 * 0.5; S.blob(c, D2.headX - 0.3, 0, 0.95 * kk, 11, 8, 0.4); }, { ao: 0.1, bevel: true }),
     ];
-    const claws = (s) => ({ over: [tube('#2a2a22', '#6a6a58', (an) => { const D2 = Object.assign({}, HB, dims); const h = rig(D2, {}).arm(s, an).h; return [-0.3, 0, 0.3].map((o) => [[h[0] + 0.3, h[1] + o, h[2] - 0.2, 0.14], [h[0] + 0.7, h[1] + o * 1.3, h[2] - 0.75, 0.08]]); }, { ao: 0 })] });
+    const TR = rig(Object.assign({}, HB, dims), {});
+    const claws = (s) => ({ over: [tube('#2a2a22', '#6a6a58', (an) => { const h = TR.arm(s, an).h; return [-0.3, 0, 0.3].map((o) => [[h[0] + 0.3, h[1] + o, h[2] - 0.2, 0.14], [h[0] + 0.7, h[1] + o * 1.3, h[2] - 0.75, 0.08]]); }, { ao: 0 })] });
     return person(p, {
       dims, skin: SK, legs: SK, boots: sh(SK, -0.2), torso: prof, torsoSide: SK, torsoTop: SKT, sleeve: SK, hands: SK,
       bands: [{ col: '#4a3a24', top: '#7a6440', t0: -PI, t1: PI, z0: 4.3, z1: 5.2, out: 1.08, inK: 0.84 }],
       coreMid: () => moss,
       heldR: [claws(1)], heldL: [claws(-1)],
       head: { headSide: sh(SK, -0.05), headTop: SKT, eyes: '#ff6a2a', eyeFlat: true, eyeR: 0.15, nose: 0.36, style: 'bald', hat: headX },
-      r: 4, h: 9.8, scale: 2.25,
+      r: 4, h: 9.8, scale: 2.45,
     });
   };
 
@@ -1187,8 +1181,7 @@
     const trunkPose = (an, R2, s) => { const w = R2.swing(s, an) * 0.08; return { e: [0.4, s * 2.45, 5.75], h: [1.05 + w, s * 2.0, 6.9] }; };
     const pose = { R: trunkPose }, R = rig(D, pose);
     const trunk = { under: [
-      tube('#4e3a28', '#86684a', (an) => { const h = R.arm(1, an).h; return [[[h[0] + 0.9, h[1] - 0.1, h[2] - 0.65, 0.5], [h[0] - 1.2, h[1] + 0.1, h[2] + 2.3, 0.72], [h[0] - 2.7, h[1] + 0.2, h[2] + 4.0, 0.95]]]; }, { ao: 0.1,
-        detail: null }),
+      tube('#4e3a28', '#86684a', (an) => { const h = R.arm(1, an).h; return [[[h[0] + 0.9, h[1] - 0.1, h[2] - 0.65, 0.5], [h[0] - 1.2, h[1] + 0.1, h[2] + 2.3, 0.72], [h[0] - 2.7, h[1] + 0.2, h[2] + 4.0, 0.95]]]; }, { ao: 0.1 }),
       tube('#3e2e20', '#6e563c', (an) => { const h = R.arm(1, an).h; return [[[h[0] - 1.5, h[1] + 0.6, h[2] + 2.8, 0.25], [h[0] - 1.4, h[1] + 1.35, h[2] + 3.4, 0.16]], [[h[0] - 2.4, h[1] - 0.5, h[2] + 3.7, 0.24], [h[0] - 2.0, h[1] - 1.1, h[2] + 4.3, 0.15]]]; }, { ao: 0 }),
       tube('#4a7a2a', '#9ac85a', (an) => { const h = R.arm(1, an).h; return [[[h[0] - 1.4, h[1] + 1.45, h[2] + 3.55, 0.42]], [[h[0] - 2.0, h[1] - 1.25, h[2] + 4.45, 0.38]]]; }, { ao: 0 }),
     ] };
@@ -1207,7 +1200,7 @@
 
   M.mon_bandit = function (pal, opt) {
     const p = P(pal); opt = opt || {};
-    const CL = '#4a4c3a', CLT = '#7e8264', LE = '#6e4c30';
+    const CL = '#555a42', CLT = '#8e9670', LE = '#74502f';
     const cbR = (an, R2, s) => ({ e: [0.05, s * 1.95, 5.5], h: [0.95, s * 0.75, 5.95] });
     const cbL = (an, R2, s) => ({ e: [0.85, s * 1.9, 5.55], h: [2.2, s * -0.05, 6.1] });
     const pose = { R: cbR, L: cbL };
@@ -1247,7 +1240,7 @@
       // deck planks at the rear
       gp(woodD, woodT, 3.6, 4.0, (c) => S.rect(c, -7.9, -2.55, 5.9, 5.1), { ao: 0.2, bevel: true, detail: (c) => S.lines(c, 'rgba(30,18,8,0.45)', 0.12, [-7.9, -1.3, -2, -1.3, -7.9, 0, -2, 0, -7.9, 1.3, -2, 1.3]) }),
       // torsion bundle (rope skein) across the frame
-      tube(ROPE, ROPE_T, () => [[[-3.0, -2.6, 4.7, 0.75], [-3.0, 2.6, 4.7, 0.75]]], { ao: 0.2, detail: null }),
+      tube(ROPE, ROPE_T, () => [[[-3.0, -2.6, 4.7, 0.75], [-3.0, 2.6, 4.7, 0.75]]], { ao: 0.2 }),
       // uprights + braces
       tube(woodD, woodT, () => [[[1.2, 2.55, 4.0, 0.42], [1.0, 2.2, 10.0, 0.36]], [[1.2, -2.55, 4.0, 0.42], [1.0, -2.2, 10.0, 0.36]], [[4.6, 2.75, 4.2, 0.3], [1.15, 2.3, 8.6, 0.28]], [[4.6, -2.75, 4.2, 0.3], [1.15, -2.3, 8.6, 0.28]]], { ao: 0.15 }),
       // padded stop bar in the faction colour

@@ -73,6 +73,8 @@
       if (AS.Life) AS.Life.init(this);
       for (const F of this.factionList) if (F.buildTown) F.buildTown();
       if (AS.Sites) for (const s of m.sites) { const site = AS.Sites.create(this, s); if (site) { this.sites.push(site); this.byId.set(site.id, site); } }
+      // bridges that are not objectives still need their stonework
+      if (AS.Sites) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
       if (AS.Roads) AS.Roads.lay(this);
       if (AS.Powerups) AS.Powerups.init(this);
       // explored fog for the war map
@@ -225,12 +227,14 @@
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }
       // camera: follows the dragon's body, leads its travel, pulls back with speed
-      const p = this.player;
+      if (this.demo) this.demoCamera(dt);
+      const p = this.demo ? this.focus : this.player;
       const sp = p.down > 0 ? 0 : p.speed;
       const zoomT = U.clamp((sp - 150) / 300, 0, 1);
       this.camera.baseZoom = U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0);
       const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z;
       this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
+      if (this.demo) { this.updateRegion(dt); return; }
       this.exploreT = (this.exploreT || 0) - dt;
       if (this.exploreT <= 0) { this.exploreT = 0.3; this.revealArea(p.x, p.y, 900); if (AS.Factions) AS.Factions.reveal(this); }
       for (let i = this.msgs.length - 1; i >= 0; i--) { this.msgs[i].t -= dt; if (this.msgs[i].t <= 0) this.msgs.splice(i, 1); }
@@ -241,9 +245,20 @@
       if (this.state === 'ending') { this.endT -= dt; if (this.endT <= 0) this.finish(); }
     }
 
+    // attract mode: follow a dragon, switching every so often to whoever is busiest
+    demoCamera(dt) {
+      this.focusT = (this.focusT || 0) - dt;
+      if (!this.focus || this.focus.down > 0 || this.focusT <= 0) {
+        this.focusT = 18;
+        const live = this.dragons.filter((d) => d.down <= 0);
+        live.sort((a, b) => (b.breathing ? 2 : 0) + (b.faction.lord && b.faction.lord.goal.type === 'duel' ? 3 : 0) - ((a.breathing ? 2 : 0) + (a.faction.lord && a.faction.lord.goal.type === 'duel' ? 3 : 0)) + Math.random() - 0.5);
+        const was = this.focus; this.focus = live[0] || this.dragons[0];
+        if (was !== this.focus) this.camera.snap(this.focus.x, this.focus.y - this.focus.z);
+      }
+    }
     /* blend the region look (air, light tint) and switch music/ambience where you fly */
     updateRegion(dt, snap) {
-      const p = this.player, T = this.terrain, w = T.biomeAt(p.x, p.y, this._rw || (this._rw = new Float32Array(5)));
+      const p = (this.demo && this.focus) || this.player, T = this.terrain, w = T.biomeAt(p.x, p.y, this._rw || (this._rw = new Float32Array(5)));
       const k = snap ? 1 : Math.min(1, dt * 0.8);
       for (let i = 0; i < 5; i++) this.regionW[i] += (w[i] - this.regionW[i]) * k;
       let best = 4, bv = 0;
@@ -260,7 +275,7 @@
       let amb = 0; for (let i = 0; i < 5; i++) amb += R[B[i]].ambient * this.regionW[i];
       L.ambient = amb > 0.985 ? 1 : amb;
       const deadW = this.regionW[3], iceW = this.regionW[2], elfW = this.regionW[1], humW = this.regionW[0];
-      L.tint = deadW > 0.15 ? 'rgba(80,40,110,' + (deadW * 0.08).toFixed(3) + ')' : iceW > 0.15 ? 'rgba(150,200,255,' + (iceW * 0.05).toFixed(3) + ')' : elfW > 0.2 ? 'rgba(80,200,140,' + (elfW * 0.035).toFixed(3) + ')' : humW > 0.3 ? 'rgba(255,200,120,' + (humW * 0.03).toFixed(3) + ')' : null;
+      L.tint = deadW > 0.15 ? 'rgba(80,40,110,' + (deadW * 0.055).toFixed(3) + ')' : iceW > 0.15 ? 'rgba(150,200,255,' + (iceW * 0.05).toFixed(3) + ')' : elfW > 0.2 ? 'rgba(80,200,140,' + (elfW * 0.035).toFixed(3) + ')' : humW > 0.3 ? 'rgba(255,200,120,' + (humW * 0.03).toFixed(3) + ')' : null;
       const qk = 'realm:' + this.map.id + ':' + key + ':' + Math.round(A.hazeA * 40) + ':' + Math.round(A.sunA * 40);
       this.world.key = qk;
       if (key !== this.region || snap) {

@@ -13,6 +13,8 @@
 (function (AS) {
   const U = AS.U, TAU = U.TAU, C = U.C;
   const CAP_Z = 46;
+  // site models whose banners and flags show the owner's colours
+  const COLOURED = { prop_banner: 1, site_goldmine: 1, site_villagehall: 1, site_fort: 1, site_tradepost: 1, site_oldwatch: 1, site_castle: 1 };
 
   class Site {
     constructor(g, s) {
@@ -38,6 +40,7 @@
       if (o && o.dirs) { B.dirs = o.dirs; B.sheet = AS.Building.sheetFor(gen, AS.Data.pal.neutral, { v: o.v || 0 }, o.dirs, 1); }
       if (o && o.anims) B.sheet = AS.Building.sheetFor(gen, AS.Data.pal.neutral, { v: o.v || 0 }, 1, o.anims);
       if (o && o.solid === false) { const i = this.g.solids.indexOf(B); if (i >= 0) this.g.solids.splice(i, 1); B.solid = false; }
+      B.sopt = { v: o && o.v || 0 }; B.sdirs = o && o.dirs || 1; B.sanims = o && o.anims || 1;
       this.g.buildings.push(B); this.structures.push(B);
       return B;
     }
@@ -74,8 +77,7 @@
         g.terrain.addDecal('plaza', x, y + 6, 70, null, { static: true, fk: 'neutral', seed: x | 0 });
       } else if (k === 'bridge') {
         const b = (g.map.bridges || []).find((q) => q.site === this.id) || { a: 0 };
-        this.struct('site_bridge', x, y, { dirs: 16, angle: b.a || 0, solid: false });
-        this.structures[0].angle = b.a || 0;
+        this.structures.push(Sites.bridge(g, b, this));
       } else if (k === 'tradepost') {
         this.struct('site_tradepost', x, y, {});
         this.struct('prop_tent', x - 70, y + 34, { solid: false }); this.struct('prop_stall', x + 66, y + 30, { solid: false });
@@ -86,8 +88,12 @@
       } else {
         this.struct(this.def.gen, x, y, anim4[k] ? { anims: 4 } : {});
       }
-      // waygates and bridges carry no extra props; others get a banner pole for ownership
+      // a banner pole shows who holds the site (cream and grey while unclaimed)
       this.bannerPos = k === 'bridge' ? { x: x + 20, y: y + 26 } : { x: x + (this.def.r || 40) * 0.55 + 10, y: y + (this.def.r || 40) * 0.35 + 8 };
+      if (k === 'bridge' && this.structures[0]) { const B = this.structures[0], a = B.angle; this.bannerPos = { x: x + Math.cos(a) * (B.len + 16) + 14, y: y + Math.sin(a) * (B.len + 16) + 14 }; }
+      if (AS.Models.prop_banner && !this.def.treasure) this.banner = this.struct('prop_banner', this.bannerPos.x, this.bannerPos.y, { solid: false, anims: 4 });
+      // a hoard waits in front of caves and ruins until it is looted
+      if (this.def.treasure && AS.Models.site_chest) this.chest = this.struct('site_chest', x + 18, y + (this.def.r || 40) * 0.5 + 6, { solid: false });
     }
     spawnGuards() {
       const g = this.g;
@@ -115,6 +121,7 @@
       if (prev && g.factions[prev]) g.factions[prev].sitesOwned--;
       this.owner = fk; this.controller = fk; this.control = fk ? 1 : 0;
       if (fk) g.factions[fk].sitesOwned++;
+      this.recolour = true;
       if (this.herd) { this.herd.owner = fk; for (const o of g.life.animals) if (o.herd === this.herd) o.owner = fk; }
       if (this.people) for (const o of g.life.people) if (Math.hypot(o.x - this.x, o.y - this.y) < 260) o.team = fk || 'neutral';
       // garrisons for forts and castles
@@ -156,13 +163,24 @@
       return P;
     }
 
+    // flags and banners take the holder's colours (sheets are rebuilt lazily,
+    // once the site is near the camera, so distant captures cost nothing)
+    applyColours() {
+      const owner = this.owner || undefined;
+      for (const B of this.structures) {
+        if (!B.sopt || !COLOURED[B.gen]) continue;
+        B.sheet = AS.Building.sheetFor(B.gen, AS.Data.pal.neutral, Object.assign({}, B.sopt, owner ? { owner } : {}), B.sdirs, B.sanims);
+      }
+      this.recolour = false;
+    }
     update(dt) {
       const g = this.g;
       this.t += dt;
+      if (this.recolour) { const c = g.camera; if (Math.abs(this.x - (c.x + c.w / 2)) < c.w + 400 && Math.abs(this.y - (c.y + c.h / 2)) < c.h + 400) this.applyColours(); }
       // treasure sites reset after a while
       if (this.def.treasure && this.looted) {
         this.respawnT -= dt;
-        if (this.respawnT <= 0) { this.looted = false; this.spawnGuards(); }
+        if (this.respawnT <= 0) { this.looted = false; this.spawnGuards(); if (this.chest) this.chest.hidden = false; }
         return;
       }
       // ---- the contest
@@ -245,6 +263,7 @@
     loot(fk) {
       const g = this.g, F = g.factions[fk];
       this.looted = true; this.respawnT = this.def.respawn;
+      if (this.chest) this.chest.hidden = true;
       const v = this.def.treasure;
       AS.Pickups.coins(g, this.x, this.y + 20, v);
       AS.Audio.sfx('gold_big', { x: this.x, y: this.y });
@@ -272,8 +291,8 @@
       ctx.restore();
     }
     drawOverlay(ctx, ox, oy, R) {
-      // ownership banner
-      if (!this.owner) return;
+      // ownership banner (drawn by hand only when the banner model is missing)
+      if (!this.owner || this.banner) return;
       const g = this.g, F = g.factions[this.owner], b = this.bannerPos;
       const x = b.x - ox, y = b.y - oy;
       if (x < -60 || y < -100 || x > g.camera.w + 60 || y > g.camera.h + 60) return;
@@ -288,6 +307,23 @@
 
   const Sites = {
     create(g, s) { return AS.Data.sites[s.k] ? new Site(g, s) : null; },
+    /* a stone bridge long enough to span the river where the map puts it */
+    bridge(g, b, site) {
+      const T = g.terrain, a = b.a || 0, c = Math.cos(a), s = Math.sin(a);
+      let reach = 0;
+      for (const dir of [1, -1]) for (let t = 0; t < 280; t += 6) { if (T.gs(T.gWater, b.x + c * t * dir, b.y + s * t * dir) < 6) reach = Math.max(reach, t); }
+      const len = U.clamp(Math.round((reach + 30) / 8) * 8, 60, 176);
+      const B = new AS.Building(g, 'site', null, b.x, b.y, { gen: 'site_bridge', team: 'neutral', instant: true, site, shoots: false, angle: a });
+      B.invuln = true; B.targetable = false; B.burnable = false; B.solid = false; B.flat = true;
+      B.sheet = AS.Building.sheetFor('site_bridge', AS.Data.pal.neutral, { len }, 16, 1); B.dirs = 16; B.angle = a;
+      B.viewR = len * 1.4; B.len = len;
+      const i = g.solids.indexOf(B); if (i >= 0) g.solids.splice(i, 1);
+      g.buildings.push(B);
+      // the walkable corridor matches the visible deck
+      const tb = (T.bridges || []).find((q) => Math.abs((q.x0 + q.x1) / 2 - b.x) < 1 && Math.abs((q.y0 + q.y1) / 2 - b.y) < 1);
+      if (tb) { tb.x0 = b.x - c * (len + 10); tb.y0 = b.y - s * (len + 10); tb.x1 = b.x + c * (len + 10); tb.y1 = b.y + s * (len + 10); }
+      return B;
+    },
     // rival carts pay a toll crossing a bridge someone else owns
     cartToll(g, cart) {
       if (cart.tolled) return;

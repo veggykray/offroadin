@@ -44,6 +44,8 @@
       const map = AS.Maps.byId[id];
       if (!map) return;
       this.state = 'loading';
+      this.demo = null; // the attract-mode realm makes way for the real one
+      AS.Particles.clear(); AS.Proj.clear();
       AS.UI && AS.UI.showLoading && AS.UI.showLoading(map);
       AS.Music.stop && AS.Music.stop();
       setTimeout(() => {
@@ -135,6 +137,16 @@
           if (this.overlay === 'map' && AS.WarMap) AS.WarMap.draw(ctx, g, dt);
         }
         AS.Audio.update && AS.Audio.update(dt, g);
+      } else if (this.demo && this.state !== 'loading') {
+        // attract mode: an all-AI war plays behind the title and menus
+        const d = this.demo;
+        AS.game = d;
+        d.update(dt);
+        AS.Renderer.renderWorld(d, dt);
+        AS.Renderer.present();
+        AS.game = null;
+        AS.UI && AS.UI.tick && AS.UI.tick(dt);
+        AS.Audio.update && AS.Audio.update(dt, null);
       } else {
         AS.UI && AS.UI.tick && AS.UI.tick(dt);
         AS.Audio.update && AS.Audio.update(dt, null);
