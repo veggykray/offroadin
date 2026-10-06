@@ -157,7 +157,7 @@
       // ---- the southern border: Kingsholm on the Sudwater (Aldermere / Sylvara) ----
       { id: 'kingsholm', k: 'castle', name: 'Kingsholm', x: 6000, y: 9100, guard: [['giant', 2], ['ogre', 2]] },
       { id: 'holmbridge', k: 'bridge', name: 'Holmbridge', x: 5500, y: 9550 },
-      { id: 'crownbridge', k: 'bridge', name: 'Crownbridge', x: 6500, y: 9550 },
+      { id: 'crownbridge', k: 'bridge', name: 'Sceptrebridge', x: 6500, y: 9550 },
       { id: 'sudwaterwatch', k: 'watchtower', name: 'Sudwater Watch', x: 6700, y: 8300, guard: [['ogre', 2]] },
       { id: 'trollfen', k: 'cave', name: 'Troll Fen Cave', x: 7600, y: 11100, guard: [['troll', 2]] },
       { id: 'sudwatergate', k: 'waygate', name: 'Sudwater Waygate', x: 5300, y: 11100, guard: [['troll', 1], ['ogre', 1]] },
@@ -166,7 +166,7 @@
       { id: 'eskvein', k: 'goldmine', name: 'Eskvein Mine', x: 10700, y: 5350, guard: [['ogre', 2], ['troll', 1]] },
       { id: 'eskhold', k: 'fort', name: 'Eskhold', x: 8850, y: 6850, guard: [['troll', 2], ['ogre', 2]] },
       { id: 'dawnway', k: 'waygate', name: 'Dawnway Gate', x: 11200, y: 6800, guard: [['troll', 1], ['ogre', 1]] },
-      { id: 'sunkenchapel', k: 'ruins', name: 'Sunken Chapel', x: 9100, y: 5250, guard: [['ogre', 2], ['bandit', 3]] },
+      { id: 'sunkenchapel', k: 'ruins', name: 'Fallen Chantry', x: 9100, y: 5250, guard: [['ogre', 2], ['bandit', 3]] },
       { id: 'eskwatch', k: 'watchtower', name: 'Eskwatch', x: 10300, y: 7300, guard: [['bandit', 4]] },
       // ---- the western border: the Westway (Morgrave / Aldermere) ----
       { id: 'westwaybridge', k: 'bridge', name: 'Westway Bridge', x: 2500, y: 5950 },
@@ -183,9 +183,9 @@
       { id: 'ashgrove', k: 'village', name: 'Ashgrove', x: 3200, y: 4300, guard: [['wolf', 3]] },
       // ---- Hrimgard's quarter (north-east) ----
       { id: 'rimewyrm', k: 'goldmine', name: 'Rimewyrm Mine', x: 10900, y: 3500, guard: [['wolf', 4]] },
-      { id: 'frostholm', k: 'village', name: 'Frostholm', x: 8200, y: 1300 },
+      { id: 'frostholm', k: 'village', name: 'Winterhythe', x: 8200, y: 1300 },
       { id: 'snowfell', k: 'village', name: 'Snowfell', x: 11000, y: 1500, guard: [['wolf', 3]] },
-      { id: 'frostcrowneyrie', k: 'nest', name: 'Frostcrown Eyrie', x: 9500, y: 1000, guard: [['troll', 1], ['wolf', 2]] },
+      { id: 'frostcrowneyrie', k: 'nest', name: 'Hoarcrown Eyrie', x: 9500, y: 1000, guard: [['troll', 1], ['wolf', 2]] },
       { id: 'rimegatemarket', k: 'tradepost', name: 'Rimegate Market', x: 8150, y: 3550, guard: [['bandit', 3]] },
       // ---- Sylvara's quarter (south-east) ----
       { id: 'sylvanvein', k: 'goldmine', name: 'Sylvanvein Mine', x: 10900, y: 8400, guard: [['wolf', 4]] },

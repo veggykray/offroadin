@@ -4,8 +4,7 @@
  * and between them lie two high vales, the Greyvale and the Ravenvale. Each
  * vale has its watershed at the centre, where an old castle stands: Greyhelm
  * in the Greyvale, Ravenscar in the Ravenvale. From tarns beside them the
- * Greyrun flows east to the sea of the moor and the Ravenrun west past the
- * woods. One trunk road climbs from the southern lowlands through the South
+ * Greyrun flows east across the moor and the Ravenrun west past the woods. One trunk road climbs from the southern lowlands through the South
  * Pass, crosses both vales by the Midgap and the Heartvein mine, and runs out
  * by the North Pass to the heights. Great massifs fill the four corners.
  * Aldermere farms the lowlands in the south, Sylvara keeps the western woods
@@ -14,13 +13,15 @@
  * Strategy: a war of strongpoints. Forts hold both passes and all four vale
  * mouths, watchtowers line the outer roads, and the two castles sit where the
  * roads meet. Every route between realms runs past a fort, so whoever holds
- * the forts decides where armies and carts may go. */
+ * the forts decides where armies and carts may go. The high crests cannot be
+ * crossed on foot (peaksBlock); only dragons fly over them. */
 'use strict';
 (function (AS) {
   AS.Maps.add({
     id: 'highmarch', name: 'Highmarch', index: 9, w: 10400, h: 10400, seed: 909,
     blurb: 'Ridge and vale. Forts hold every pass and vale mouth, and two old castles stand on the watershed: a war of strongpoints.',
     difficulty: 'Very hard',
+    peaksBlock: 0.95, // the high crests are walls: armies and carts must take the passes and the vales
     regions: [
       { biome: 'human', x: 5200, y: 8800, r: 2700 },
       { biome: 'elf', x: 1500, y: 5150, r: 2600 },
@@ -142,23 +143,23 @@
       { id: 'copperkettle', k: 'goldmine', name: 'Copperkettle Mine', x: 2500, y: 8100, guard: [['ogre', 2], ['bandit', 3]] },
       { id: 'highkeep', k: 'ruins', name: 'Fallen Highkeep', x: 2300, y: 1900, guard: [['ogre', 1], ['bandit', 4]] },
       { id: 'barrowhall', k: 'ruins', name: 'Barrowhall Ruins', x: 8100, y: 8500, guard: [['ogre', 1], ['bandit', 4]] },
-      { id: 'rimewalleyrie', k: 'nest', name: 'Rimewall Eyrie', x: 8900, y: 1300, guard: [['troll', 1]] },
+      { id: 'rimewalleyrie', k: 'nest', name: 'Rimewall Eyrie', x: 9000, y: 1150, guard: [['troll', 1]] },
       { id: 'greendowneyrie', k: 'nest', name: 'Greendown Eyrie', x: 1500, y: 9100, guard: [['troll', 1]] },
       // ---- Hrimgard on the heights ----
-      { id: 'frostvein', k: 'goldmine', name: 'Frostvein Mine', x: 4100, y: 2700, guard: [['wolf', 4]] },
-      { id: 'rimeholt', k: 'village', name: 'Rimeholt', x: 6500, y: 950 },
+      { id: 'frostvein', k: 'goldmine', name: 'Hoarvein Mine', x: 4100, y: 2700, guard: [['wolf', 4]] },
+      { id: 'rimeholt', k: 'village', name: 'Icegarth', x: 6500, y: 950 },
       { id: 'coldhearth', k: 'village', name: 'Coldhearth', x: 3900, y: 1500, guard: [['wolf', 3]] },
       { id: 'rimefang', k: 'crystal', name: 'Rimefang Crystal', x: 8000, y: 1600, guard: [['troll', 1], ['wolf', 2]] },
       // ---- Aldermere in the lowlands ----
       { id: 'goldfurrow', k: 'goldmine', name: 'Goldfurrow Mine', x: 6300, y: 7700, guard: [['bandit', 4]] },
       { id: 'meadowbrook', k: 'village', name: 'Meadowbrook', x: 3900, y: 9450 },
       { id: 'barleyhithe', k: 'village', name: 'Barleyhithe', x: 6500, y: 8900, guard: [['wolf', 3]] },
-      { id: 'dawnstone', k: 'shrine', name: 'Dawnstone Circle', x: 2400, y: 8800, guard: [['bandit', 3]] },
+      { id: 'dawnstone', k: 'shrine', name: 'Sunstone Circle', x: 2400, y: 8800, guard: [['bandit', 3]] },
       // ---- Sylvara in the western woods ----
       { id: 'leafgold', k: 'goldmine', name: 'Leafgold Mine', x: 1300, y: 3700, guard: [['wolf', 4]] },
       { id: 'willowmere', k: 'village', name: 'Willowmere', x: 600, y: 6200 },
       { id: 'briarwood', k: 'village', name: 'Briarwood', x: 550, y: 4500, guard: [['wolf', 3]] },
-      { id: 'elderglade', k: 'grove', name: 'Elderglade', x: 2550, y: 3700, guard: [['wolf', 3]] },
+      { id: 'elderglade', k: 'grove', name: 'Fernshade Glade', x: 2550, y: 3700, guard: [['wolf', 3]] },
       // ---- Morgrave on the eastern moor ----
       { id: 'bonevein', k: 'goldmine', name: 'Bonevein Mine', x: 9100, y: 6700, guard: [['bandit', 4]] },
       { id: 'gallowmoor', k: 'village', name: 'Gallowmoor', x: 9800, y: 4200 },

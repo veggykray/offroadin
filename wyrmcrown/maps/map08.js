@@ -6,7 +6,8 @@
  * and the Wyrmhoard, the richest seam in the land. Three passes cut the ring:
  * the Ember Gate faces Aldermere in the south-west, the Fern Gate faces Sylvara
  * in the north-west, and the Dawn Gate opens east, between Hrimgard and
- * Morgrave, who must share it. Bare stone ribs run out from the ring like the
+ * Morgrave, who must share it; the crests between them cannot be crossed on
+ * foot (peaksBlock), so armies and carts must use the passes. Bare stone ribs run out from the ring like the
  * bones of a coiled dragon. Two meltwater rivers spill from tarns at the foot
  * of the Spine to the north and south edges, so the outer circuit road crosses
  * water only at Tearsbridge and Sorrowbridge.
@@ -20,6 +21,7 @@
     id: 'dragonspine', name: "The Dragon's Spine", index: 8, w: 10400, h: 10400, seed: 808,
     blurb: 'A ring of peaks coils round the caldera where the dragon-kings nested. Three passes lead in; giants guard the castle and its eyries.',
     difficulty: 'Very hard',
+    peaksBlock: 0.95, // the high Spine is a wall: armies and carts must use the three passes
     regions: [
       { biome: 'human', x: 1950, y: 8450, r: 2900 },
       { biome: 'elf', x: 1900, y: 1950, r: 2900 },
@@ -122,10 +124,10 @@
       { id: 'haywardcross', k: 'village', name: "Hayward's Cross", x: 2850, y: 6950, guard: [['wolf', 3]] },
       { id: 'amberspire', k: 'wizardtower', name: 'Amberspire', x: 650, y: 9500, guard: [['bandit', 3]] },
       // ---- Sylvara's march (north-west) ----
-      { id: 'mossgold', k: 'goldmine', name: 'Mossgold Mine', x: 3300, y: 2150, guard: [['wolf', 4]] },
-      { id: 'thornwick', k: 'village', name: 'Thornwick', x: 750, y: 1100 },
+      { id: 'mossgold', k: 'goldmine', name: 'Lichengold Mine', x: 3300, y: 2150, guard: [['wolf', 4]] },
+      { id: 'thornwick', k: 'village', name: 'Bramblewick', x: 750, y: 1100 },
       { id: 'fernhollow', k: 'village', name: 'Fernhollow', x: 2500, y: 520, guard: [['wolf', 3]] },
-      { id: 'starbloom', k: 'grove', name: 'Starbloom Grove', x: 650, y: 2700, guard: [['wolf', 3]] },
+      { id: 'starbloom', k: 'grove', name: 'Glimmerbough Grove', x: 650, y: 2700, guard: [['wolf', 3]] },
       // ---- Hrimgard's march (north-east) ----
       { id: 'rimegold', k: 'goldmine', name: 'Rimegold Mine', x: 7300, y: 3000, guard: [['wolf', 4]] },
       { id: 'snowmantle', k: 'village', name: 'Snowmantle', x: 9650, y: 1150 },
@@ -133,7 +135,7 @@
       { id: 'rimeheart', k: 'crystal', name: 'Rimeheart Crystal', x: 9600, y: 3000, guard: [['troll', 1]] },
       // ---- Morgrave's march (south-east) ----
       { id: 'gravegold', k: 'goldmine', name: 'Gravegold Mine', x: 7300, y: 7400, guard: [['bandit', 4]] },
-      { id: 'ashwick', k: 'village', name: 'Ashwick', x: 9600, y: 9500 },
+      { id: 'ashwick', k: 'village', name: 'Cindermoor', x: 9600, y: 9500 },
       { id: 'mournhollow', k: 'village', name: 'Mournhollow', x: 7350, y: 9750, guard: [['wolf', 3]] },
       { id: 'boneking', k: 'relic', name: 'Barrow of the Bone King', x: 9700, y: 7600, guard: [['troll', 1]] },
       // ---- the western border (Aldermere / Sylvara) ----

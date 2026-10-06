@@ -283,6 +283,13 @@
         case 'capture': this.capture(d, inp, gl.ref); break;
         default: this.flyTo(d, inp, gl.x, gl.y, { arrive: 300 });
       }
+      // a dragon that has landed takes off again unless resting at home or claiming the ground it sits on
+      this.landedT = d.landed ? (this.landedT || 0) + dt : 0;
+      if (this.landedT > 6) {
+        const claiming = gl.type === 'capture' && gl.ref && Math.hypot(d.x - gl.ref.x, d.y - gl.ref.y) < gl.ref.capR * 0.9;
+        const resting = gl.type === 'retreat' && d.hp < d.maxHp * 0.97;
+        if (!claiming && !resting) inp.throttle = 1;
+      }
       // carrying stolen livestock: fly it home, otherwise eat at once
       if (d.carry) { this.wantDeposit = d.carry.owner && d.carry.owner !== d.team && Math.hypot(d.x - F.townPos.x, d.y - F.townPos.y) < 2500 && d.energy > d.maxEnergy * 0.4; if (this.wantDeposit) this.flyTo(d, inp, F.townPos.x, F.townPos.y, { arrive: 200 }); else inp.eatHit = true; }
       // opportunistic bolts at anything hostile in reach
@@ -351,7 +358,9 @@
         if (best) return this.strike(d, inp, best, false);
       }
       const dist = this.flyTo(d, inp, s.x, s.y, { arrive: s.capR * 0.4, hover: true, brave: !!s.owner });
-      if (dist < s.capR * 1.3) { inp.throttle = -1; if (d.z > 40) inp.skim = true; }
+      // glide in low, and only flare (and perhaps land) well inside the ring
+      if (dist < s.capR * 0.75) { inp.throttle = -1; if (d.z > 40) inp.skim = true; }
+      else if (dist < s.capR * 1.4) { inp.throttle = d.landed ? 1 : 0.2; inp.skim = true; }
       // circle slowly over the site while claiming it
       if (dist < s.capR * 0.6) inp.turn = this.orbitDir * 0.6;
     }
