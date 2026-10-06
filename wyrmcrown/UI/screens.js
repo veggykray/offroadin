@@ -25,10 +25,10 @@
       const key = map.id + ':' + size;
       if (this.cache.has(key)) return this.cache.get(key);
       const cv = AS.Forge.canvas(size, size), c = cv.getContext('2d'), k = size / Math.max(map.w, map.h);
-      c.save(); c.translate((size - map.w * k) / 2, (size - map.h * k) / 2);
       const LOOK = { human: '#8aa04e', elf: '#4f7a3a', ice: '#e6eef6', undead: '#6a6260', neutral: '#b0a868' };
-      // parchment
+      // parchment (the whole card), then the realm centred on it
       c.fillStyle = '#d8c69a'; c.fillRect(0, 0, size, size);
+      c.save(); c.translate((size - map.w * k) / 2, (size - map.h * k) / 2);
       // regions: soft-edged painted blobs
       for (const r of map.regions) {
         const g = c.createRadialGradient(r.x * k, r.y * k, 0, r.x * k, r.y * k, r.r * k * 1.05);
@@ -47,13 +47,23 @@
         c.strokeStyle = 'rgba(240,236,228,0.5)'; c.lineWidth = m.w * k * 0.3;
         c.beginPath(); pts.forEach((p, i) => (i ? c.lineTo(p[0] * k, p[1] * k) : c.moveTo(p[0] * k, p[1] * k))); c.stroke();
       }
-      // water
+      // water (keep a copy of the land first, for islands)
+      const land = AS.Forge.canvas(size, size); land.getContext('2d').drawImage(cv, 0, 0);
       for (const r of map.rivers || []) {
         const pts = AS.RealmTerrain.smoothLine(r.pts, 160);
         c.strokeStyle = '#4a7a98'; c.lineWidth = Math.max(1.5, r.w * k * 1.6);
         c.beginPath(); pts.forEach((p, i) => (i ? c.lineTo(p[0] * k, p[1] * k) : c.moveTo(p[0] * k, p[1] * k))); c.stroke();
       }
       for (const l of map.lakes || []) { c.fillStyle = '#4a7a98'; c.beginPath(); c.ellipse(l.x * k, l.y * k, l.r * k * (l.sx || 1), l.r * k * (l.sy || 1), 0, 0, TAU); c.fill(); }
+      // islands: the land painted before the water shows through again
+      if (map.islands && map.islands.length) {
+        c.save(); c.beginPath();
+        for (const l of map.islands) { c.moveTo(l.x * k + l.r * k * (l.sx || 1), l.y * k); c.ellipse(l.x * k, l.y * k, l.r * k * (l.sx || 1), l.r * k * (l.sy || 1), 0, 0, TAU); }
+        c.clip(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(land, 0, 0);
+        c.restore();
+        c.strokeStyle = 'rgba(40,70,90,0.6)'; c.lineWidth = 1;
+        for (const l of map.islands) { c.beginPath(); c.ellipse(l.x * k, l.y * k, l.r * k * (l.sx || 1), l.r * k * (l.sy || 1), 0, 0, TAU); c.stroke(); }
+      }
       // roads
       c.setLineDash([3, 3]); c.strokeStyle = 'rgba(110,80,50,0.6)'; c.lineWidth = 1;
       for (const r of map.roads || []) { c.beginPath(); r.pts.forEach((p, i) => (i ? c.lineTo(p[0] * k, p[1] * k) : c.moveTo(p[0] * k, p[1] * k))); c.stroke(); }

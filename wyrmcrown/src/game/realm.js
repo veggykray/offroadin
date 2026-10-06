@@ -357,7 +357,8 @@
       else clearings.push({ x: s.x, y: s.y, r: (r || 60) * 1.15 });
     }
     for (const b of m.bridges || []) clearings.push({ x: b.x, y: b.y, r: 120 });
-    const T = new AS.RealmTerrain(world, Object.assign({}, m, { zones, fields, clearings }));
+    // a map may add its own farmland and glades on top of the generated ones
+    const T = new AS.RealmTerrain(world, Object.assign({}, m, { zones, fields: fields.concat(m.fields || []), clearings: clearings.concat(m.clearings || []) }));
     for (const b of m.bridges || []) {
       const a = b.a || 0, L = 150;
       T.bridges.push({ x0: b.x - Math.cos(a) * L, y0: b.y - Math.sin(a) * L, x1: b.x + Math.cos(a) * L, y1: b.y + Math.sin(a) * L, w: 24, a, site: b.site });

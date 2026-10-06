@@ -113,7 +113,7 @@
         }
         for (const l of lakes) {
           const ang = Math.atan2(y - l.y, x - l.x);
-          const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13)) * (l.sx ? 1 : 1);
+          const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
           const dx = (x - l.x) / (l.sx || 1), dy = (y - l.y) / (l.sy || 1);
           const d = Math.hypot(dx, dy) - rr;
           if (d < wd) wd = d;
