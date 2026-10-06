@@ -36,6 +36,11 @@ async function test(name, fn) {
   console.log(results[results.length - 1]);
 }
 const ok = (cond, msg) => { if (!cond) throw new Error(msg); };
+// wait for game time to pass (robust when the machine is busy and frames are slow)
+const play = async (page, secs) => {
+  const t0 = await page.evaluate(() => AS.game.time);
+  await page.waitForFunction(([t0, secs]) => AS.game.time >= t0 + secs, [t0, secs], { timeout: secs * 1000 * 8 + 4000, polling: 50 });
+};
 const ev = (page, fn, arg) => page.evaluate(fn, arg);
 // screen position (CSS px) of a world point (projected: z lifts it up the screen)
 const screenOf = (page, x, y, z) => ev(page, ([x, y, z]) => { const R = AS.Renderer, s = R.worldToScreen(x, y - (z || 0), AS.game.camera); return { x: s.x / R.dpr, y: s.y / R.dpr }; }, [x, y, z || 0]);
@@ -59,22 +64,22 @@ await test('menus: title → realm → map → war', async (keep) => {
 await test('flight: thrust, bank, dive and climb, brake', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
   const s0 = await ev(page, () => { const p = AS.game.player; return { v: p.speed, a: p.angle }; });
-  await page.keyboard.down('KeyW'); await page.waitForTimeout(2200);
+  await page.keyboard.down('KeyW'); await play(page, 2.2);
   const fast = await ev(page, () => AS.game.player.speed);
   ok(fast > s0.v + 40 && fast > 200, 'W beats the wings faster (' + Math.round(s0.v) + ' → ' + Math.round(fast) + ')');
-  await page.keyboard.down('KeyA'); await page.waitForTimeout(1200); await page.keyboard.up('KeyA');
+  await page.keyboard.down('KeyA'); await play(page, 1.2); await page.keyboard.up('KeyA');
   const a1 = await ev(page, () => AS.game.player.angle);
   ok(Math.abs(Math.atan2(Math.sin(a1 - s0.a), Math.cos(a1 - s0.a))) > 0.5, 'A banks the dragon round');
   await page.keyboard.up('KeyW');
   const z0 = await ev(page, () => AS.game.player.z);
-  await page.keyboard.down('Space'); await page.waitForTimeout(1500);
+  await page.keyboard.down('Space'); await play(page, 1.5);
   const zl = await ev(page, () => [AS.game.player.z, AS.game.player.speed]);
   await page.keyboard.up('Space');
   ok(zl[0] < z0 - 25 && zl[0] < 30, 'SPACE dives low (' + Math.round(z0) + ' → ' + Math.round(zl[0]) + ')');
   ok(zl[1] > 200, 'the dive keeps its speed');
-  await page.waitForTimeout(2000);
+  await play(page, 2);
   ok(await ev(page, () => AS.game.player.z) > 45, 'releasing SPACE climbs back up');
-  await page.keyboard.down('KeyS'); await page.waitForTimeout(2500);
+  await page.keyboard.down('KeyS'); await play(page, 2.5);
   const slow = await ev(page, () => AS.game.player.speed);
   await page.keyboard.up('KeyS');
   ok(slow < 110, 'S flares to a near-hover (' + Math.round(slow) + ')');
@@ -89,8 +94,8 @@ await test('flight: flare low to land, rest, and take off again', async (keep) =
   await page.keyboard.up('KeyS');
   const l = await ev(page, () => [AS.game.player.landed, Math.round(AS.game.player.z), Math.round(AS.game.player.speed)]);
   ok(l[0] && l[1] === 0 && l[2] === 0, 'holding S low over open ground lands the dragon (' + l + ')');
-  await page.waitForTimeout(400);
-  await page.keyboard.down('KeyW'); await page.waitForTimeout(1200); await page.keyboard.up('KeyW');
+  await play(page, 0.4);
+  await page.keyboard.down('KeyW'); await play(page, 1.2); await page.keyboard.up('KeyW');
   const t = await ev(page, () => [AS.game.player.landed, Math.round(AS.game.player.z), Math.round(AS.game.player.speed)]);
   ok(!t[0] && t[1] > 15 && t[2] > 80, 'W launches it back into the air (' + t + ')');
   return page;
@@ -111,7 +116,7 @@ await test('combat: staff bolts hit what the cursor points at', async (keep) => 
   const sp = await screenOf(page, p0[0], p0[1] - 6);
   await page.mouse.move(sp.x, sp.y);
   await page.mouse.down();
-  for (let i = 0; i < 12; i++) { await page.waitForTimeout(120); const q = await ev(page, () => [__t.x, __t.y]); const s = await screenOf(page, q[0], q[1] - 6); await page.mouse.move(s.x, s.y); }
+  for (let i = 0; i < 12; i++) { await play(page, 0.12); const q = await ev(page, () => [__t.x, __t.y]); const s = await screenOf(page, q[0], q[1] - 6); await page.mouse.move(s.x, s.y); }
   await page.mouse.up(); await page.keyboard.up('KeyS');
   const after = await ev(page, () => [__t.alive, __t.hp, AS.game.player.mana]);
   ok(!after[0] || after[1] < t.hp, 'the bandit was struck (hp ' + t.hp + ' → ' + Math.round(after[1]) + ')');
@@ -129,7 +134,7 @@ await test('combat: breath burns the ground forces in front', async (keep) => {
     return u.hp;
   });
   await page.keyboard.down('KeyS'); await page.keyboard.down('KeyF');
-  await page.waitForTimeout(1600);
+  await play(page, 1.6);
   await page.keyboard.up('KeyF'); await page.keyboard.up('KeyS');
   const r = await ev(page, () => [__t.hp, __t.alive, AS.game.player.fireCharge, AS.game.player.maxFire || 100]);
   ok(!r[1] || r[0] < t * 0.8, 'the ogre was burned (' + t + ' → ' + Math.round(r[0]) + ')');
@@ -151,7 +156,7 @@ await test('food: snatch an animal from the ground and eat it', async (keep) => 
   const carrying = await ev(page, () => AS.game.player.carry === __o || __o.carried);
   ok(carrying, 'E snatched the animal below');
   await page.keyboard.press('KeyE');
-  await page.waitForTimeout(1600);
+  await play(page, 1.6);
   const e1 = await ev(page, () => AS.game.player.energy);
   ok(e1 > e0 + 10, 'eating restores energy (' + Math.round(e0) + ' → ' + Math.round(e1) + ')');
   return page;
