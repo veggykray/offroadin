@@ -240,6 +240,28 @@
         g.troops.push(u); this.troops.push(u);
       }
     }
+    musterPatrol() {
+      const live = this.troops.filter((t) => t.alive && t.state === 'patrol');
+      if (live.length >= 3) return;
+      // foot soldiers walk the rounds first; archers stay on the walls
+      const free = this.troops.filter((t) => t.alive && t.state === 'garrison' && t.role !== 'cart' && t.role !== 'siege').sort((a, b) => (a.tdef.ranged ? 1 : 0) - (b.tdef.ranged ? 1 : 0));
+      if (free.length < 5) return; // never strip the town bare
+      if (!this.patrolRoute) {
+        const c = this.townPos, T = this.g.terrain, pts = [];
+        for (let i = 0; i < 10; i++) {
+          const a = this.gateA + i / 10 * TAU, r = 700 + (i % 2) * 90;
+          const x = c.x + Math.cos(a) * r, y = c.y + Math.sin(a) * r * 0.86;
+          if (T.groundPassable(x, y)) pts.push([x, y]);
+        }
+        this.patrolRoute = pts.length >= 4 ? pts : null;
+      }
+      if (!this.patrolRoute) return;
+      const start = (Math.random() * this.patrolRoute.length) | 0;
+      free.slice(0, 3 - live.length).forEach((u, i) => {
+        u.state = 'patrol'; u.route = this.patrolRoute; u.ri = start; u.pOff = (i - 1) * 16;
+        u.dest = { x: this.patrolRoute[start][0], y: this.patrolRoute[start][1], r: 40 };
+      });
+    }
     // a rough measure of a realm's might, for the comeback rules
     power() { return this.sitesOwned * 1.2 + this.keepLevel * 2 + this.wardStrength() + (this.upgrades.scales || 0) + (this.upgrades.lungs || 0) + this.alive('tower') * 0.3; }
     troopCount() { let n = 0; for (const t of this.troops) if (t.alive && t.role !== 'cart') n++; return n; }
@@ -295,6 +317,9 @@
         const cap = 14 + (this.keepLevel - 1) * 8 + Math.min(6, this.sitesOwned);
         if (this.alive('house') < cap && g.time - this.attackedT > 30) this.addHouse(false);
       }
+      // a patrol walks the round of the outskirts
+      this.patrolT = (this.patrolT === undefined ? 20 : this.patrolT) - dt;
+      if (this.patrolT <= 0) { this.patrolT = 30; this.musterPatrol(); }
       // breeding
       this.breedT -= dt;
       if (this.breedT <= 0) {

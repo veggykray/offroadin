@@ -133,8 +133,10 @@
       }
       // leash for guards and garrisons
       const lx = this.home.x, ly = this.home.y;
-      const leash = this.state === 'guard' ? 420 : this.state === 'garrison' ? 600 : 1e9;
+      const leash = this.state === 'guard' ? 420 : this.state === 'garrison' ? 600 : this.state === 'patrol' ? 380 : 1e9;
       if ((this.state === 'guard' || this.state === 'garrison') && U.dist(this.x, this.y, lx, ly) > leash) this.target = null;
+      // patrols leave a fight that drags them too far off their round
+      if (this.state === 'patrol' && this.target && this.route) { const wp = this.route[this.ri % this.route.length]; if (U.dist(this.x, this.y, wp[0], wp[1]) > 520) this.target = null; }
       let mx = null, my = null, sp = this.tdef.speed;
       const t = this.target;
       if (t) {
@@ -143,6 +145,13 @@
         const keep = t.isDragon ? (t.z > 40 ? 120 : 30) : this.tdef.ranged ? this.tdef.ranged.range * 0.7 : (this.tdef.melee ? this.tdef.melee.range * 0.8 : 12) + (t.r || 6) * 0.6;
         if (d > keep) { mx = t.x; my = t.y; }
         else if (t.isDragon) { mx = null; }
+      } else if (this.state === 'patrol' && this.route) {
+        // walk the round of the town's outskirts, waypoint to waypoint
+        const wp = this.route[this.ri % this.route.length];
+        mx = wp[0] + (this.pOff || 0); my = wp[1];
+        if (U.dist(this.x, this.y, mx, my) < 36) this.ri++;
+        sp *= 0.62;
+        this.unstick(dt);
       } else if (this.state === 'march') {
         if (this.path && this.pi < this.path.length) this.unstick(dt);
         const wp = this.path && this.path[this.pi];
