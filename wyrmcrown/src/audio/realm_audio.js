@@ -41,6 +41,8 @@
     update(dt, g) {
       if (!g || g !== this.g) return;
       const A = AS.Audio, p = g.player, T = g.terrain;
+      // sounds are synthesised in the background at start-up: begin the wind once they exist
+      if (!A.loops.air) A.startLoop('air', 'air_rush', 0.01);
       // settle on a region for a few seconds before changing the score
       this.regionT += dt;
       if (this.regionT > 4 && this.musicKey !== this.regionKey) this.playMusic(this.regionKey);

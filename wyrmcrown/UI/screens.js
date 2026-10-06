@@ -248,7 +248,7 @@
         ['W', 'Beat your wings — speed builds with every downstroke'], ['S', 'Flare the wings: brake, turn tighter, hover low'], ['A / D', 'Bank left / right (slow = tight turns, fast = wide sweeps)'],
         ['SPACE (hold)', 'Dive toward the ground — release to pull up'], ['SHIFT', 'Sprint (burns energy)'], ['MOUSE', 'Aim the wizard\'s staff'],
         ['LEFT CLICK', 'Cast magic bolts'], ['RIGHT CLICK / F', 'Breathe fire (uses breath; strongest when low)'], ['E', 'Snatch prey / eat it / travel through an owned waygate'],
-        ['Q', 'Cast a stored spell'], ['T', 'Hold court in your town — build, recruit, upgrade'], ['M', 'War map'], ['C', 'Switch flight controls (keys / follow the cursor)'], ['ESC / P', 'Pause'],
+        ['Q', 'Cast a stored spell'], ['T', 'Hold court in your town — build, recruit, upgrade'], ['G', 'Order your warband: pick a site or rival town on the map'], ['M', 'War map'], ['C', 'Switch flight controls (keys / follow the cursor)'], ['ESC / P', 'Pause'],
       ];
       s.appendChild(h('div', { class: 'panel', style: 'min-width:640px;max-width:820px' },
         h('h2', null, 'How to Play'),

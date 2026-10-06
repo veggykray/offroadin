@@ -120,6 +120,7 @@
             if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
           } else if (I.hit('map') && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
           else if (I.hit('town') && AS.Court) AS.Court.toggle(g);
+          else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
           if (I.hit('controlMode')) {
             AS.Settings.controlMode = AS.Settings.controlMode === 'mouse' ? 'keys' : 'mouse'; AS.Save.saveSettings();
             g.msg(AS.Settings.controlMode === 'mouse' ? 'FLIGHT: FOLLOW THE CURSOR' : 'FLIGHT: KEYS STEER, MOUSE AIMS', '#ffe7a8', 2.2);

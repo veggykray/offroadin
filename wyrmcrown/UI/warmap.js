@@ -9,7 +9,9 @@
   const U = AS.U, TAU = U.TAU, K = AS.UIKit;
   const WarMap = {
     travel: null,
-    openTravel(g, gate) { this.travel = gate; AS.App.openOverlay('map'); },
+    openTravel(g, gate) { this.travel = gate; this.orders = false; AS.App.openOverlay('map'); },
+    // G: the war map becomes the muster: click a site or a rival town to march on it
+    openOrders(g) { this.orders = true; this.travel = null; AS.App.openOverlay('map'); },
     draw(ctx, g, dt) {
       const R = AS.Renderer, W = R.canvas.width, H = R.canvas.height, dpr = R.dpr, HUD = AS.HUD;
       const s = Math.max(0.85, Math.min(1.5, H / (900 * dpr) * 1.05)) * dpr;
@@ -19,6 +21,7 @@
       const boxH = H - 90 * s, boxW = W - 380 * s;
       const k = Math.min(boxW / g.map.w, boxH / g.map.h), sw = g.map.w * k, size = g.map.h * k;
       const x0 = (W - sw) / 2 - 120 * s, y0 = 50 * s;
+      this.lay = { x0, y0, k, dpr }; // for tests and tools: world → canvas pixels
       HUD.plate(ctx, x0 - 10 * s, y0 - 10 * s, sw + 20 * s, size + 20 * s, 12 * s, 0.95);
       ctx.save(); K.rrect(ctx, x0, y0, sw, size, 8 * s); ctx.clip();
       ctx.imageSmoothingEnabled = true;
@@ -78,9 +81,10 @@
       const px = x0 + sw + 26 * s, pw = W - px - 20 * s;
       HUD.plate(ctx, px, y0 - 10 * s, pw, size + 20 * s, 12 * s, 0.9);
       ctx.textAlign = 'left'; ctx.font = HUD.F(Math.round(20 * s)); ctx.fillStyle = HUD.COL.gold;
-      ctx.fillText(this.travel ? 'WAYGATE TRAVEL' : 'WAR MAP', px + 18 * s, y0 + 16 * s);
+      const PF = g.playerFaction, ready = this.orders ? PF.troops.filter((t) => t.alive && t.role !== 'cart' && t.state === 'garrison').length : 0;
+      ctx.fillText(this.travel ? 'WAYGATE TRAVEL' : this.orders ? 'MUSTER THE WARBAND' : 'WAR MAP', px + 18 * s, y0 + 16 * s);
       ctx.font = HUD.B(Math.round(13 * s), '500'); ctx.fillStyle = HUD.COL.dim;
-      ctx.fillText(this.travel ? 'Click a glowing waygate you own.' : g.map.name + ' · day ' + (1 + Math.floor(g.time / 300)), px + 18 * s, y0 + 40 * s);
+      ctx.fillText(this.travel ? 'Click a glowing waygate you own.' : this.orders ? (ready > 3 ? 'Click a site or rival town · ' + (ready - 3) + ' troops will march' : 'Too few troops at home (3 stay on guard)') : g.map.name + ' · day ' + (1 + Math.floor(g.time / 300)), px + 18 * s, y0 + 40 * s);
       let yy = y0 + 72 * s;
       if (hover) {
         const isF = !!hover.def && hover.def.dragon;
@@ -117,7 +121,21 @@
       if (this.travel && mouse.lPressed && hover && hover.def && hover.def.travel && hover.owner === g.playerKey && hover !== this.travel) {
         AS.Sites.travel(g, g.player, hover); this.travel = null; AS.App.closeOverlay();
       }
-      if (AS.App.overlay !== 'map') this.travel = null;
+      // click to send the warband
+      if (this.orders && mouse.lPressed && hover) {
+        const isF = !!hover.def && !!hover.def.dragon;
+        const tx = isF ? hover.townPos.x : hover.x, ty = isF ? hover.townPos.y : hover.y;
+        if ((isF && hover === PF) || (!isF && hover.owner === PF.key)) { /* our own: nothing to take */ }
+        else if (!AS.Nav.reachable(g, PF.townPos.x, PF.townPos.y, tx, ty)) { g.msg('NO ROAD LEADS THERE — ONLY DRAGONS CAN REACH IT', '#ffe7a8', 2.2); AS.Audio.sfx('denied'); }
+        else {
+          AS.Court.g = g;
+          const n = AS.Court.sendWarband(PF, { x: tx, y: ty, siege: isF });
+          g.msg(n ? n + ' TROOPS MARCH ON ' + (isF ? hover.def.short : hover.name).toUpperCase() : 'TOO FEW TROOPS AT HOME', n ? '#ffe08a' : '#ffe7a8', 2.4);
+          AS.Audio.sfx(n ? 'herald' : 'denied');
+          this.orders = false; AS.App.closeOverlay();
+        }
+      }
+      if (AS.App.overlay !== 'map') { this.travel = null; this.orders = false; }
     },
   };
   AS.WarMap = WarMap;

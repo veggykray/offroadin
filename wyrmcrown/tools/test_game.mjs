@@ -179,6 +179,27 @@ await test('town: hold court at home and buy a farmstead', async (keep) => {
   return page;
 });
 
+await test('army: G musters the warband and marches it on a site', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  const target = await ev(page, () => {
+    const g = AS.game, F = g.playerFaction;
+    F.recruit('soldier', 6, true);
+    const s = g.sites.filter((q) => !q.owner && q.kind !== 'bridge' && AS.Nav.reachable(g, F.townPos.x, F.townPos.y, q.x, q.y)).sort((a, b) => Math.hypot(a.x - F.townPos.x, a.y - F.townPos.y) - Math.hypot(b.x - F.townPos.x, b.y - F.townPos.y))[0];
+    g.revealArea ? g.revealArea(s.x, s.y, 400) : null;
+    return { id: s.id, x: s.x, y: s.y };
+  });
+  await page.keyboard.press('KeyG');
+  await page.waitForTimeout(300);
+  ok(await ev(page, () => AS.App.overlay === 'map' && AS.WarMap.orders), 'G opened the muster map');
+  const at = await ev(page, ([x, y]) => { const L = AS.WarMap.lay; return { x: (L.x0 + x * L.k) / L.dpr, y: (L.y0 + y * L.k) / L.dpr }; }, [target.x, target.y]);
+  await page.mouse.move(at.x, at.y); await page.waitForTimeout(150);
+  await page.mouse.down(); await page.waitForTimeout(60); await page.mouse.up();
+  await page.waitForTimeout(300);
+  const r = await ev(page, () => [AS.App.overlay, AS.game.playerFaction.troops.filter((t) => t.alive && t.state === 'march').length]);
+  ok(r[0] === null && r[1] >= 3, 'the warband marches (' + r + ')');
+  return page;
+});
+
 await test('war: break every rival → victory screen', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
   await ev(page, () => {

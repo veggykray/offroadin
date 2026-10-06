@@ -276,14 +276,27 @@
         ctx.drawImage(gl, gx - bi.L * 0.55, gy - bi.L * 0.4, bi.L * 1.1, bi.L * 0.8);
         // the stream itself: a tapered wedge from the jaws
         const mx = bi.mx - ox, my = bi.my - bi.mz - oy;
-        const ex = gx, ey = gy, w0 = 3 * d.scale, w1 = bi.L * 0.32;
+        const ex = gx, ey = gy, w0 = 3 * d.scale, t = g.time + d.x * 0.01;
         const nx = -sa, ny = ca;
-        const grd = ctx.createLinearGradient(mx, my, ex, ey);
-        grd.addColorStop(0, C.str(B.cols[0], 0.85)); grd.addColorStop(0.4, C.str(B.cols[1], 0.55)); grd.addColorStop(1, C.str(B.cols[2], 0));
-        ctx.globalAlpha = 0.9;
-        ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.moveTo(mx + nx * w0, my + ny * w0); ctx.quadraticCurveTo((mx + ex) / 2 + nx * w1 * 0.7, (my + ey) / 2 + ny * w1 * 0.7, ex + nx * w1, ey + ny * w1);
-        ctx.lineTo(ex - nx * w1, ey - ny * w1); ctx.quadraticCurveTo((mx + ex) / 2 - nx * w1 * 0.7, (my + ey) / 2 - ny * w1 * 0.7, mx - nx * w0, my - ny * w0); ctx.closePath(); ctx.fill();
+        // two flickering lobes: a wide soft plume and a hot narrow core
+        for (const [wk, a0, a1, al] of [[0.3, 0.5, 0.3, 0.55], [0.13, 0.95, 0.6, 0.75]]) {
+          const w1 = bi.L * wk * (0.88 + 0.12 * Math.sin(t * 23 + wk * 40)), bend = Math.sin(t * 9 + wk * 10) * w1 * 0.25;
+          const grd = ctx.createLinearGradient(mx, my, ex, ey);
+          grd.addColorStop(0, C.str(B.cols[0], a0)); grd.addColorStop(0.45, C.str(B.cols[1], a1)); grd.addColorStop(1, C.str(B.cols[2], 0));
+          ctx.globalAlpha = al; ctx.fillStyle = grd;
+          const cx = (mx + ex) / 2 + nx * bend, cy = (my + ey) / 2 + ny * bend;
+          ctx.beginPath(); ctx.moveTo(mx + nx * w0, my + ny * w0); ctx.quadraticCurveTo(cx + nx * w1 * 0.7, cy + ny * w1 * 0.7, ex + nx * w1, ey + ny * w1);
+          ctx.lineTo(ex - nx * w1, ey - ny * w1); ctx.quadraticCurveTo(cx - nx * w1 * 0.7, cy - ny * w1 * 0.7, mx - nx * w0, my - ny * w0); ctx.closePath(); ctx.fill();
+        }
+        // billows rolling out along the stream
+        const W1 = bi.L * 0.3;
+        for (let i = 0; i < 9; i++) {
+          const f = (i / 9 + t * 2.4) % 1, wob = Math.sin(t * 13 + i * 2.1) * W1 * 0.4 * f;
+          const px = mx + (ex - mx) * f + nx * wob, py = my + (ey - my) * f + ny * wob;
+          const r = (w0 + (W1 * 1.15 - w0) * f) * (0.75 + 0.3 * Math.sin(t * 17 + i));
+          ctx.globalAlpha = 0.42 * (1 - f * 0.75);
+          ctx.drawImage(AS.Forge.glow(f < 0.3 ? B.cols[0] : B.cols[1], 64), px - r, py - r, r * 2, r * 2);
+        }
         ctx.restore();
       }
     },
