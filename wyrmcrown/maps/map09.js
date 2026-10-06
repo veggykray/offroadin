@@ -24,7 +24,7 @@
     regions: [
       { biome: 'human', x: 5200, y: 8800, r: 2700 },
       { biome: 'elf', x: 1500, y: 5150, r: 2600 },
-      { biome: 'ice', x: 5200, y: 1500, r: 2800 },
+      { biome: 'ice', x: 5200, y: 1450, r: 2450 },
       { biome: 'undead', x: 8900, y: 5250, r: 2600 },
       { biome: 'neutral', x: 5200, y: 5200, r: 2300 },
       { biome: 'neutral', x: 1900, y: 1900, r: 1300 },

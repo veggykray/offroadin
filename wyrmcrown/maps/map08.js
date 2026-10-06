@@ -47,7 +47,7 @@
       { x: 5250, y: 2620, r: 210 }, // Weeping Tarn
       { x: 5250, y: 7800, r: 210 }, // Ashen Tarn
       { x: 3500, y: 950, r: 300 }, // Moonmere
-      { x: 9400, y: 4200, r: 340 }, // Rimemere (frozen)
+      { x: 9450, y: 3650, r: 320 }, // Rimemere (frozen)
       { x: 6500, y: 9600, r: 320 }, // the Black Fen
       { x: 700, y: 6200, r: 260 }, // Millpond
     ],
