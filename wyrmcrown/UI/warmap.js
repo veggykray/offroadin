@@ -15,13 +15,15 @@
       const s = Math.max(0.85, Math.min(1.5, H / (900 * dpr) * 1.05)) * dpr;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = 'rgba(8,5,3,0.82)'; ctx.fillRect(0, 0, W, H);
-      const size = Math.min(H - 90 * s, W - 380 * s), x0 = (W - size) / 2 - 120 * s, y0 = 50 * s;
-      const k = size / g.map.w;
-      HUD.plate(ctx, x0 - 10 * s, y0 - 10 * s, size + 20 * s, size + 20 * s, 12 * s, 0.95);
-      ctx.save(); K.rrect(ctx, x0, y0, size, size, 8 * s); ctx.clip();
+      // fit the realm (square or not) into the space left of the side panel
+      const boxH = H - 90 * s, boxW = W - 380 * s;
+      const k = Math.min(boxW / g.map.w, boxH / g.map.h), sw = g.map.w * k, size = g.map.h * k;
+      const x0 = (W - sw) / 2 - 120 * s, y0 = 50 * s;
+      HUD.plate(ctx, x0 - 10 * s, y0 - 10 * s, sw + 20 * s, size + 20 * s, 12 * s, 0.95);
+      ctx.save(); K.rrect(ctx, x0, y0, sw, size, 8 * s); ctx.clip();
       ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(g.tacMap, x0, y0, size, size);
-      ctx.drawImage(HUD.fogLayer(g), x0, y0, size, size);
+      ctx.drawImage(g.tacMap, x0, y0, sw, size);
+      ctx.drawImage(HUD.fogLayer(g), x0, y0, sw, size);
       const P = (wx, wy) => [x0 + wx * k, y0 + wy * k];
       // sight of what we own
       const mouse = AS.Input.mouse, mx = mouse.x * dpr, my = mouse.y * dpr;
@@ -73,7 +75,7 @@
       ctx.strokeStyle = 'rgba(255,240,200,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(a[0], a[1], cam.w * k, cam.h * k);
       ctx.restore();
       // side panel: legend + hover details
-      const px = x0 + size + 26 * s, pw = W - px - 20 * s;
+      const px = x0 + sw + 26 * s, pw = W - px - 20 * s;
       HUD.plate(ctx, px, y0 - 10 * s, pw, size + 20 * s, 12 * s, 0.9);
       ctx.textAlign = 'left'; ctx.font = HUD.F(Math.round(20 * s)); ctx.fillStyle = HUD.COL.gold;
       ctx.fillText(this.travel ? 'WAYGATE TRAVEL' : 'WAR MAP', px + 18 * s, y0 + 16 * s);

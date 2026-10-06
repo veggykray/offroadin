@@ -273,7 +273,7 @@
 
     // one texel per fog cell, refreshed twice a second; drawn smoothed
     fogLayer(g) {
-      if (!this.fog || this.fog.width !== g.fogW) { this.fog = AS.Forge.canvas(g.fogW, g.fogH); this.fogT = -1; }
+      if (!this.fog || this.fog.width !== g.fogW || this.fog.height !== g.fogH) { this.fog = AS.Forge.canvas(g.fogW, g.fogH); this.fogT = -1; }
       if (g.time - this.fogT > 0.5 || this.fogG !== g) {
         this.fogT = g.time; this.fogG = g;
         const c = this.fog.getContext('2d'), img = c.createImageData(g.fogW, g.fogH), D = img.data;

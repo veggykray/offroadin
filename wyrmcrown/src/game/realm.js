@@ -22,7 +22,7 @@
       this.playerKey = opts.faction || 'human';
       this.time = 0; this.ended = false; this.state = 'play';
       this.godMode = !!opts.god;
-      this.diff = AS.Data.difficulty ? AS.Data.difficulty[opts.difficulty || 'normal'] : { ai: 1, income: 1 };
+      this.diff = AS.Campaign ? AS.Campaign.difficultyFor(map, opts.difficulty) : AS.Data.difficulty[opts.difficulty || 'normal'];
       this.factions = {}; this.factionList = [];
       this.dragons = []; this.buildings = []; this.troops = []; this.sites = []; this.pickups = []; this.solids = [];
       this.byId = new Map();

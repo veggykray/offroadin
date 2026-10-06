@@ -370,6 +370,7 @@
       this.down = 0; this.hidden = false;
       this.x = home.x; this.y = home.y + 10; this.z = 20; this.speed = 90; this.velA = this.angle = -Math.PI / 2;
       this.hp = this.maxHp * 0.7; this.energy = Math.max(this.energy, this.maxEnergy * 0.6); this.fireCharge = this.maxFire;
+      this.buffs.shield = Math.max(this.buffs.shield || 0, 10); // back in the air with a brief ward of scales
       for (const n of this.nodes) { n.x = this.x; n.y = this.y; n.z = this.z; }
       this.layoutRig(0, true);
       AS.Audio.sfx('dragon_roar', { x: this.x, y: this.y });

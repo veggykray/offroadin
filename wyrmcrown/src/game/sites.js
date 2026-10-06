@@ -213,9 +213,13 @@
         this.cartT -= dt;
         if (this.cartT <= 0 && this.stock >= 45) {
           this.cartT = 26;
-          const cart = new AS.Troop(g, 'cart', this.owner, this.x + 30, this.y + 40, { cargo: Math.round(this.stock), site: this });
-          cart.haulTo(F.townPos.x, F.townPos.y);
-          g.troops.push(cart); F.troops.push(cart);
+          // no road home (an island, a cut-off valley): the gold is sent by courier raven
+          if (!AS.Nav.reachable(g, this.x + 30, this.y + 40, F.townPos.x, F.townPos.y)) F.addGold(this.stock, this.x, this.y, 'courier');
+          else {
+            const cart = new AS.Troop(g, 'cart', this.owner, this.x + 30, this.y + 40, { cargo: Math.round(this.stock), site: this });
+            cart.haulTo(F.townPos.x, F.townPos.y);
+            g.troops.push(cart); F.troops.push(cart);
+          }
           this.stock = 0;
         }
       }

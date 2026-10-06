@@ -115,7 +115,7 @@
       const town = h('div', { class: 'box' },
         h('b', null, 'Stronghold'), meter(keep.hp / keep.maxHp, F.def.color),
         row('Ward', ward ? ['', 'failing', 'weak', 'strong', 'unbroken'][Math.min(4, ward)] + ' (' + F.alive('wardstone') + '/3 wardstones)' : 'BROKEN'),
-        row('Income', Math.round(F.income) + ' gold / min'),
+        row('Income', Math.round(F.income) + ' gold / min' + (F.underdog > 0.05 ? ' (underdog +' + Math.round(F.underdog * 35) + '%)' : '')),
         row('Troops', F.troopCount() + ' / ' + F.troopCap()),
         row('Herds', F.livestock() + ' / ' + F.livestockCap()),
         row('Houses', String(F.alive('house'))),
@@ -139,8 +139,9 @@
       const free = F.troops.filter((t) => t.alive && t.role !== 'cart' && t.state === 'garrison');
       const marching = F.troops.filter((t) => t.alive && t.state === 'march');
       const targets = [];
-      for (const s of g.sites) if (s.owner !== F.key && !(s.def.treasure && s.looted) && g.isExplored(s.x, s.y)) targets.push({ label: s.name + (s.owner ? ' (' + g.factions[s.owner].def.short + ')' : s.guarded() ? ' (guarded)' : ''), x: s.x, y: s.y, d: Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y) });
-      for (const R of g.factionList) if (R !== F && !R.eliminated) targets.push({ label: '⚔ ' + R.def.name + ' (siege)', x: R.townPos.x, y: R.townPos.y, siege: true, d: Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) });
+      const walk = (x, y) => AS.Nav.reachable(g, F.townPos.x, F.townPos.y, x, y);
+      for (const s of g.sites) if (s.owner !== F.key && !(s.def.treasure && s.looted) && g.isExplored(s.x, s.y) && walk(s.x, s.y)) targets.push({ label: s.name + (s.owner ? ' (' + g.factions[s.owner].def.short + ')' : s.guarded() ? ' (guarded)' : ''), x: s.x, y: s.y, d: Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y) });
+      for (const R of g.factionList) if (R !== F && !R.eliminated && walk(R.townPos.x, R.townPos.y)) targets.push({ label: '⚔ ' + R.def.name + ' (siege)', x: R.townPos.x, y: R.townPos.y, siege: true, d: Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) });
       targets.sort((a, b) => (a.siege ? 1e5 : 0) + a.d - ((b.siege ? 1e5 : 0) + b.d));
       const sel = h('select', { style: 'width:100%;background:#2a1c12;color:#f0e2c0;border:1px solid rgba(214,170,90,0.3);border-radius:4px;padding:5px;font:500 14px var(--text)' }, targets.map((t, i) => h('option', { value: i }, t.label)));
       const go = btn('March!', () => {

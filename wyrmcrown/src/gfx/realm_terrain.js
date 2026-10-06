@@ -89,7 +89,7 @@
       this.rivers = rivers;
       const ridges = (map.mountains || []).map((m) => ({ w: m.w || 420, hgt: m.h || 1, pts: smoothLine(m.pts, 90) }));
       this.ridges = ridges;
-      const lakes = map.lakes || [];
+      const lakes = map.lakes || [], islands = map.islands || [];
       const roads = (map.roads || []).map((r) => smoothLine(r.pts || r, 70));
       this.roadLines = roads;
       const regions = map.regions || [];
@@ -117,6 +117,13 @@
           const dx = (x - l.x) / (l.sx || 1), dy = (y - l.y) / (l.sy || 1);
           const d = Math.hypot(dx, dy) - rr;
           if (d < wd) wd = d;
+        }
+        // islands: land that rises out of a lake or sea (land wins inside them)
+        for (const l of islands) {
+          const ang = Math.atan2(y - l.y, x - l.x);
+          const rr = l.r * (1 + 0.2 * U.noise2(Math.cos(ang) * 1.8 + l.x * 0.001, Math.sin(ang) * 1.8 + l.y * 0.001, sd + 19));
+          const d = rr - Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1));
+          if (d > -wd) wd = Math.max(wd, d);
         }
         wd += U.noise2(x / 140, y / 140, sd + 17) * 14;
         this.gWater[k] = wd;

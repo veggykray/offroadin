@@ -184,6 +184,7 @@
       for (const R of g.factionList) {
         if (R === F || R.eliminated || (only && R !== only)) continue;
         let rs = -Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) / 2500;
+        if (R.underdog === 0 && R.power() - F.power() > 4) rs += 1.2; // cut the leader down to size
         if (R.lastAttacker === F) rs += 0.3; else if (F.lastAttacker === R) rs += 1.5;
         // don't all pile onto the same realm at once
         for (const O of g.factionList) if (O !== F && O.lord && O.lord.goal.type === 'harass' && O.lord.goal.rival === R) rs -= 1.5;
@@ -237,12 +238,14 @@
       // siege a broken rival, or seize an unguarded site near home
       const R = this.siegeTarget();
       let target = null, raid = null;
-      if (R && Math.random() < 0.6) target = { x: R.townPos.x, y: R.townPos.y, siege: true };
-      else if (g.time > this.style.harassAt * 1.6 && Math.random() < 0.25 + this.style.raid * 0.4 && (raid = this.harassTarget(F.dragon, null))) target = { x: raid.x, y: raid.y, siege: true, raid };
+      const walk = (x, y) => AS.Nav.reachable(g, F.townPos.x, F.townPos.y, x, y);
+      if (R && Math.random() < 0.6 && walk(R.townPos.x, R.townPos.y)) target = { x: R.townPos.x, y: R.townPos.y, siege: true };
+      else if (g.time > this.style.harassAt * 1.6 && Math.random() < 0.25 + this.style.raid * 0.4 && (raid = this.harassTarget(F.dragon, null)) && walk(raid.x, raid.y)) target = { x: raid.x, y: raid.y, siege: true, raid };
       else {
         let best = null, bs = -1e9;
         for (const s of g.sites) {
           if (s.owner === F.key || s.def.treasure || s.kind === 'bridge') continue;
+          if (!AS.Nav.reachable(g, F.townPos.x, F.townPos.y, s.x, s.y)) continue; // islands are for dragons
           const dist = Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y);
           const sc = (SITE_VALUE[s.kind] || 2) - dist / 1200 - (s.guarded() ? 3 : 0);
           if (sc > bs) { bs = sc; best = s; }

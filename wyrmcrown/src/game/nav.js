@@ -93,9 +93,19 @@
       }
       const out = [];
       let k = goal;
-      if (from[k] === -1 && k !== start) return [goal];
+      if (from[k] === -1 && k !== start) { const r = [goal]; r.unreachable = true; return r; }
       while (k !== -1 && k !== start) { out.push(k); k = from[k]; }
       return out.reverse();
+    },
+    // can a walker get from one point to another over land and bridges?
+    reachable(g, x0, y0, x1, y1) {
+      if (!g.nav) this.build(g);
+      const N = g.nav;
+      const a = this.nearestOpen(g, this.cellOf(g, x0, y0)), b = this.nearestOpen(g, this.cellOf(g, x1, y1));
+      const key = a.i + ',' + a.j + '>' + b.i + ',' + b.j;
+      let cells = N.cache.get(key);
+      if (!cells) { cells = this.astar(g, a, b); N.cache.set(key, cells); }
+      return !cells.unreachable;
     },
     // drop waypoints that can be skipped with a clear straight line
     smooth(g, pts) {

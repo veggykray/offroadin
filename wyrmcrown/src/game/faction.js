@@ -240,6 +240,8 @@
         g.troops.push(u); this.troops.push(u);
       }
     }
+    // a rough measure of a realm's might, for the comeback rules
+    power() { return this.sitesOwned * 1.2 + this.keepLevel * 2 + this.wardStrength() + (this.upgrades.scales || 0) + (this.upgrades.lungs || 0) + this.alive('tower') * 0.3; }
     troopCount() { let n = 0; for (const t of this.troops) if (t.alive && t.role !== 'cart') n++; return n; }
     troopCap() { return 6 + (this.has('barracks') ? 8 : 0) + (this.keepLevel - 1) * 4 + this.siteTroopCap(); }
     siteTroopCap() { let n = 0; for (const s of this.g.sites) if (s.owner === this.key && s.def.troopCap) n += s.def.troopCap; return n; }
@@ -249,6 +251,7 @@
       const g = this.g;
       v *= this.has('market') ? 1.2 : 1;
       v *= this.ai ? g.diff.aiIncome || 1 : g.diff.income || 1;
+      if (why !== 'conquest') v *= 1 + 0.35 * (this.underdog || 0);
       this.gold += v;
       this.incomeAcc += v;
       if (this.key === g.playerKey) {
@@ -266,6 +269,15 @@
         const houses = this.alive('house');
         const stock = this.livestock();
         this.addGold(houses * 0.34 + stock * 0.22 * (this.has('market') ? 2 : 1));
+      }
+      // comeback: realms that fall behind the leader gather their strength
+      // (up to +35% to all income); the AI lords also gang up on a runaway leader
+      this.powerT = (this.powerT || 0) - dt;
+      if (this.powerT <= 0) {
+        this.powerT = 5;
+        let top = 0;
+        for (const R of g.factionList) if (!R.eliminated) top = Math.max(top, R.power());
+        this.underdog = U.clamp((top - this.power()) / 10, 0, 1);
       }
       // income rate over the last minute (per-second buckets, for the HUD)
       this.rateT = (this.rateT || 0) - dt;

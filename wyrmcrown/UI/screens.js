@@ -24,7 +24,8 @@
     draw(map, size) {
       const key = map.id + ':' + size;
       if (this.cache.has(key)) return this.cache.get(key);
-      const cv = AS.Forge.canvas(size, size), c = cv.getContext('2d'), k = size / map.w;
+      const cv = AS.Forge.canvas(size, size), c = cv.getContext('2d'), k = size / Math.max(map.w, map.h);
+      c.save(); c.translate((size - map.w * k) / 2, (size - map.h * k) / 2);
       const LOOK = { human: '#8aa04e', elf: '#4f7a3a', ice: '#e6eef6', undead: '#6a6260', neutral: '#b0a868' };
       // parchment
       c.fillStyle = '#d8c69a'; c.fillRect(0, 0, size, size);
@@ -64,6 +65,7 @@
         c.fillStyle = '#2a1a10'; c.beginPath(); c.arc(t.x * k, t.y * k, r + 1.5, 0, TAU); c.fill();
         c.fillStyle = F.color; c.beginPath(); c.arc(t.x * k, t.y * k, r, 0, TAU); c.fill();
       }
+      c.restore();
       // aged edges
       const v = c.createRadialGradient(size / 2, size / 2, size * 0.35, size / 2, size / 2, size * 0.72);
       v.addColorStop(0, 'rgba(60,40,20,0)'); v.addColorStop(1, 'rgba(60,40,20,0.45)');
@@ -172,10 +174,11 @@
         const rec = P.maps[m.id];
         const cv = h('canvas', { width: 220, height: 220 });
         cv.getContext('2d').drawImage(Atlas.draw(m, 220), 0, 0);
-        grid.appendChild(h('div', { class: 'map-card' + (this.sel.map === m.id ? ' sel' : ''), onclick: () => { this.sel.map = m.id; AS.Audio.sfx('ui_click'); this.showMaps(); } },
+        const locked = AS.Campaign && !AS.Campaign.unlocked(m.id);
+        grid.appendChild(h('div', { class: 'map-card' + (this.sel.map === m.id ? ' sel' : '') + (locked ? ' locked' : ''), onclick: () => { if (locked) { AS.Audio.sfx('denied'); return; } this.sel.map = m.id; AS.Audio.sfx('ui_click'); this.showMaps(); } },
           cv, h('div', { class: 'num' }, 'REALM ' + (i + 1)), h('div', { class: 'nm' }, m.name),
-          h('div', { class: 'dim', style: 'font:500 12px var(--text)' }, m.difficulty || 'Standard'),
-          rec && rec.won ? h('span', { class: 'tag gold won' }, '✦ Conquered') : null));
+          h('div', { class: 'dim', style: 'font:500 12px var(--text)' }, locked ? 'Conquer the realm before it to open' : (m.difficulty || 'Standard')),
+          rec && rec.won ? h('span', { class: 'tag gold won' }, '✦ Conquered' + (rec.best ? ' · ' + Math.floor(rec.best / 60) + 'm' : '')) : locked ? h('span', { class: 'tag lock' }, 'Locked') : null));
       });
       s.appendChild(grid);
       const m = AS.Maps.byId[this.sel.map] || AS.Maps.list[0];
@@ -268,7 +271,8 @@
         h('p', { class: 'dim', style: 'text-align:center' }, (res.map ? res.map.name + ' · ' : '') + U.fmtTime(res.time || 0)),
         stand,
         h('p', { class: 'dim' }, 'Gold earned ' + Math.round(st.goldEarned || 0) + ' · sites captured ' + (st.captured || 0) + ' · foes slain ' + (st.kills || 0) + ' · dragons driven off ' + (st.dragonsDowned || 0) + ' · prey eaten ' + (st.eaten || 0)),
-        h('div', { class: 'row', style: 'justify-content:center;margin-top:12px' }, btn('Fight Again', () => AS.App.restart(), 'primary'), btn('Atlas', () => { AS.App.endGame(); this.showMaps(); }), btn('Title', () => { AS.App.endGame(); this.showMenu(); setTimeout(() => this.startDemo(), 100); }))));
+        res.unlocked ? h('p', { style: 'text-align:center;font:700 16px var(--title);color:var(--gold)' }, '✦ A new realm opens in the atlas: ' + res.unlocked.name + ' ✦') : null,
+        h('div', { class: 'row', style: 'justify-content:center;margin-top:12px' }, res.unlocked ? btn('Onward to ' + res.unlocked.name, () => { this.sel.map = res.unlocked.id; AS.App.endGame(); this.showMaps(); }, 'primary') : null, btn('Fight Again', () => AS.App.restart(), res.unlocked ? '' : 'primary'), btn('Atlas', () => { AS.App.endGame(); this.showMaps(); }), btn('Title', () => { AS.App.endGame(); this.showMenu(); setTimeout(() => this.startDemo(), 100); }))));
       this.show('results');
     },
     confirm(text, yes) {

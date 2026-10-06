@@ -1,15 +1,15 @@
 // WYRMCROWN — fast-forward an all-AI war (no rendering) and log how each realm
 // fares: gold, buildings, troops, sites, ward, eliminations, plus any errors.
-// usage: node wyrmcrown/tools/sim.mjs [minutes=12] [difficulty=normal] [seedRuns=1]
+// usage: node wyrmcrown/tools/sim.mjs [minutes=12] [difficulty=normal] [runs=1] [map=sundered]
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-const [,, mins = '12', diff = 'normal', runs = '1'] = process.argv;
+const [,, mins = '12', diff = 'normal', runs = '1', mapId = 'sundered'] = process.argv;
 const b = await chromium.launch();
 for (let run = 0; run < +runs; run++) {
   const p = await b.newPage({ viewport: { width: 1200, height: 800 } });
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message + ' | ' + (e.stack || '').split('\n').slice(1, 3).join(' ')));
   p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
-  await p.goto('http://127.0.0.1:8766/wyrmcrown/index.html?map=sundered&demo=1');
+  await p.goto('http://127.0.0.1:8766/wyrmcrown/index.html?map=' + mapId + '&demo=1');
   await p.waitForFunction(() => window.AS && AS.game && AS.App.state === 'play', null, { timeout: 30000 });
   const log = await p.evaluate(async ([mins, diff]) => {
     const g = AS.game;
