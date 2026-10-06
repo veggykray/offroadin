@@ -138,6 +138,13 @@
         for (let i = 0; i < n; i++) if (Math.random() < 0.0004) { const len = Math.floor(sr * 0.06), f = 80 + Math.random() * 120; for (let k = 0; k < len && i + k < n; k++) out[i + k] += Math.sin(k / sr * TAU * f * (1 + k / len)) * (1 - k / len) * 2; }
         break;
       }
+      case 'rain': {
+        // steady rain: bright hiss with a soft low wash and scattered drips
+        for (let i = 0; i < n; i++) out[i] = rnd();
+        bandpass(out, sr, (t) => 4200 + 900 * Math.sin(t * TAU / dur * 2), 0.35);
+        for (let i = 0; i < n; i++) if (Math.random() < 0.002) { const len = Math.floor(sr * 0.012), f = 1800 + Math.random() * 2400; for (let k = 0; k < len && i + k < n; k++) out[i + k] += Math.sin(k / sr * TAU * f) * (1 - k / len) * 0.9; }
+        break;
+      }
       case 'storm': { for (let i = 0; i < n; i++) out[i] = rnd(); lowpass(out, sr, (t) => 250 + 150 * Math.sin(t * TAU / dur * 3)); break; }
       case 'jungle': {
         for (let i = 0; i < n; i++) out[i] = rnd() * 0.3;

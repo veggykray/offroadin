@@ -77,6 +77,8 @@
       if (AS.Sites) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
       if (AS.Roads) AS.Roads.lay(this);
       if (AS.Powerups) AS.Powerups.init(this);
+      // weather drifts over the realm (drawn through the renderer's weather hook)
+      if (AS.Weather) { this.weather = new AS.Weather(this); this.hazards = { drawWeather: (ctx, ox, oy, vw, vh, R) => this.weather.draw(ctx, ox, oy, vw, vh, R) }; }
       // explored fog for the war map
       this.fogCell = 96;
       this.fogW = Math.ceil(m.w / this.fogCell); this.fogH = Math.ceil(m.h / this.fogCell);
@@ -223,6 +225,7 @@
       for (const F of this.factionList) F.update && F.update(dt);
       if (AS.Life) AS.Life.update(this, dt);
       if (AS.Powerups) AS.Powerups.update(this, dt);
+      if (this.weather) this.weather.update(dt);
       AS.Proj.update(this, dt);
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }

@@ -52,11 +52,13 @@
       for (const F of g.factionList) { const d = Math.hypot(p.x - F.townPos.x, p.y - F.townPos.y); town = Math.max(town, U.clamp(1 - d / 900, 0, 1)); }
       for (const s of g.sites) if (s.kind === 'village') { const d = Math.hypot(p.x - s.x, p.y - s.y); town = Math.max(town, U.clamp(1 - d / 600, 0, 1) * 0.8); }
       const hi = U.clamp((p.z - 20) / 70, 0, 1);
+      const Wx = g.weather || { rain: 0, storm: 0, snow: 0 };
       const target = {
-        wind: 0.12 + hi * 0.12 + w[2] * 0.08,
+        rain: Wx.rain * 0.3,
+        wind: 0.12 + hi * 0.12 + w[2] * 0.08 + Wx.storm * 0.16 + Wx.snow * 0.05,
         forest: U.clamp(forest * 1.3, 0, 1) * 0.2 * (1 - hi * 0.5) * (1 - w[2]),
         river: U.clamp(1 - Math.max(0, water) / 380, 0, 1) * 0.24 * (w[2] > 0.55 ? 0.15 : 1),
-        blizzard: w[2] * 0.22,
+        blizzard: w[2] * 0.22 + Wx.snow * 0.15,
         village: town * 0.13 * (1 - hi * 0.4),
         cursed: w[3] * 0.18,
       };
@@ -69,7 +71,7 @@
       // which ambient events fit here
       const ev = this.events = this.events || [];
       ev.length = 0;
-      if (w[0] + w[1] + w[4] > 0.4 && forest < 0.8) ev.push('birds', 'birds');
+      if (w[0] + w[1] + w[4] > 0.4 && forest < 0.8 && Wx.rain < 0.4) ev.push('birds', 'birds');
       if (forest > 0.4 && w[3] < 0.5) ev.push('birds');
       if (town > 0.2 || this.nearHerd(g, p)) ev.push('cattle');
       if (w[3] > 0.4) ev.push('crows', 'creatures');
@@ -97,7 +99,7 @@
   window.addEventListener('pointerdown', () => setTimeout(tryLate, 50));
   window.addEventListener('keydown', () => setTimeout(tryLate, 50));
   // the realm's extra ambience beds (synthesised in alien-strike/src/audio/synth.js)
-  AS.Audio.bedVolumes = { forest: 0.05, river: 0.05, blizzard: 0.05, village: 0.05, cursed: 0.05, birds: 0, cattle: 0 };
+  AS.Audio.bedVolumes = { forest: 0.05, river: 0.05, blizzard: 0.05, village: 0.05, cursed: 0.05, rain: 0.01, birds: 0, cattle: 0 };
   AS.Audio.eventKinds = ['birds', 'cattle', 'crows', 'wolves'];
   AS.RealmAudio = RA;
 })(window.AS);

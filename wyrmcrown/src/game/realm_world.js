@@ -25,7 +25,7 @@
       },
       light: { ambient: 1, tint: null, shadow: 0.34 },
       atm: Object.assign({}, REGION.neutral.atm),
-      ambience: ['wind', 'forest', 'birds', 'village', 'cattle', 'river', 'blizzard', 'cursed', 'icecrack', 'creatures'],
+      ambience: ['wind', 'forest', 'birds', 'village', 'cattle', 'river', 'blizzard', 'cursed', 'rain', 'icecrack', 'creatures'],
       music: AS.Data.factions.human.music,
       decor: [], props: [], propPal: AS.Data.pal.neutral,
       colony: AS.Data.pal.neutral, choir: AS.Data.pal.undead, native: AS.Data.pal.neutral,

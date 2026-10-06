@@ -155,6 +155,20 @@ falls.
 | `fortress` | Hrimgard | Defences, holds its half |
 | `aggressive` | Morgrave | Early raids, theft, sieges |
 
+## Weather (`weather.js`)
+
+- **Fronts:** rain fronts drift across the realm with the wind every few
+  minutes, and some are thunderstorms.
+- **Lightning:** it strikes inside storms, and a dragon flying high in one
+  draws the bolt, so in a storm you fly low.
+- **Each land's own air:**
+  - snow over Hrimgard (a front over the ice becomes a blizzard);
+  - ash over the blight;
+  - motes of light in the Sylvaran forest.
+- **Sound and light:** rain darkens the light, lightning flashes the screen,
+  thunder rolls in late with distance, and the rain bed and wind swell in
+  the mix.
+
 ## World life (`life.js`)
 
 Herds of livestock and wild animals, villagers and farmers, and flocks of
