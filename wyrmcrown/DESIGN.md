@@ -69,6 +69,11 @@ The dragon always flies forward; it never hovers like a helicopter.
   height, then climbs back when released. **S** flares the wings, which
   brakes and settles to a low hover-glide.
 - **Sprint:** a fast, energy-hungry stroke.
+- **Landing:** flaring low and slow over open ground settles the dragon onto
+  the ground with a final cupped wingbeat and dust. Grounded, it folds its
+  wings, turns on the spot, can still cast and breathe, and rests (faster
+  healing, almost no energy drain) at the risk of ground troops. **W**, a
+  dive or a sprint launches it again.
 
 Energy (food) drains with flight, sprinting and breathing and is restored
 only by eating animals. Animals are snatched in a low pass, carried, then

@@ -319,6 +319,8 @@
       if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);
       else if (p.z < 40 && g.life && g.life.grid.query(p.x, p.y, 44, []).some((o) => o.A && !o.dead && !o.carried)) lines.push(['E', 'SNATCH PREY']);
       else if (p.energy < p.maxEnergy * 0.3 && !p.carry) lines.push(['SPACE + E', 'HUNGRY — DIVE ON AN ANIMAL AND SNATCH IT']);
+      if (p.landed) lines.push(['W', 'TAKE OFF — RESTING HEALS AND SAVES ENERGY']);
+      else if (!p.carry && p.speed < 110 && p.z < 52 && p.braking && p.canLand && p.canLand()) lines.push(['S', 'KEEP FLARING TO LAND']);
       const gate = AS.Sites && AS.Sites.gateAt(g, p);
       if (gate && AS.Sites.gatesOf(g, p.team).length > 1) lines.push(['E', 'TRAVEL THROUGH THE WAYGATE']);
       // capture progress of the site we are over

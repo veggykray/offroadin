@@ -22,7 +22,7 @@ interact with the page).
 | Key | Action |
 |-----|--------|
 | **W** | Beat your wings. Every downstroke adds speed. |
-| **S** | Flare the wings: brake, turn tighter, hover low |
+| **S** | Flare the wings: brake, turn tighter, hover low. Keep flaring low over open ground to land; resting heals and saves energy. **W** takes off again. |
 | **A / D** | Bank left / right. Slow flight gives tight turns, fast flight gives wide sweeps. |
 | **Space** (hold) | Dive toward the ground. Release to pull up. |
 | **Shift** | Sprint (burns energy) |

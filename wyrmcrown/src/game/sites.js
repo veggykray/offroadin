@@ -354,7 +354,7 @@
     },
     travel(g, d, s) {
       AS.Particles.spawn({ x: d.x, y: d.y, z: d.z, shape: AS.Particles.GLOW, col: '#8affff', size: 20, size2: 80, life: 0.4, add: true, keep: true });
-      d.x = s.x; d.y = s.y + 30; d.z = 40; d.speed = 120;
+      d.x = s.x; d.y = s.y + 30; d.z = 40; d.speed = 120; d.landed = false; d.landing = false;
       for (const n of d.nodes) { n.x = d.x; n.y = d.y; n.z = d.z; }
       d.layoutRig(0, true);
       AS.Particles.spawn({ x: d.x, y: d.y, z: 20, shape: AS.Particles.RING, col: '#8affff', size: 10, size2: 120, life: 0.6, add: true, layer: 0, keep: true });

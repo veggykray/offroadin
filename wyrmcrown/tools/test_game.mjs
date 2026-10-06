@@ -81,6 +81,21 @@ await test('flight: thrust, bank, dive and climb, brake', async (keep) => {
   return page;
 });
 
+await test('flight: flare low to land, rest, and take off again', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  await ev(page, () => { const p = AS.game.player; AS.Debug.tp(3200, 6400, 45); p.speed = 70; p.angle = 0; });
+  await page.keyboard.down('KeyS');
+  await page.waitForFunction(() => AS.game.player.landed, null, { timeout: 8000 }).catch(() => {});
+  await page.keyboard.up('KeyS');
+  const l = await ev(page, () => [AS.game.player.landed, Math.round(AS.game.player.z), Math.round(AS.game.player.speed)]);
+  ok(l[0] && l[1] === 0 && l[2] === 0, 'holding S low over open ground lands the dragon (' + l + ')');
+  await page.waitForTimeout(400);
+  await page.keyboard.down('KeyW'); await page.waitForTimeout(1200); await page.keyboard.up('KeyW');
+  const t = await ev(page, () => [AS.game.player.landed, Math.round(AS.game.player.z), Math.round(AS.game.player.speed)]);
+  ok(!t[0] && t[1] > 15 && t[2] > 80, 'W launches it back into the air (' + t + ')');
+  return page;
+});
+
 await test('combat: staff bolts hit what the cursor points at', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
   // a bandit on open ground ahead of the dragon

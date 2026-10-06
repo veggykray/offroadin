@@ -135,6 +135,14 @@
         const dist = Math.hypot(I.steer.x - this.x, I.steer.y - this.y);
         turn = dist < 30 ? 0 : U.clamp(d * 2.6, -1, 1);
       }
+      // ---- landing: flare low and slow over open ground and the dragon settles;
+      // W (or a dive) launches it again with a hard beat of the wings
+      if (this.landed) return this.groundTime(dt, thr, turn);
+      this.brakeT = thr < -0.1 && !I.dive ? (this.brakeT || 0) + dt : 0;
+      if (this.landing || (this.brakeT > 0.7 && this.speed < F.hover + 24 && this.z < F.zHover + 8 && !this.carry && this.canLand())) {
+        if (thr > 0.3 || I.dive || !this.canLand()) this.landing = false;
+        else return this.touchDown(dt, turn);
+      }
       const sprint = I.sprint && thr >= 0 && !tired && !I.dive;
       const dive = I.dive && !this.carryHeavy;
       const braking = thr < -0.1 && !dive;
@@ -206,6 +214,7 @@
       const vzT = dive ? U.clamp(dz * 3, -150, 40) : U.clamp(dz * 1.6, -70, 75);
       this.vz = U.damp(this.vz, vzT, 3.5, dt);
       this.z = Math.max(4, this.z + this.vz * dt);
+      if (this.takeoffT > 0) this.takeoffT -= dt;
       // body pitch: nose down when diving, up when climbing hard
       this.pitch = U.damp(this.pitch, U.clamp(-this.vz / 140, -0.7, 0.7) + (braking ? -0.18 : 0), 4, dt);
       // ---- integrate
@@ -228,6 +237,56 @@
       W.sweep = U.damp(W.sweep, sweep, 6, dt);
       W.cup = U.damp(W.cup, cup, 5, dt);
       this.wingsDown = down;
+    }
+
+    canLand() {
+      const g = this.g;
+      if (g.terrain.kindFast(this.x, this.y) !== 0 || g.terrain.onBridge && g.terrain.onBridge(this.x, this.y)) return false;
+      for (const o of g.solidsNear ? g.solidsNear(this.x, this.y) : []) if (o.alive !== false && Math.hypot(o.x - this.x, o.y - this.y) < o.r + this.r * 0.7) return false;
+      return true;
+    }
+    // the last metres down: wings cupped and beating hard, speed bleeding away
+    touchDown(dt, turn) {
+      const W = this.wing;
+      if (!this.landing) { this.landing = true; this.phase = 0.75; }
+      this.speed = U.damp(this.speed, 0, 3, dt);
+      this.vz = -38; this.z = Math.max(0, this.z + this.vz * dt);
+      this.angle = U.wrapAngle(this.angle + turn * 1.2 * dt); this.velA = this.angle;
+      this.vx = Math.cos(this.angle) * this.speed; this.vy = Math.sin(this.angle) * this.speed;
+      this.x += this.vx * dt; this.y += this.vy * dt;
+      this.freq = U.damp(this.freq, 2.2, 8, dt); this.amp = 0.8;
+      const prev = Math.sin(this.phase * TAU);
+      this.phase = (this.phase + this.freq * dt) % 1;
+      const stroke = Math.sin(this.phase * TAU);
+      if (prev <= 0 && stroke > 0) this.onBeat();
+      W.elev = U.damp(W.elev, 0.3 + Math.cos(this.phase * TAU) * 0.75, 30, dt); W.cup = U.damp(W.cup, 0.8, 6, dt); W.sweep = U.damp(W.sweep, 0.45, 6, dt);
+      W.fold = U.damp(W.fold, stroke < 0 ? -stroke * 0.35 : 0, 14, dt);
+      this.pitch = U.damp(this.pitch, -0.35, 5, dt); this.bank = U.damp(this.bank, 0, 5, dt);
+      if (this.z <= 0.5) {
+        this.landing = false; this.landed = true; this.z = 0; this.speed = 0; this.vz = 0;
+        AS.FX.dust(this.x, this.y, 14, this.g.groundDust ? this.g.groundDust(this.x, this.y) : '#9a8a6a', 90);
+        AS.Particles.spawn({ x: this.x, y: this.y, z: 0, shape: AS.Particles.RING, col: '#e8dcc0', size: 8, size2: 60 * this.scale, life: 0.6, alpha: 0.35, layer: 0 });
+        AS.Audio.sfx('thud', { x: this.x, y: this.y, vol: this.isPlayer ? 0.7 : 0.4, rate: 0.7 });
+        if (this.isPlayer && this.g.camera) this.g.camera.shake(0.15);
+      }
+    }
+    // on the ground: wings folded, turning on the spot; W launches
+    groundTime(dt, thr, turn) {
+      const W = this.wing, I = this.input;
+      this.speed = 0; this.vx = this.vy = 0; this.vz = 0; this.z = 0; this.diving = false; this.braking = false; this.sprinting = false;
+      this.angle = U.wrapAngle(this.angle + turn * 1.5 * dt); this.velA = this.angle; this.angVel = turn * 1.5;
+      this.freq = U.damp(this.freq, 0, 6, dt);
+      W.elev = U.damp(W.elev, 0.04 + Math.sin(this.t * 1.1) * 0.02, 5, dt); W.fold = U.damp(W.fold, 0.88, 4, dt);
+      W.sweep = U.damp(W.sweep, 0.25, 4, dt); W.cup = U.damp(W.cup, 0.2, 4, dt);
+      this.pitch = U.damp(this.pitch, 0.05, 4, dt); this.bank = U.damp(this.bank, 0, 5, dt);
+      this.wingsDown = 0;
+      if (thr > 0.3 || I.dive || I.sprint || this.hurt > 0.5) {
+        // launch: a hard downstroke and a leap into the air
+        this.landed = false; this.takeoffT = 0.8;
+        this.speed = 110; this.vz = 95; this.z = 6; this.phase = 0.05; this.freq = 2.6; this.amp = 0.75;
+        this.onBeat();
+        AS.Audio.sfx('wing_beat', { x: this.x, y: this.y, vol: this.isPlayer ? 0.9 : 0.5, rate: 0.85 });
+      }
     }
 
     bounds(dt) {
@@ -282,7 +341,7 @@
     /* energy (hunger), health regen, mana, breath charge */
     vitals(dt) {
       const g = this.g;
-      let drain = 0.2 + (this.freq > 0.3 ? 0.14 : 0) + (this.sprinting ? 1.25 : 0) + (this.braking && this.speed < 90 ? 0.4 : 0) + (this.breathing ? 2.2 : 0);
+      let drain = this.landed ? 0.04 + (this.breathing ? 2.2 : 0) : 0.2 + (this.freq > 0.3 ? 0.14 : 0) + (this.sprinting ? 1.25 : 0) + (this.braking && this.speed < 90 ? 0.4 : 0) + (this.breathing ? 2.2 : 0);
       if (this.buffs.feast) drain = 0;
       this.energy = Math.max(0, this.energy - drain * this.drainMul * dt * (g.energyMul || 1));
       if (this.energy <= 0) {
@@ -292,7 +351,7 @@
       // slow natural healing out of combat; fast at the home roost
       const calm = g.time - this.lastHurt > 8;
       const home = g.atRoost && g.atRoost(this);
-      let regen = calm ? this.maxHp * 0.004 : 0;
+      let regen = calm ? this.maxHp * (this.landed ? 0.012 : 0.004) : 0; // resting on the ground heals faster
       if (home) regen = this.maxHp * 0.05;
       if (this.buffs.regen) regen += this.maxHp * 0.04;
       this.hp = Math.min(this.maxHp, this.hp + regen * dt);
@@ -330,6 +389,7 @@
 
     /* defeated dragons are driven off: they crash, then recover at their roost */
     knockDown(src) {
+      this.landed = false; this.landing = false;
       const g = this.g;
       this.down = this.def.recover || 22;
       this.downMax = this.down;
@@ -367,7 +427,7 @@
     }
     respawn() {
       const g = this.g, home = g.roostOf ? g.roostOf(this.faction) : { x: this.x, y: this.y };
-      this.down = 0; this.hidden = false;
+      this.down = 0; this.hidden = false; this.landed = false; this.landing = false;
       this.x = home.x; this.y = home.y + 10; this.z = 20; this.speed = 90; this.velA = this.angle = -Math.PI / 2;
       this.hp = this.maxHp * 0.7; this.energy = Math.max(this.energy, this.maxEnergy * 0.6); this.fireCharge = this.maxFire;
       this.buffs.shield = Math.max(this.buffs.shield || 0, 10); // back in the air with a brief ward of scales
