@@ -259,6 +259,8 @@
     groundPassable(x, y) {
       const k = this.kindFast(x, y);
       if (k === 5) return false;
+      // maps may make their high peaks a wall that only dragons cross (map.peaksBlock = uplift threshold)
+      if (this.map && this.map.peaksBlock && this.gs(this.gMount, x, y) > this.map.peaksBlock) return false;
       if (k === 1) return this.frozenAt(x, y) || this.onBridge(x, y);
       return true;
     }

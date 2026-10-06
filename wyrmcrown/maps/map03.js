@@ -19,6 +19,7 @@
     id: 'frostspine', name: 'Frostspine Pass', index: 3, w: 9600, h: 10800, seed: 37,
     blurb: 'A mountain wall splits the realm. Three held passes are the only roads between north and south.',
     difficulty: 'Standard',
+    peaksBlock: 0.95, // the high Frostspine is a wall: armies must use the three passes
     regions: [
       { biome: 'elf', x: 1900, y: 2000, r: 2800 },
       { biome: 'ice', x: 7700, y: 2000, r: 2800 },

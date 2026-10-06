@@ -189,7 +189,9 @@ Each map is pure data:
 - 34–56 neutral sites with guardians;
 - wild herds and rune circles.
 
-Map 1 is the reference. `tools/mapview.html` previews any map, and
+A map can also set `peaksBlock` to make its high peaks a wall that only
+dragons cross. Frostspine Pass uses it, so its three passes are true
+chokepoints. Map 1 is the reference. `tools/mapview.html` previews any map, and
 `tools/sim.mjs` runs an AI war on it.
 
 ## Performance notes
