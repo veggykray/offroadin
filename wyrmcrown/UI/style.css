@@ -65,6 +65,13 @@ canvas#game { position: fixed; inset: 0; display: block; cursor: crosshair; }
 .realm-card .banner { height: 6px; border-radius: 3px; margin-bottom: 12px; }
 .realm-card canvas { display: block; margin: 0 auto 8px; }
 .realm-card .nm { font: 700 19px var(--title); margin: 4px 0; }
+.realm-card .tag.lock { position: absolute; left: 16px; bottom: 12px; top: auto; right: auto; font: 700 13px var(--text); padding: 3px 12px; background: rgba(0, 0, 0, 0.35); }
+.realm-card .play { margin: 8px 0 30px; padding: 10px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.32); border: 1px solid var(--rim2); }
+.realm-card .play .style { font: 700 15px var(--title); color: var(--gold); letter-spacing: 0.5px; margin-bottom: 6px; }
+.realm-card .stat-row { display: flex; justify-content: space-between; align-items: center; font: 700 14px var(--text); color: #f4e8cc; margin: 3px 0; }
+.realm-card .pips { display: flex; gap: 4px; }
+.realm-card .pips i { width: 16px; height: 8px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4); }
+.realm-card .play .how { font: 500 14px/1.4 var(--text); color: #f0e2c0; margin-top: 8px; }
 .realm-card .who { font: 600 13px var(--text); color: var(--dim); margin-bottom: 8px; }
 .realm-card .bl { font: 500 14px/1.35 var(--text); color: var(--ink); }
 .realm-card .lock { position: absolute; top: 12px; right: 12px; }

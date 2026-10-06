@@ -35,7 +35,7 @@ and ALIEN STRIKE still passes its own test suite.
   - Neutral site kinds.
 - **`src/gfx/`**: art.
   - `realm_terrain`: biomes, rivers, lakes, islands, ridges, forests, roads, decor.
-  - `dragon_art`: the segmented dragon and rider rig with live wing membranes.
+  - `dragon_art`: the segmented dragon and rider rig with live wings; four dragon kinds (see below).
   - Model sets: nature, the four realms, units, sites.
   - Realm decals: plazas, fields, pastures, lanes, roads.
 - **`src/game/`**: simulation.
@@ -55,6 +55,26 @@ and ALIEN STRIKE still passes its own test suite.
 - **`maps/`**: ten hand-authored maps (pure data).
 - **`UI/`**: HUD, court (town management), war map, menus and atlas.
 - **`tools/`**: tests, simulator, previews, screenshots.
+
+## The four dragons (`dragon_art.js`)
+
+Each realm's dragon is a different kind of creature, not a recolour. The kinds
+share the rig (a 12-node spine of pre-rendered segment sheets plus wings drawn
+live each frame), but each has its own spine proportions, segment models, wing
+renderer and ambient effects.
+
+| Realm | Kind | Silhouette | Wings | Effects |
+| --- | --- | --- | --- | --- |
+| Aldermere | Ember Wyrm | classic crimson dragon; swept horns with gold rings, royal blue caparison and gold peytral, spade tail | bat membrane with veins and a sunlit glow along the trailing edge | embers, glowing eyes |
+| Sylvara | Glade Serpent | long neck, slim body, long tail; stag antlers with leaves, whiskers, leaf crest, frond-fan tail | layered leaf feathers with coverts | drifting light motes |
+| Hrimgard | Winter Tyrant | heavy, blocky and armoured; icicle beard, crown of crystal horns, glowing crystal spires and a crystal club tail | faceted crystal panes with a jagged edge and glints | cold vapour, crystal glow |
+| Morgrave | Unburied | gaunt skeleton; skull with green eyes, ram horns, vertebra neck and tail, ribcage with ghost fire, bone-blade tail | ragged membrane, finger bones past the edge, rot holes and a green rim light | ghost fire, grave smoke |
+
+The rider sits at a per-kind height on the back. Each dragon's sheets are
+built while the match loads, so a rival's first appearance never stalls a
+frame. Wing and effect drawing costs about 0.3–0.6 ms per dragon per frame.
+Each realm card shows the dragon's play style: a role, speed, agility,
+toughness, breath and recovery pips, and a one-line summary.
 
 ## Flight model (`dragon.js`)
 

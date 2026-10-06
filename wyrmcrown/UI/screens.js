@@ -166,12 +166,32 @@
           h('div', { class: 'nm', style: 'color:' + F.color }, F.name),
           h('div', { class: 'who' }, F.dragon.name + ', ' + F.dragon.title + ' · ridden by ' + F.rider.name),
           h('div', { class: 'bl' }, F.blurb),
+          this.playStyle(fk),
           locked ? h('span', { class: 'tag lock' }, 'Rival realm') : h('span', { class: 'tag gold lock' }, 'Playable'));
         grid.appendChild(card);
       }
       s.appendChild(grid);
       s.appendChild(h('div', { class: 'row' }, btn('Back', () => this.showMenu()), btn('Choose a Map', () => this.showMaps(), 'primary')));
       this.show('select');
+    },
+
+    /* how each dragon plays: a one-line style and pips scaled across the four */
+    playStyle(fk) {
+      const all = AS.Data.factionOrder.map((k) => AS.Data.factions[k].dragon), D = AS.Data.factions[fk].dragon;
+      const B = AS.Data.breaths[D.breath] || {};
+      const stats = [
+        ['Speed', (d) => d.speed], ['Agility', (d) => d.turn], ['Toughness', (d) => d.hp * (1 + d.armor * 0.12)],
+        ['Breath', (d) => d.breathDmg], ['Recovery', (d) => 1 / d.recover],
+      ];
+      const rows = stats.map(([label, f]) => {
+        const vs = all.map(f), lo = Math.min(...vs), hi = Math.max(...vs), v = f(D);
+        const pips = Math.round(2 + (hi > lo ? (v - lo) / (hi - lo) : 0.5) * 3); // 2..5
+        return h('div', { class: 'stat-row' }, h('span', null, label), h('span', { class: 'pips' }, [1, 2, 3, 4, 5].map((i) => h('i', { class: i <= pips ? 'on' : '', style: i <= pips ? 'background:' + AS.Data.factions[fk].color : '' }))));
+      });
+      return h('div', { class: 'play' },
+        h('div', { class: 'style' }, D.style + ' · ' + (B.name || '')),
+        h('div', { class: 'stats' }, rows),
+        h('div', { class: 'how' }, D.play));
     },
 
     /* ---------- the atlas ---------- */

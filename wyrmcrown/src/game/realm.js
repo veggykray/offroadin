@@ -68,6 +68,8 @@
         if (F.key === this.playerKey) this.player = d;
       }
       this.playerFaction = this.factions[this.playerKey];
+      // forge every dragon's sprite sheets now, so a rival's first fly-by does not hitch
+      if (AS.DragonArt && AS.DragonArt.rig) for (const d of this.dragons) AS.DragonArt.rig(d.fk, d.scale);
       // navigation and wildlife first, then towns (which breed herds) and sites
       if (AS.Nav) AS.Nav.build(this);
       if (AS.Life) AS.Life.init(this);

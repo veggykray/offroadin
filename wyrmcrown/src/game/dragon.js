@@ -450,7 +450,7 @@
 
     /* ================= rig: place the body chain ================= */
     layoutRig(dt, snap) {
-      const C = AS.DragonArt.CHAIN, n = this.nodes, s = this.scale, ch = n[AS.DragonArt.CHEST];
+      const C = AS.DragonArt.chainFor ? AS.DragonArt.chainFor(this.fk) : AS.DragonArt.CHAIN, n = this.nodes, s = this.scale, ch = n[AS.DragonArt.CHEST];
       const a = this.angle, ca = Math.cos(a), sa = Math.sin(a);
       const bob = this.down > 0 ? 0 : (this.freq > 0.25 ? -Math.sin(this.phase * TAU) * 1.6 * this.amp : Math.sin(this.t * 1.3) * 0.6);
       // chest sits slightly ahead of the body centre
@@ -510,9 +510,35 @@
       // low health: smoke trails from the wounds
       const hp = this.hp / this.maxHp;
       if (hp < 0.35 && Math.random() < (0.35 - hp) * 2) AS.FX.smoke(this.x, this.y, this.z + 6, 5, hp < 0.15);
+      // each kind of dragon trails its own nature
+      if (!this.hidden && this.down <= 0) this.kindFx(dt, P);
       // faction aura motes
       if (this.buffs.shield && Math.random() < 0.5) P.spawn({ x: this.x + U.range(-30, 30), y: this.y + U.range(-20, 20) + this.z, z: this.z + U.range(0, 16), vz: 10, shape: P.GLOW, col: '#9fd8ff', size: 3, size2: 0.5, life: 0.6, add: true });
       AS.Renderer.light(this.x, this.y - this.z, 30 * this.scale, this.fdef.color, 0.08);
+    }
+
+    kindFx(dt, P) {
+      const n = this.nodes, s = this.scale, hd = n[0], ch = n[AS.DragonArt.CHEST], tip = n[n.length - 1];
+      const near = this.isPlayer || (this.g.player && Math.hypot(this.x - this.g.player.x, this.y - this.g.player.y) < 900);
+      if (!near) return;
+      const r = Math.random, dens = AS.Particles.density;
+      if (this.fk === 'undead') {
+        // ghost-fire licking up out of the ribcage and the eye sockets, a trail of grave-smoke
+        if (r() < 7 * dt * dens) P.spawn({ x: ch.x + U.range(-5, 5) * s, y: ch.y + U.range(-4, 4) * s, z: ch.z + 7 * s, vx: this.vx * 0.6, vy: this.vy * 0.6, vz: 26, shape: P.GLOW, col: '#b8ff7a', col2: '#3a8a2a', size: 3 * s, size2: 0.5, life: 0.55, add: true });
+        if (r() < 3 * dt * dens) P.spawn({ x: hd.x, y: hd.y, z: hd.z + 6 * s, vx: this.vx * 0.7, vy: this.vy * 0.7, vz: 18, shape: P.GLOW, col: '#c8ff9a', col2: '#2a6a1a', size: 2.2 * s, size2: 0.4, life: 0.4, add: true });
+        if (r() < 4 * dt * dens) P.spawn({ x: tip.x, y: tip.y, z: tip.z + 2, vx: -this.vx * 0.05, vy: -this.vy * 0.05, vz: 6, shape: P.SMOKE, col: '#3a2a44', col2: '#1a1420', size: 3, size2: 10, life: 1.1, alpha: 0.35, drag: 1.5 });
+      } else if (this.fk === 'ice') {
+        // cold vapour off the crystals and from the jaws
+        if (r() < 5 * dt * dens) P.spawn({ x: ch.x + U.range(-8, 8) * s, y: ch.y + U.range(-6, 6) * s, z: ch.z + 10 * s, vx: -this.vx * 0.08, vy: -this.vy * 0.08, vz: -6, shape: P.SMOKE, col: '#f0faff', col2: '#c8e4f4', size: 2.5, size2: 9, life: 1, alpha: 0.32, drag: 1.2 });
+        if (r() < 2.5 * dt * dens) P.spawn({ x: hd.x + Math.cos(hd.a) * 14 * s, y: hd.y + Math.sin(hd.a) * 14 * s, z: hd.z + 3, vx: this.vx * 0.5, vy: this.vy * 0.5, vz: -4, shape: P.SMOKE, col: '#ffffff', col2: '#d8eefc', size: 1.5, size2: 6, life: 0.7, alpha: 0.4, drag: 2 });
+      } else if (this.fk === 'elf') {
+        // motes of light shed from the leaf-feathers
+        if (r() < 6 * dt * dens) { const sd = r() < 0.5 ? 1 : -1, a = ch.a + sd * 1.6, d = U.range(14, 44) * s; P.spawn({ x: ch.x + Math.cos(a) * d, y: ch.y + Math.sin(a) * d, z: ch.z + 8, vx: -this.vx * 0.04, vy: -this.vy * 0.04, vz: U.range(-4, 6), shape: P.GLOW, col: r() < 0.5 ? '#c8ffb0' : '#fff0a0', col2: '#3a9a5a', size: 2.2, size2: 0.4, life: U.range(0.8, 1.4), add: true }); }
+      } else {
+        // embers curling from the nostrils
+        if (r() < 3 * dt * dens) P.spawn({ x: hd.x + Math.cos(hd.a) * 16 * s, y: hd.y + Math.sin(hd.a) * 16 * s, z: hd.z + 5 * s, vx: this.vx * 0.7 + U.range(-10, 10), vy: this.vy * 0.7 + U.range(-10, 10), vz: 14, shape: P.GLOW, col: '#ffd070', col2: '#ff4a10', size: 1.6, size2: 0.3, life: 0.5, add: true });
+        if (r() < 1.5 * dt * dens) P.spawn({ x: hd.x + Math.cos(hd.a) * 15 * s, y: hd.y + Math.sin(hd.a) * 15 * s, z: hd.z + 5 * s, vx: this.vx * 0.6, vy: this.vy * 0.6, vz: 10, shape: P.SMOKE, col: '#5a4a40', col2: '#2a2420', size: 1.5, size2: 6, life: 0.8, alpha: 0.3, drag: 1.5 });
+      }
     }
 
     /* ================= draw ================= */
