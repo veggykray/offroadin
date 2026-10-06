@@ -148,17 +148,17 @@
       { id: 'slagdeep', k: 'goldmine', name: 'Slagdeep Mine', x: 5300, y: 7300, guard: [['ogre', 2]] },
       { id: 'hoarfrost', k: 'village', name: 'Hoarfrost', x: 5300, y: 3300, guard: [['bandit', 3]] },
       { id: 'meadhall', k: 'village', name: 'Meadhollow', x: 4300, y: 8100, guard: [['bandit', 3]] },
-      { id: 'rimebridge', k: 'bridge', name: 'Rimebridge', x: 3450, y: 2050 },
+      { id: 'rimebridge', k: 'bridge', name: 'Rimeflow Bridge', x: 3450, y: 2050 },
       { id: 'blackbridge', k: 'bridge', name: 'Blackbridge', x: 6150, y: 8750 },
       { id: 'icebarrow', k: 'ruins', name: 'Icebarrow', x: 4300, y: 600, guard: [['bandit', 3], ['wolf', 2]] },
       { id: 'saltruin', k: 'ruins', name: 'Ruined Tollhouse', x: 5300, y: 10200, guard: [['bandit', 3], ['wolf', 2]] },
       { id: 'bearden', k: 'cave', name: 'Bear Den', x: 2400, y: 500, guard: [['troll', 1], ['wolf', 2]] },
       { id: 'boarden', k: 'cave', name: 'Barrowdown Hole', x: 7200, y: 10300, guard: [['troll', 1], ['wolf', 2]] },
       // behind the towns
-      { id: 'dawnstone', k: 'shrine', name: 'Dawnstone', x: 750, y: 9700 },
-      { id: 'rimecrag', k: 'nest', name: 'Rimecrag Eyrie', x: 8900, y: 1150, guard: [['troll', 1]] },
-      { id: 'elderglade', k: 'grove', name: 'Elderglade', x: 750, y: 1050, guard: [['wolf', 2]] },
-      { id: 'bonealtar', k: 'shrine', name: 'Altar of Bones', x: 8700, y: 9600 },
+      { id: 'firstlight', k: 'shrine', name: 'Cairn of First Light', x: 750, y: 9700 },
+      { id: 'hoarpeak', k: 'nest', name: 'Hoarpeak Eyrie', x: 8900, y: 1150, guard: [['troll', 1]] },
+      { id: 'thornheart', k: 'grove', name: 'Thornheart Grove', x: 750, y: 1050, guard: [['wolf', 2]] },
+      { id: 'ossuary', k: 'shrine', name: 'Ossuary of the Tors', x: 8700, y: 9600 },
     ],
     wild: [
       { k: 'deer', x: 1300, y: 2900, n: 6 }, { k: 'deer', x: 2900, y: 2700, n: 5 }, { k: 'deer', x: 4000, y: 2300, n: 4 },
@@ -169,7 +169,7 @@
       { k: 'horse', x: 3000, y: 8200, n: 5 }, { k: 'horse', x: 1200, y: 9300, n: 4 }, { k: 'horse', x: 5900, y: 2300, n: 4 },
       { k: 'horse', x: 7300, y: 7600, n: 4 }, { k: 'deer', x: 7000, y: 2900, n: 4 }, { k: 'boar', x: 1500, y: 3700, n: 3 },
     ],
-    runes: [[4400, 5000], [5200, 5800], [4300, 6500], [5300, 4300], [1900, 4900], [7700, 5900], [3800, 4300], [5800, 6500],
+    runes: [[4400, 5000], [5200, 5800], [4300, 6500], [5300, 4300], [2350, 4950], [7250, 5850], [3800, 4300], [5800, 6500],
       [2500, 3300], [7100, 7500], [5500, 1100], [4100, 9700], [1600, 6100], [8000, 4700], [3500, 7300], [6100, 2600]],
   });
 })(window.AS);

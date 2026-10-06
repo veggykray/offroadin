@@ -31,6 +31,8 @@
       { biome: 'human', x: 2450, y: 9550, r: 3200 },
       { biome: 'neutral', x: 6000, y: 6000, r: 3000 },
       { biome: 'neutral', x: 6000, y: 700, r: 1400 },
+      { biome: 'neutral', x: 6000, y: 2700, r: 1100 },
+      { biome: 'neutral', x: 6000, y: 9300, r: 1100 },
       { biome: 'neutral', x: 6000, y: 11300, r: 1400 },
       { biome: 'neutral', x: 700, y: 6000, r: 1400 },
       { biome: 'neutral', x: 11300, y: 6000, r: 1400 },
@@ -68,6 +70,15 @@
       { x: 6000, y: 6000, r: 480 }, // the isle of the Wyrmcrown
     ],
     mountains: [
+      // the Tines: eight crags standing round the Crownmere like the points of a crown
+      { w: 240, h: 1.1, pts: [[8402, 6995], [8725, 7129], [9049, 7263]] },
+      { w: 240, h: 1.1, pts: [[6995, 8402], [7129, 8725], [7263, 9049]] },
+      { w: 240, h: 1.1, pts: [[5005, 8402], [4871, 8725], [4737, 9049]] },
+      { w: 240, h: 1.1, pts: [[3598, 6995], [3275, 7129], [2951, 7263]] },
+      { w: 240, h: 1.1, pts: [[3598, 5005], [3275, 4871], [2951, 4737]] },
+      { w: 240, h: 1.1, pts: [[5005, 3598], [4871, 3275], [4737, 2951]] },
+      { w: 240, h: 1.1, pts: [[6995, 3598], [7129, 3275], [7263, 2951]] },
+      { w: 240, h: 1.1, pts: [[8402, 5005], [8725, 4871], [9049, 4737]] },
       // the Frostcrown along Hrimgard's northern edge, and its eastern spur
       { w: 380, h: 1.25, pts: [[7600, 400], [8800, 800], [10200, 500], [11400, 900]] },
       { w: 300, h: 1.0, pts: [[11500, 3900], [11050, 5000]] },
@@ -153,16 +164,16 @@
       // ---- the eastern border: the Esk (Hrimgard / Sylvara) ----
       { id: 'eskbridge', k: 'bridge', name: 'Eskbridge', x: 9500, y: 6050 },
       { id: 'eskvein', k: 'goldmine', name: 'Eskvein Mine', x: 10700, y: 5350, guard: [['ogre', 2], ['troll', 1]] },
-      { id: 'eskhold', k: 'fort', name: 'Eskhold', x: 8700, y: 6700, guard: [['troll', 2], ['ogre', 2]] },
+      { id: 'eskhold', k: 'fort', name: 'Eskhold', x: 8850, y: 6850, guard: [['troll', 2], ['ogre', 2]] },
       { id: 'dawnway', k: 'waygate', name: 'Dawnway Gate', x: 11200, y: 6800, guard: [['troll', 1], ['ogre', 1]] },
-      { id: 'sunkenchapel', k: 'ruins', name: 'Sunken Chapel', x: 8300, y: 5250, guard: [['ogre', 2], ['bandit', 3]] },
+      { id: 'sunkenchapel', k: 'ruins', name: 'Sunken Chapel', x: 9100, y: 5250, guard: [['ogre', 2], ['bandit', 3]] },
       { id: 'eskwatch', k: 'watchtower', name: 'Eskwatch', x: 10300, y: 7300, guard: [['bandit', 4]] },
       // ---- the western border: the Westway (Morgrave / Aldermere) ----
       { id: 'westwaybridge', k: 'bridge', name: 'Westway Bridge', x: 2500, y: 5950 },
       { id: 'westvein', k: 'goldmine', name: 'Westvein Mine', x: 1300, y: 6650, guard: [['ogre', 2], ['troll', 1]] },
-      { id: 'westhold', k: 'fort', name: 'Westhold', x: 3300, y: 5300, guard: [['troll', 2], ['ogre', 2]] },
+      { id: 'westhold', k: 'fort', name: 'Westhold', x: 3150, y: 5150, guard: [['troll', 2], ['ogre', 2]] },
       { id: 'duskway', k: 'waygate', name: 'Duskway Gate', x: 800, y: 5200, guard: [['troll', 1], ['ogre', 1]] },
-      { id: 'barrowfield', k: 'ruins', name: 'Old Barrowfield', x: 3700, y: 6750, guard: [['ogre', 2], ['bandit', 3]] },
+      { id: 'barrowfield', k: 'ruins', name: 'Old Barrowfield', x: 2900, y: 6750, guard: [['ogre', 2], ['bandit', 3]] },
       { id: 'westwatch', k: 'watchtower', name: 'Westwatch', x: 1700, y: 4700, guard: [['bandit', 4]] },
       // ---- Morgrave's quarter (north-west) ----
       { id: 'gravewyrm', k: 'goldmine', name: 'Gravewyrm Mine', x: 1100, y: 3600, guard: [['bandit', 4]] },

@@ -114,22 +114,22 @@
       { id: 'kelpwick', k: 'village', name: 'Kelpwick', x: 1300, y: 7600 },
       { id: 'tidecopper', k: 'goldmine', name: 'Tidecopper Mine', x: 2800, y: 8050, guard: [['wolf', 3]] },
       { id: 'harbourmarket', k: 'tradepost', name: 'Gullhaven Market', x: 3800, y: 6750, guard: [['bandit', 2]] },
-      { id: 'dawnstone', k: 'shrine', name: 'Dawnstone', x: 950, y: 6350 },
+      { id: 'seashrine', k: 'shrine', name: "Seafarer's Shrine", x: 950, y: 6350 },
       // Sylvan Isle
       { id: 'mossholm', k: 'village', name: 'Mossholm', x: 1300, y: 1400 },
       { id: 'fernhollow', k: 'goldmine', name: 'Fernhollow Mine', x: 2800, y: 950, guard: [['wolf', 3]] },
       { id: 'leafquay', k: 'tradepost', name: 'Leafquay', x: 3800, y: 2250, guard: [['bandit', 2]] },
-      { id: 'elderglade', k: 'grove', name: 'Elderglade', x: 950, y: 2650 },
+      { id: 'moonfern', k: 'grove', name: 'Moonfern Grove', x: 950, y: 2650 },
       // Hrimgard Isle
       { id: 'rimeport', k: 'village', name: 'Rimeport', x: 10100, y: 1400 },
       { id: 'frostvein', k: 'goldmine', name: 'Frostvein Mine', x: 8600, y: 950, guard: [['wolf', 3]] },
       { id: 'icewharf', k: 'tradepost', name: 'Icewharf', x: 7600, y: 2250, guard: [['bandit', 2]] },
-      { id: 'rimecrag', k: 'nest', name: 'Rimecrag Eyrie', x: 10450, y: 2650 },
+      { id: 'icecliff', k: 'nest', name: 'Icecliff Eyrie', x: 10450, y: 2650 },
       // Morgrave Isle
       { id: 'wrackmoor', k: 'village', name: 'Wrackmoor', x: 10100, y: 7600 },
       { id: 'gravelgrim', k: 'goldmine', name: 'Gravelgrim Mine', x: 8600, y: 8050, guard: [['wolf', 3]] },
       { id: 'blackwharf', k: 'tradepost', name: 'Blackwharf', x: 7600, y: 6750, guard: [['bandit', 2]] },
-      { id: 'bonealtar', k: 'shrine', name: 'Altar of Bones', x: 10450, y: 6350 },
+      { id: 'wreckaltar', k: 'shrine', name: "Wreckers' Altar", x: 10450, y: 6350 },
       // the land links
       { id: 'wardbridge_s', k: 'bridge', name: 'Wardholm South Bridge', x: 1600, y: 5468 },
       { id: 'wardbridge_n', k: 'bridge', name: 'Wardholm North Bridge', x: 1600, y: 3676 },
@@ -138,7 +138,7 @@
       { id: 'wardholm', k: 'fort', name: 'Wardholm', x: 1450, y: 4500, guard: [['ogre', 2], ['bandit', 4]] },
       { id: 'eastholm', k: 'fort', name: 'Eastholm', x: 9950, y: 4500, guard: [['ogre', 2], ['bandit', 4]] },
       // the Crown Isle
-      { id: 'crownhold', k: 'castle', name: 'Tidecrown', x: 5300, y: 4550, guard: [['giant', 2], ['ogre', 2]] },
+      { id: 'tidecrown', k: 'castle', name: 'Tidecrown', x: 5300, y: 4550, guard: [['giant', 2], ['ogre', 2]] },
       { id: 'crowndeep', k: 'goldmine', name: 'Crowndeep Mine', x: 6100, y: 4600, rich: true, guard: [['giant', 1], ['troll', 2]] },
       { id: 'gate_c', k: 'waygate', name: 'Crown Waygate', x: 5700, y: 4050 },
       // the North and South Isles
@@ -149,10 +149,10 @@
       { id: 'gate_n', k: 'waygate', name: 'North Isle Waygate', x: 5700, y: 1450 },
       { id: 'gate_s', k: 'waygate', name: 'South Isle Waygate', x: 5700, y: 7550 },
       // the four small isles
-      { id: 'moonwell', k: 'magicwell', name: 'Moonwell Isle', x: 4550, y: 3150, guard: [['troll', 1], ['wolf', 2]] },
+      { id: 'silverspring', k: 'magicwell', name: 'Silverspring Isle', x: 4550, y: 3150, guard: [['troll', 1], ['wolf', 2]] },
       { id: 'frostshard', k: 'crystal', name: 'Frostshard', x: 6850, y: 3150, guard: [['troll', 2]] },
-      { id: 'stormspire', k: 'wizardtower', name: 'Stormspire', x: 4550, y: 5850, guard: [['troll', 1], ['ogre', 1]] },
-      { id: 'bonebarrow', k: 'relic', name: 'Barrow of the Drowned King', x: 6850, y: 5850, guard: [['skeleton', 6], ['troll', 1]] },
+      { id: 'tempest', k: 'wizardtower', name: 'Tempest Tower', x: 4550, y: 5850, guard: [['troll', 1], ['ogre', 1]] },
+      { id: 'seatomb', k: 'relic', name: 'Tomb of the Sea-King', x: 6850, y: 5850, guard: [['skeleton', 6], ['troll', 1]] },
       // the rocks
       { id: 'westmost', k: 'watchtower', name: 'Westmost Light', x: 450, y: 4500, guard: [['bandit', 2]] },
       { id: 'eastmost', k: 'watchtower', name: 'Eastmost Light', x: 10950, y: 4500, guard: [['bandit', 2]] },
@@ -172,6 +172,6 @@
       { k: 'goat', x: 1500, y: 4650, n: 3 }, { k: 'goat', x: 9850, y: 4400, n: 3 }, { k: 'horse', x: 2900, y: 7700, n: 3 },
     ],
     runes: [[5700, 4800], [5200, 4200], [6200, 4250], [5300, 1400], [6100, 7600], [4650, 3350], [6750, 5650], [3200, 6200],
-      [3200, 2800], [8200, 2800], [8200, 6200], [1700, 4600], [9750, 4500], [5500, 900], [5900, 8100]],
+      [3200, 2800], [8200, 2800], [8200, 6200], [1450, 5000], [9500, 4500], [5500, 900], [5900, 8100]],
   });
 })(window.AS);
