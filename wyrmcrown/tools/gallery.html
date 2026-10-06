@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>WYRMCROWN model gallery</title>
+<style>
+  body { margin: 0; background: #1b1a17; color: #eee; font: 13px monospace; }
+  #bar { padding: 8px 12px; background: #111; position: sticky; top: 0; z-index: 2; }
+  canvas { display: block; }
+</style></head>
+<body>
+<div id="bar">gallery — ?files=models_x.js[,models_y.js]&amp;group=substring&amp;scale=1.8&amp;big=3</div>
+<canvas id="c"></canvas>
+<script src="../../alien-strike/src/core/util.js"></script>
+<script src="../../alien-strike/src/gfx/forge.js"></script>
+<script src="../../alien-strike/src/gfx/models.js"></script>
+<script src="../data/palettes.js"></script>
+<script>
+/* Generic preview page for WYRMCROWN models.
+ * Every model file pushes entries onto AS.Gallery:
+ *   AS.Gallery.push({ group: 'Human buildings', bg: 'human', items: [
+ *     { name: 'keep L1', gen: 'human_keep', pal: 'human', opt: { level: 1 }, dirs: 1, anims: 1 } ] });
+ * `pal` may be a key of AS.Data.pal or an inline palette object.
+ * This page draws each model large (big×) and at in-game scale (scale×) on its
+ * region's ground colour: rotating models at 8 headings, animated models as a
+ * strip of frames. Load with ?files=models_human.js (paths relative to src/gfx/). */
+(function () {
+  const q = new URLSearchParams(location.search);
+  const files = (q.get('files') || '').split(',').filter(Boolean);
+  const groupFilter = q.get('group') || '';
+  const SC = +(q.get('scale') || 1.8), BIG = +(q.get('big') || 3);
+  let i = 0;
+  const next = () => {
+    if (i >= files.length) return draw();
+    const s = document.createElement('script');
+    const f = files[i++];
+    s.src = (f.includes('/') ? f : '../src/gfx/' + f) + '?v=' + Date.now();
+    s.onload = next; s.onerror = () => { console.error('failed to load ' + f); next(); };
+    document.body.appendChild(s);
+  };
+  window.AS.Gallery = window.AS.Gallery || [];
+  next();
+
+  function draw() {
+    const F = AS.Forge, U = AS.U, C = U.C;
+    const cv = document.getElementById('c'), W = Math.max(1400, innerWidth - 4);
+    const groups = AS.Gallery.filter((g) => !groupFilter || g.group.toLowerCase().includes(groupFilter.toLowerCase()));
+    // first pass: build sheets and measure
+    const rows = [];
+    let total = 10;
+    for (const g of groups) {
+      total += 30;
+      let x = 10, rowH = 0;
+      for (const it of g.items) {
+        const pal = typeof it.pal === 'string' ? AS.Data.pal[it.pal] : (it.pal || AS.Data.pal.neutral);
+        let sh;
+        try { sh = F.sheet('gal:' + it.gen + JSON.stringify(it.opt || {}) + JSON.stringify(pal), () => AS.Models[it.gen](pal, it.opt || {}), it.dirs || 1, it.anims || 1, { angle: it.angle0 || 0 }); }
+        catch (e) { console.error('model ' + it.name + ' (' + it.gen + ') failed: ' + e.message); continue; }
+        const dirs = sh.dirs, anims = sh.anims;
+        const bigW = sh.w * BIG, bigH = sh.h * BIG;
+        const small = dirs > 1 ? 8 : anims > 1 ? anims : 0;
+        const smallW = small * (sh.w * SC + 6);
+        const w = Math.max(bigW, smallW, 160) + 20, h = bigH + (small ? sh.h * SC + 8 : 0) + 26;
+        if (x + w > W) { total += rowH + 10; x = 10; rowH = 0; }
+        rows.push({ g, it, sh, x, y: total, w, h, bigW, bigH, small });
+        x += w; rowH = Math.max(rowH, h);
+      }
+      total += rowH + 20;
+    }
+    cv.width = W; cv.height = total + 20;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#1b1a17'; ctx.fillRect(0, 0, W, cv.height);
+    let lastG = null;
+    for (const r of rows) {
+      if (r.g !== lastG) { lastG = r.g; ctx.fillStyle = '#ffcf6a'; ctx.font = 'bold 15px monospace'; ctx.fillText(r.g.group, 10, r.y - 10); }
+      const bg = AS.Data.ground[r.g.bg || r.it.bg || 'neutral'] || r.g.bg || '#6f8a3e';
+      ctx.fillStyle = bg; ctx.fillRect(r.x, r.y, r.w - 8, r.h - 4);
+      // ground speckle so outlines and shadows read as they will in game
+      const rng = new U.RNG(r.x * 7 + r.y);
+      for (let k = 0; k < r.w * r.h / 90; k++) { ctx.fillStyle = rng.next() < 0.5 ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.06)'; ctx.fillRect(r.x + rng.next() * (r.w - 10), r.y + rng.next() * (r.h - 6), 2, 2); }
+      const sh = r.sh, put = (img, shadow, x, y, sc) => {
+        ctx.globalAlpha = 0.32; ctx.drawImage(shadow, x - sh.ax * sc + 2.4 * sc, y - sh.ay * sc + 1.4 * sc, sh.w * sc, sh.h * sc); ctx.globalAlpha = 1;
+        ctx.drawImage(img, x - sh.ax * sc, y - sh.ay * sc, sh.w * sc, sh.h * sc);
+      };
+      const heading = r.it.heading !== undefined ? r.it.heading : -0.6;
+      const di = F.frameIndex(sh, heading);
+      put(sh.frames[0][di], sh.shadows[di], r.x + 10 + sh.ax * BIG, r.y + 6 + sh.ay * BIG, BIG);
+      if (r.small) {
+        const y0 = r.y + r.bigH + 10 + sh.ay * SC;
+        for (let k = 0; k < r.small; k++) {
+          const x0 = r.x + 10 + k * (sh.w * SC + 6) + sh.ax * SC;
+          if (sh.dirs > 1) { const a = k / 8 * Math.PI * 2, d2 = F.frameIndex(sh, a); put(sh.frames[0][d2], sh.shadows[d2], x0, y0, SC); }
+          else put(sh.frames[k][0], sh.shadows[0], x0, y0, SC);
+        }
+      }
+      ctx.fillStyle = '#fff'; ctx.font = '12px monospace';
+      ctx.fillText(r.it.name + '  [' + r.it.gen + ']', r.x + 4, r.y + r.h - 8);
+    }
+    document.title = 'gallery ready';
+    window.galleryReady = true;
+  }
+})();
+</script>
+</body></html>

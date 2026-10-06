@@ -166,9 +166,10 @@
       if (!this.ctx) return;
       this.stopWorld();
       this.world = world;
-      this.startEngine();
+      // worlds without a craft (world.engine === false) drive their own loops
+      if (world.engine !== false) this.startEngine();
       const c = this.ctx;
-      const beds = { wind: 0.25, insects: 0, creatures: 0, sandhiss: 0.1, machinery: 0.12, jungle: 0.14, icecrack: 0, waves: 0.22, lava: 0.25, hum: 0.12, storm: 0.22 };
+      const beds = Object.assign({ wind: 0.25, insects: 0, creatures: 0, sandhiss: 0.1, machinery: 0.12, jungle: 0.14, icecrack: 0, waves: 0.22, lava: 0.25, hum: 0.12, storm: 0.22 }, this.bedVolumes || {});
       for (const k of world.ambience) {
         const vol = beds[k];
         if (!vol) continue;
@@ -182,7 +183,7 @@
         src.connect(gn); gn.connect(this.ambBus); src.start();
         this.amb.push({ k, src, gn, vol });
       }
-      this.ambEvents = world.ambience.filter((k) => ['insects', 'creatures', 'icecrack', 'jungle', 'machinery', 'lava', 'storm'].includes(k));
+      this.ambEvents = world.ambience.filter((k) => ['insects', 'creatures', 'icecrack', 'jungle', 'machinery', 'lava', 'storm'].concat(this.eventKinds || []).includes(k));
       this.ambT = 2;
     },
     ambStorm(on) {
@@ -196,6 +197,8 @@
       this.stopEngine();
     },
     ambientEvent(kind) {
+      // another game may voice its own ambient events (birdsong, villagers…)
+      if (this.eventHook && this.eventHook(kind)) return;
       const c = this.ctx, t = c.currentTime;
       const pan = (Math.random() - 0.5) * 1.6;
       const out = c.createGain(); out.gain.value = 0;
@@ -260,6 +263,7 @@
         this.ambT -= dt;
         if (this.ambT <= 0) { this.ambT = 1.5 + Math.random() * 5; this.ambientEvent(U.pick(this.ambEvents)); }
       }
+      if (this.updateHook) this.updateHook(dt, g);
     },
   };
   AS.Audio = Audio;

@@ -9,10 +9,17 @@
   function mk() {
     return { type: '', team: '', x: 0, y: 0, vx: 0, vy: 0, life: 0, dmg: 0, dtype: 'kinetic', r: 2, col: '#fff', size: 2,
       splash: 0, pierce: 0, hits: null, owner: null, target: null, speed: 0, turn: 0, hp: 0, trailT: 0,
-      sx: 0, sy: 0, sz: 0, gx: 0, gy: 0, t: 0, T: 1, arc: 0, land: '', radius: 0, stun: 0, extra: null, px: 0, py: 0, age: 0, prox: 0, burn: false };
+      sx: 0, sy: 0, sz: 0, gx: 0, gy: 0, t: 0, T: 1, arc: 0, land: '', radius: 0, stun: 0, extra: null, px: 0, py: 0, age: 0, prox: 0, burn: false, style: null, z: 0 };
   }
 
+  /* Hooks for other games on this engine (all optional; ALIEN STRIKE uses none):
+   *   g.projHit(p)    → true when the projectile hit something (replaces the
+   *                     player-vs-enemy hit tests, e.g. for several factions)
+   *   g.projExpire(p) → called when a projectile runs out of range / life
+   *   g.projBurst(p)  → replaces the splash burst
+   *   Proj.styles[p.style](ctx, p, sx, sy, g) → custom projectile drawing */
   const Proj = {
+    styles: {}, trails: {},
     pool: null, fields: [], beams: [], zaps: [],
     init() { this.pool = new U.Pool(mk, 900); this.fields = []; this.beams = []; this.zaps = []; },
     clear() { this.pool.clear(); this.fields.length = 0; this.beams.length = 0; this.zaps.length = 0; },
@@ -27,6 +34,7 @@
       p.col = o.col || '#fff'; p.size = o.size || 2; p.splash = o.splash || 0; p.pierce = o.pierce || 0;
       p.hits = null; p.owner = o.owner || null; p.target = null; p.trailT = 0; p.stun = o.stun || 0; p.age = 0;
       p.arc = o.arc || 0; p.T = p.life; p.prox = o.prox || 0; p.radius = o.radius || 0; p.burn = !!o.burn; p.extra = o.extra || null;
+      p.style = o.style || null; p.z = o.z || 0;
       return p;
     },
     missile(o) {
@@ -37,6 +45,7 @@
       p.life = o.life || 4; p.dmg = o.dmg; p.dtype = o.dtype || 'explosive'; p.r = o.r || 4; p.col = o.col || '#ff9a5a';
       p.size = o.size || 2; p.splash = o.splash || 30; p.target = o.target || null; p.gx = o.tx || 0; p.gy = o.ty || 0;
       p.hp = o.hp || 0; p.owner = o.owner || null; p.trailT = 0; p.age = 0; p.hits = null; p.pierce = 0; p.extra = o.extra || null;
+      p.style = o.style || null; p.z = o.z || 0;
       return p;
     },
     lob(o) {
@@ -45,7 +54,7 @@
       p.T = o.T || 1; p.t = 0; p.arc = o.arc !== undefined ? o.arc : 60; p.land = o.land || 'explode';
       p.dmg = o.dmg || 0; p.dtype = o.dtype || 'explosive'; p.radius = o.radius || 40; p.col = o.col || '#ffb04a';
       p.size = o.size || 3; p.owner = o.owner || null; p.extra = o.extra || null; p.life = p.T + 0.1; p.age = 0; p.burn = !!o.burn;
-      p.x = p.sx; p.y = p.sy - p.sz; p.trailT = 0; p.stun = o.stun || 0; p.hits = null;
+      p.x = p.sx; p.y = p.sy - p.sz; p.trailT = 0; p.stun = o.stun || 0; p.hits = null; p.style = o.style || null;
       if (o.warn) this.field({ type: 'warn', x: o.gx, y: o.gy, r: p.radius, life: p.T, col: o.warnCol || '#ff4a3a' });
       return p;
     },
@@ -71,12 +80,14 @@
         }
         if (p.type !== 'bolt' || p.trailT !== -1) this.trail(p, dt);
         let dead = false;
-        if (p.team === 'player') dead = this.hitEnemies(g, p);
+        if (g.projHit) dead = g.projHit(p);
+        else if (p.team === 'player') dead = this.hitEnemies(g, p);
         else dead = this.hitPlayerTeam(g, p);
-        if (!dead && p.prox && p.team !== 'player' && g.player && g.player.alive) {
+        if (!dead && p.prox && !g.projHit && p.team !== 'player' && g.player && g.player.alive) {
           // flak proximity fuse
           if (U.dist(p.x, p.y, g.player.x, g.player.py) < p.prox) { this.burst(g, p); dead = true; }
         }
+        if (!dead && p.life <= 0 && g.projExpire) { g.projExpire(p); dead = true; }
         if (!dead && p.life <= 0) {
           if (p.type === 'missile' || p.type === 'swarmlet' || p.splash > 0 || p.prox) this.burst(g, p);
           else if (p.type === 'emp') this.empBurst(g, p);
@@ -135,6 +146,7 @@
     trail(p, dt) {
       p.trailT -= dt;
       if (p.trailT > 0) return;
+      if (p.style && this.trails && this.trails[p.style]) { this.trails[p.style](p); return; }
       const P = AS.Particles;
       if (p.type === 'missile' || p.type === 'swarmlet') {
         p.trailT = 0.016;
@@ -213,6 +225,7 @@
     },
 
     burst(g, p) {
+      if (g.projBurst) return g.projBurst(p);
       const R = p.splash || p.radius || 24;
       // projected point → approximate ground point (assume target height)
       const gy = p.y + (p.team === 'player' ? 12 : 26);
@@ -262,6 +275,7 @@
       ctx.save();
       for (let i = 0; i < a.length; i++) {
         const p = a[i];
+        if (p.style && this.styles[p.style]) { this.styles[p.style](ctx, p, p.x - ox, p.y - oy, g, ox, oy); continue; }
         if (p.type === 'lob') {
           // shadow on ground
           ctx.globalAlpha = 0.3; ctx.fillStyle = '#000';

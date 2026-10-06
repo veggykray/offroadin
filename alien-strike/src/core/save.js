@@ -3,10 +3,11 @@
  * the player's audio/graphics/controls choices. */
 'use strict';
 (function (AS) {
-  const PROFILE_KEY = 'alienstrike.profile.v1';
-  const SETTINGS_KEY = 'alienstrike.settings.v1';
+  let PROFILE_KEY = 'alienstrike.profile.v1';
+  let SETTINGS_KEY = 'alienstrike.settings.v1';
+  let NESTED = ['stats', 'loadout', 'upgrades', 'missions']; // object fields merged onto defaults
 
-  const DEFAULT_SETTINGS = {
+  let DEFAULT_SETTINGS = {
     master: 0.8, music: 0.55, sfx: 0.8, voice: 0.9,
     quality: 'high', // low | medium | high
     shake: true, flash: true, subtitles: true,
@@ -16,7 +17,7 @@
     bindings: null,
   };
 
-  function newProfile() {
+  let newProfile = function () {
     return {
       version: 1,
       created: Date.now(),
@@ -33,13 +34,25 @@
       stats: { kills: 0, rescued: 0, missions: 0, salvageEarned: 0, deaths: 0, playTime: 0 },
       seenIntro: false,
     };
-  }
+  };
 
   function storageOK() {
     try { const k = '__as_test'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; } catch (e) { return false; }
   }
 
   const Save = {
+    /* Another game built on this engine can reuse the persistence layer with its
+     * own storage keys, profile shape and settings defaults:
+     *   AS.Save.configure({ profileKey, settingsKey, newProfile, settings, nested, migrate }) */
+    configure(o) {
+      if (o.profileKey) PROFILE_KEY = o.profileKey;
+      if (o.settingsKey) SETTINGS_KEY = o.settingsKey;
+      if (o.newProfile) newProfile = o.newProfile;
+      if (o.settings) this.DEFAULT_SETTINGS = DEFAULT_SETTINGS = Object.assign({}, o.settings);
+      if (o.nested) NESTED = o.nested;
+      this.migrate = o.migrate || null;
+      this.profile = null;
+    },
     available: storageOK(),
     profile: null,
     settings: null,
@@ -55,9 +68,10 @@
       try {
         const d = newProfile();
         for (const k in d) if (p[k] === undefined || p[k] === null) p[k] = d[k];
-        for (const k of ['stats', 'loadout', 'upgrades', 'missions']) if (typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = d[k];
-        for (const k in d.stats) if (p.stats[k] === undefined) p.stats[k] = d.stats[k];
-        for (const k in d.loadout) if (!p.loadout[k]) p.loadout[k] = d.loadout[k];
+        for (const k of NESTED) if (d[k] !== undefined && (typeof p[k] !== 'object' || Array.isArray(p[k]))) p[k] = d[k];
+        if (d.stats) for (const k in d.stats) if (p.stats[k] === undefined) p.stats[k] = d.stats[k];
+        if (d.loadout) for (const k in d.loadout) if (!p.loadout[k]) p.loadout[k] = d.loadout[k];
+        if (this.migrate) this.migrate(p);
       } catch (e) { return null; }
       this.profile = p;
       return p;
@@ -78,7 +92,7 @@
       }
       this.settings = Object.assign({}, DEFAULT_SETTINGS, s || {});
       // v2 controls: twin-stick movement becomes the default once for older saves
-      if (!this.settings.controlsV || this.settings.controlsV < 2) { this.settings.controlMode = 'twinstick'; this.settings.controlsV = 2; }
+      if (DEFAULT_SETTINGS.controlsV && (!this.settings.controlsV || this.settings.controlsV < 2)) { this.settings.controlMode = 'twinstick'; this.settings.controlsV = 2; }
       return this.settings;
     },
     saveSettings() {

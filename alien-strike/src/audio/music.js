@@ -159,13 +159,13 @@
       const bd = this.breakdown && this.intensity < 2;
       // ---- layer 0: pad + drone + bells
       if (i === 0 && bar % 2 === 0) for (let k = 0; k < 3; k++) this.inst(m.pad, time, this.deg(ch[k], 0), six * 32, L[0], 0.09);
-      if (i === 0) this.inst('drone', time, this.deg(ch[0], -2), six * 16, L[0], 0.16);
-      if (!boss && (i === this.bellPat[0] || i === this.bellPat[1]) && (bar % 2 === 1) && !bd) this.inst('bell', time, this.deg(ch[(i % 3)] + 7, 0), six * 6, L[0], 0.06, true);
+      if (i === 0) this.inst(m.drone || 'drone', time, this.deg(ch[0], -2), six * 16, L[0], 0.16);
+      if (!boss && (i === this.bellPat[0] || i === this.bellPat[1]) && (bar % 2 === 1) && !bd) this.inst(m.bell || 'bell', time, this.deg(ch[(i % 3)] + 7, 0), six * 6, L[0], 0.06, true);
       // ---- layer 1: bass rhythm, arp, light perc
       if (!bd) {
-        if (this.bassPat[i]) this.inst('bass', time, this.deg(ch[0], -1) + (i === 14 ? 7 : 0), six * 1.6, L[1], 0.2);
+        if (this.bassPat[i]) this.inst(m.bass || 'bass', time, this.deg(ch[0], -1) + (i === 14 ? 7 : 0), six * 1.6, L[1], 0.2);
         const a = this.arpPat[i];
-        if (a >= 0 && (i % 2 === 0 || this.cfg.tempo > 95)) this.inst(m.lead === 'pluck' || m.pad === 'organic' ? 'pluck' : 'arp', time, this.deg(ch[a % 4] + (a >= 4 ? 7 : 0), 1), six * 1.5, L[1], 0.06, true);
+        if (a >= 0 && (i % 2 === 0 || this.cfg.tempo > 95)) this.inst(m.arp || (m.lead === 'pluck' || m.pad === 'organic' ? 'pluck' : 'arp'), time, this.deg(ch[a % 4] + (a >= 4 ? 7 : 0), 1), six * 1.5, L[1], 0.06, true);
         this.perc(m.perc, i, time, L[1], 1);
       }
       // ---- layer 2: full drums + lead
@@ -175,10 +175,10 @@
       }
       // ---- layer 3: boss
       if (L[3].gain.value > 0.01 || boss) {
-        if (i % 2 === 0) this.inst('bassdist', time, this.deg(ch[0], -1) + ((i === 6 || i === 14) ? 1 : 0), six * 1.8, L[3], 0.18);
+        if (i % 2 === 0) this.inst(m.bossBass || 'bassdist', time, this.deg(ch[0], -1) + ((i === 6 || i === 14) ? 1 : 0), six * 1.8, L[3], 0.18);
         this.drums(i, time, L[3], true);
         if (i === 0 && bar % 2 === 0) for (let k = 0; k < 3; k++) this.inst('pad', time, this.deg(ch[k], 0), six * 32, L[3], 0.08);
-        for (const n of this.melody) if (n.i === i && bar % 2 === 0) this.inst('saw', time, this.deg(n.deg, 1), six * n.len, L[3], 0.07, true);
+        for (const n of this.melody) if (n.i === i && bar % 2 === 0) this.inst(m.bossLead || 'saw', time, this.deg(n.deg, 1), six * n.len, L[3], 0.07, true);
         if (i === 0 && bar % 4 === 0) this.hit(time, L[3]);
       }
     },
@@ -230,6 +230,18 @@
         case 'pluck': { const fl = lp(3000, 2); o('triangle', f).connect(fl); o('sawtooth', f, 4).connect(fl); fl.frequency.setValueAtTime(4000, t); fl.frequency.setTargetAtTime(500, t, 0.05); env(0.003, 0.08, 0.2, 0.15); break; }
         case 'saw': { const fl = lp(1800, 1.5); o('sawtooth', f, -6).connect(fl); o('sawtooth', f, 6).connect(fl); env(0.02, 0.3, 0.7, 0.2); break; }
         case 'sine': { const x = o('sine', f); const lfo = o('sine', 6); const lg = c.createGain(); lg.gain.value = f * 0.008; lfo.connect(lg); lg.connect(x.frequency); x.connect(g); env(0.04, 0.3, 0.8, 0.3); break; }
+        /* acoustic-flavoured voices for fantasy scores */
+        case 'harp': { const fl = lp(5200, 1); o('triangle', f).connect(fl); o('sine', f * 2, 3).connect(fl); fl.frequency.setValueAtTime(5200, t); fl.frequency.setTargetAtTime(1100, t, 0.18); env(0.002, 0.22, 0.22, 0.7); break; }
+        case 'lute': { const fl = lp(2400, 2.5); o('sawtooth', f, 3).connect(fl); o('triangle', f, -3).connect(fl); fl.frequency.setValueAtTime(3000, t); fl.frequency.setTargetAtTime(520, t, 0.07); env(0.002, 0.1, 0.18, 0.22); break; }
+        case 'flute': {
+          const x = o('sine', f); const lfo = o('sine', 5.2); const lg = c.createGain(); lg.gain.value = 0; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f * 0.007, t + 0.35); lfo.connect(lg); lg.connect(x.frequency); x.connect(g);
+          const h2 = o('triangle', f * 2); const hg = c.createGain(); hg.gain.value = 0.08; h2.connect(hg); hg.connect(g);
+          const br = this.noiseSrc(t, dur + 0.3); const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f * 2; bp.Q.value = 2; const bg = c.createGain(); bg.gain.value = 0.12; br.connect(bp); bp.connect(bg); bg.connect(g);
+          env(0.07, 0.3, 0.8, 0.22); break;
+        }
+        case 'horn': { const fl = lp(500, 1.2); o('sawtooth', f, -4).connect(fl); o('sawtooth', f, 4).connect(fl); fl.frequency.setValueAtTime(400, t); fl.frequency.linearRampToValueAtTime(1700, t + 0.18); fl.frequency.setTargetAtTime(1100, t + 0.2, 0.3); env(0.1, 0.4, 0.85, 0.3); break; }
+        case 'strings': { const fl = lp(1900, 0.8); o('sawtooth', f, -11).connect(fl); o('sawtooth', f, 0).connect(fl); o('sawtooth', f, 11).connect(fl); env(0.32, 0.7, 0.85, 0.6); break; }
+        case 'deepdrone': { const fl = lp(200, 1.5); o('sawtooth', f).connect(fl); o('sawtooth', f * 1.003).connect(fl); o('sine', f / 2).connect(g); env(1.8, 2, 0.85, 1.8); break; }
         default: { o('triangle', f).connect(g); env(0.01, 0.2, 0.5, 0.2); }
       }
     },
@@ -272,10 +284,20 @@
         case 'industrial': if (i % 4 === 2) this.clank(t, bus, 0.12 * k); if (i % 2 === 0) this.hat(t, bus, 0.05 * k); break;
         case 'wood': if (i % 3 === 0) this.wood(t, bus, 0.12 * k); if (i % 4 === 2) this.hat(t, bus, 0.04 * k, true); break;
         case 'soft': if (i % 4 === 2) this.hat(t, bus, 0.05 * k, true); if (i === 12) this.wood(t, bus, 0.06 * k); break;
+        case 'march': if (i % 8 === 0) this.tom(t, bus, 0.24 * k, 92); if (i === 4 || i === 12) this.snare(t, bus, 0.11 * k); if (i === 14 || i === 15) this.snare(t, bus, 0.05 * k); break;
+        case 'frame': if (i === 0 || i === 6 || i === 8 || i === 11) this.tom(t, bus, (i === 0 ? 0.26 : 0.16) * k, i === 0 ? 70 : 105); if (i % 2 === 1) this.hat(t, bus, 0.025 * k); break;
         case 'driving': default: if (i % 2 === 0) this.hat(t, bus, 0.06 * k); if (i % 4 === 2) this.hat(t, bus, 0.04 * k, true); break;
       }
     },
     drums(i, t, bus, heavy) {
+      // war drums: toms and snare instead of a modern kit (world music block drums: 'war')
+      if (this.cfg && this.cfg.drums === 'war') {
+        if (i % 4 === 0) this.tom(t, bus, heavy ? 0.42 : 0.32, i % 8 === 0 ? 62 : 74);
+        if (i === 6 || i === 10 || i === 14) this.tom(t, bus, heavy ? 0.26 : 0.18, 112);
+        if (i % 8 === 4) this.snare(t, bus, heavy ? 0.2 : 0.12);
+        if (heavy && i % 2 === 1) this.hat(t, bus, 0.03);
+        return;
+      }
       if (heavy) { if (i % 4 === 0 || i === 10) this.kick(t, bus, 0.5); if (i % 8 === 4) this.snare(t, bus, 0.3); if (i % 2 === 0) this.hat(t, bus, 0.06); if (i === 14) this.tom(t, bus, 0.25, 120); return; }
       if (i === 0 || i === 8 || i === 10) this.kick(t, bus, 0.42);
       if (i === 4 || i === 12) this.snare(t, bus, 0.24);

@@ -29,6 +29,7 @@
       window.addEventListener('resize', () => this.resize());
     },
     viewH() {
+      if (this.viewHeights) { const v = AS.Settings && AS.Settings.view; return this.viewHeights[v] || this.viewHeights.normal; }
       const v = AS.Settings && AS.Settings.view;
       return v === 'near' ? 420 : v === 'far' ? 560 : 480;
     },
@@ -171,7 +172,7 @@
       if (AS.Atmosphere) AS.Atmosphere.over(ctx, g, this);
       // floating texts
       ctx.textAlign = 'center';
-      ctx.font = 'bold 8px "Share Tech Mono", monospace';
+      ctx.font = this.textFont || 'bold 8px "Share Tech Mono", monospace';
       for (let i = this.texts.length - 1; i >= 0; i--) {
         const t = this.texts[i];
         t.t -= dt; t.y -= dt * 16;

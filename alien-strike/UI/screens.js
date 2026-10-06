@@ -3,23 +3,8 @@
 'use strict';
 (function (AS) {
   const U = AS.U, TAU = U.TAU;
-  const $ = (sel, root) => (root || document).querySelector(sel);
-  const h = (tag, attrs, ...kids) => {
-    const e = document.createElement(tag);
-    if (attrs) for (const k in attrs) {
-      if (k === 'class') e.className = attrs[k];
-      else if (k === 'html') e.innerHTML = attrs[k];
-      else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
-      else if (attrs[k] !== false && attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]);
-    }
-    for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) e.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
-    return e;
-  };
-  const btn = (label, fn, cls, sub) => {
-    const b = h('button', { class: 'btn ' + (cls || ''), onclick: (e) => { AS.Audio.sfx('ui_click'); fn(e); }, onmouseenter: () => AS.Audio.sfx('ui_hover') }, label);
-    if (sub) b.appendChild(h('span', { class: 'sub' }, sub));
-    return b;
-  };
+  // DOM builders shared with other games on this engine (UI/kit.js)
+  const { $, h, btn } = AS.UIKit;
 
   /* ---------------- procedural planets ---------------- */
   const Planet = {

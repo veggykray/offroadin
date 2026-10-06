@@ -29,6 +29,17 @@
 
   const Input = {
     DEFAULT_BINDINGS, ACTION_LABELS,
+    /* Another game on this engine supplies its own actions, labels and gamepad map:
+     *   AS.Input.configure({ bindings, labels, pad: (state, axes, button) => {...} })
+     * `pad` fills the per-frame pad state (action → bool, plus moveX / moveY). */
+    configure(o) {
+      if (o.bindings) this.DEFAULT_BINDINGS = o.bindings;
+      if (o.labels) this.ACTION_LABELS = o.labels;
+      if (o.pad) this.padMap = o.pad;
+      if (o.preventKeys) this.preventKeys = o.preventKeys;
+      this.bindings = JSON.parse(JSON.stringify(this.DEFAULT_BINDINGS));
+    },
+    padMap: null, preventKeys: null,
     bindings: JSON.parse(JSON.stringify(DEFAULT_BINDINGS)),
     keys: new Set(),
     pressed: new Set(),
@@ -40,7 +51,7 @@
     init(target) {
       window.addEventListener('keydown', (e) => {
         if (this.captureHandler) { e.preventDefault(); this.captureHandler(e.code); return; }
-        if (e.code === 'Tab' || e.code === 'Space' || e.code === 'F9' || e.code.startsWith('Arrow')) {
+        if (e.code === 'Tab' || e.code === 'Space' || e.code === 'F9' || e.code.startsWith('Arrow') || (this.preventKeys && this.preventKeys.includes(e.code))) {
           if (!(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT'))) e.preventDefault();
         }
         if (!this.keys.has(e.code)) this.pressed.add(e.code);
@@ -66,7 +77,7 @@
       document.addEventListener('mouseenter', () => { this.mouse.inside = true; });
     },
     setBindings(b) {
-      this.bindings = JSON.parse(JSON.stringify(DEFAULT_BINDINGS));
+      this.bindings = JSON.parse(JSON.stringify(this.DEFAULT_BINDINGS));
       if (b) for (const k in b) if (this.bindings[k] && Array.isArray(b[k])) this.bindings[k] = b[k].slice(0, 2);
     },
     down(action) {
@@ -99,8 +110,14 @@
       const lx = dz(p.axes[0] || 0), ly = dz(p.axes[1] || 0), rx = dz(p.axes[2] || 0), ry = dz(p.axes[3] || 0);
       const b = (i) => !!(p.buttons[i] && p.buttons[i].pressed);
       const s = this.padState;
+      s.moveX = lx; s.moveY = ly; s.aimX = rx; s.aimY = ry;
+      if (this.padMap) {
+        this.padMap(s, p.axes, (i) => (p.buttons[i] ? p.buttons[i].value || (p.buttons[i].pressed ? 1 : 0) : 0));
+        if (Object.values(s).some((v) => v === true) || Math.abs(lx) + Math.abs(ly) + Math.abs(rx) + Math.abs(ry) > 0) this.usingPad = true;
+        if (Math.abs(rx) + Math.abs(ry) > 0) { this.padAim.x = rx; this.padAim.y = ry; this.padAim.active = true; }
+        return;
+      }
       s.forward = ly < -0.3; s.back = ly > 0.3; s.left = lx < -0.3; s.right = lx > 0.3;
-      s.moveX = lx; s.moveY = ly;
       s.firePrimary = (p.buttons[7] && p.buttons[7].value > 0.3) || false;
       s.fireSecondary = (p.buttons[6] && p.buttons[6].value > 0.3) || false;
       s.special = b(5); s.interact = b(0); s.boost = b(10) || b(4); s.repair = b(3);

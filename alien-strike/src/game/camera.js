@@ -14,6 +14,8 @@
       this.leadX = 0; this.leadY = 0;
       this.bounds = null;
       this.t = 0;
+      // movement lead: fraction of velocity, clamp and smoothing (games may tune these)
+      this.leadK = [0.38, 0.32]; this.leadMax = [150, 110]; this.leadRate = 2.2; this.follow = 6; this.zoomRate = 4;
     }
     snap(x, y) { this.cx = x; this.cy = y; this.leadX = this.leadY = 0; this.apply(); }
     setView(vw, vh) { this.vw = vw; this.vh = vh; }
@@ -29,11 +31,11 @@
     update(dt, tx, ty, vx, vy) {
       this.t += dt;
       // lead in the direction of travel, clamped
-      const lx = U.clamp(vx * 0.38, -150, 150), ly = U.clamp(vy * 0.32, -110, 110);
-      this.leadX = U.damp(this.leadX, lx, 2.2, dt);
-      this.leadY = U.damp(this.leadY, ly, 2.2, dt);
-      this.cx = U.damp(this.cx, tx + this.leadX, 6, dt);
-      this.cy = U.damp(this.cy, ty + this.leadY, 6, dt);
+      const lx = U.clamp(vx * this.leadK[0], -this.leadMax[0], this.leadMax[0]), ly = U.clamp(vy * this.leadK[1], -this.leadMax[1], this.leadMax[1]);
+      this.leadX = U.damp(this.leadX, lx, this.leadRate, dt);
+      this.leadY = U.damp(this.leadY, ly, this.leadRate, dt);
+      this.cx = U.damp(this.cx, tx + this.leadX, this.follow, dt);
+      this.cy = U.damp(this.cy, ty + this.leadY, this.follow, dt);
       // zoom
       let z = this.baseZoom;
       if (this.zoomPulseT > 0) {
@@ -41,7 +43,7 @@
         const k = this.zoomPulseT / this.zoomPulseDur;
         z += this.zoomPulse * Math.sin(Math.min(1, (1 - k) * 4) * Math.PI / 2) * Math.min(1, k * 3);
       }
-      this.zoom = U.damp(this.zoom, z, 4, dt);
+      this.zoom = U.damp(this.zoom, z, this.zoomRate, dt);
       if (Math.abs(this.zoom - z) < 5e-4) this.zoom = z; // settle exactly so terrain blits stay 1:1
       // shake
       this.trauma = Math.max(0, this.trauma - dt * 1.4);

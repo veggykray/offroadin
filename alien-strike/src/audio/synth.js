@@ -145,6 +145,40 @@
         for (let i = 0; i < n; i++) { const t = i / sr; out[i] *= 0.5 + 0.5 * Math.sin(t * TAU * 11) * Math.sin(t * TAU * 0.5); }
         break;
       }
+      case 'forest': {
+        // leaves rustling in gusts: soft high band noise with slow swells
+        for (let i = 0; i < n; i++) out[i] = rnd();
+        bandpass(out, sr, (t) => 1800 + 700 * Math.sin(t * TAU / dur * 3), 0.4);
+        for (let i = 0; i < n; i++) { const t = i / sr; out[i] *= 0.25 + 0.75 * Math.pow(0.5 + 0.5 * Math.sin(t * TAU / dur * 2 + Math.sin(t * TAU / dur * 5)), 2); }
+        break;
+      }
+      case 'river': {
+        // babbling water: dense filtered noise with bubbly amplitude flutter
+        for (let i = 0; i < n; i++) out[i] = rnd();
+        bandpass(out, sr, (t) => 900 + 500 * Math.sin(t * TAU * 0.7) + 300 * Math.sin(t * TAU * 2.3), 0.5);
+        for (let i = 0; i < n; i++) { const t = i / sr; out[i] *= 0.6 + 0.4 * Math.sin(t * TAU * 6.1 + Math.sin(t * TAU * 1.3) * 3); }
+        break;
+      }
+      case 'blizzard': {
+        for (let i = 0; i < n; i++) out[i] = rnd();
+        bandpass(out, sr, (t) => 600 + 500 * Math.sin(t * TAU / dur * 3) + 300 * Math.sin(t * TAU / dur * 7 + 2), 0.7);
+        for (let i = 0; i < n; i++) { const t = i / sr; out[i] *= 0.45 + 0.55 * Math.abs(Math.sin(t * TAU / dur * 2.5)); }
+        break;
+      }
+      case 'village': {
+        // distant murmur of voices: formant-filtered noise bursts
+        for (let i = 0; i < n; i++) out[i] = rnd() * 0.4;
+        bandpass(out, sr, (t) => 500 + 300 * Math.sin(t * TAU * 1.7) + 200 * Math.sin(t * TAU * 3.1), 0.9);
+        for (let i = 0; i < n; i++) { const t = i / sr; out[i] *= 0.3 + 0.7 * Math.pow(Math.max(0, Math.sin(t * TAU * 0.9) * Math.sin(t * TAU * 2.3)), 1); }
+        break;
+      }
+      case 'cursed': {
+        // low wavering drone with a breathy whisper on top
+        let ph = 0, ph2 = 0;
+        for (let i = 0; i < n; i++) { const t = i / sr; ph += (41 + Math.sin(t * TAU / dur * 2) * 2) / sr; ph2 += 61.5 / sr; out[i] = Math.sin(ph * TAU) * 0.5 + Math.sin(ph2 * TAU) * 0.25 + rnd() * 0.06; }
+        lowpass(out, sr, 700);
+        break;
+      }
       default: for (let i = 0; i < n; i++) out[i] = rnd() * 0.1;
     }
     // seamless loop crossfade

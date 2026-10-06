@@ -290,7 +290,9 @@
       ctx.putImageData(img, 0, 0);
       st.D = null;
       yield null;
-      this.stampDecor(ctx, cx, cy, st);
+      // subclasses may stamp decor incrementally (a generator) to spread the cost
+      if (this.stampDecorGen) yield* this.stampDecorGen(ctx, cx, cy, st);
+      else this.stampDecor(ctx, cx, cy, st);
       return cv;
     }
 
@@ -337,6 +339,9 @@
       const inv = 1 / TD;
       const F = this.F, clouds = this.type === 'clouds';
       const faceCol = this.col.face, faceDark = this.col.faceDark, lip = this.col.lip;
+      // optional per-position cliff colours (subclasses with several biomes)
+      const fcBuf = this.faceColAt ? (this._fcBuf || (this._fcBuf = new Float32Array(6))) : null;
+      const fcA = [0, 0, 0], fcB = [0, 0, 0];
       const faceCloud = C.mix(faceCol, faceDark, 0.3);
       const shadowA = this.world.light.shadow !== undefined ? this.world.light.shadow : 0.3;
       const seed = this.seed, W = this.W, H = this.H, NR = NW * rows;
@@ -379,9 +384,10 @@
             const strata = (U.hash2(band, dropL[xi], seed) - 0.5) * 0.2;
             const ck = U.hash2((wx * 0.8) | 0, band >> 1, seed + 1);
             const vert = ck > 0.92 ? -0.18 : (ck - 0.5) * 0.06;
-            const c0 = l < 0 && clouds ? faceCloud : faceCol;
+            let c0 = l < 0 && clouds ? faceCloud : faceCol, fd = faceDark;
+            if (fcBuf) { this.faceColAt(wx, wy, fcBuf); fcA[0] = fcBuf[0]; fcA[1] = fcBuf[1]; fcA[2] = fcBuf[2]; fcB[0] = fcBuf[3]; fcB[1] = fcBuf[4]; fcB[2] = fcBuf[5]; c0 = fcA; fd = fcB; }
             const tt = t * 0.8;
-            r = c0[0] + (faceDark[0] - c0[0]) * tt; g = c0[1] + (faceDark[1] - c0[1]) * tt; b = c0[2] + (faceDark[2] - c0[2]) * tt;
+            r = c0[0] + (fd[0] - c0[0]) * tt; g = c0[1] + (fd[1] - c0[1]) * tt; b = c0[2] + (fd[2] - c0[2]) * tt;
             const facing = faceNX[xi] < -1 ? -1 : faceNX[xi] > 1 ? 1 : faceNX[xi];
             sh = 1 + strata + vert - facing * 0.2 + (t < 0.1 ? 0.1 : 0) - (t > 0.88 ? 0.16 : 0);
             if (l < 0 && clouds && t > 0.6) {
