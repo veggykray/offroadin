@@ -13,6 +13,7 @@
       quality: 'high', shake: true, flash: true, subtitles: true,
       controlMode: 'keys', // keys: A/D steer, mouse aims the staff · mouse: the dragon flies toward the cursor
       view: 'normal', difficulty: 'normal', testMode: false, bindings: null,
+      taunts: true, // wizards and dragons trading insults (voices + subtitles)
     },
     newProfile() {
       return {

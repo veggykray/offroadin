@@ -19,7 +19,7 @@
   const BODY = '"Alegreya Sans", "Segoe UI", "Trebuchet MS", sans-serif';
   const F = (px, w) => (w || '700') + ' ' + px + 'px ' + SERIF;
   const B = (px, w) => (w || '600') + ' ' + px + 'px ' + BODY;
-  const COL = { gold: '#f2c14e', goldDim: '#a8863a', parch: '#f0e2c0', dim: 'rgba(240,226,192,0.6)', hp: '#e0473a', energy: '#f0a23a', mana: '#5aa8ff', fire: '#ff7a2a', ok: '#8ee07a', bad: '#ff6a4a', leather: 'rgba(22,14,10,0.78)', rim: 'rgba(214,170,90,0.75)' };
+  const COL = { gold: '#f2c14e', goldDim: '#a8863a', parch: '#f0e2c0', dim: 'rgba(244,232,204,0.82)', hp: '#e0473a', energy: '#f0a23a', mana: '#5aa8ff', fire: '#ff7a2a', ok: '#8ee07a', bad: '#ff6a4a', leather: 'rgba(18,11,8,0.88)', rim: 'rgba(214,170,90,0.75)' };
 
   /* ---------- vector icons ---------- */
   const ICON = {
@@ -89,7 +89,8 @@
     draw(ctx, g, dt) {
       this.t += dt;
       const R = AS.Renderer, W = R.canvas.width, H = R.canvas.height, dpr = R.dpr;
-      const s = Math.max(0.85, Math.min(1.5, H / (900 * dpr) * 1.05)) * dpr;
+      // the HUD scales with the window; a touch larger than before for legibility
+      const s = Math.max(0.95, Math.min(1.7, H / (900 * dpr) * 1.2)) * dpr;
       this.s = s;
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -104,6 +105,7 @@
       this.minimap(ctx, g, s, H);
       this.buffs(ctx, g, W, H, s, dt);
       this.prompts(ctx, g, W, H, s);
+      if (AS.Voices) AS.Voices.draw(ctx, g, W, H, s);
       this.messages(ctx, g, W, H, s);
       if (g.player.down > 0 && g.player.fall <= 0) this.downBanner(ctx, g, W, H, s);
       ctx.restore();
@@ -133,7 +135,7 @@
       ctx.textAlign = 'left';
       ctx.font = F(Math.round(15 * s)); ctx.fillStyle = COL.parch;
       ctx.fillText(p.name, x + 58 * s, y + 20 * s);
-      ctx.font = B(Math.round(11 * s), '500'); ctx.fillStyle = COL.dim;
+      ctx.font = B(Math.round(12.5 * s), '500'); ctx.fillStyle = COL.dim;
       ctx.fillText(fdef.dragon.title + ' · ' + fdef.rider.name, x + 58 * s, y + 37 * s);
       const bx = x + 58 * s, bw = w - 72 * s, bh = 9 * s;
       const hp = p.hp / p.maxHp;
@@ -141,7 +143,7 @@
       const row = (yy, ic, col, frac, ghost, label, warn) => {
         icon(ctx, ic, x + 34 * s, yy + bh / 2, 13 * s, warn && Math.sin(this.t * 8) > 0 ? '#ffffff' : col);
         K.bar(ctx, bx, yy, bw, bh, frac, col, ghost);
-        if (label) { ctx.font = B(Math.round(9.5 * s), '700'); ctx.textAlign = 'right'; K.keyText(ctx, label, bx + bw - 4 * s, yy + bh / 2 + 0.5 * s, '#fff8e8', 2.5 * s); ctx.textAlign = 'left'; }
+        if (label) { ctx.font = B(Math.round(11 * s), '700'); ctx.textAlign = 'right'; K.keyText(ctx, label, bx + bw - 4 * s, yy + bh / 2 + 0.5 * s, '#fff8e8', 2.5 * s); ctx.textAlign = 'left'; }
       };
       row(y + 50 * s, 'heart', COL.hp, hp, this.ghost, Math.ceil(p.hp) + ' / ' + p.maxHp, hp < 0.25);
       const en = p.energy / p.maxEnergy;
@@ -160,7 +162,7 @@
       icon(ctx, 'coin', x + 26 * s, y + h / 2, 22 * s, COL.gold);
       ctx.font = F(Math.round(19 * s)); ctx.textAlign = 'left'; ctx.fillStyle = '#ffe6a0';
       ctx.fillText(Math.floor(this.goldShown + 0.5).toLocaleString(), x + 44 * s, y + h / 2 + 1 * s);
-      ctx.font = B(Math.round(10.5 * s), '600'); ctx.textAlign = 'right'; ctx.fillStyle = COL.dim;
+      ctx.font = B(Math.round(12 * s), '600'); ctx.textAlign = 'right'; ctx.fillStyle = COL.dim;
       ctx.fillText('+' + Math.round(Fp.income) + ' / min', x + w - 14 * s, y + h / 2 + 1 * s);
     },
 
@@ -172,7 +174,7 @@
         const yy = y + 6 * s + i * rh, mine = Fc.key === g.playerKey;
         if (mine) { K.rrect(ctx, x + 4 * s, yy + 1 * s, w - 8 * s, rh - 2 * s, 6 * s); ctx.fillStyle = 'rgba(255,220,140,0.08)'; ctx.fill(); }
         crest(ctx, x + 18 * s, yy + rh / 2, 10 * s, Fc.def);
-        ctx.textAlign = 'left'; ctx.font = F(Math.round(11.5 * s), mine ? '700' : '600');
+        ctx.textAlign = 'left'; ctx.font = F(Math.round(12.5 * s), mine ? '700' : '600');
         ctx.fillStyle = Fc.eliminated ? 'rgba(200,180,160,0.4)' : mine ? '#ffe6a0' : COL.parch;
         ctx.fillText(Fc.def.short, x + 34 * s, yy + rh / 2 - 5 * s);
         if (Fc.eliminated) { ctx.strokeStyle = 'rgba(255,90,60,0.8)'; ctx.lineWidth = 1.5 * s; ctx.beginPath(); ctx.moveTo(x + 32 * s, yy + rh / 2 - 5 * s); ctx.lineTo(x + 34 * s + ctx.measureText(Fc.def.short).width, yy + rh / 2 - 5 * s); ctx.stroke(); icon(ctx, 'skull', x + w - 22 * s, yy + rh / 2, 13 * s, '#c8b8a0'); return; }
@@ -187,7 +189,7 @@
         icon(ctx, 'wing', wx + 6 * s, yy + rh / 2, 14 * s, up ? Fc.def.color2 : 'rgba(255,255,255,0.18)');
         // territory
         icon(ctx, 'flag', x + w - 52 * s, yy + rh / 2, 12 * s, Fc.def.color);
-        ctx.font = B(Math.round(11 * s), '700'); ctx.textAlign = 'left'; ctx.fillStyle = COL.parch;
+        ctx.font = B(Math.round(12.5 * s), '700'); ctx.textAlign = 'left'; ctx.fillStyle = COL.parch;
         ctx.fillText(String(Fc.sitesOwned), x + w - 43 * s, yy + rh / 2 + 0.5 * s);
         if (!mine && Fc.attackedT > g.time - 3 && Math.sin(this.t * 10) > 0) icon(ctx, 'flame', x + w - 18 * s, yy + rh / 2, 12 * s, '#ff8a3a');
       });
@@ -198,16 +200,17 @@
     advisor(ctx, g, W, s, dt) {
       const a = AS.Advisor ? AS.Advisor.current(g) : null;
       if (!a) return;
-      const w = 260 * s, x = W - w - 14 * s, y = this.realmsBottom + 8 * s;
-      ctx.font = B(Math.round(12 * s), '600');
-      const lines = this.wrap(ctx, a.text, w - 40 * s);
-      const h = (22 + lines.length * 15) * s;
-      plate(ctx, x, y, w, h, 8 * s, 0.62);
+      const w = 280 * s, x = W - w - 14 * s, y = this.realmsBottom + 8 * s;
+      ctx.font = B(Math.round(13.5 * s), '600');
+      const lines = this.wrap(ctx, a.text, w - 30 * s);
+      const h = (30 + lines.length * 17) * s;
+      plate(ctx, x, y, w, h, 8 * s, 0.8);
+      this.advBottom = y + h;
       icon(ctx, a.icon || 'flag', x + 16 * s, y + 15 * s, 14 * s, a.col || COL.gold);
-      ctx.font = F(Math.round(10 * s)); ctx.textAlign = 'left'; ctx.fillStyle = a.col || COL.gold;
+      ctx.font = F(Math.round(11.5 * s)); ctx.textAlign = 'left'; ctx.fillStyle = a.col || COL.gold;
       ctx.fillText(a.title || 'COUNSEL', x + 30 * s, y + 13 * s);
-      ctx.font = B(Math.round(12 * s), '600'); ctx.fillStyle = COL.parch;
-      lines.forEach((l, i) => ctx.fillText(l, x + 14 * s, y + (30 + i * 15) * s));
+      ctx.font = B(Math.round(13.5 * s), '600'); ctx.fillStyle = COL.parch;
+      lines.forEach((l, i) => ctx.fillText(l, x + 14 * s, y + (32 + i * 17) * s));
       this.advTarget = a.target || null;
     },
     wrap(ctx, text, maxW) {
@@ -267,7 +270,7 @@
         ctx.restore();
       }
       ctx.restore();
-      ctx.font = F(Math.round(9.5 * s)); ctx.textAlign = 'center'; ctx.fillStyle = COL.dim;
+      ctx.font = F(Math.round(11 * s)); ctx.textAlign = 'center'; ctx.fillStyle = COL.dim;
       ctx.fillText('M — WAR MAP', x + size / 2, y + size + 1 * s);
     },
 
@@ -293,9 +296,9 @@
       if (p.spell) {
         const D = P[p.spell];
         icon(ctx, 'pw_' + p.spell, x - sw / 2, y - sw / 2 - 4 * s, 26 * s, D.col);
-        ctx.font = F(Math.round(10 * s)); ctx.textAlign = 'center'; ctx.fillStyle = COL.parch;
+        ctx.font = F(Math.round(11.5 * s)); ctx.textAlign = 'center'; ctx.fillStyle = COL.parch;
         ctx.fillText('Q ×' + p.spellCharges, x - sw / 2, y - 10 * s);
-      } else { ctx.font = F(Math.round(9 * s)); ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(240,226,192,0.35)'; ctx.fillText('NO SPELL', x - sw / 2, y - sw / 2); }
+      } else { ctx.font = F(Math.round(11 * s)); ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(240,226,192,0.35)'; ctx.fillText('NO SPELL', x - sw / 2, y - sw / 2); }
       x -= sw + 10 * s;
       for (const k in p.buffs) {
         const D = P[k]; if (!D) continue;
@@ -317,8 +320,8 @@
       const Fp = g.playerFaction;
       if (Math.hypot(p.x - Fp.townPos.x, p.y - Fp.townPos.y) < 520) lines.push(['T', 'HOLD COURT — SPEND YOUR GOLD']);
       if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);
-      else if (p.z < 40 && g.life && g.life.grid.query(p.x, p.y, 44, []).some((o) => o.A && !o.dead && !o.carried)) lines.push(['E', 'SNATCH PREY']);
-      else if (p.energy < p.maxEnergy * 0.3 && !p.carry) lines.push(['SPACE + E', 'HUNGRY — DIVE ON AN ANIMAL AND SNATCH IT']);
+      else if (AS.Life.preyInReach(g, p)) lines.push(['E', 'SNATCH AND EAT — HOLD E TO CARRY IT HOME']);
+      else if (p.energy < p.maxEnergy * 0.3 && !p.carry) lines.push(['SPACE · E', 'HUNGRY — DROP LOW AND SLOW OVER AN ANIMAL, THEN PRESS E']);
       if (p.landed) lines.push(['W', 'TAKE OFF — RESTING HEALS AND SAVES ENERGY']);
       else if (!p.carry && p.speed < 110 && p.z < 52 && p.braking && p.canLand && p.canLand()) lines.push(['S', 'KEEP FLARING TO LAND']);
       const gate = AS.Sites && AS.Sites.gateAt(g, p);
@@ -338,7 +341,7 @@
       let y = H * 0.72;
       ctx.textAlign = 'center';
       for (const [key, text] of lines.slice(0, 3)) {
-        ctx.font = F(Math.round(12.5 * s));
+        ctx.font = F(Math.round(13.5 * s));
         const tw = ctx.measureText(text).width, kw = key ? (ctx.measureText(key).width + 18 * s) : 0;
         const w = tw + kw + 30 * s, x = W / 2 - w / 2;
         plate(ctx, x, y - 14 * s, w, 28 * s, 14 * s, 0.68);
@@ -352,7 +355,7 @@
     worldMarks(ctx, g, W, H, s) {
       const R = AS.Renderer, cam = g.camera, p = g.player;
       const marks = [];
-      for (const d of g.dragons) if (d !== p && d.targetable && Math.hypot(d.x - p.x, d.y - p.y) < 1800) marks.push({ x: d.x, y: d.y - d.z, col: d.fdef.color, label: d.name, kind: 'wing' });
+      for (const d of g.dragons) if (d !== p && d.targetable && Math.hypot(d.x - p.x, d.y - p.y) < 1800) marks.push({ x: d.x, y: d.y - d.z, col: d.fdef.color, label: d.name, kind: 'wing', d });
       const home = g.playerFaction.townPos;
       marks.push({ x: home.x, y: home.y, col: COL.gold, label: 'HOME', kind: 'castle' });
       if (this.advTarget) marks.push({ x: this.advTarget.x, y: this.advTarget.y, col: '#fff2c0', label: this.advTarget.label || '', kind: 'flag' });
@@ -361,10 +364,7 @@
         const q = R.worldToScreen(mk.x, mk.y, cam);
         const on = q.x > m && q.y > m && q.x < W - m && q.y < H - m;
         if (on) {
-          if (mk.kind === 'wing') { // a name tag over rival dragons
-            ctx.font = F(Math.round(10 * s)); ctx.textAlign = 'center';
-            K.keyText(ctx, mk.label, q.x, q.y - 54 * s, mk.col, 3 * s);
-          }
+          if (mk.kind === 'wing') this.dragonTag(ctx, mk.d, q.x, q.y - 58 * s, s);
           continue;
         }
         const cx = W / 2, cy = H / 2, a = Math.atan2(q.y - cy, q.x - cx);
@@ -378,6 +378,22 @@
       }
     },
 
+    // a rival dragon's name plate: name, health bar, and a flash when it is hurt
+    dragonTag(ctx, d, x, y, s) {
+      const w = 92 * s, h = 7 * s, hp = U.clamp(d.hp / d.maxHp, 0, 1);
+      ctx.font = F(Math.round(13.5 * s)); ctx.textAlign = 'center';
+      const tw = ctx.measureText(d.name.toUpperCase()).width;
+      const bw = Math.max(w, tw + 16 * s) + 8 * s;
+      ctx.fillStyle = 'rgba(12,8,5,0.72)'; K.rrect(ctx, x - bw / 2, y - 16 * s, bw, 30 * s, 5 * s); ctx.fill();
+      ctx.strokeStyle = C.str(d.fdef.color, 0.8); ctx.lineWidth = 1.2 * s; ctx.stroke();
+      K.keyText(ctx, d.name.toUpperCase(), x, y - 3 * s, d.fdef.color, 3 * s);
+      const bx = x - w / 2, by = y + 3 * s;
+      ctx.fillStyle = 'rgba(0,0,0,0.75)'; ctx.fillRect(bx - 1, by - 1, w + 2, h + 2);
+      ctx.fillStyle = hp > 0.5 ? '#6ed06a' : hp > 0.25 ? '#f0c040' : '#ff5a3a';
+      ctx.fillRect(bx, by, w * hp, h);
+      if (d.hurt > 0.2) { ctx.fillStyle = 'rgba(255,255,255,' + Math.min(0.6, d.hurt) + ')'; ctx.fillRect(bx, by, w * hp, h); }
+      ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fillRect(bx, by, w * hp, h * 0.35);
+    },
     messages(ctx, g, W, H, s) {
       let y = H * 0.2;
       ctx.textAlign = 'center';
@@ -396,7 +412,7 @@
       plate(ctx, x, y, w, h, 12 * s, 0.85);
       ctx.textAlign = 'center'; ctx.font = F(Math.round(18 * s)); ctx.fillStyle = '#ff9a7a';
       ctx.fillText(p.name.toUpperCase() + ' IS RECOVERING', W / 2, y + 22 * s);
-      ctx.font = B(Math.round(12 * s)); ctx.fillStyle = COL.parch;
+      ctx.font = B(Math.round(13.5 * s)); ctx.fillStyle = COL.parch;
       ctx.fillText('Back in the sky in ' + Math.ceil(p.down) + 's — your ward is weakened while you are down', W / 2, y + 44 * s);
     },
   };

@@ -23,6 +23,7 @@
     boar: { gen: 'ani_boar', food: 28, hp: 28, speed: 36, run: 140, r: 6, col: '#4a3428', col2: '#2a1e18', len: 11, sfx: 'boar', wild: true },
     horse: { gen: 'ani_horse', food: 30, hp: 30, speed: 44, run: 190, r: 7, col: '#7a4a2a', col2: '#2a1a12', len: 15, sfx: 'horse', wild: true },
   };
+  const SNATCH_SLOW = 235; // below this speed the dragon can snatch from higher up and further away
   const PEOPLE = { peasant: { gen: 'ppl_peasant' }, villager: { gen: 'ppl_villager' } };
 
   /* fallback look for a missing animal model: a lit oval body with a head */
@@ -258,22 +259,45 @@
       }
     },
 
-    /* ---------------- the dragon eats ---------------- */
+    /* ---------------- the dragon eats ----------------
+     * Snatching is easy when the dragon is slow: it reaches further and from
+     * higher up. Tap E to snatch and eat at once (crunch, squelch, swallow);
+     * hold E to keep the animal in its claws and carry it home instead. */
+    snatchReach(d) {
+      const slow = d.speed < SNATCH_SLOW;
+      return { z: slow ? 56 : 36, r: (slow ? 88 : 46) * d.scale, slow };
+    },
+    preyInReach(g, d) {
+      const R = this.snatchReach(d);
+      if (d.z > R.z) return null;
+      // the head reaches a little ahead of the body
+      const qx = d.x + Math.cos(d.angle) * 16 * d.scale, qy = d.y + Math.sin(d.angle) * 16 * d.scale;
+      let best = null, bd = R.r * R.r;
+      for (const o of g.life.grid.query(qx, qy, R.r + 8, [])) {
+        if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
+        const dd = (o.x - qx) * (o.x - qx) + (o.y - qy) * (o.y - qy);
+        if (dd < bd) { bd = dd; best = o; }
+      }
+      return best;
+    },
     dragonFeeding(d, dt) {
       const g = d.g, I = d.input;
       d.grabCd -= dt;
       if (d.eatT > 0) {
         d.eatT -= dt;
-        if (Math.random() < 0.3) AS.FX.splat(d.nodes[0].x, d.nodes[0].y, d.nodes[0].z, '#8a2a1a', 1);
-        if (d.eatT <= 0) {
+        if (Math.random() < 0.35) AS.FX.splat(d.nodes[0].x, d.nodes[0].y, d.nodes[0].z, '#8a2a1a', 1);
+        // the swallow comes quickly after the crunch
+        if (!d.swallowed && d.eatT < 0.42) {
+          d.swallowed = true;
           const o = d.eating, A = o.A;
           const gain = A.food * (o.roast ? 1.3 : 1) * (d.buffs.feast ? 1.5 : 1);
           d.energy = Math.min(d.maxEnergy, d.energy + gain);
           d.heal(d.maxHp * 0.04);
-          d.eating = null; d.stats.eaten++;
+          d.stats.eaten++;
           if (d.isPlayer) { g.stats.eaten++; AS.FX.text(d.x, d.y - d.z, 20, '+' + Math.round(gain) + ' ENERGY', '#ffd27a'); }
-          AS.Audio.sfx('gulp', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.5 });
+          AS.Audio.sfx('swallow', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.45 });
         }
+        if (d.eatT <= 0) d.eating = null;
         return;
       }
       if (d.carry) {
@@ -283,24 +307,23 @@
         // stolen livestock flown home joins your herds
         const F = d.faction;
         if (o.owner !== F.key && F.pastureAt && F.pastureAt(d.x, d.y) && d.z < 70) { this.deposit(g, d, o, F); return; }
-        if (I.eatHit || (d.carryT > (d.isPlayer ? 5 : 1.5) && !(d.ai && d.ai.wantDeposit))) {
-          this.eat(d, o);
-        }
+        if (d.isPlayer) {
+          // a tap eats at once; holding E keeps it in the claws to carry home
+          if (!d.carryKeep) {
+            if (I.eat && d.carryT > 0.3) { d.carryKeep = true; g.msg('CARRYING ' + o.kind.toUpperCase() + ' — FLY IT HOME TO YOUR PASTURES, OR PRESS E TO EAT', '#ffd27a', 3); }
+            else if (!I.eat) this.eat(d, o);
+          } else if (I.eatHit) this.eat(d, o);
+        } else if (I.eatHit || (d.carryT > 1.5 && !(d.ai && d.ai.wantDeposit))) this.eat(d, o);
         return;
       }
-      if (!I.eatHit && !(I.dive && I.eat) || d.grabCd > 0) return;
-      // snatch: the nearest animal under the dragon, if flying low enough
-      if (d.z > 34) { if (d.isPlayer && I.eatHit) g.msg('FLY LOWER TO SNATCH PREY — HOLD SPACE TO DIVE', '#ffe7a8', 1.6); return; }
-      let best = null, bd = 40 * 40 * d.scale * d.scale;
-      for (const o of g.life.grid.query(d.x, d.y, 50, [])) {
-        if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
-        const dd = (o.x - d.x) * (o.x - d.x) + (o.y - d.y) * (o.y - d.y);
-        if (dd < bd) { bd = dd; best = o; }
-      }
-      if (!best) { if (d.isPlayer && I.eatHit) g.msg('NO PREY BENEATH YOU', '#ffe7a8', 1.2); return; }
+      if (!I.eatHit || d.grabCd > 0) return;
+      const R = this.snatchReach(d);
+      if (d.z > R.z) { if (d.isPlayer) g.msg(R.slow ? 'TOO HIGH — HOLD SPACE TO DROP LOW' : 'TOO FAST AND HIGH — SLOW DOWN (S) OR DROP LOW (SPACE)', '#ffe7a8', 1.6); return; }
+      const best = this.preyInReach(g, d);
+      if (!best) { if (d.isPlayer) g.msg(R.slow ? 'NO PREY IN REACH' : 'NO PREY IN REACH — SLOW DOWN TO REACH FURTHER', '#ffe7a8', 1.2); return; }
       d.grabCd = 0.5;
       best.carried = true; best.state = 'carried';
-      d.carry = best; d.carryT = 0;
+      d.carry = best; d.carryT = 0; d.carryKeep = false;
       AS.Audio.sfx('snatch', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.6 });
       if (best.A.sfx) AS.Audio.sfx(best.A.sfx, { x: d.x, y: d.y, vol: 0.7, rate: 1.2 });
       AS.FX.dust(best.x, best.y, 6, g.groundDust(best.x, best.y), 50);
@@ -311,10 +334,15 @@
     },
     eat(d, o) {
       const g = d.g;
-      d.carry = null;
+      d.carry = null; d.carryKeep = false;
       o.carried = false; o.alive = false;
-      d.eating = o; d.eatT = 1.15;
-      AS.Audio.sfx('eat_crunch', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.5 });
+      d.eating = o; d.eatT = 0.9; d.swallowed = false;
+      // crunch, a wet squelch, then the swallow (in dragonFeeding)
+      const vol = d.isPlayer ? 1 : 0.5;
+      AS.Audio.sfx('bone_crunch', { x: d.x, y: d.y, vol, rate: U.range(0.92, 1.08) });
+      const later = g.later ? g.later.bind(g) : (t, fn) => setTimeout(fn, t * 1000);
+      later(0.16, () => AS.Audio.sfx('squelch', { x: d.x, y: d.y, vol, rate: U.range(0.9, 1.1) }));
+      AS.FX.splat(d.nodes[0].x, d.nodes[0].y, d.nodes[0].z, '#8a2a1a', 4);
     },
     deposit(g, d, o, F) {
       d.carry = null;

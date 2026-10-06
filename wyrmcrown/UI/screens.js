@@ -242,7 +242,8 @@
       const check = (key, label) => { const e = h('input', { type: 'checkbox' }); e.checked = !!S[key]; e.onchange = () => { S[key] = e.checked; AS.Save.saveSettings(); }; return h('div', { class: 'opt-row' }, h('span', null, label), e); };
       s.appendChild(h('div', { class: 'panel', style: 'min-width:520px' },
         h('h2', null, 'Options'),
-        slider('master', 'Master volume'), slider('music', 'Music'), slider('sfx', 'Sound effects'),
+        slider('master', 'Master volume'), slider('music', 'Music'), slider('sfx', 'Sound effects'), slider('voice', 'Taunt voices'),
+        check('taunts', 'Wizards and dragons trade insults'), check('subtitles', 'Show what they say'),
         select('controlMode', 'Flight controls', [['keys', 'Keys steer, mouse aims (A/D bank)'], ['mouse', 'Follow the cursor (W/S pace)']]),
         select('difficulty', 'Difficulty', Object.keys(AS.Data.difficulty).map((k) => [k, AS.Data.difficulty[k].name])),
         select('quality', 'Graphics quality', [['high', 'High'], ['medium', 'Medium'], ['low', 'Low (fastest)']], () => { AS.Particles.density = S.quality === 'low' ? 0.5 : S.quality === 'medium' ? 0.8 : 1; AS.Renderer.resize(); }),
@@ -256,8 +257,8 @@
       const s = this.screens.controls; s.innerHTML = '';
       const rows = [
         ['W', 'Beat your wings — speed builds with every downstroke'], ['S', 'Flare the wings: brake, turn tighter, hover low — keep flaring near the ground to land (W takes off)'], ['A / D', 'Bank left / right (slow = tight turns, fast = wide sweeps)'],
-        ['SPACE (hold)', 'Dive toward the ground — release to pull up'], ['SHIFT', 'Sprint (burns energy)'], ['MOUSE', 'Aim the wizard\'s staff'],
-        ['LEFT CLICK', 'Cast magic bolts'], ['RIGHT CLICK / F', 'Breathe fire (uses breath; strongest when low)'], ['E', 'Snatch prey / eat it / travel through an owned waygate'],
+        ['SPACE (hold)', 'Fly low — with W a fast power dive, with S a slow low glide; release to climb'], ['SHIFT', 'Sprint (burns energy)'], ['MOUSE', 'Aim the wizard\'s staff'],
+        ['LEFT CLICK', 'Cast magic bolts'], ['RIGHT CLICK / F', 'Breathe fire where the cursor points — the head turns to aim'], ['E', 'Tap to snatch and eat prey (easy when slow and low) · hold to carry it home · travel an owned waygate'],
         ['Q', 'Cast a stored spell'], ['T', 'Hold court in your town — build, recruit, upgrade'], ['G', 'Order your warband: pick a site or rival town on the map'], ['M', 'War map'], ['C', 'Switch flight controls (keys / follow the cursor)'], ['ESC / P', 'Pause'],
       ];
       s.appendChild(h('div', { class: 'panel', style: 'min-width:640px;max-width:820px' },

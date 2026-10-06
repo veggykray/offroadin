@@ -24,12 +24,12 @@ interact with the page).
 | **W** | Beat your wings. Every downstroke adds speed. |
 | **S** | Flare the wings: brake, turn tighter, hover low. Keep flaring low over open ground to land; resting heals and saves energy. **W** takes off again. |
 | **A / D** | Bank left / right. Slow flight gives tight turns, fast flight gives wide sweeps. |
-| **Space** (hold) | Dive toward the ground. Release to pull up. |
+| **Space** (hold) | Fly low at your current pace. Add **W** for a fast power dive, or **S** to slow right down. Release to climb. |
 | **Shift** | Sprint (burns energy) |
 | **Mouse** | Aim the wizard's staff |
 | **Left click** | Cast magic bolts |
-| **Right click / F** | Dragon breath (uses its charge; strongest when flying low) |
-| **E** | Snatch prey, then eat it or carry it home. Also travels through a waygate you own. |
+| **Right click / F** | Dragon breath (uses its charge). The dragon turns its head toward the cursor, so you can fly one way and burn another. |
+| **E** | Tap to snatch and eat prey (easy when you are low and not too fast). Hold to carry it home instead. Also travels through a waygate you own. |
 | **Q** | Cast a stored spell (storm, frost nova, summon) |
 | **T** | Hold court in your town: build, recruit, upgrade (the realm pauses) |
 | **G** | Order your warband: click a site or a rival town on the map |
@@ -43,9 +43,10 @@ B snatches, X holds court, Y casts a spell, LB sprints.
 
 ## How a war goes
 
-1. **Feed.** Flying burns energy. Dive low over an animal and press **E** to
-   snatch it, then eat it. Livestock in your own pastures is food and wealth.
-   A rival's livestock carried home joins your herds.
+1. **Feed.** Flying burns energy. Fly low and not too fast over an animal
+   and tap **E** to eat it. Hold **E** to carry it home instead: livestock in
+   your own pastures is food and wealth, and a rival's livestock carried home
+   joins your herds.
 2. **Take land.** Each neutral site has guardians: bandits, wolves, ogres,
    trolls or giants. Defeat them, then circle low over the site to claim it.
    - Mines, villages, trade posts and castles send gold home by cart. Guard the
@@ -75,6 +76,12 @@ B snatches, X holds court, Y casts a spell, LB sprints.
 
    When every rival stronghold has fallen, the Wyrmcrown is yours. If yours
    falls, the war is lost.
+
+Wizards and dragons trade insults as they meet and fight, each in their own
+voice: squeaky wizards, deep-voiced dragons. Your own pair always comes
+through clearly; rivals are only heard nearby, fading with distance. The
+voices use your browser's speech synthesiser; the options screen sets their
+volume or turns them off, and subtitles show what was said.
 
 Realms that fall behind gather strength (up to +35% income), and the lords
 gang up on a runaway leader. Magic runes rise across the map, so a war is

@@ -61,6 +61,7 @@
           AS.HUD && AS.HUD.reset && AS.HUD.reset(this.game);
           AS.Audio.startWorld && AS.Audio.startWorld(this.game.world);
           AS.RealmAudio && AS.RealmAudio.start(this.game);
+          AS.Voices && AS.Voices.start(this.game);
           this.game.msg(map.name.toUpperCase(), '#ffe7a8', 4);
           AS.Tutorial && AS.Tutorial.start(this.game);
         } catch (e) {
@@ -75,6 +76,7 @@
       if (this.state !== 'play') return;
       this.state = 'paused';
       AS.Audio.duck && AS.Audio.duck(true);
+      AS.Voices && AS.Voices.stop();
       AS.UI && AS.UI.showPause && AS.UI.showPause();
     },
     resume() {
@@ -89,12 +91,14 @@
       this.state = 'menu';
       AS.Audio.stopWorld && AS.Audio.stopWorld();
       AS.RealmAudio && AS.RealmAudio.stop();
+      AS.Voices && AS.Voices.stop(); if (AS.Voices) AS.Voices.g = null;
       AS.Music.stop && AS.Music.stop();
       AS.Particles.clear(); AS.Proj.clear();
     },
     onMatchEnd(res) {
       this.state = 'results';
       AS.RealmAudio && AS.RealmAudio.stop();
+      AS.Voices && AS.Voices.stop();
       if (AS.Campaign) AS.Campaign.applyResult(res);
       AS.UI && AS.UI.showResults && AS.UI.showResults(res);
     },
@@ -127,7 +131,7 @@
           }
           AS.HUD && AS.HUD.tabTick && AS.HUD.tabTick(I.down('objectives'), dt);
           // the war map and the court pause the realm
-          if (!this.overlay) g.update(dt);
+          if (!this.overlay) { g.update(dt); AS.Voices && AS.Voices.update(dt, g); }
           else { AS.Particles.update(0); }
         } else if (this.state === 'results') AS.Particles.update(dt * 0.5);
         AS.Renderer.renderWorld(g, this.state === 'play' && !this.overlay ? dt : 0);

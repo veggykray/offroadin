@@ -269,7 +269,7 @@
       d.ai = this;
       if (!F.lord) new AILord(g, F);
       const L = F.lord, S = L.style, gl = L.goal;
-      inp.fire = false; inp.breath = false; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false;
+      inp.fire = false; inp.breath = false; inp.breathTarget = null; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false;
       this.t = (this.t || 0) + dt;
       // keep the goal's position fresh for moving targets
       if (gl.ref && gl.ref.x !== undefined) { gl.x = gl.ref.x; gl.y = gl.ref.y; }
@@ -335,10 +335,16 @@
       inp.aimX = t.x + (t.vx || 0) * lead * 0.8; inp.aimY = (t.py !== undefined ? t.py : t.y) + (t.vy || 0) * lead * 0.8;
       inp.fire = true;
     }
+    // breathe when the target is within reach of a swing of the head
     breathIfAligned(d, inp, t) {
       if (!t || d.fireCharge < 8) return false;
-      const bi = AS.Combat.breathInfo(d);
-      if (AS.Combat.inCone(bi, t.x, t.y, t.z || 0, (t.r || 8) * 0.8)) { inp.breath = true; return true; }
+      const dist = Math.hypot(t.x - d.x, t.y - d.y), bi = AS.Combat.breathInfo(d);
+      const off = Math.abs(U.wrapAngle(Math.atan2(t.y - d.y, t.x - d.x) - d.angle));
+      const dz = Math.abs((t.z || 0) - d.z);
+      if (dist < bi.L * (t.isDragon ? 1.05 : 0.95) && dist > 20 && off < 1.15 && (t.isDragon ? dz < 70 : d.z < 70)) {
+        inp.breath = true; inp.breathTarget = t; inp.aimX = t.x; inp.aimY = t.y;
+        return true;
+      }
       return false;
     }
     hunt(d, inp, gl) {
@@ -346,7 +352,8 @@
       if (!o) return this.flyTo(d, inp, gl.x, gl.y, { arrive: 100 });
       const dist = this.flyTo(d, inp, o.x, o.y, { arrive: 20, low: true });
       if (dist < 140) { inp.skim = true; inp.throttle = d.speed > 90 ? -1 : 0.2; }
-      if (dist < 36 * d.scale && d.z < 33) inp.eatHit = true;
+      const R = AS.Life.snatchReach(d);
+      if (dist < R.r * 0.85 && d.z < R.z) inp.eatHit = true;
       // hungry dragons don't waste breath on dinner unless it is fleeing far
     }
     capture(d, inp, s) {

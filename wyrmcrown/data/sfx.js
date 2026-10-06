@@ -18,6 +18,15 @@
     crash_heavy: { vol: 0.9, poly: 2, dur: 2.0, drive: 1.8, layers: [N({ lp: [2400, 120], lpT: 1.4, decay: 2.2, gain: 1 }), S('sine', { f: 64, f1: 24, decay: 2.2, gain: 1.4 }), S('crackle', { density: 0.06, decay: 2, hp: 1400, gain: 0.5 })] },
     thud: { vol: 0.5, poly: 3, dur: 0.4, layers: [S('sine', { f: 110, f1: 45, decay: 10, gain: 1 }), N({ lp: 900, decay: 14, gain: 0.6 })] },
     eat_crunch: { vol: 0.55, poly: 2, dur: 0.75, layers: [0, 0.18, 0.36, 0.52].map((at, i) => S('crackle', { at, dur: 0.16, density: 0.4, decay: 22, lp: 2600 - i * 200, gain: 1 })).concat([S('sine', { f: 140, f1: 70, decay: 10, gain: 0.5 }), S('sine', { at: 0.36, f: 120, f1: 60, decay: 10, gain: 0.4 })]) },
+    // eating: a bony crunch, a wet squelch, then a big swallow
+    bone_crunch: { vol: 0.8, poly: 3, dur: 0.5, drive: 1.6, layers: [S('crackle', { dur: 0.2, density: 0.7, decay: 18, lp: 3400, gain: 1.1 }), N({ bp: [2000, 600], bpT: 0.14, q: 0.8, env: [0.005, 0.05, 0.3, 0.12], gain: 0.8 }), S('crackle', { at: 0.11, dur: 0.16, density: 0.55, decay: 20, lp: 2600, gain: 0.9 }), S('sine', { f: 130, f1: 52, decay: 14, gain: 0.7 })] },
+    squelch: { vol: 0.65, poly: 3, dur: 0.42, layers: [N({ bp: [1500, 240], bpT: 0.26, q: 2.4, env: [0.01, 0.06, 0.55, 0.22], gain: 1 }), S('sine', { f: 280, f1: 85, vib: 26, vibAmt: 0.3, env: [0.01, 0.05, 0.5, 0.2], gain: 0.55 })] },
+    swallow: { vol: 0.8, poly: 2, dur: 0.65, layers: [S('sine', { f: 230, f1: 68, sweep: 0.22, env: [0.02, 0.08, 0.6, 0.16], gain: 1 }), N({ lp: [800, 180], lpT: 0.3, env: [0.02, 0.1, 0.45, 0.2], gain: 0.5 }), S('sine', { at: 0.32, f: 160, f1: 58, decay: 9, gain: 0.55 })] },
+    // under a dragon's words: a throaty rumble
+    dragon_growl: { vol: 0.55, poly: 2, dur: 1.5, drive: 2, layers: [S('saw', { f: 68, f1: 50, vib: 7, vibAmt: 0.14, env: [0.12, 0.4, 0.75, 0.6], lp: 520, gain: 1 }), N({ lp: [520, 180], lpT: 1.3, env: [0.12, 0.4, 0.6, 0.6], gain: 0.6 })] },
+    // stand-in voices when the browser has no speech voices: syllable burbles
+    babble_hi: { vol: 0.32, poly: 4, dur: 0.12, layers: [S('tri', { f: 520, f1: 430, vib: 30, vibAmt: 0.08, env: [0.01, 0.03, 0.6, 0.05], gain: 1 }), S('sine', { f: 1040, f1: 860, env: [0.01, 0.03, 0.4, 0.05], gain: 0.35 })] },
+    babble_lo: { vol: 0.5, poly: 4, dur: 0.2, drive: 1.8, layers: [S('saw', { f: 92, f1: 70, vib: 9, vibAmt: 0.12, env: [0.02, 0.06, 0.7, 0.08], lp: 700, gain: 1 }), N({ lp: 400, env: [0.02, 0.06, 0.4, 0.08], gain: 0.4 })] },
     gulp: { vol: 0.45, poly: 2, dur: 0.35, layers: [S('sine', { f: 320, f1: 110, sweep: 0.2, decay: 9, gain: 0.8 }), N({ lp: 500, decay: 12, gain: 0.3 })] },
     snatch: { vol: 0.5, poly: 2, dur: 0.4, layers: [N({ bp: [500, 2400], bpT: 0.2, q: 0.6, env: [0.01, 0.12, 0.3, 0.2], gain: 0.8 }), S('sine', { f: 160, f1: 90, decay: 10, gain: 0.6 })] },
     air_rush: { vol: 0.42, loop: true, dur: 1.6, layers: [N({ bp: 650, q: 0.35, env: ON, trem: 0.7, gain: 1 }), N({ hp: 2400, env: ON, gain: 0.25 })] },

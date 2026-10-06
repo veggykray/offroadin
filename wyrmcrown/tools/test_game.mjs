@@ -75,8 +75,19 @@ await test('flight: thrust, bank, dive and climb, brake', async (keep) => {
   await page.keyboard.down('Space'); await play(page, 1.5);
   const zl = await ev(page, () => [AS.game.player.z, AS.game.player.speed]);
   await page.keyboard.up('Space');
-  ok(zl[0] < z0 - 25 && zl[0] < 30, 'SPACE dives low (' + Math.round(z0) + ' → ' + Math.round(zl[0]) + ')');
-  ok(zl[1] > 200, 'the dive keeps its speed');
+  ok(zl[0] < z0 - 25 && zl[0] < 30, 'SPACE takes the dragon low (' + Math.round(z0) + ' → ' + Math.round(zl[0]) + ')');
+  ok(zl[1] <= fast + 5, 'SPACE alone does not speed it up (' + Math.round(fast) + ' → ' + Math.round(zl[1]) + ')');
+  await play(page, 2);
+  ok(await ev(page, () => AS.game.player.z) > 45, 'releasing SPACE climbs back up');
+  // W + SPACE: a fast power dive; S + SPACE: slow and low
+  await page.keyboard.down('KeyW'); await page.keyboard.down('Space'); await play(page, 1.6);
+  const pd = await ev(page, () => [AS.game.player.z, AS.game.player.speed]);
+  await page.keyboard.up('KeyW');
+  ok(pd[1] > 320 && pd[0] < 30, 'W + SPACE power-dives fast and low (' + pd.map(Math.round) + ')');
+  await page.keyboard.down('KeyS'); await play(page, 2.2);
+  const sl = await ev(page, () => [AS.game.player.z, AS.game.player.speed]);
+  await page.keyboard.up('KeyS'); await page.keyboard.up('Space');
+  ok(sl[1] < 120 && sl[0] < 30, 'S + SPACE glides slow and low (' + sl.map(Math.round) + ')');
   await play(page, 2);
   ok(await ev(page, () => AS.game.player.z) > 45, 'releasing SPACE climbs back up');
   await page.keyboard.down('KeyS'); await play(page, 2.5);
@@ -133,8 +144,11 @@ await test('combat: breath burns the ground forces in front', async (keep) => {
     u.home = { x: u.x, y: u.y, r: 30 }; u.root = 99; g.troops.push(u); window.__t = u;
     return u.hp;
   });
+  // point the cursor at the ogre: the breath goes where you aim
+  const q0 = await ev(page, () => [__t.x, __t.y]); const sp0 = await screenOf(page, q0[0], q0[1]);
+  await page.mouse.move(sp0.x, sp0.y);
   await page.keyboard.down('KeyS'); await page.keyboard.down('KeyF');
-  await play(page, 1.6);
+  for (let i = 0; i < 16; i++) { await play(page, 0.1); const q = await ev(page, () => [__t.x, __t.y]); const sp = await screenOf(page, q[0], q[1]); await page.mouse.move(sp.x, sp.y); }
   await page.keyboard.up('KeyF'); await page.keyboard.up('KeyS');
   const r = await ev(page, () => [__t.hp, __t.alive, AS.game.player.fireCharge, AS.game.player.maxFire || 100]);
   ok(!r[1] || r[0] < t * 0.8, 'the ogre was burned (' + t + ' → ' + Math.round(r[0]) + ')');
@@ -142,23 +156,82 @@ await test('combat: breath burns the ground forces in front', async (keep) => {
   return page;
 });
 
-await test('food: snatch an animal from the ground and eat it', async (keep) => {
+await test('food: tap E low and slow to eat, hold E to carry', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
-  const e0 = await ev(page, () => {
+  const pick = () => ev(page, () => {
     const g = AS.game, p = g.player;
-    const o = g.life.animals.find((a) => !a.owner && a.alive && !a.carried && g.terrain.kindFast(a.x, a.y) === 0);
+    const o = g.life.animals.find((a) => !a.owner && a.alive && !a.carried && g.terrain.kindFast(a.x, a.y) === 0 && a !== window.__o);
     window.__o = o;
-    AS.Debug.tp(o.x, o.y, 22); p.speed = 40; p.energy = 30;
+    // a little above and behind the animal, at an easy pace
+    AS.Debug.tp(o.x - 45, o.y, 46); p.angle = 0; p.speed = 120; p.energy = 30;
     return p.energy;
   });
+  const e0 = await pick();
   await page.keyboard.press('KeyE');
-  await page.waitForTimeout(250);
-  const carrying = await ev(page, () => AS.game.player.carry === __o || __o.carried);
-  ok(carrying, 'E snatched the animal below');
+  await play(page, 1.2);
+  const r = await ev(page, () => [AS.game.player.energy, !!AS.game.player.carry, AS.game.player.stats.eaten]);
+  ok(r[0] > e0 + 10 && !r[1], 'a tap of E snatched and ate it (' + Math.round(e0) + ' → ' + Math.round(r[0]) + ')');
+  await pick();
+  await page.keyboard.down('KeyE'); await play(page, 0.6); await page.keyboard.up('KeyE');
+  await play(page, 0.3);
+  ok(await ev(page, () => AS.game.player.carry === __o), 'holding E keeps the animal in the claws');
   await page.keyboard.press('KeyE');
-  await play(page, 1.6);
-  const e1 = await ev(page, () => AS.game.player.energy);
-  ok(e1 > e0 + 10, 'eating restores energy (' + Math.round(e0) + ' → ' + Math.round(e1) + ')');
+  await play(page, 1.0);
+  ok(await ev(page, () => !AS.game.player.carry && AS.game.player.stats.eaten >= 2), 'E again eats what it carries');
+  return page;
+});
+
+await test('combat: the head turns to aim the breath at the cursor', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  const t = await ev(page, () => {
+    const g = AS.game, p = g.player, x = 3200, y = 6400;
+    AS.Debug.tp(x, y, 40); p.angle = 0; p.speed = 50;
+    const a = 0.95, u = new AS.Troop(g, 'ogre', 'wild', x + Math.cos(a) * 130, y + Math.sin(a) * 130, { state: 'guard' });
+    u.home = { x: u.x, y: u.y, r: 5 }; u.root = 99; g.troops.push(u); window.__t = u;
+    return u.hp;
+  });
+  await page.keyboard.down('KeyS');
+  for (let i = 0; i < 16; i++) {
+    const q = await ev(page, () => [__t.x, __t.y]); const sp = await screenOf(page, q[0], q[1]);
+    await page.mouse.move(sp.x, sp.y);
+    if (i === 0) await page.keyboard.down('KeyF');
+    await play(page, 0.1);
+  }
+  await page.keyboard.up('KeyF'); await page.keyboard.up('KeyS');
+  const r = await ev(page, () => [__t.hp, Math.abs(AS.game.player.headYaw || 0)]);
+  ok(r[0] < t - 30, 'breath reached a target well off the nose (' + t + ' → ' + Math.round(r[0]) + ')');
+  return page;
+});
+
+await test('taunts: one voice at a time, rivals fade with distance', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  const r = await ev(page, async () => {
+    const g = AS.game, p = g.player, V = AS.Voices;
+    const e = g.factions.elf.dragon;
+    let ex = 260;
+    e.pilot = { read(ee, inp) { inp.throttle = 0; ee.x = p.x + ex; ee.y = p.y; ee.z = 60; ee.speed = 40; } };
+    V.quietUntil = 1e9; V.pairNext = {}; // no random encounters during the test
+    let overlap = false, spoken = [], last = null;
+    const watch = setInterval(() => { if (V.speaking && V.speaking.q !== last) { last = V.speaking.q; spoken.push((last.own ? 'own ' : 'foe ') + last.role + ': ' + last.text); } }, 30);
+    // a line, a reply and an interruption must queue up, never talk over each other
+    await new Promise((r) => setTimeout(r, 300));
+    V.spkNext = {}; V.calmUntil = 0;
+    const q1 = V.say(p, 'dragon', 'elf'); V.say(e, 'wizard', 'human', 0, q1); V.say(e, 'dragon', 'human');
+    const t0 = performance.now();
+    while (performance.now() - t0 < 9000) { await new Promise((r) => setTimeout(r, 50)); if (V.speaking && V.queue.includes(V.speaking.q)) overlap = true; }
+    // far away: only a snippet, quietly
+    ex = 800; V.spkNext = {}; await new Promise((r) => setTimeout(r, 200));
+    V.queue = []; V.speaking = null; V.gapUntil = 0; V.calmUntil = 0;
+    const far = V.say(e, 'wizard', 'human');
+    await new Promise((r) => setTimeout(r, 400));
+    const bub = V.bubbles.find((b) => b.d === e);
+    clearInterval(watch);
+    return { spoken, overlap, far: !!far, farText: bub ? bub.text : null, farAlpha: bub ? bub.alpha : null };
+  });
+  ok(r.spoken.length >= 2, 'lines were spoken in turn: ' + r.spoken.join(' | '));
+  ok(new Set(r.spoken).size === r.spoken.length, 'no line repeated');
+  ok(!r.overlap, 'never two voices at once');
+  ok(r.far && r.farText && r.farText.startsWith('…') && r.farAlpha < 0.8, 'a distant rival is only half heard (' + r.farText + ')');
   return page;
 });
 

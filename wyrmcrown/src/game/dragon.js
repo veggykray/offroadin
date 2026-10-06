@@ -38,7 +38,7 @@
     return T[T.length - 1][1];
   }
 
-  function blankInput() { return { throttle: 0, turn: 0, dive: false, sprint: false, fire: false, breath: false, eat: false, eatHit: false, aimX: 0, aimY: 0, steer: null, spell: false }; }
+  function blankInput() { return { throttle: 0, turn: 0, dive: false, sprint: false, fire: false, breath: false, breathTarget: null, eat: false, eatHit: false, aimX: 0, aimY: 0, steer: null, spell: false }; }
 
   class Dragon {
     constructor(g, faction, opts) {
@@ -144,13 +144,17 @@
         else return this.touchDown(dt, turn);
       }
       const sprint = I.sprint && thr >= 0 && !tired && !I.dive;
+      // SPACE takes the dragon low; on its own it holds its speed, with S it
+      // slows into a low glide, with W it becomes a full power dive
       const dive = I.dive && !this.carryHeavy;
-      const braking = thr < -0.1 && !dive;
-      this.diving = dive; this.braking = braking; this.sprinting = sprint && (thr > 0 || this.speed < F.sprintMax * sm);
+      const braking = thr < -0.1;
+      const power = dive && thr > 0.1;
+      const tucked = dive && !braking;
+      this.diving = dive; this.powerDive = power; this.braking = braking; this.sprinting = sprint && (thr > 0 || this.speed < F.sprintMax * sm);
       // ---- wing stroke: frequency, amplitude and thrust on the downstroke
       let freq = 0, amp = 0.5;
       const cruise = F.cruise * sm;
-      if (dive) { freq = 0; }
+      if (tucked) { freq = power ? 0 : this.speed < cruise - 20 ? 1.1 : 0; amp = 0.4; }
       else if (this.sprinting) { freq = 2.9; amp = 0.62; }
       else if (thr > 0.1) { freq = 2.15; amp = 0.55; }
       else if (braking) { freq = this.speed < 90 ? 1.7 : 0.9; amp = 0.72; }
@@ -172,8 +176,14 @@
       this.prevStroke = stroke;
       // ---- speed
       let sp = this.speed;
-      if (dive) {
+      if (tucked && power) {
         sp = Math.min(F.diveMax * Math.max(0.8, sm), sp + F.diveAcc * dt * (this.z > F.zLow + 4 ? 1 : 0.35));
+      } else if (tucked) {
+        // a plain descent: only a little speed from the drop, settling back to cruise down low
+        const cap = cruise * 1.08;
+        if (sp > cap) sp = U.damp(sp, cap, 1.4, dt);
+        else if (this.z > F.zLow + 6) sp = Math.min(cap, sp + F.diveAcc * 0.25 * dt);
+        else sp += F.flapAcc * 0.55 * down * dt * 1.25;
       } else if (this.sprinting) {
         sp += F.sprintAcc * down * dt * 1.25;
         if (sp > F.sprintMax * sm) sp = U.damp(sp, F.sprintMax * sm, 2.5, dt);
@@ -193,7 +203,7 @@
       if (exhausted) sp = Math.min(sp, 170);
       this.speed = Math.max(F.hover * 0.6, sp);
       // ---- turning: rate limited by speed, rolled in smoothly
-      const wmax = turnRate(this.speed) * this.turnMul * (braking ? 1.18 : 1) * (dive ? 0.85 : 1);
+      const wmax = turnRate(this.speed) * this.turnMul * (braking ? 1.18 : 1) * (power ? 0.85 : 1);
       this.angVel = U.approach(this.angVel, turn * wmax, F.turnAcc * dt * (Math.abs(turn) > 0.05 ? 1 : 1.4));
       this.angle = U.wrapAngle(this.angle + this.angVel * dt);
       // velocity direction lags the heading (momentum through hard turns)
@@ -225,7 +235,7 @@
       // ---- wing pose for the renderer
       const W = this.wing;
       let elev, fold = 0, sweep = 0, cup = 0;
-      if (dive) { elev = 0.18; fold = 0.55; sweep = -0.65; }
+      if (tucked && !flapping) { elev = 0.18; fold = power ? 0.55 : 0.3; sweep = power ? -0.65 : -0.35; }
       else if (flapping) {
         elev = 0.22 + Math.cos(this.phase * TAU) * this.amp;
         if (stroke < 0) fold = -stroke * 0.42;
@@ -377,6 +387,7 @@
       if (!(opts && opts.silent)) {
         this.hurt = 0.18; this.lastHurt = g.time;
         if (src && src !== this) this.lastHitBy = src;
+        if (src && src.isDragon && src !== this && AS.Voices && g === AS.Voices.g) AS.Voices.onHit(src, this);
         if (this.isPlayer) { g.camera.shake(Math.min(0.45, 0.06 + dmg * 0.012)); AS.Audio.sfx('dragon_hurt', { vol: Math.min(1, 0.35 + dmg / 40) }); }
         else if (Math.random() < 0.25) AS.Audio.sfx('dragon_hurt', { x: this.x, y: this.y, vol: 0.5 });
       }
@@ -446,7 +457,8 @@
       ch.x = this.x + ca * 3 * s; ch.y = this.y + sa * 3 * s; ch.z = this.z + bob; ch.a = a;
       // neck and head arc toward the turn (and the target when breathing)
       let bend = U.clamp(this.angVel * 0.24, -0.6, 0.6);
-      if (this.breathing) bend *= 0.3;
+      // the head swings toward what the dragon breathes at
+      bend = U.clamp(bend * (this.breathing ? 0.3 : 1) + (this.headYaw || 0), -1.35, 1.35);
       if (this.lookBend) bend = U.clamp(bend + this.lookBend, -0.8, 0.8);
       const headDip = this.eatT > 0 ? 8 : 0;
       let px = ch.x, py = ch.y, pa = a;

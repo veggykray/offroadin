@@ -45,9 +45,33 @@
         d.breathT += dt;
         d.fireCharge = Math.max(0, d.fireCharge - 32 * dt * (d.buffs.inferno ? 0.4 : 1));
         if (d.fireCharge <= 0) { d.breathing = false; d.fireDelay = 1.4; }
-        this.breath(d, dt);
+        this.aimBreath(d, dt);
+        if (d.breathing) this.breath(d, dt);
       } else if (d.breathing) { d.breathing = false; d.fireDelay = 0.7; }
+      if (!d.breathing) this.aimBreath(d, dt);
       this.breathSound(d);
+    },
+    /* the dragon swings its head toward what it breathes at: the cursor (or a
+     * rival dragon near it), up to ~75 degrees either side of its flight;
+     * the stream rises to meet a dragon in the air */
+    aimBreath(d, dt) {
+      const g = d.g, I = d.input;
+      let want = 0;
+      if (d.breathing) {
+        let tgt = I.breathTarget && I.breathTarget.targetable ? I.breathTarget : null;
+        if (!tgt) {
+          let bd = 95 * 95;
+          for (const e of g.dragons) {
+            if (e === d || !e.targetable || !g.hostile(d.team, e.team)) continue;
+            const dx = e.x - I.aimX, dy = e.y - e.z - I.aimY, dd = dx * dx + dy * dy;
+            if (dd < bd) { bd = dd; tgt = e; }
+          }
+        }
+        const tx = tgt ? tgt.x : I.aimX, ty = tgt ? tgt.y : I.aimY;
+        d.breathTarget = tgt;
+        want = U.clamp(U.wrapAngle(Math.atan2(ty - d.y, tx - d.x) - d.angle), -1.3, 1.3);
+      } else d.breathTarget = null;
+      d.headYaw = U.damp(d.headYaw || 0, want, d.breathing ? 12 : 5, dt);
     },
     castBolt(d, bk) {
       const g = d.g, I = d.input;
@@ -84,7 +108,9 @@
       const mx = hd.x + Math.cos(a) * 14 * s, my = hd.y + Math.sin(a) * 14 * s, mz = hd.z + 2;
       const hi = U.clamp((mz - 24) / 60, 0, 1); // high breath lands further ahead and weaker
       const L = (150 + hi * 40) * s * (d.buffs.inferno ? 1.25 : 1);
-      return { a, mx, my, mz, L, start: (10 + hi * 50) * s, half: 0.34, power: U.lerp(1, 0.55, hi) };
+      // aimed at a dragon in the air, the stream climbs or falls to its height
+      const tz = d.breathTarget && d.breathTarget.isDragon ? d.breathTarget.z : 0;
+      return { a, mx, my, mz, tz, L: tz > 30 ? L * 1.15 : L, start: (10 + hi * 50) * s, half: 0.34, power: tz > 30 ? 0.95 : U.lerp(1, 0.55, hi) };
     },
     breath(d, dt) {
       const g = d.g, B = AS.Data.breaths[d.fdef.dragon.breath] || AS.Data.breaths.fire;
@@ -97,7 +123,7 @@
       for (let i = 0; i < n; i++) {
         const spr = (Math.random() - 0.5) * bi.half * 1.6, sp = 300 + Math.random() * 180;
         const a = bi.a + spr, life = 0.28 + Math.random() * 0.22;
-        const vz = -(bi.mz) / (life * 1.3) * (0.6 + Math.random() * 0.5);
+        const vz = ((bi.tz || 0) - bi.mz) / (life * 1.3) * (0.6 + Math.random() * 0.5);
         Pp.spawn({ x: bi.mx, y: bi.my, z: bi.mz, vx: Math.cos(a) * sp + d.vx * 0.7, vy: Math.sin(a) * sp + d.vy * 0.7, vz, shape: Pp.SMOKE, col: B.cols[1], col2: B.cols[3], size: 2.5 * d.scale, size2: (11 + Math.random() * 8) * d.scale, life, alpha: 0.95, drag: 1.6, keep: d.isPlayer });
         if (Math.random() < 0.6) Pp.spawn({ x: bi.mx, y: bi.my, z: bi.mz, vx: Math.cos(a) * sp * 1.05 + d.vx * 0.7, vy: Math.sin(a) * sp * 1.05 + d.vy * 0.7, vz: vz * 0.9, shape: Pp.GLOW, col: B.cols[0], col2: B.cols[2], size: 4 * d.scale, size2: 14 * d.scale, life: life * 0.8, add: true, drag: 1.4 });
       }
@@ -141,8 +167,9 @@
       const half = bi.half + Math.atan2(r, Math.max(10, dist));
       if (ang > half) return false;
       // air targets must be near the stream's height at that distance
-      const t = U.clamp(dist / bi.L, 0, 1), sz = bi.mz * (1 - t);
-      return z < 30 ? sz < 70 || t > 0.4 : Math.abs(z - sz) < 55;
+      const t = U.clamp(dist / bi.L, 0, 1), tz = bi.tz || 0, sz = bi.mz + (tz - bi.mz) * t;
+      if (z < 30) return tz > 30 ? sz < 40 : sz < 70 || t > 0.4;
+      return Math.abs(z - sz) < 60;
     },
     applyEffect(e, eff, src) {
       if (eff === 'burn') { if (e.ignite) e.ignite(3.5, src); }
@@ -269,14 +296,16 @@
         const bi = d.breathInfoCache, B = AS.Data.breaths[d.fdef.dragon.breath] || AS.Data.breaths.fire;
         const ca = Math.cos(bi.a), sa = Math.sin(bi.a);
         ctx.save(); ctx.globalCompositeOperation = 'lighter';
-        // ground glow where the stream lands
-        const gx = bi.mx + ca * bi.L * 0.62 - ox, gy = bi.my + sa * bi.L * 0.62 - oy;
+        // ground glow where the stream lands (or, aimed at a dragon, the end of the stream in the air)
+        const air = (bi.tz || 0) > 30, reach = air ? 0.85 : 0.62;
+        const gx = bi.mx + ca * bi.L * reach - ox, gy = bi.my + sa * bi.L * reach - oy;
         const gl = AS.Forge.glow(B.cols[2], 64);
-        ctx.globalAlpha = 0.5 + Math.random() * 0.15;
-        ctx.drawImage(gl, gx - bi.L * 0.55, gy - bi.L * 0.4, bi.L * 1.1, bi.L * 0.8);
+        const endZ = air ? bi.mz + (bi.tz - bi.mz) * reach : 0;
+        ctx.globalAlpha = (air ? 0.35 : 0.5) + Math.random() * 0.15;
+        ctx.drawImage(gl, gx - bi.L * 0.55, gy - endZ - bi.L * 0.4, bi.L * 1.1, bi.L * 0.8);
         // the stream itself: a tapered wedge from the jaws
         const mx = bi.mx - ox, my = bi.my - bi.mz - oy;
-        const ex = gx, ey = gy, w0 = 3 * d.scale, t = g.time + d.x * 0.01;
+        const ex = gx, ey = gy - endZ, w0 = 3 * d.scale, t = g.time + d.x * 0.01;
         const nx = -sa, ny = ca;
         // two flickering lobes: a wide soft plume and a hot narrow core
         for (const [wk, a0, a1, al] of [[0.3, 0.5, 0.3, 0.55], [0.13, 0.95, 0.6, 0.75]]) {

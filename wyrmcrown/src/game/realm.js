@@ -208,6 +208,8 @@
       if (d === this.player) { this.msg(d.name.toUpperCase() + ' IS DOWN — RECOVERING AT THE ROOST', '#ff7a5a', 5); this.news(d.name + ' has been driven from the sky!', d.fk, true); }
       else this.news(d.name + ' of ' + d.faction.def.short + ' was driven from the sky' + (killer ? ' by ' + killer.def.short : '') + '!', d.fk, true);
       if (killer && killer.addGold) killer.addGold(150, d.x, d.y, 'dragon');
+      const by = src && src.isDragon ? src : killer && killer.dragon;
+      if (AS.Voices && AS.Voices.g === this && by) AS.Voices.onDown(d, by);
       if (AS.Factions && AS.Factions.onDragonDown) AS.Factions.onDragonDown(this, d, src);
     }
     onDragonRespawn(d) { if (d === this.player) this.msg(d.name.toUpperCase() + ' TAKES WING AGAIN', '#ffe08a', 3); }

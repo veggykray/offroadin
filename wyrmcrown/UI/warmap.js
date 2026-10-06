@@ -14,7 +14,7 @@
     openOrders(g) { this.orders = true; this.travel = null; AS.App.openOverlay('map'); },
     draw(ctx, g, dt) {
       const R = AS.Renderer, W = R.canvas.width, H = R.canvas.height, dpr = R.dpr, HUD = AS.HUD;
-      const s = Math.max(0.85, Math.min(1.5, H / (900 * dpr) * 1.05)) * dpr;
+      const s = Math.max(0.95, Math.min(1.7, H / (900 * dpr) * 1.15)) * dpr;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = 'rgba(8,5,3,0.82)'; ctx.fillRect(0, 0, W, H);
       // fit the realm (square or not) into the space left of the side panel
@@ -60,7 +60,7 @@
         const q = P(F.townPos.x, F.townPos.y);
         if (F.eliminated) { HUD.icon(ctx, 'skull', q[0], q[1], 22 * s, '#a89880'); continue; }
         HUD.crest(ctx, q[0], q[1], 15 * s, F.def);
-        ctx.font = HUD.F(Math.round(12 * s)); ctx.textAlign = 'center';
+        ctx.font = HUD.F(Math.round(13.5 * s)); ctx.textAlign = 'center';
         K.keyText(ctx, F.def.short, q[0], q[1] + 26 * s, F.def.color, 3 * s);
         const d = Math.hypot(mx - q[0], my - q[1]); if (d < hd + 6 * s) { hd = d; hover = F; }
       }
@@ -83,14 +83,14 @@
       ctx.textAlign = 'left'; ctx.font = HUD.F(Math.round(20 * s)); ctx.fillStyle = HUD.COL.gold;
       const PF = g.playerFaction, ready = this.orders ? PF.troops.filter((t) => t.alive && t.role !== 'cart' && t.state === 'garrison').length : 0;
       ctx.fillText(this.travel ? 'WAYGATE TRAVEL' : this.orders ? 'MUSTER THE WARBAND' : 'WAR MAP', px + 18 * s, y0 + 16 * s);
-      ctx.font = HUD.B(Math.round(13 * s), '500'); ctx.fillStyle = HUD.COL.dim;
+      ctx.font = HUD.B(Math.round(14 * s), '500'); ctx.fillStyle = HUD.COL.dim;
       ctx.fillText(this.travel ? 'Click a glowing waygate you own.' : this.orders ? (ready > 3 ? 'Click a site or rival town · ' + (ready - 3) + ' troops will march' : 'Too few troops at home (3 stay on guard)') : g.map.name + ' · day ' + (1 + Math.floor(g.time / 300)), px + 18 * s, y0 + 40 * s);
       let yy = y0 + 72 * s;
       if (hover) {
         const isF = !!hover.def && hover.def.dragon;
         ctx.font = HUD.F(Math.round(16 * s)); ctx.fillStyle = HUD.COL.parch;
         ctx.fillText(isF ? hover.def.name : hover.name, px + 18 * s, yy); yy += 24 * s;
-        ctx.font = HUD.B(Math.round(13 * s), '600');
+        ctx.font = HUD.B(Math.round(14 * s), '600');
         const lines = [];
         if (isF) {
           const F = hover;
@@ -112,9 +112,9 @@
       // legend
       yy = Math.max(yy, y0 + size - 170 * s);
       const leg = [['mine', 'Gold mine'], ['village', 'Village'], ['castle_s', 'Castle / fort'], ['tower', 'Wizard tower'], ['gate', 'Waygate'], ['crystal', 'Magic site'], ['cave', 'Treasure']];
-      ctx.font = HUD.B(Math.round(12 * s), '600');
+      ctx.font = HUD.B(Math.round(13.5 * s), '600');
       leg.forEach(([ic, label], i) => { const lx = px + 18 * s + (i % 2) * (pw / 2 - 10 * s), ly = yy + Math.floor(i / 2) * 22 * s; HUD.icon(ctx, ic, lx + 6 * s, ly, 12 * s, '#f0e2c0'); ctx.fillStyle = HUD.COL.dim; ctx.fillText(label, lx + 18 * s, ly + 1 * s); });
-      ctx.fillStyle = HUD.COL.faint || 'rgba(240,226,192,0.4)'; ctx.font = HUD.B(Math.round(12 * s), '500');
+      ctx.fillStyle = HUD.COL.faint || 'rgba(240,226,192,0.4)'; ctx.font = HUD.B(Math.round(13.5 * s), '500');
       ctx.fillText('M or Esc — close', px + 18 * s, y0 + size);
       ctx.restore();
       // click to travel

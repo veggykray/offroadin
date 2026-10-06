@@ -65,9 +65,10 @@ The dragon always flies forward; it never hovers like a helicopter.
 - **Turning:** turn rate falls as speed rises, so slow flight turns tight and
   fast flight carves wide arcs. Heading follows the turn with momentum, and
   the body banks into turns.
-- **Height:** **Space** dives. The dragon gains speed and drops to skimming
-  height, then climbs back when released. **S** flares the wings, which
-  brakes and settles to a low hover-glide.
+- **Height:** **Space** takes the dragon low at its current pace. With **W**
+  it becomes a fast power dive; with **S** a slow, low glide. Releasing it
+  climbs back. **S** alone flares the wings, which brakes and settles to a
+  low hover-glide.
 - **Sprint:** a fast, energy-hungry stroke.
 - **Landing:** flaring low and slow over open ground settles the dragon onto
   the ground with a final cupped wingbeat and dust. Grounded, it folds its
@@ -85,7 +86,9 @@ eaten (a visible action), or flown home if stolen.
   *projected* screen space, so what you see is what you hit. They have light
   aim assistance and cost mana.
 - **Breath:** a cone from the jaws, ticking ten times a second, limited by a
-  regenerating charge and energy. Each realm's breath has its own effect:
+  regenerating charge and energy. The head swings up to about 75° toward
+  the cursor (or the AI's target), so you can fly one way and burn another,
+  and the stream rises to meet a dragon you point at. Each realm's breath has its own effect:
 
   | Realm | Breath | On troops and dragons | On buildings |
   |-------|--------|-----------------------|--------------|
@@ -154,6 +157,30 @@ falls.
 | `evasive` | Sylvara | Kites, fast raids |
 | `fortress` | Hrimgard | Defences, holds its half |
 | `aggressive` | Morgrave | Early raids, theft, sieges |
+
+## Taunts (`data/taunts.js`, `src/audio/voices.js`)
+
+- **Who says what:** wizards are inventive and petty; dragons are primal,
+  arrogant and physically insulting. Every speaker–target pairing has
+  hand-written lines, mixed with lines generated from each realm's
+  vocabulary:
+  - humans use pub insults;
+  - elves condescend in the language of nature;
+  - the ice folk sneer at warmth and weakness;
+  - the undead talk body horror.
+
+  Lines are dealt from a shuffled deck, and recently heard ones are skipped.
+- **Voices:** the browser's speech synthesiser. Wizards are pitched high;
+  dragons are the lowest pitch, slowed, with a synthesised growl under the
+  words. Without speech voices, a burble of syllables stands in and the
+  subtitles carry the words.
+- **One voice at a time.** Your own pair takes priority, a reply follows its
+  line at once, and everything else waits out a quiet spell of 5–9 seconds.
+  Each speaker also has a long cooldown, so taunts stay occasional.
+- **Rivals are local.** Their voices fade with distance, and beyond about
+  half their range you only catch a snippet.
+- **Triggers:** meeting a rival dragon, trading hits, driving one from the
+  sky, rivals squabbling within earshot, and taking a rival's land.
 
 ## Weather (`weather.js`)
 

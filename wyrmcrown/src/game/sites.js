@@ -120,6 +120,7 @@
       if (prev === fk) return;
       if (prev && g.factions[prev]) g.factions[prev].sitesOwned--;
       this.owner = fk; this.controller = fk; this.control = fk ? 1 : 0;
+      if (fk && prev && !silent && AS.Voices && AS.Voices.g === g) AS.Voices.onCapture(this, fk, prev);
       if (fk) g.factions[fk].sitesOwned++;
       this.recolour = true;
       if (this.herd) { this.herd.owner = fk; for (const o of g.life.animals) if (o.herd === this.herd) o.owner = fk; }
