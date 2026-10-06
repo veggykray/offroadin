@@ -138,8 +138,8 @@
       { id: 'wardholm', k: 'fort', name: 'Wardholm', x: 1450, y: 4500, guard: [['ogre', 2], ['bandit', 4]] },
       { id: 'eastholm', k: 'fort', name: 'Eastholm', x: 9950, y: 4500, guard: [['ogre', 2], ['bandit', 4]] },
       // the Crown Isle
-      { id: 'tidecrown', k: 'castle', name: 'Tidecrown', x: 5300, y: 4550, guard: [['giant', 2], ['ogre', 2]] },
-      { id: 'crowndeep', k: 'goldmine', name: 'Crowndeep Mine', x: 6100, y: 4600, rich: true, guard: [['giant', 1], ['troll', 2]] },
+      { id: 'tidecrown', k: 'castle', name: 'Tidecrown', x: 5250, y: 4520, guard: [['giant', 2], ['ogre', 2]] },
+      { id: 'crowndeep', k: 'goldmine', name: 'Crowndeep Mine', x: 6150, y: 4600, rich: true, guard: [['giant', 1], ['troll', 2]] },
       { id: 'gate_c', k: 'waygate', name: 'Crown Waygate', x: 5700, y: 4050 },
       // the North and South Isles
       { id: 'northdeep', k: 'goldmine', name: 'Northdeep Mine', x: 5300, y: 1050, guard: [['ogre', 2], ['troll', 1]] },

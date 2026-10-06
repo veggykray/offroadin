@@ -99,7 +99,7 @@
       { pts: [[2050, 7950], [2500, 7450], [2900, 7050]] },
       { pts: [[1950, 2050], [2400, 2550], [2850, 2950]] },
       { pts: [[7950, 2050], [7450, 2400], [6950, 2780]] },
-      { pts: [[7950, 7950], [7450, 7650], [6950, 7400]] },
+      { pts: [[7950, 7950], [7600, 7650], [7250, 7350]] },
       // river-mouth tracks to the trade posts
       { pts: [[5900, 1700], [5750, 2300], [5750, 2750]] },
       { pts: [[4100, 8300], [4200, 7750], [4250, 7300]] },
@@ -122,7 +122,7 @@
       { id: 'reedwick', k: 'village', name: 'Reedwick', x: 2900, y: 7050 },
       { id: 'mossfen', k: 'village', name: 'Mossfen', x: 2850, y: 2950 },
       { id: 'rimeholm', k: 'village', name: 'Rimeholm', x: 6950, y: 2780 },
-      { id: 'gloomwater', k: 'village', name: 'Gloomwater', x: 6950, y: 7400 },
+      { id: 'gloomwater', k: 'village', name: 'Gloomwater', x: 7250, y: 7350 },
       // lookouts over the lake
       { id: 'heronwatch', k: 'watchtower', name: 'Heronwatch', x: 2550, y: 6250 },
       { id: 'mistwatch', k: 'watchtower', name: 'Mistwatch', x: 3550, y: 2600 },
