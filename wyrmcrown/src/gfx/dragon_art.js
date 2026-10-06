@@ -29,8 +29,8 @@
     c.stroke(); c.restore();
   }
   function spineRidge(L, z0, z1, col, n, w) {
-    return { z0, z1, side: C.shade(col, -0.2), top: col, bevel: false, shape: (c, zt) => {
-      for (let i = 0; i < n; i++) { const x = L / 2 - (i + 0.5) * (L / n), s = (w || 1.3) * (1 - zt * 0.85); c.moveTo(x + s * 1.6, 0); c.lineTo(x - s * 1.2, s); c.lineTo(x - s * 1.2, -s); c.closePath(); }
+    return { z0, z1, side: C.shade(col, -0.35), top: C.shade(col, 0.15), bevel: false, shape: (c, zt) => {
+      for (let i = 0; i < n; i++) { const x = L / 2 - (i + 0.5) * (L / n), s = (w || 1.3) * (1 - zt * 0.8); c.moveTo(x + s * 0.9, 0); c.lineTo(x - s * 1.8, s * 0.55); c.lineTo(x - s * 1.4, 0); c.lineTo(x - s * 1.8, -s * 0.55); c.closePath(); }
     } };
   }
 
@@ -64,14 +64,14 @@
       else parts.push({ z0: hz, z1: hz + 2.2, side: C.shade(horn, -0.35), top: horn, stroke: 1.7, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(3, sg * 2.8); c.bezierCurveTo(-2, sg * 6.5, -5, sg * 2.5, -1.5, sg * 2); } } });
       // cheek frills
       parts.push({ z0: 2.4 + jawDrop, z1: 4 + jawDrop, side: C.shade(lk.spine, -0.2), top: lk.spine, bevel: false, shape: (c) => { for (const sg of [1, -1]) S.poly(c, [2.5, sg * 3.8, -3, sg * 6.4, -1, sg * 3.6]); } });
-      return { r: 13, h: 10, style: 'hero', parts };
+      return { r: 13, h: 10, style: 'hero', parts, scale: 1.22 };
     },
     neck(lk, w) {
       w = w || 6;
       return { r: 8, h: 7, style: 'hero', parts: [
         { z0: 0, z1: 1.5, side: C.shade(lk.belly, -0.3), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 5.5, w * 0.5) },
-        { z0: 1.5, z1: 4.6, side: lk.body, top: lk.top, shape: (c, zt) => S.ell(c, 0, 0, 5.8, w * 0.5 * (1 - zt * 0.25)), detail: (c) => scalesDetail(c, 9, w, 'rgba(0,0,0,0.2)', 3) },
-        spineRidge(9, 4.6, 6.4, lk.spine, 2, 1.1),
+        { z0: 1.5, z1: 4.8, side: lk.body, top: lk.top, shape: (c, zt) => S.ell(c, 0, 0, 7, w * 0.58 * (1 - zt * 0.25)), detail: (c) => scalesDetail(c, 10, w, 'rgba(0,0,0,0.2)', 3) },
+        spineRidge(9, 4.8, 6.4, lk.spine, 1, 1.2),
       ] };
     },
     chest(lk) {
@@ -80,12 +80,12 @@
         // tucked forelegs
         { z0: 0, z1: 2.4, side: C.shade(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, 2, sg * 6.6, 3.2, 1.6, sg * 0.5); } ,
           detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.horn, 4.6, sg * (6 + i * 0.8), 0.35); } },
-        { z0: 0.6, z1: 3.4, side: C.shade(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 9, 6.2) },
-        { z0: 3.4, z1: 8.2, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 9.6, 7 * (1 - zt * 0.22)),
+        { z0: 0.6, z1: 3.4, side: C.shade(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 9.8, 7.4) },
+        { z0: 3.4, z1: 8.6, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 10.4, 8.4 * (1 - zt * 0.22)),
           detail: (c) => { scalesDetail(c, 16, 12, 'rgba(0,0,0,0.2)', 5); S.lines(c, C.shade(t, 0.25), 0.5, [6, 3.5, -5, 4.5, 6, -3.5, -5, -4.5]); } },
         // wing roots (shoulders)
         { z0: 5.5, z1: 8.6, side: C.shade(b, -0.1), top: C.shade(t, 0.06), shape: (c) => { for (const sg of [1, -1]) S.ell(c, 1, sg * 5.6, 3.6, 2.4, sg * -0.3); } },
-        spineRidge(16, 8.2, 10.6, lk.spine, 4, 1.4),
+        spineRidge(16, 8.6, 10.8, lk.spine, 3, 1.6),
       ] };
     },
     hips(lk) {
@@ -93,16 +93,17 @@
       return { r: 14, h: 10, style: 'hero', parts: [
         { z0: 0, z1: 2.6, side: C.shade(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, -3, sg * 6.4, 4, 2, sg * -0.4); },
           detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.horn, -6.6, sg * (5.6 + i * 0.9), 0.4); } },
-        { z0: 0.6, z1: 3.2, side: C.shade(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 8.4, 5.4) },
-        { z0: 3.2, z1: 7.4, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 8.8, 6.2 * (1 - zt * 0.24)), detail: (c) => scalesDetail(c, 15, 10, 'rgba(0,0,0,0.2)', 4) },
-        spineRidge(14, 7.4, 9.6, lk.spine, 3, 1.3),
+        { z0: 0.6, z1: 3.2, side: C.shade(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 9, 6.4) },
+        { z0: 3.2, z1: 7.6, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 9.6, 7.2 * (1 - zt * 0.24)), detail: (c) => scalesDetail(c, 15, 11, 'rgba(0,0,0,0.2)', 4) },
+        spineRidge(14, 7.6, 9.6, lk.spine, 2, 1.4),
       ] };
     },
     tail(lk, w, L) {
+      L *= 1.55; // long overlapping segments read as one continuous tail
       return { r: Math.max(6, L * 0.8), h: 6, style: 'hero', parts: [
         { z0: 0, z1: 1.2, side: C.shade(lk.belly, -0.3), top: lk.belly, shape: (c) => S.ell(c, 0, 0, L * 0.55, w * 0.42) },
         { z0: 1.2, z1: 1.2 + w * 0.42, side: lk.body, top: lk.top, shape: (c, zt) => S.ell(c, 0, 0, L * 0.58, w * 0.5 * (1 - zt * 0.25)), detail: (c) => scalesDetail(c, L, w, 'rgba(0,0,0,0.2)', 2) },
-        spineRidge(L, 1.2 + w * 0.42, 2.4 + w * 0.5, lk.spine, 2, w * 0.17),
+        spineRidge(L, 1.2 + w * 0.42, 2.2 + w * 0.5, lk.spine, 1, w * 0.2),
       ] };
     },
     tip(lk) {
@@ -145,7 +146,7 @@
   /* chain layout: rest spacing between consecutive segment centres (world
    * units, scale 1) and the sheets used for each node */
   const CHAIN = [
-    { k: 'head', d: 0 }, { k: 'neck', d: 9.5, w: 5.4 }, { k: 'neck', d: 6.5, w: 6.4 }, { k: 'chest', d: 10 },
+    { k: 'head', d: 0 }, { k: 'neck', d: 10.5, w: 5.6 }, { k: 'neck', d: 6.5, w: 6.4 }, { k: 'chest', d: 10 },
     { k: 'hips', d: 13 }, { k: 'tail', d: 11, w: 8, L: 10 }, { k: 'tail', d: 8, w: 6.6, L: 9 }, { k: 'tail', d: 7.2, w: 5.4, L: 8 },
     { k: 'tail', d: 6.4, w: 4.4, L: 7 }, { k: 'tail', d: 5.8, w: 3.5, L: 6 }, { k: 'tail', d: 5.2, w: 2.8, L: 5.5 }, { k: 'tip', d: 5 },
   ];
@@ -159,7 +160,7 @@
     if (r) return r;
     const lk = LOOKS[fk] || LOOKS.human;
     const F = AS.Forge, D = 32;
-    const sc = (m) => { m.scale = scale; return m; };
+    const sc = (m) => { m.scale = (m.scale || 1) * scale; return m; };
     const sheets = CHAIN.map((n, i) => {
       const id = 'drg:' + key + ':' + i;
       if (n.k === 'head') return F.sheet(id, () => sc(Seg.head(lk, false)), D, 1);
@@ -183,9 +184,9 @@
    * shoulder → elbow → wrist on the leading edge, four fingers from the wrist
    * to the trailing-edge tips, membrane back to the flank. */
   const WING = {
-    shoulder: [1, 5], elbow: [-3, 18], wrist: [4, 31],
-    tips: [[-2, 47], [-12, 45], [-20, 37], [-24, 26]],
-    flank: [-14, 6],
+    shoulder: [1, 5], elbow: [-4, 19], wrist: [5, 33],
+    tips: [[-1, 52], [-13, 49], [-22, 40], [-27, 26]],
+    flank: [-17, 6],
   };
   // fold: 0 = spread, 1 = folded tight along the body
   function wingPoints(span, fold, sweep, out) {
@@ -276,7 +277,7 @@
         // elevation folds the membrane up around the shoulder line; cup curls the tips
         const cup = (w.cup || 0) * outward * 0.35;
         const yy = 4 * s + outward * ce;
-        const zz = outward * se - bankK * outward * 0.75 + cup;
+        const zz = (outward * se - bankK * outward * 0.75 + cup) * 0.62;
         const wx = ch.x + lx * ca - yy * side * sa, wy = ch.y + lx * sa + yy * side * ca;
         out.push({ x: wx, y: wy, z: ch.z + 6 * s + zz });
       }

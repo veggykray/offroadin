@@ -1,0 +1,55 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>WYRMCROWN map view</title>
+<style>body{margin:0;background:#111;color:#eee;font:12px monospace}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script src="../../alien-strike/src/core/util.js"></script>
+<script src="../../alien-strike/src/core/input.js"></script>
+<script src="../../alien-strike/src/core/save.js"></script>
+<script src="../src/core/config.js"></script>
+<script src="../../alien-strike/src/gfx/forge.js"></script>
+<script src="../../alien-strike/src/gfx/models.js"></script>
+<script src="../../alien-strike/src/gfx/models4.js"></script>
+<script src="../../alien-strike/src/gfx/terrain.js"></script>
+<script src="../../alien-strike/src/gfx/decals.js"></script>
+<script src="../data/palettes.js"></script>
+<script src="../data/factions.js"></script>
+<script src="../src/gfx/realm_terrain.js"></script>
+<script src="../src/game/realm_world.js"></script>
+<script src="../src/game/realm.js"></script>
+<script src="../maps/maps.js"></script>
+<script src="../maps/map01.js"></script>
+<script>
+/* Whole-map preview: ?map=<id>&scale=12. Draws the terrain colour map with
+ * forests and roads, then towns, sites (labelled), bridges and herds. */
+const q = new URLSearchParams(location.search);
+const m = AS.Maps.byId[q.get('map') || 'sundered'] || AS.Maps.list[0];
+const sc = +(q.get('scale') || 12);
+const world = AS.RealmWorld.make(m);
+const t0 = performance.now();
+const T = AS.Realm.makeTerrain(world, m);
+const t1 = performance.now();
+const map = T.buildMap(sc);
+const t2 = performance.now();
+const cv = document.getElementById('c'); cv.width = map.width; cv.height = map.height + 24;
+const c = cv.getContext('2d');
+c.drawImage(map, 0, 0);
+c.font = 'bold 11px sans-serif'; c.textAlign = 'center';
+const col = { goldmine: '#ffd23a', village: '#ffffff', tradepost: '#ff9a3a', wizardtower: '#c08aff', magicwell: '#5ae8ff', grove: '#7aff9a', crystal: '#9adfff', relic: '#ffe08a', fort: '#d0c0a0', castle: '#ffcf6a', bridge: '#c8a878', shrine: '#ffffaa', cave: '#a08060', nest: '#ff6a4a', watchtower: '#e0e0e0', waygate: '#8affff', ruins: '#b0a090' };
+for (const s of m.sites) {
+  const x = s.x / sc, y = s.y / sc;
+  c.fillStyle = '#000'; c.beginPath(); c.arc(x, y, 6, 0, 6.283); c.fill();
+  c.fillStyle = col[s.k] || '#f0f'; c.beginPath(); c.arc(x, y, 4.5, 0, 6.283); c.fill();
+  c.fillStyle = '#000'; c.fillText(s.name, x + 1, y - 8 + 1); c.fillStyle = '#fff'; c.fillText(s.name, x, y - 8);
+}
+for (const fk in m.factions) {
+  const t = m.factions[fk].town, x = t.x / sc, y = t.y / sc;
+  c.fillStyle = AS.Data.factions[fk].color; c.strokeStyle = '#000'; c.lineWidth = 3;
+  c.beginPath(); c.arc(x, y, 14, 0, 6.283); c.fill(); c.stroke();
+  c.fillStyle = '#fff'; c.font = 'bold 13px sans-serif'; c.fillText(AS.Data.factions[fk].short.toUpperCase(), x, y + 30);
+}
+c.font = '10px sans-serif';
+for (const h of m.wild) { c.fillStyle = h.k === 'deer' ? '#c88a4a' : h.k === 'boar' ? '#5a3a2a' : h.k === 'goat' ? '#e8e0d0' : '#8a5a3a'; c.fillRect(h.x / sc - 2, h.y / sc - 2, 4, 4); }
+for (const r of m.runes || []) { c.strokeStyle = '#8affff'; c.lineWidth = 1.5; c.beginPath(); c.arc(r[0] / sc, r[1] / sc, 4, 0, 6.283); c.stroke(); }
+c.fillStyle = '#ccc'; c.textAlign = 'left'; c.fillText(m.name + ' — terrain ' + (t1 - t0).toFixed(0) + 'ms, map ' + (t2 - t1).toFixed(0) + 'ms', 6, map.height + 16);
+window.ready = true;
+</script></body></html>

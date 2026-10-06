@@ -294,7 +294,12 @@
       const rockT = U.clamp((mt - 0.74) * 6, 0, 0.75) * (1 - iceW * 0.6);
       if (rockT > 0) { r = U.lerp(r, 132, rockT); g = U.lerp(g, 124, rockT); b = U.lerp(b, 112, rockT); }
       const snowLine = 0.86 - iceW * 0.3;
-      if (mt > snowLine) { const t = U.clamp((mt - snowLine) * 9, 0, 1); r = U.lerp(r, 238, t); g = U.lerp(g, 243, t); b = U.lerp(b, 250, t); }
+      if (mt > snowLine) {
+        // snow caps, except in the blight where the peaks are ash and black glass
+        const t = U.clamp((mt - snowLine) * 9, 0, 1) * (1 - deadW * 0.85), ta = U.clamp((mt - snowLine) * 9, 0, 1) * deadW;
+        r = U.lerp(r, 238, t); g = U.lerp(g, 243, t); b = U.lerp(b, 250, t);
+        r = U.lerp(r, 86, ta); g = U.lerp(g, 80, ta); b = U.lerp(b, 88, ta);
+      }
       // forest floor darkens under the canopy
       if (ex > 0.25 && s > 20) {
         const t = U.clamp((ex - 0.25) * 1.6, 0, 0.7);
@@ -371,10 +376,10 @@
         sets.sheets[name] = list;
       };
       const P = (k) => tint[k] || null;
-      mk('oak', 'tree_oak', P('human'), 6); mk('birch', 'tree_birch', P('human'), 4); mk('pine', 'tree_pine', P('neutral'), 5);
+      mk('oak', 'tree_oak', P('human'), 8); mk('oakAutumn', 'tree_oak', null, 5, { tint: 'autumn' }); mk('birch', 'tree_birch', P('human'), 4); mk('pine', 'tree_pine', P('neutral'), 6);
       mk('willow', 'tree_willow', null, 3); mk('fruit', 'tree_fruit', null, 3);
-      mk('elfoak', 'tree_oak', P('elf') || { leafA: '#1f5a2e', leafB: '#4aa25a', bark: '#5a4a3a' }, 5);
-      mk('elder', 'tree_elder', null, 3); mk('elfbirch', 'tree_birch', P('elf') || { leafA: '#2a7a4a', leafB: '#8ad89a' }, 3);
+      mk('elfoak', 'tree_oak', P('elf'), 6, { tint: 'emerald' });
+      mk('elder', 'tree_elder', null, 3); mk('elfbirch', 'tree_birch', P('elf'), 3, { tint: 'spring' });
       mk('snowpine', 'tree_snowpine', null, 5); mk('dead', 'tree_dead', null, 5);
       mk('darkpine', 'tree_pine', P('undead') || { leafA: '#1c2a24', leafB: '#36483c', bark: '#2a2420' }, 4);
       mk('bush', 'bush', null, 4); mk('berry', 'bush_berry', null, 3); mk('flowers', 'flowers', null, 4); mk('reeds', 'reeds', null, 3);
@@ -382,11 +387,11 @@
       mk('shard', 'ice_shard', null, 3); mk('shroom', 'mushrooms_glow', null, 3); mk('bones', 'bones_pile', null, 3); mk('stump', 'stump', null, 3);
       // tree choice per biome: [set name, weight]
       sets.trees = {
-        human: [['oak', 5], ['birch', 2], ['pine', 1.2], ['fruit', 0.4]],
+        human: [['oak', 4], ['oakAutumn', 1.6], ['birch', 2], ['pine', 1.2], ['fruit', 0.4]],
         elf: [['elfoak', 4], ['elfbirch', 2], ['elder', 0.35], ['pine', 0.6]],
         ice: [['snowpine', 6], ['pine', 0.8]],
         undead: [['dead', 4], ['darkpine', 2.2]],
-        neutral: [['oak', 3], ['pine', 2.5], ['birch', 1.5]],
+        neutral: [['oak', 3], ['oakAutumn', 0.6], ['pine', 2.5], ['birch', 1.5]],
       };
       sets.under = {
         human: [['bush', 2], ['flowers', 2.5], ['berry', 0.6], ['rock', 0.6], ['stump', 0.3]],
@@ -446,6 +451,7 @@
           if (hv > dens * 0.82 * q + lone) continue;
           const bk = biomeOf(x, y);
           let kind = this.pickW(ds.trees[bk], U.hash2(gx, gy, sd + 404));
+          if (kind === 'elder' && (gx % 3 || gy % 3)) kind = 'elfoak';
           // willows lean over the water's edge
           if (bk !== 'ice' && bk !== 'undead' && this.gs(this.gWater, x, y) < 90 && U.hash2(gx, gy, sd + 405) < 0.5) kind = 'willow';
           items.push({ k: kind, x, y, v: (U.hash2(gx, gy, sd + 406) * 97) | 0, r: kind === 'elder' ? 20 : 7 });
@@ -500,7 +506,7 @@
         const x = i * scale + scale / 2, y = j * scale + scale / 2, q = (j * w + i) * 4;
         const fo = this.gs(this.gForest, x, y), wd = this.gs(this.gWater, x, y);
         if (fo > 0.3 && wd > 20 && !this.gn(this.gField, x, y)) { const k = 1 - Math.min(0.42, (fo - 0.3) * 0.7); D[q] *= k * 0.92; D[q + 1] *= k; D[q + 2] *= k * 0.9; }
-        if (this.gs(this.gRoad, x, y) < scale * 0.7 && wd > 0) { D[q] = U.lerp(D[q], 196, 0.55); D[q + 1] = U.lerp(D[q + 1], 176, 0.55); D[q + 2] = U.lerp(D[q + 2], 132, 0.55); }
+        if (this.gs(this.gRoad, x, y) < Math.max(18, scale * 1.1) && wd > 0) { D[q] = U.lerp(D[q], 196, 0.55); D[q + 1] = U.lerp(D[q + 1], 176, 0.55); D[q + 2] = U.lerp(D[q + 2], 132, 0.55); }
       }
       ctx.putImageData(img, 0, 0);
       return cv;

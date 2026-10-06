@@ -44,6 +44,7 @@
     constructor(g, faction, opts) {
       opts = opts || {};
       this.g = g; this.faction = faction; this.fk = faction.key; this.team = faction.key;
+      this.fdef = AS.Data.factions[this.fk];
       this.isDragon = true;
       const D = faction.dragon;
       this.def = D;
@@ -101,6 +102,15 @@
       for (const k in this.buffs) { this.buffs[k] -= dt; if (this.buffs[k] <= 0) { delete this.buffs[k]; if (this.onBuffEnd) this.onBuffEnd(k); } }
       if (this.down > 0) { this.updateDown(dt); return; }
       if (this.pilot) this.pilot.read(this, this.input, dt);
+      // waygate travel and stored spells
+      if (this.input.eatHit && !this.carry && AS.Sites) {
+        const gate = AS.Sites.gateAt(this.g, this);
+        if (gate && AS.Sites.gatesOf(this.g, this.team).length > 1) {
+          if (this.isPlayer && AS.WarMap) { AS.WarMap.openTravel(this.g, gate); this.input.eatHit = false; }
+          else if (this.ai && this.ai.travelTo) { AS.Sites.travel(this.g, this, this.ai.travelTo); this.ai.travelTo = null; this.input.eatHit = false; }
+        }
+      }
+      if (this.input.spellHit && AS.Powerups) { AS.Powerups.cast(this); this.input.spellHit = false; }
       this.flight(dt);
       this.vitals(dt);
       if (AS.Combat) AS.Combat.dragonWeapons(this, dt);
@@ -316,6 +326,7 @@
       return dmg;
     }
     heal(v) { this.hp = Math.min(this.maxHp, this.hp + v); }
+    dropCarry() { if (AS.Life) AS.Life.dropCarry(this); }
 
     /* defeated dragons are driven off: they crash, then recover at their roost */
     knockDown(src) {
@@ -428,7 +439,7 @@
       if (hp < 0.35 && Math.random() < (0.35 - hp) * 2) AS.FX.smoke(this.x, this.y, this.z + 6, 5, hp < 0.15);
       // faction aura motes
       if (this.buffs.shield && Math.random() < 0.5) P.spawn({ x: this.x + U.range(-30, 30), y: this.y + U.range(-20, 20) + this.z, z: this.z + U.range(0, 16), vz: 10, shape: P.GLOW, col: '#9fd8ff', size: 3, size2: 0.5, life: 0.6, add: true });
-      AS.Renderer.light(this.x, this.y - this.z, 30 * this.scale, this.faction.color, 0.08);
+      AS.Renderer.light(this.x, this.y - this.z, 30 * this.scale, this.fdef.color, 0.08);
     }
 
     /* ================= draw ================= */
@@ -451,7 +462,7 @@
       }
       const st = this.syncDraw();
       AS.DragonArt.draw(ctx, st, ox, oy, R);
-      if (this.carry && this.carryPos) this.carry.drawCarried && this.carry.drawCarried(ctx, this.carryPos.x, this.carryPos.y, this.carryPos.z, ox, oy, R, this.angle);
+      if (this.carry && this.carryPos) AS.Life.drawCarried(this.carry, ctx, this.carryPos.x, this.carryPos.y, this.carryPos.z, ox, oy, R, this.angle);
       if (this.buffs.shield) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.25 + Math.sin(this.t * 6) * 0.08;
         ctx.strokeStyle = '#9fd8ff'; ctx.lineWidth = 1.5;

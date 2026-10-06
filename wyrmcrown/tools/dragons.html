@@ -1,0 +1,78 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>WYRMCROWN dragons</title>
+<style>body{margin:0;background:#1b1a17}canvas{display:block}</style></head>
+<body><canvas id="c" width="1500" height="1000"></canvas>
+<script src="../../alien-strike/src/core/util.js"></script>
+<script src="../../alien-strike/src/gfx/forge.js"></script>
+<script src="../../alien-strike/src/gfx/models.js"></script>
+<script src="../../alien-strike/src/gfx/renderer.js"></script>
+<script src="../data/palettes.js"></script>
+<script src="../data/factions.js"></script>
+<script src="../src/gfx/dragon_art.js"></script>
+<script src="../src/game/dragon.js"></script>
+<script>
+/* Dragon rig preview: the four faction dragons in flight poses (glide,
+ * downstroke, upstroke, banked turn, dive, brake/hover) at 2.2x and at game
+ * scale. ?anim=1 animates a looping flight for visual checks. */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const R = AS.Renderer, U = AS.U;
+const fakeG = { time: 0, map: { w: 9999, h: 9999 } };
+const poses = [
+  { name: 'glide', set: (d) => { d.freq = 0; d.phase = 0.3; d.wing.elev = 0.06; d.wing.fold = 0; d.wing.sweep = -0.05; } },
+  { name: 'downstroke', set: (d) => { d.freq = 2; d.phase = 0.12; d.wing.elev = 0.22 + Math.cos(0.12 * 6.283) * 0.55; d.wing.fold = 0; } },
+  { name: 'upstroke', set: (d) => { d.freq = 2; d.phase = 0.75; d.wing.elev = 0.22 + Math.cos(0.75 * 6.283) * 0.55; d.wing.fold = 0.4; } },
+  { name: 'wings high', set: (d) => { d.freq = 2; d.phase = 0.97; d.wing.elev = 0.75; d.wing.fold = 0.1; } },
+  { name: 'banked turn', set: (d) => { d.angVel = 1.6; d.bank = 0.8; d.wing.elev = 0.1; } },
+  { name: 'dive', set: (d) => { d.pitch = 0.6; d.wing.elev = 0.18; d.wing.fold = 0.55; d.wing.sweep = -0.65; } },
+  { name: 'brake / hover', set: (d) => { d.pitch = -0.18; d.wing.elev = 0.5; d.wing.sweep = 0.35; d.wing.cup = 0.55; } },
+];
+const fks = ['human', 'elf', 'ice', 'undead'];
+function make(fk, ang) {
+  const d = new AS.Dragon(fakeG, Object.assign({ upgrades: {} }, AS.Data.factions[fk]), { x: 0, y: 0, angle: ang });
+  d.input.aimX = Math.cos(ang - 0.6) * 200; d.input.aimY = Math.sin(ang - 0.6) * 200 - 60;
+  return d;
+}
+function drawAt(d, x, y, sc) {
+  ctx.save(); ctx.setTransform(sc, 0, 0, sc, x, y);
+  ctx.globalAlpha = 0.3; d.drawShadow(ctx, 0, 0); ctx.globalAlpha = 1;
+  d.draw(ctx, 0, 0, R);
+  ctx.restore();
+}
+function frame(t) {
+  ctx.fillStyle = '#6f8a3e'; ctx.fillRect(0, 0, cv.width, cv.height);
+  const rng = new U.RNG(3);
+  for (let i = 0; i < 5000; i++) { ctx.fillStyle = rng.next() < 0.5 ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)'; ctx.fillRect(rng.next() * 1500, rng.next() * 1000, 3, 3); }
+  ctx.fillStyle = '#fff'; ctx.font = '13px monospace';
+  if (anim) {
+    fks.forEach((fk, i) => {
+      const d = dr[i];
+      fakeG.time = t; d.t = t;
+      d.angle = -Math.PI / 2 + Math.sin(t * 0.5 + i) * 0.8; d.angVel = Math.cos(t * 0.5 + i) * 0.4;
+      d.input.throttle = Math.sin(t * 0.3 + i) > 0 ? 1 : 0; d.speed = 220;
+      d.freq = d.input.throttle ? 2.1 : 0; if (d.freq) d.phase = (t * 2.1 + i * 0.2) % 1;
+      const st = Math.sin(d.phase * 6.283);
+      d.wing.elev = d.freq ? 0.22 + Math.cos(d.phase * 6.283) * 0.55 : 0.06; d.wing.fold = d.freq && st < 0 ? -st * 0.42 : 0;
+      d.bank = d.angVel * 0.5;
+      d.layoutRig(1 / 60);
+      drawAt(d, 200 + i * 360, 520, 2.4);
+      ctx.fillStyle = '#fff'; ctx.fillText(fk, 160 + i * 360, 300);
+    });
+    requestAnimationFrame((ms) => frame(ms / 1000));
+    return;
+  }
+  // big: faction dragons in each pose
+  fks.forEach((fk, row) => {
+    poses.forEach((p, col) => {
+      const d = make(fk, -0.9 + (col % 2) * 0.25);
+      p.set(d); for (let k = 0; k < 20; k++) d.layoutRig(1 / 60);
+      drawAt(d, 110 + col * 205, 175 + row * 230, 1.5);
+      if (row === 0) ctx.fillText(p.name, 60 + col * 205, 20);
+    });
+    ctx.fillText(fk, 4, 175 + row * 230);
+  });
+  window.ready = true;
+}
+const anim = new URLSearchParams(location.search).get('anim') === '1';
+const dr = fks.map((fk) => make(fk, -Math.PI / 2));
+frame(0);
+</script></body></html>

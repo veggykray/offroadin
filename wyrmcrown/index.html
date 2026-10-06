@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WYRMCROWN</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <script>
+    // Boot guard: if a game file fails to load (for example the folder was opened
+    // from inside a ZIP, or the shared alien-strike engine folder is missing) or
+    // start-up throws, explain what happened instead of hanging on the loading text.
+    (function () {
+      var missing = [], firstError = '';
+      window.addEventListener('error', function (e) {
+        var t = e.target;
+        if (t && (t.tagName === 'SCRIPT' || (t.tagName === 'LINK' && t.rel === 'stylesheet'))) missing.push(t.getAttribute('src') || t.getAttribute('href'));
+        else if (e instanceof ErrorEvent && !firstError) firstError = e.message || String(e.error);
+      }, true);
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var boot = document.getElementById('boot');
+          if (!boot) return;
+          var p = function (html) { return '<p style="margin:0 0 14px">' + html + '</p>'; };
+          var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+          var body = missing.length
+            ? p('WYRMCROWN could not find its game files (' + missing.length + ' missing, for example <code>' + esc(missing[0]) + '</code>).') +
+              p('WYRMCROWN is built on the ALIEN STRIKE engine: keep the <b>wyrmcrown</b> folder next to the <b>alien-strike</b> folder, exactly as they are in the download.') +
+              p('If you opened <b>index.html</b> straight from the downloaded ZIP, extract the ZIP first (right-click it, <b>Extract All</b>), then open <b>wyrmcrown/index.html</b> from the extracted folder.')
+            : p('WYRMCROWN failed to start: <code>' + esc(firstError || 'start-up did not finish') + '</code>') +
+              p('Try a current version of Chrome, Edge or Firefox. If it keeps happening, please report the message above.');
+          boot.setAttribute('style', 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0d0a08;color:#efe2c6;font:16px/1.5 Georgia,serif;padding:24px;z-index:100');
+          boot.innerHTML = '<div style="max-width:640px"><h1 style="margin:0 0 16px;font:700 26px Georgia,serif;letter-spacing:4px;color:#e8b84a">WYRMCROWN</h1>' + body + '</div>';
+        }, 1500);
+      });
+    })();
+  </script>
+  <link rel="stylesheet" href="UI/fonts.css" />
+  <link rel="stylesheet" href="UI/style.css" />
+</head>
+<body>
+  <noscript><p style="font:16px/1.5 serif;color:#efe2c6;background:#0d0a08;padding:24px;margin:0">WYRMCROWN needs JavaScript. Please enable it for this page.</p></noscript>
+  <canvas id="game"></canvas>
+  <div id="ui"></div>
+  <div id="boot">WYRMCROWN — THE REALMS AWAKEN…</div>
+
+  <!-- shared engine (ALIEN STRIKE) -->
+  <script src="../alien-strike/src/core/util.js"></script>
+  <script src="../alien-strike/src/core/input.js"></script>
+  <script src="../alien-strike/src/core/save.js"></script>
+  <script src="src/core/config.js"></script>
+  <script src="../alien-strike/src/gfx/forge.js"></script>
+  <script src="../alien-strike/src/gfx/models.js"></script>
+  <script src="../alien-strike/src/gfx/models4.js"></script>
+  <script src="../alien-strike/src/gfx/terrain.js"></script>
+  <script src="../alien-strike/src/gfx/particles.js"></script>
+  <script src="../alien-strike/src/gfx/decals.js"></script>
+  <script src="../alien-strike/src/gfx/atmosphere.js"></script>
+  <script src="../alien-strike/src/gfx/renderer.js"></script>
+  <script src="../alien-strike/src/audio/synth.js"></script>
+  <script src="../alien-strike/src/audio/audio.js"></script>
+  <script src="../alien-strike/src/audio/music.js"></script>
+  <script src="../alien-strike/src/game/camera.js"></script>
+  <script src="../alien-strike/src/game/entity.js"></script>
+  <script src="../alien-strike/src/game/projectiles.js"></script>
+  <script src="../alien-strike/UI/kit.js"></script>
+  <!-- data -->
+  <script src="data/palettes.js"></script>
+  <script src="data/factions.js"></script>
+  <script src="data/sfx.js"></script>
+  <script src="data/buildings.js"></script>
+  <script src="data/sites.js"></script>
+  <!-- art -->
+  <script src="src/gfx/realm_terrain.js"></script>
+  <script src="src/gfx/dragon_art.js"></script>
+  <script src="src/gfx/models_nature.js"></script>
+  <script src="src/gfx/models_elf.js"></script>
+  <script src="src/gfx/models_ice.js"></script>
+  <script src="src/gfx/decals_realm.js"></script>
+  <!-- game -->
+  <script src="src/game/realm_world.js"></script>
+  <script src="src/game/dragon.js"></script>
+  <script src="src/game/pilot.js"></script>
+  <script src="src/game/combat.js"></script>
+  <script src="src/game/life.js"></script>
+  <script src="src/game/nav.js"></script>
+  <script src="src/game/building.js"></script>
+  <script src="src/game/troops.js"></script>
+  <script src="src/game/faction.js"></script>
+  <script src="src/game/sites.js"></script>
+  <script src="src/game/powerups.js"></script>
+  <script src="src/game/advisor.js"></script>
+  <script src="src/game/ai.js"></script>
+  <script src="src/game/realm.js"></script>
+  <!-- maps -->
+  <script src="maps/maps.js"></script>
+  <script src="maps/map01.js"></script>
+  <!-- ui -->
+  <script src="UI/hud.js"></script>
+  <script src="UI/court.js"></script>
+  <script src="UI/warmap.js"></script>
+  <script src="src/debug.js"></script>
+  <!-- app -->
+  <script src="src/main.js"></script>
+</body>
+</html>
