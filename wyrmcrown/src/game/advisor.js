@@ -28,7 +28,7 @@
       if (g.time - F.attackedT < 12) return { title: 'TO ARMS!', text: F.def.short + ' is under attack' + (F.lastAttacker ? ' by ' + F.lastAttacker.def.short : '') + '! Fly home and drive them off.', icon: 'flame', col: '#ff7a5a', target: { x: F.townPos.x, y: F.townPos.y, label: 'HOME' } };
       if (p.energy < p.maxEnergy * 0.25) {
         const prey = this.nearestPrey(g, p);
-        return { title: 'HUNGER', text: 'Your dragon is ' + (p.energy <= 0 ? 'starving and weakening' : 'hungry') + '. Dive over an animal and press E to snatch and eat it.', icon: 'meat', col: '#f0a23a', target: prey ? { x: prey.x, y: prey.y, label: 'PREY' } : null };
+        return { title: 'HUNGER', text: 'Your dragon is ' + (p.energy <= 0 ? 'starving and weakening' : 'hungry') + '. Double-click an animal to swoop on it and eat it.', icon: 'meat', col: '#f0a23a', target: prey ? { x: prey.x, y: prey.y, label: 'PREY' } : null };
       }
       if (p.hp < p.maxHp * 0.3) return { title: 'WOUNDED', text: 'Badly hurt. Rest at your roost to heal — or claim an Elixir of Life.', icon: 'heart', col: '#ff8a7a', target: { x: F.roost.x, y: F.roost.y, label: 'ROOST' } };
       // a rival laid bare

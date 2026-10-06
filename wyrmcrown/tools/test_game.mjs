@@ -181,6 +181,61 @@ await test('food: tap E low and slow to eat, hold E to carry', async (keep) => {
   return page;
 });
 
+await test('combat: the staff still fires after eating', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  await ev(page, () => {
+    const g = AS.game, p = g.player;
+    const o = g.life.animals.find((a) => !a.owner && a.alive && !a.carried && g.terrain.kindFast(a.x, a.y) === 0);
+    AS.Debug.tp(o.x - 45, o.y, 46); p.angle = 0; p.speed = 120; p.energy = 30;
+  });
+  await page.keyboard.press('KeyE');
+  await play(page, 1.5);
+  ok(await ev(page, () => AS.game.player.stats.eaten >= 1 && AS.game.player.eatT === 0), 'ate, and the meal finished cleanly');
+  const m0 = await ev(page, () => { const p = AS.game.player; p.mana = p.maxMana; return p.mana; });
+  await page.mouse.move(900, 300);
+  await page.mouse.down(); await play(page, 0.5); await page.mouse.up();
+  const m1 = await ev(page, () => AS.game.player.mana);
+  ok(m1 < m0 - 3, 'bolts cast after the meal (magic ' + Math.round(m0) + ' → ' + Math.round(m1) + ')');
+  return page;
+});
+
+await test('food: double-click an animal and the dragon hunts it down', async (keep) => {
+  const page = keep(await open('?map=sundered&god=1'));
+  const e0 = await ev(page, () => {
+    const g = AS.game, p = g.player;
+    const o = g.life.animals.find((a) => !a.owner && a.alive && !a.carried && g.terrain.kindFast(a.x, a.y) === 0);
+    window.__o = o;
+    // cruising past it at height, heading away
+    AS.Debug.tp(o.x - 200, o.y + 30, 62); p.angle = p.velA = Math.PI; p.speed = 185; p.energy = 30;
+    return p.stats.eaten;
+  });
+  await play(page, 0.3);
+  const q = await ev(page, () => [__o.x, __o.y]); const sp = await screenOf(page, q[0], q[1] - 4);
+  await page.mouse.move(sp.x, sp.y);
+  await page.mouse.dblclick(sp.x, sp.y);
+  await play(page, 0.2);
+  ok(await ev(page, () => !!AS.game.player.pilot.quarry), 'the hunt began');
+  await page.waitForFunction((e0) => AS.game.player.stats.eaten > e0, e0, { timeout: 60000, polling: 100 });
+  ok(await ev(page, () => !AS.game.player.pilot.quarry && AS.game.player.energy > 45), 'snatched and ate it, then handed back control');
+  return page;
+});
+
+await test('flight: double-tap SPACE loops the loop and dodges fire', async (keep) => {
+  const page = keep(await open('?map=sundered'));
+  await ev(page, () => { const p = AS.game.player; AS.Debug.tp(3200, 6400, 60); p.angle = p.velA = 0.3; p.speed = 220; p.energy = 80; window.__peak = 0; window.__dodged = null;
+    const iv = setInterval(() => { if (!p.loop) return; __peak = Math.max(__peak, p.z); if (p.evading && __dodged === null) { const hp = p.hp; __dodged = p.targetable === false && p.takeDamage(25, 'magic', AS.game.factions.elf.dragon) === 0 && p.hp === hp; } }, 30); });
+  await play(page, 0.3);
+  await page.keyboard.press('Space'); await page.waitForTimeout(90); await page.keyboard.press('Space');
+  await play(page, 0.25);
+  ok(await ev(page, () => !!AS.game.player.loop), 'a double-tap started a loop');
+  await play(page, 1.6);
+  const r = await ev(page, () => { const p = AS.game.player; return { loop: !!p.loop, peak: __peak, dodged: __dodged, a: p.angle, z: p.z, hit: p.takeDamage(5, 'magic', AS.game.factions.elf.dragon) }; });
+  ok(!r.loop && r.peak > 130, 'climbed over the top and came back (peak ' + Math.round(r.peak) + ')');
+  ok(r.dodged === true, 'nothing touches the dragon over the top of the loop');
+  ok(Math.abs(r.a - 0.3) < 0.05 && r.hit > 0, 'back on its heading, and hittable again');
+  return page;
+});
+
 await test('combat: the head turns to aim the breath at the cursor', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
   const t = await ev(page, () => {

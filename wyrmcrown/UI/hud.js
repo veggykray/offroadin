@@ -319,9 +319,10 @@
       const lines = [];
       const Fp = g.playerFaction;
       if (Math.hypot(p.x - Fp.townPos.x, p.y - Fp.townPos.y) < 520) lines.push(['T', 'HOLD COURT — SPEND YOUR GOLD']);
-      if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);
+      if (p.pilot && p.pilot.quarry) lines.push(['W A S D', 'HUNTING — ANY FLIGHT KEY BREAKS OFF']);
+      else if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);
       else if (AS.Life.preyInReach(g, p)) lines.push(['E', 'SNATCH AND EAT — HOLD E TO CARRY IT HOME']);
-      else if (p.energy < p.maxEnergy * 0.3 && !p.carry) lines.push(['SPACE · E', 'HUNGRY — DROP LOW AND SLOW OVER AN ANIMAL, THEN PRESS E']);
+      else if (p.energy < p.maxEnergy * 0.3 && !p.carry) lines.push(['2× CLICK', 'HUNGRY — DOUBLE-CLICK AN ANIMAL TO SWOOP ON IT']);
       if (p.landed) lines.push(['W', 'TAKE OFF — RESTING HEALS AND SAVES ENERGY']);
       else if (!p.carry && p.speed < 110 && p.z < 52 && p.braking && p.canLand && p.canLand()) lines.push(['S', 'KEEP FLARING TO LAND']);
       const gate = AS.Sites && AS.Sites.gateAt(g, p);
@@ -355,7 +356,8 @@
     worldMarks(ctx, g, W, H, s) {
       const R = AS.Renderer, cam = g.camera, p = g.player;
       const marks = [];
-      for (const d of g.dragons) if (d !== p && d.targetable && Math.hypot(d.x - p.x, d.y - p.y) < 1800) marks.push({ x: d.x, y: d.y - d.z, col: d.fdef.color, label: d.name, kind: 'wing', d });
+      this.preyMarks(ctx, g, s);
+      for (const d of g.dragons) if (d !== p && d.alive && d.down <= 0 && Math.hypot(d.x - p.x, d.y - p.y) < 1800) marks.push({ x: d.x, y: d.y - d.z, col: d.fdef.color, label: d.name, kind: 'wing', d });
       const home = g.playerFaction.townPos;
       marks.push({ x: home.x, y: home.y, col: COL.gold, label: 'HOME', kind: 'castle' });
       if (this.advTarget) marks.push({ x: this.advTarget.x, y: this.advTarget.y, col: '#fff2c0', label: this.advTarget.label || '', kind: 'flag' });
@@ -375,6 +377,41 @@
         icon(ctx, mk.kind, 0, 0, 16 * s, mk.col);
         ctx.rotate(a); ctx.fillStyle = mk.col; ctx.beginPath(); ctx.moveTo(22 * s, 0); ctx.lineTo(15 * s, -6 * s); ctx.lineTo(15 * s, 6 * s); ctx.closePath(); ctx.fill();
         ctx.restore();
+      }
+    },
+
+    /* the animal being hunted (double-click) gets a closing reticle; an animal
+     * under the cursor gets a faint ring, so the double-click is discoverable */
+    preyMarks(ctx, g, s) {
+      const R = AS.Renderer, cam = g.camera, p = g.player, pl = p.pilot;
+      const ring = (o, col, r, a, spin) => {
+        const q = R.worldToScreen(o.x, o.y - 4, cam);
+        ctx.save(); ctx.translate(q.x, q.y); ctx.globalAlpha = a;
+        ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.lineWidth = 4 * s;
+        ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+        ctx.strokeStyle = col; ctx.lineWidth = 2 * s;
+        if (spin !== undefined) {
+          for (let i = 0; i < 4; i++) { const a0 = spin + i * TAU / 4; ctx.beginPath(); ctx.arc(0, 0, r, a0, a0 + 0.9); ctx.stroke(); }
+          for (let i = 0; i < 4; i++) { const a0 = i * TAU / 4 + TAU / 8; ctx.beginPath(); ctx.moveTo(Math.cos(a0) * (r + 9 * s), Math.sin(a0) * (r + 9 * s)); ctx.lineTo(Math.cos(a0) * (r + 3 * s), Math.sin(a0) * (r + 3 * s)); ctx.stroke(); }
+        } else { ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke(); }
+        ctx.restore();
+        return q;
+      };
+      if (pl && pl.quarry && pl.quarry.o.alive) {
+        const r = (16 + Math.sin(this.t * 7) * 3) * s;
+        const q = ring(pl.quarry.o, '#ffd27a', r, 1, this.t * 2.2);
+        ctx.font = F(Math.round(11 * s)); ctx.textAlign = 'center';
+        K.keyText(ctx, 'DINNER', q.x, q.y - r - 12 * s, '#ffd27a', 3 * s);
+        return;
+      }
+      if (AS.Input.usingPad || g.uiBlocking || p.carry) return;
+      const m = AS.Input.mouse, w = R.screenToWorld(m.x, m.y, cam);
+      const o = AS.Life.preyAt(g, w.x, w.y, 30);
+      if (!o) return;
+      const q = ring(o, '#fff2c0', 14 * s, 0.75);
+      if (p.energy < p.maxEnergy * 0.9) {
+        ctx.font = B(Math.round(12 * s), '700'); ctx.textAlign = 'center';
+        K.keyText(ctx, 'DOUBLE-CLICK TO HUNT', q.x, q.y + 26 * s, '#fff2c0', 3 * s);
       }
     },
 

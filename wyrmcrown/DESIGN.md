@@ -90,6 +90,15 @@ The dragon always flies forward; it never hovers like a helicopter.
   climbs back. **S** alone flares the wings, which brakes and settles to a
   low hover-glide.
 - **Sprint:** a fast, energy-hungry stroke.
+- **Loop the loop:** a double-tap of **Space** flies a vertical circle along
+  the heading in 1.25 s: up, over on its back (drifting back along its own
+  line, so a chaser overshoots) and out on the same heading. For most of it
+  the dragon can't be targeted or damaged. 3.5 s cooldown, 6 energy. Drawn by
+  tilting the top-down dragon about its chest with one canvas transform; its
+  on-screen area never drops below a third, so the moments when the tilted
+  camera sees the wings edge-on flip past instead of shrinking to a line.
+  Rival dragons loop now and then when a rival dragon is hitting them
+  (Sylvara most often).
 - **Landing:** flaring low and slow over open ground settles the dragon onto
   the ground with a final cupped wingbeat and dust. Grounded, it folds its
   wings, turns on the spot, can still cast and breathe, and rests (faster
@@ -98,7 +107,12 @@ The dragon always flies forward; it never hovers like a helicopter.
 
 Energy (food) drains with flight, sprinting and breathing and is restored
 only by eating animals. Animals are snatched in a low pass, carried, then
-eaten (a visible action), or flown home if stolen.
+eaten (a visible action), or flown home if stolen. Double-clicking an animal
+hands the flying to a hunt autopilot (`pilot.js`): it lines up, skims in low
+a little faster than the animal can run (but under snatch speed, for the long
+reach), lunges on the last stretch, snatches and eats. Any flight key breaks
+off. A click on an animal holds the staff for 0.4 s so the first click of a
+double-click doesn't shoot dinner.
 
 ## Combat (`combat.js`)
 

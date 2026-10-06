@@ -269,7 +269,7 @@
       d.ai = this;
       if (!F.lord) new AILord(g, F);
       const L = F.lord, S = L.style, gl = L.goal;
-      inp.fire = false; inp.breath = false; inp.breathTarget = null; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false;
+      inp.fire = false; inp.breath = false; inp.breathTarget = null; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false; inp.loop = false;
       this.t = (this.t || 0) + dt;
       // keep the goal's position fresh for moving targets
       if (gl.ref && gl.ref.x !== undefined) { gl.x = gl.ref.x; gl.y = gl.ref.y; }
@@ -302,6 +302,9 @@
         const foes = g.foesNear(d.team, d.x, d.y, d.spell === 'nova' ? 300 : 480);
         if (foes.length >= (d.spell === 'summon' ? 2 : 3) || (foes.some((e) => e.isDragon) && d.spell !== 'summon')) { inp.spellHit = true; this.spellT = this.t + 8; }
       }
+      // under fire from a rival dragon, now and then loop the loop to shake it off
+      if (d.loopCd <= 0 && !d.carry && g.time - d.lastHurt < 0.4 && d.lastHitBy && d.lastHitBy.isDragon && d.energy > d.maxEnergy * 0.3 &&
+        Math.random() < dt * (S.kite ? 2.6 : 1.2) * (g.diff.ai || 1)) inp.loop = true;
       // AI aim gets steadier on harder difficulty
       const acc = g.diff.ai || 1;
       inp.aimX += Math.sin(this.t * 3.1 + this.jitter) * 18 / acc; inp.aimY += Math.cos(this.t * 2.7 + this.jitter) * 14 / acc;

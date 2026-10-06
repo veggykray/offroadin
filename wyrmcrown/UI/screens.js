@@ -6,7 +6,8 @@
   const U = AS.U, TAU = U.TAU;
   const { $, h, btn } = AS.UIKit;
   const TIPS = [
-    'Dive with SPACE and press E over an animal to snatch it. A fed dragon is a fast dragon.',
+    'Double-click an animal and your dragon swoops down and eats it. A fed dragon is a fast dragon.',
+    'Double-tap SPACE to loop the loop: bolts, arrows and breath all miss while you are over the top.',
     'Gold carts roll home from the mines and villages you hold. Guard them — and break your rivals\' carts.',
     'A stronghold\'s ward holds while its wardstones stand and its dragon flies. Break both to storm it.',
     'Your breath is strongest when you fly low. At cruising height the flames spread thin.',
@@ -277,8 +278,8 @@
       const s = this.screens.controls; s.innerHTML = '';
       const rows = [
         ['W', 'Beat your wings — speed builds with every downstroke'], ['S', 'Flare the wings: brake, turn tighter, hover low — keep flaring near the ground to land (W takes off)'], ['A / D', 'Bank left / right (slow = tight turns, fast = wide sweeps)'],
-        ['SPACE (hold)', 'Fly low — with W a fast power dive, with S a slow low glide; release to climb'], ['SHIFT', 'Sprint (burns energy)'], ['MOUSE', 'Aim the wizard\'s staff'],
-        ['LEFT CLICK', 'Cast magic bolts'], ['RIGHT CLICK / F', 'Breathe fire where the cursor points — the head turns to aim'], ['E', 'Tap to snatch and eat prey (easy when slow and low) · hold to carry it home · travel an owned waygate'],
+        ['SPACE (hold)', 'Fly low — with W a fast power dive, with S a slow low glide; release to climb'], ['SPACE ×2', 'Loop the loop — dodges everything mid-loop (short cooldown)'], ['SHIFT', 'Sprint (burns energy)'], ['MOUSE', 'Aim the wizard\'s staff'],
+        ['LEFT CLICK', 'Cast magic bolts'], ['DOUBLE-CLICK AN ANIMAL', 'Swoop down, snatch and eat it (any flight key breaks off)'], ['RIGHT CLICK / F', 'Breathe fire where the cursor points — the head turns to aim'], ['E', 'Tap to snatch and eat prey (easy when slow and low) · hold to carry it home · travel an owned waygate'],
         ['Q', 'Cast a stored spell'], ['T', 'Hold court in your town — build, recruit, upgrade'], ['G', 'Order your warband: pick a site or rival town on the map'], ['M', 'War map'], ['C', 'Switch flight controls (keys / follow the cursor)'], ['ESC / P', 'Pause'],
       ];
       s.appendChild(h('div', { class: 'panel', style: 'min-width:640px;max-width:820px' },

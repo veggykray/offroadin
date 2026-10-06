@@ -25,9 +25,11 @@ interact with the page).
 | **S** | Flare the wings: brake, turn tighter, hover low. Keep flaring low over open ground to land; resting heals and saves energy. **W** takes off again. |
 | **A / D** | Bank left / right. Slow flight gives tight turns, fast flight gives wide sweeps. |
 | **Space** (hold) | Fly low at your current pace. Add **W** for a fast power dive, or **S** to slow right down. Release to climb. |
+| **Space** (double-tap) | Loop the loop. Bolts, arrows and breath miss you while you are over the top. Short cooldown, a little energy. |
 | **Shift** | Sprint (burns energy) |
 | **Mouse** | Aim the wizard's staff |
 | **Left click** | Cast magic bolts |
+| **Double-click an animal** | Your dragon swoops down, snatches and eats it. Any flight key breaks off the hunt. |
 | **Right click / F** | Dragon breath (uses its charge). The dragon turns its head toward the cursor, so you can fly one way and burn another. |
 | **E** | Tap to snatch and eat prey (easy when you are low and not too fast). Hold to carry it home instead. Also travels through a waygate you own. |
 | **Q** | Cast a stored spell (storm, frost nova, summon) |
@@ -43,8 +45,9 @@ B snatches, X holds court, Y casts a spell, LB sprints.
 
 ## How a war goes
 
-1. **Feed.** Flying burns energy. Fly low and not too fast over an animal
-   and tap **E** to eat it. Hold **E** to carry it home instead: livestock in
+1. **Feed.** Flying burns energy. Double-click an animal and your dragon
+   hunts it down and eats it, or fly low and not too fast over one and tap
+   **E**. Hold **E** to carry it home instead: livestock in
    your own pastures is food and wealth, and a rival's livestock carried home
    joins your herds.
 2. **Take land.** Each neutral site has guardians: bandits, wolves, ogres,

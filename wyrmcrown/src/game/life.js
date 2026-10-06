@@ -267,11 +267,24 @@
       const slow = d.speed < SNATCH_SLOW;
       return { z: slow ? 56 : 36, r: (slow ? 88 : 46) * d.scale, slow };
     },
+    // the animal under a point on the ground (a click), if any
+    preyAt(g, x, y, r) {
+      let best = null, bd = r * r;
+      for (const o of g.life.grid.query(x, y, r + 8, [])) {
+        if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
+        const dd = (o.x - x) * (o.x - x) + (o.y - 4 - y) * (o.y - 4 - y);
+        if (dd < bd) { bd = dd; best = o; }
+      }
+      return best;
+    },
     preyInReach(g, d) {
       const R = this.snatchReach(d);
       if (d.z > R.z) return null;
       // the head reaches a little ahead of the body
       const qx = d.x + Math.cos(d.angle) * 16 * d.scale, qy = d.y + Math.sin(d.angle) * 16 * d.scale;
+      // the animal the dragon is hunting comes first when it is in reach
+      const w = d.preyWant;
+      if (w && w.alive && !w.carried && (w.x - qx) * (w.x - qx) + (w.y - qy) * (w.y - qy) < R.r * R.r) return w;
       let best = null, bd = R.r * R.r;
       for (const o of g.life.grid.query(qx, qy, R.r + 8, [])) {
         if (!(o.kind in ANIMALS) || o.carried || !o.alive) continue;
@@ -297,7 +310,7 @@
           if (d.isPlayer) { g.stats.eaten++; AS.FX.text(d.x, d.y - d.z, 20, '+' + Math.round(gain) + ' ENERGY', '#ffd27a'); }
           AS.Audio.sfx('swallow', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.45 });
         }
-        if (d.eatT <= 0) d.eating = null;
+        if (d.eatT <= 0) { d.eatT = 0; d.eating = null; }
         return;
       }
       if (d.carry) {

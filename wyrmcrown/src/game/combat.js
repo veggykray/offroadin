@@ -29,7 +29,7 @@
       d.fireCd -= dt;
       const bk = BOLT[d.fdef.rider.bolt] || BOLT.arcane;
       const cost = 4 * (d.buffs.rapid ? 0.4 : 1);
-      if (I.fire && d.fireCd <= 0 && d.mana >= cost && !d.eatT) {
+      if (I.fire && d.fireCd <= 0 && d.mana >= cost && !(d.eatT > 0)) {
         d.fireCd = 1 / (d.boltRate * (d.buffs.rapid ? 1.9 : 1));
         d.mana -= cost;
         this.castBolt(d, bk);
