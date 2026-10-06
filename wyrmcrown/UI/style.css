@@ -122,7 +122,7 @@ table.keys td:first-child { color: var(--gold); font-family: var(--title); font-
 .item .price { font: 800 17px var(--title); color: #ffe6a0; }
 .item .why { font: 600 12px var(--text); color: var(--red); }
 .item.done { opacity: 0.6; }
-.court-side { width: 270px; display: flex; flex-direction: column; gap: 10px; }
+.court-side { width: 270px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; }
 .court-side .box { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--rim2); background: rgba(20, 13, 9, 0.7); font: 500 14px/1.5 var(--text); }
 .court-side .box b { color: var(--gold); font-family: var(--title); }
 .court-side .meter { height: 7px; border-radius: 4px; background: rgba(0, 0, 0, 0.5); overflow: hidden; margin: 3px 0 8px; }

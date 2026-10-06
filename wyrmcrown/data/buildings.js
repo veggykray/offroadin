@@ -25,7 +25,7 @@
     wall: { name: 'Walls', gen: 'wall', hp: [420, 950, 1600], r: 20, dirs: 16, cost: [200, 450, 900], levels: 3, slot: 'wall', desc: 'A ring of walls with a gatehouse. Stops raiding troops at the gate. Upgrade: palisade → stone → enchanted.' },
     gate: { name: 'Gatehouse', gen: 'gate', hp: [700, 1500, 2400], r: 22, dirs: 16, slot: 'wall' },
     watchtower: { name: 'Watchtower', gen: 'watchtower', hp: 320, r: 9, tall: 60, cost: 90, max: 2, slot: 'watch', reveal: 1500, desc: 'Watches the approaches: reveals the land around it on the war map and warns of raids.' },
-    wardstone: { name: 'Wardstone', gen: 'wardstone', hp: 900, r: 13, cost: 160, max: 3, slot: 'ward', desc: 'Powers the stronghold\'s ward barrier. Rebuild fallen wardstones to restore it.' },
+    wardstone: { name: 'Wardstone', gen: 'wardstone', hp: 650, r: 13, cost: 160, max: 3, slot: 'ward', desc: 'Powers the stronghold\'s ward barrier. Rebuild fallen wardstones to restore it.' },
   };
 
   // what the court sells, by tab (items refer to buildings above, or special actions)

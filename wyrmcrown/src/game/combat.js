@@ -110,7 +110,7 @@
       d.breathTick -= dt;
       if (d.breathTick > 0) return;
       d.breathTick = 0.1;
-      const base = 7.5 * d.fireDmg * bi.power * (d.buffs.inferno ? 1.6 : 1);
+      const base = 11 * d.fireDmg * bi.power * (d.buffs.inferno ? 1.6 : 1);
       const R = bi.L + 40;
       const cx = bi.mx + ca * bi.L * 0.5, cy = bi.my + sa * bi.L * 0.5;
       const list = g.grid.query(cx, cy, R, []);
@@ -146,7 +146,7 @@
     },
     applyEffect(e, eff, src) {
       if (eff === 'burn') { if (e.ignite) e.ignite(3.5, src); }
-      else if (eff === 'freeze') { e.slow = Math.max(e.slow || 0, 2.5); if (e.chill !== undefined) e.chill = Math.min(1, (e.chill || 0) + 0.12); }
+      else if (eff === 'freeze') { e.slow = Math.max(e.slow || 0, 2.5); if (e.chill !== undefined) e.chill = Math.min(1, (e.chill || 0) + 0.12); if (e.isBuilding) e.brittle = Math.max(e.brittle || 0, 3); }
       else if (eff === 'entangle') { if (!e.isBuilding && !e.isDragon) e.root = Math.max(e.root || 0, 1.6); else if (e.ignite) e.ignite(2, src); }
       else if (eff === 'wither') { e.wither = Math.max(e.wither || 0, 4); e.witherSrc = src; }
     },

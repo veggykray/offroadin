@@ -18,10 +18,10 @@
   const U = AS.U, TAU = U.TAU;
   const SITE_VALUE = { goldmine: 5, village: 4, tradepost: 4, castle: 7, fort: 3, wizardtower: 3, magicwell: 2.6, grove: 2.2, crystal: 3, relic: 3, bridge: 2.4, shrine: 2, cave: 3, nest: 3, watchtower: 1.4, waygate: 1.8, ruins: 2.5 };
   const STYLE = {
-    balanced: { retreat: 0.3, hunt: 0.33, duel: 0.55, kite: 0, sprint: 0.5, raid: 0.35, home: 1.0, siegeAt: 4, buildOrder: ['tower', 'wall', 'farm', 'recruitSoldiers', 'scales', 'staffPower', 'market', 'recruitArchers', 'ballista', 'wings', 'lungs', 'keepUp', 'tower', 'magetower', 'temple', 'stable', 'recruitKnights', 'workshop', 'catapult', 'wall', 'stomach', 'staffRate'] },
-    evasive: { retreat: 0.35, hunt: 0.35, duel: 0.5, kite: 340, sprint: 0.7, raid: 0.4, home: 1.15, siegeAt: 5, buildOrder: ['farm', 'magetower', 'tower', 'wings', 'staffPower', 'recruitArchers', 'market', 'staffRate', 'wall', 'scales', 'ballista', 'keepUp', 'temple', 'lungs', 'recruitSoldiers', 'farm', 'stomach', 'tower', 'wall'] },
-    fortress: { retreat: 0.28, hunt: 0.3, duel: 0.45, kite: 0, sprint: 0.3, raid: 0.2, home: 1.6, siegeAt: 6, buildOrder: ['wall', 'tower', 'ballista', 'farm', 'scales', 'recruitSoldiers', 'tower', 'wall', 'lungs', 'ballista', 'keepUp', 'magetower', 'market', 'workshop', 'catapult', 'temple', 'recruitArchers', 'wall', 'stomach', 'wings'] },
-    aggressive: { retreat: 0.16, hunt: 0.3, duel: 0.75, kite: 0, sprint: 0.6, raid: 0.7, home: 0.8, siegeAt: 3, buildOrder: ['recruitSoldiers', 'lungs', 'tower', 'farm', 'scales', 'workshop', 'recruitSoldiers', 'staffPower', 'recruitSiege', 'wall', 'wings', 'magetower', 'keepUp', 'recruitArchers', 'catapult', 'market', 'stomach', 'tower', 'recruitSiege'] },
+    balanced: { harassAt: 300, harassEvery: 125, siegeTime: 720, retreat: 0.3, hunt: 0.33, duel: 0.55, kite: 0, sprint: 0.5, raid: 0.35, home: 1.0, siegeAt: 4, buildOrder: ['tower', 'wall', 'farm', 'recruitSoldiers', 'scales', 'staffPower', 'market', 'recruitArchers', 'ballista', 'wings', 'lungs', 'keepUp', 'tower', 'magetower', 'temple', 'stable', 'recruitKnights', 'workshop', 'catapult', 'wall', 'stomach', 'staffRate'] },
+    evasive: { harassAt: 240, harassEvery: 110, siegeTime: 720, retreat: 0.35, hunt: 0.35, duel: 0.5, kite: 340, sprint: 0.7, raid: 0.4, home: 1.15, siegeAt: 5, buildOrder: ['farm', 'magetower', 'tower', 'wings', 'staffPower', 'recruitArchers', 'market', 'staffRate', 'wall', 'scales', 'ballista', 'keepUp', 'temple', 'lungs', 'recruitSoldiers', 'farm', 'stomach', 'tower', 'wall'] },
+    fortress: { harassAt: 420, harassEvery: 170, siegeTime: 900, retreat: 0.28, hunt: 0.3, duel: 0.45, kite: 0, sprint: 0.3, raid: 0.2, home: 1.6, siegeAt: 6, buildOrder: ['wall', 'tower', 'ballista', 'farm', 'scales', 'recruitSoldiers', 'tower', 'wall', 'lungs', 'ballista', 'keepUp', 'magetower', 'market', 'workshop', 'catapult', 'temple', 'recruitArchers', 'wall', 'stomach', 'wings'] },
+    aggressive: { harassAt: 150, harassEvery: 75, siegeTime: 480, retreat: 0.24, hunt: 0.3, duel: 0.75, kite: 0, sprint: 0.6, raid: 0.7, home: 0.8, siegeAt: 3, buildOrder: ['recruitSoldiers', 'lungs', 'tower', 'farm', 'scales', 'workshop', 'recruitSoldiers', 'staffPower', 'recruitSiege', 'wall', 'wings', 'magetower', 'keepUp', 'recruitArchers', 'catapult', 'market', 'stomach', 'tower', 'recruitSiege'] },
   };
 
   /* ===================================================== the strategist */
@@ -67,6 +67,19 @@
       if (this.threat && g.time - this.threatT < 18 && this.threat.alive !== false && Math.hypot(this.threat.x - F.townPos.x, this.threat.y - F.townPos.y) < 900) {
         return this.setGoal({ type: this.threat.isDragon ? 'duel' : 'attack', ref: this.threat, x: this.threat.x, y: this.threat.y });
       }
+      // harassing a rival town: keep at it for a while, switching targets there
+      if (this.goal.type === 'harass' && hp < S.retreat + 0.22) return this.setGoal({ type: 'retreat', x: home.x, y: home.y });
+      if (this.goal.type === 'harass' && (this.goal.engaged || 0) < 45) {
+        const gl = this.goal;
+        // the clock only runs once we are over their town
+        if (gl.rival && Math.hypot(d.x - gl.rival.townPos.x, d.y - gl.rival.townPos.y) < 1100) gl.engaged = (gl.engaged || 0) + 1.1;
+        // only turn on their dragon if it is right on us and weaker
+        const near = this.nearestDragon(d, 350);
+        if (near && hp > near.hp / near.maxHp + 0.1) return this.setGoal({ type: 'duel', ref: near, x: near.x, y: near.y });
+        if (gl.ref && gl.ref.alive) return;
+        const t = this.harassTarget(d, gl.rival);
+        if (t) return this.setGoal({ type: 'harass', ref: t, x: t.x, y: t.y, rival: gl.rival, engaged: gl.engaged });
+      }
       // an enemy dragon close by: fight it if we are the stronger, or it is in our lands
       const foe = this.nearestDragon(d, 750);
       if (foe) {
@@ -77,6 +90,14 @@
       // magic nearby
       const orb = g.pickups.find((q) => q.alive && q.def && Math.hypot(q.x - d.x, q.y - d.y) < 1100);
       if (orb && this.goal.type !== 'siege') return this.setGoal({ type: 'powerup', ref: orb, x: orb.x, y: orb.y });
+      if (g.time > S.harassAt && g.time > (this.harassNext || 0) && hp > 0.6 && en > 0.45) {
+        const t = this.harassTarget(d, null);
+        this.harassNext = g.time + S.harassEvery * U.range(0.8, 1.25);
+        if (t) {
+          if (t.faction === g.playerFaction) g.news(F.def.short + '\'s dragon is coming for ' + t.faction.def.short + '!', F.key, false);
+          return this.setGoal({ type: 'harass', ref: t, x: t.x, y: t.y, rival: t.faction });
+        }
+      }
       // a weakened rival to break
       const prey = this.siegeTarget();
       if (prey) {
@@ -153,11 +174,32 @@
       }
       return best;
     }
+    /* an outlying building of a rival town to burn: wardstones first (they
+     * hold up the stronghold's ward), then farms and houses, away from the
+     * heaviest defences; rivals that hit us, and nearby ones, come first */
+    harassTarget(d, only) {
+      const g = this.g, F = this.F;
+      const VAL = { wardstone: 5, farm: 3, house: 1.8, barracks: 2, market: 2.2, temple: 2, stable: 1.6, roost: 1.5, watchtower: 1.4, tower: 1.2, ballista: 1.4, magetower: 1 };
+      let best = null, bs = -1e9;
+      for (const R of g.factionList) {
+        if (R === F || R.eliminated || (only && R !== only)) continue;
+        let rs = -Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) / 2500;
+        if (R.lastAttacker === F) rs += 0.3; else if (F.lastAttacker === R) rs += 1.5;
+        // don't all pile onto the same realm at once
+        for (const O of g.factionList) if (O !== F && O.lord && O.lord.goal.type === 'harass' && O.lord.goal.rival === R) rs -= 1.5;
+        for (const b of R.buildings) {
+          if (!b.alive || b.built < 1 || !VAL[b.kind]) continue;
+          const sc = rs + VAL[b.kind] - this.dangerAt(b.x, b.y) * 0.45 - Math.hypot(b.x - d.x, b.y - d.y) / 4000 + Math.random() * 0.6;
+          if (sc > bs) { bs = sc; best = b; }
+        }
+      }
+      return best;
+    }
     // a rival whose ward is failing and whom we can reach
     siegeTarget() {
       const g = this.g, F = this.F;
       const strength = F.sitesOwned + (F.upgrades.scales || 0) + (F.upgrades.lungs || 0) + F.keepLevel;
-      if (strength < this.style.siegeAt && g.time < 900) return null;
+      if (strength < this.style.siegeAt && g.time < this.style.siegeTime) return null;
       let best = null, bs = -1e9;
       for (const R of g.factionList) {
         if (R === F || R.eliminated) continue;
@@ -166,7 +208,7 @@
         if (R.lastAttacker === F) sc += 0.5;
         if (sc > bs) { bs = sc; best = R; }
       }
-      return bs > 0.5 || g.time > 1200 ? best : null;
+      return bs > 0.5 || g.time > this.style.siegeTime * 1.5 ? best : null;
     }
 
     /* ---------- spending ---------- */
@@ -194,8 +236,9 @@
       if (free.length < 7) return;
       // siege a broken rival, or seize an unguarded site near home
       const R = this.siegeTarget();
-      let target = null;
+      let target = null, raid = null;
       if (R && Math.random() < 0.6) target = { x: R.townPos.x, y: R.townPos.y, siege: true };
+      else if (g.time > this.style.harassAt * 1.6 && Math.random() < 0.25 + this.style.raid * 0.4 && (raid = this.harassTarget(F.dragon, null))) target = { x: raid.x, y: raid.y, siege: true, raid };
       else {
         let best = null, bs = -1e9;
         for (const s of g.sites) {
@@ -209,7 +252,8 @@
       if (!target) return;
       const send = free.slice(4);
       for (const u of send) u.marchTo(target.x + U.range(-40, 40), target.y + U.range(-40, 40), { siege: !!target.siege, r: 130 });
-      if (send.length >= 4) g.news(F.def.short + ' sends a warband' + (target.siege ? ' to besiege ' + R.def.short + '!' : ' into the field'), F.key, !!target.siege && R === g.playerFaction);
+      const foeF = target.raid ? target.raid.faction : R;
+      if (send.length >= 4) g.news(F.def.short + ' sends a warband' + (target.raid ? ' to raid ' + foeF.def.short + '!' : target.siege ? ' to besiege ' + foeF.def.short + '!' : ' into the field'), F.key, !!target.siege && foeF === g.playerFaction);
     }
     onSiteCaptured() {}
   }
@@ -231,7 +275,7 @@
         case 'retreat': this.flyTo(d, inp, gl.x, gl.y, { arrive: 70, hover: true, sprint: true }); break;
         case 'hunt': this.hunt(d, inp, gl); break;
         case 'duel': this.duel(d, inp, gl.ref || L.nearestDragon(d, 900)); break;
-        case 'attack': case 'raid': case 'siege': this.strike(d, inp, gl.ref, gl.type === 'siege'); break;
+        case 'attack': case 'raid': case 'siege': case 'harass': this.strike(d, inp, gl.ref, gl.type === 'siege' || gl.type === 'harass'); break;
         case 'powerup': this.flyTo(d, inp, gl.x, gl.y, { arrive: 10, low: true }); break;
         case 'capture': this.capture(d, inp, gl.ref); break;
         default: this.flyTo(d, inp, gl.x, gl.y, { arrive: 300 });
@@ -308,17 +352,27 @@
       // circle slowly over the site while claiming it
       if (dist < s.capR * 0.6) inp.turn = this.orbitDir * 0.6;
     }
+    /* attack runs: come in low and straight with the breath, overfly the
+     * target, carry on out past it, swing round wide and come again; a
+     * dragon that hovers over a town is a dragon the archers bring down */
     strike(d, inp, t, siege) {
       if (!t) return;
+      const run = this.run || (this.run = { phase: 'in', ref: null, outA: 0 });
+      if (run.ref !== t) { run.ref = t; run.phase = 'in'; }
       const dist = Math.hypot(t.x - d.x, t.y - d.y);
-      // approach high, then come in low for the breath run; loop round and repeat
       const ahead = U.wrapAngle(Math.atan2(t.y - d.y, t.x - d.x) - d.angle);
-      this.flyTo(d, inp, t.x, t.y, { arrive: 40, brave: true });
-      if (dist < 420) { inp.skim = t.isBuilding || t.isTroop; inp.throttle = Math.abs(ahead) < 0.6 ? 0.3 : -0.6; }
+      const low = t.isBuilding || t.isTroop;
+      if (run.phase === 'in') {
+        this.flyTo(d, inp, t.x, t.y, { arrive: 10, brave: true });
+        if (dist < 480) { inp.skim = low; inp.throttle = Math.abs(ahead) < 0.5 ? (d.speed < 150 ? 0.6 : 0) : -0.6; }
+        if (dist < 60 || (dist < 200 && Math.abs(ahead) > 1.7)) { run.phase = 'out'; run.outA = d.angle + (Math.random() - 0.5) * 0.6; }
+      } else {
+        this.flyTo(d, inp, t.x + Math.cos(run.outA) * 420, t.y + Math.sin(run.outA) * 420, { arrive: 60, brave: true });
+        inp.throttle = 1; inp.skim = dist < 200 && low;
+        if (dist > 340) run.phase = 'in';
+      }
       if (dist < 520 && d.mana > 12) this.aimAt(d, inp, t);
       this.breathIfAligned(d, inp, t);
-      // keep moving through the run instead of hovering under the guns
-      if (dist < 60 && d.speed < 120) inp.throttle = 1;
       if (siege && t.isBuilding && d.faction.lord.dangerAt(d.x, d.y) > 5 && d.hp < d.maxHp * 0.5) d.faction.lord.thinkT = 0;
     }
     duel(d, inp, e) {

@@ -240,7 +240,7 @@
         g.troops.push(u); this.troops.push(u);
       }
     }
-    troopCount() { let n = 0; for (const t of this.troops) if (t.alive) n++; return n; }
+    troopCount() { let n = 0; for (const t of this.troops) if (t.alive && t.role !== 'cart') n++; return n; }
     troopCap() { return 6 + (this.has('barracks') ? 8 : 0) + (this.keepLevel - 1) * 4 + this.siteTroopCap(); }
     siteTroopCap() { let n = 0; for (const s of this.g.sites) if (s.owner === this.key && s.def.troopCap) n += s.def.troopCap; return n; }
 

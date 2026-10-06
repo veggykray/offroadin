@@ -106,6 +106,29 @@
       this.toast('Ordered: ' + ((AS.Data.buildings[id] || AS.Data.actions[id] || AS.Data.upgrades[id]).name));
       this.render();
     },
+    /* the right-hand column: the state of the town, the dragon and the war */
+    side() {
+      const g = this.g, F = g.playerFaction, d = F.dragon;
+      const meter = (v, col) => h('div', { class: 'meter' }, h('i', { style: 'width:' + Math.round(AS.U.clamp(v, 0, 1) * 100) + '%;background:' + col }));
+      const row = (k, v) => h('div', null, k + ': ', h('b', null, v));
+      const keep = F.keep, ward = F.wardStrength();
+      const town = h('div', { class: 'box' },
+        h('b', null, 'Stronghold'), meter(keep.hp / keep.maxHp, F.def.color),
+        row('Ward', ward ? ['', 'failing', 'weak', 'strong', 'unbroken'][Math.min(4, ward)] + ' (' + F.alive('wardstone') + '/3 wardstones)' : 'BROKEN'),
+        row('Income', Math.round(F.income) + ' gold / min'),
+        row('Troops', F.troopCount() + ' / ' + F.troopCap()),
+        row('Herds', F.livestock() + ' / ' + F.livestockCap()),
+        row('Houses', String(F.alive('house'))),
+        row('Lands held', String(F.sitesOwned)));
+      const up = (k) => F.upgrades[k] || 0;
+      const drag = h('div', { class: 'box' },
+        h('b', null, d.name), meter(d.hp / d.maxHp, '#e0503a'), meter(d.energy / d.maxEnergy, '#f0a030'),
+        row('Scales', 'Lv ' + up('scales')), row('Wings', 'Lv ' + up('wings')), row('Lungs', 'Lv ' + up('lungs')), row('Staff', 'Lv ' + (up('staffPower') + up('staffRate') + up('staffMana'))));
+      const rivals = h('div', { class: 'box' }, h('b', null, 'Rival realms'),
+        g.factionList.filter((R) => R !== F).map((R) => h('div', { style: 'color:' + R.def.color }, R.def.short + ': ' + (R.eliminated ? 'fallen' : R.wardStrength() ? 'ward ' + R.wardStrength() + '/4 · ' + R.sitesOwned + ' lands' : 'WARD BROKEN — strike the stronghold!'))));
+      const tip = AS.Advisor && AS.Advisor.current ? AS.Advisor.current(g) : null;
+      return h('div', { class: 'court-side' }, town, drag, rivals, tip && tip.text ? h('div', { class: 'box dim' }, tip.text) : null);
+    },
     toast(text) {
       const t = h('div', { class: 'toast' }, text);
       this.root.querySelector('.panel').appendChild(t);

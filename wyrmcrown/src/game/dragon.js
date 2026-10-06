@@ -282,7 +282,7 @@
     /* energy (hunger), health regen, mana, breath charge */
     vitals(dt) {
       const g = this.g;
-      let drain = 0.42 + (this.freq > 0.3 ? 0.22 : 0) + (this.sprinting ? 1.7 : 0) + (this.braking && this.speed < 90 ? 0.6 : 0) + (this.breathing ? 2.6 : 0);
+      let drain = 0.2 + (this.freq > 0.3 ? 0.14 : 0) + (this.sprinting ? 1.25 : 0) + (this.braking && this.speed < 90 ? 0.4 : 0) + (this.breathing ? 2.2 : 0);
       if (this.buffs.feast) drain = 0;
       this.energy = Math.max(0, this.energy - drain * this.drainMul * dt * (g.energyMul || 1));
       if (this.energy <= 0) {

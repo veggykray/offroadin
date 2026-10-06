@@ -47,7 +47,17 @@
         N.cache.set(key, cells);
         if (N.cache.size > 400) N.cache.delete(N.cache.keys().next().value);
       }
-      const pts = cells.map((k) => [(k % N.W) * CELL + CELL / 2, Math.floor(k / N.W) * CELL + CELL / 2]);
+      const T = g.terrain;
+      const pts = cells.map((k) => {
+        const x = (k % N.W) * CELL + CELL / 2, y = Math.floor(k / N.W) * CELL + CELL / 2;
+        if (T.groundPassable(x, y)) return [x, y];
+        // a cell opened by a bridge: walk the deck itself, not the water beside it
+        for (const b of T.bridges) if (U.segDist(x, y, b.x0, b.y0, b.x1, b.y1) < CELL * 1.2) {
+          const dx = b.x1 - b.x0, dy = b.y1 - b.y0, t = U.clamp(((x - b.x0) * dx + (y - b.y0) * dy) / (dx * dx + dy * dy), 0, 1);
+          return [b.x0 + dx * t, b.y0 + dy * t];
+        }
+        return [x, y];
+      });
       pts.push([x1, y1]);
       return this.smooth(g, [[x0, y0]].concat(pts));
     },
@@ -93,7 +103,7 @@
       const out = [pts[0]];
       let i = 0;
       while (i < pts.length - 1) {
-        let j = pts.length - 1;
+        let j = Math.min(pts.length - 1, i + 14);
         while (j > i + 1 && !this.clear(g, pts[i], pts[j])) j--;
         out.push(pts[j]); i = j;
       }
@@ -109,6 +119,9 @@
         if (v <= 0 || v > 1.5) return false;
         if (v < 1) road++;
       }
+      // the coarse grid opens cells beside bridges: check the real ground finely
+      const T = g.terrain, m = Math.ceil(d / 18);
+      for (let s = 1; s < m; s++) { const t = s / m; if (!T.groundPassable(U.lerp(a[0], b[0], t), U.lerp(a[1], b[1], t))) return false; }
       // don't cut corners off roads across country
       return d < 400 || road > n * 0.6 || road === 0;
     },

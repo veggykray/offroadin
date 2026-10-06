@@ -144,6 +144,7 @@
         if (d > keep) { mx = t.x; my = t.y; }
         else if (t.isDragon) { mx = null; }
       } else if (this.state === 'march') {
+        if (this.path && this.pi < this.path.length) this.unstick(dt);
         const wp = this.path && this.path[this.pi];
         if (wp) {
           mx = wp[0]; my = wp[1];
@@ -246,23 +247,44 @@
     }
     updateCart(dt) {
       const g = this.g;
+      // delivered once it reaches the town square (the keep itself is in the way of the exact spot)
+      if (this.dest && U.dist(this.x, this.y, this.dest.x, this.dest.y) < Math.max(this.dest.r, 120)) {
+        if (this.faction && !this.faction.eliminated) this.faction.addGold(this.cargo, this.x, this.y, 'cart');
+        if (this.onDeliver) this.onDeliver();
+        this.alive = false; this.removed = true;
+        return;
+      }
+      this.unstick(dt);
       const wp = this.path && this.path[this.pi];
       let mx = null, my = null;
       if (wp) { mx = wp[0]; my = wp[1]; if (U.dist(this.x, this.y, wp[0], wp[1]) < 28) this.pi++; }
-      else if (this.dest) {
-        mx = this.dest.x; my = this.dest.y;
-        if (U.dist(this.x, this.y, this.dest.x, this.dest.y) < this.dest.r) {
-          // delivered
-          if (this.faction && !this.faction.eliminated) this.faction.addGold(this.cargo, this.x, this.y, 'cart');
-          if (this.onDeliver) this.onDeliver();
-          this.alive = false; this.removed = true;
-          return;
-        }
-      }
+      else if (this.dest) { mx = this.dest.x; my = this.dest.y; }
       const fast = this.faction && this.faction.has('stable') ? 1.25 : 1;
       this.move(mx, my, this.tdef.speed * fast * (this.slow > 0 ? 0.45 : 1), dt);
       // tolls at bridges owned by another faction
       if (AS.Sites && Math.random() < dt * 2) AS.Sites.cartToll(g, this);
+    }
+
+    /* hauling or marching units that stop making progress replan from where
+     * they stand, and, if still wedged, hop to their next waypoint */
+    unstick(dt) {
+      this.stuckT = (this.stuckT || 0) + dt;
+      if (this.stuckT < 2.5) return;
+      const moved = this.lastX === undefined ? 99 : Math.hypot(this.x - this.lastX, this.y - this.lastY);
+      this.lastX = this.x; this.lastY = this.y; this.stuckT = 0;
+      if (moved > 10 || !this.dest) { this.wedged = 0; return; }
+      this.wedged = (this.wedged || 0) + 1;
+      if (this.wedged === 1) { this.path = AS.Nav.path(this.g, this.x, this.y, this.dest.x, this.dest.y); this.pi = 1; }
+      else {
+        const wp = this.path && this.path[this.pi];
+        if (wp) {
+          // a short hop along the route, never a long teleport
+          const dd = Math.hypot(wp[0] - this.x, wp[1] - this.y), k = Math.min(1, 70 / Math.max(1, dd));
+          const nx = this.x + (wp[0] - this.x) * k, ny = this.y + (wp[1] - this.y) * k;
+          if (this.g.terrain.groundPassable(nx, ny)) { this.x = nx; this.y = ny; if (k >= 1) this.pi++; }
+        }
+        this.wedged = 0;
+      }
     }
 
     /* ---------------- drawing ---------------- */
