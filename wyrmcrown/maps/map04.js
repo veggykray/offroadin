@@ -72,8 +72,8 @@
       // rocks
       { x: 450, y: 4500, r: 260 }, { x: 10950, y: 4500, r: 260 },
       { x: 5700, y: 2700, r: 250 }, { x: 5700, y: 6300, r: 250 },
-      { x: 4250, y: 650, r: 240 }, { x: 7150, y: 650, r: 240 },
-      { x: 4250, y: 8350, r: 240 }, { x: 7150, y: 8350, r: 240 },
+      { x: 4250, y: 650, r: 270 }, { x: 7150, y: 650, r: 270 },
+      { x: 4250, y: 8350, r: 270 }, { x: 7150, y: 8350, r: 270 },
     ],
     mountains: [
       { w: 260, h: 0.75, pts: [[9600, 900], [10300, 1100]] },
@@ -143,7 +143,7 @@
       { id: 'gate_c', k: 'waygate', name: 'Crown Waygate', x: 5700, y: 4050 },
       // the North and South Isles
       { id: 'northdeep', k: 'goldmine', name: 'Northdeep Mine', x: 5300, y: 1050, guard: [['ogre', 2], ['troll', 1]] },
-      { id: 'gullholm', k: 'village', name: 'Gullholm', x: 6150, y: 1100, guard: [['bandit', 4]] },
+      { id: 'gullholm', k: 'village', name: 'Gullholm', x: 6050, y: 1000, guard: [['bandit', 4]] },
       { id: 'southdeep', k: 'goldmine', name: 'Southdeep Mine', x: 6100, y: 7950, guard: [['ogre', 2], ['troll', 1]] },
       { id: 'seawick', k: 'village', name: 'Seawick', x: 5250, y: 7900, guard: [['bandit', 4]] },
       { id: 'gate_n', k: 'waygate', name: 'North Isle Waygate', x: 5700, y: 1450 },

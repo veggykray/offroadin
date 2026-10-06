@@ -97,11 +97,11 @@
       { pts: [[7950, 7950], [7000, 8250], [5900, 8250], [4850, 8250], [3800, 8300], [2900, 8250], [2050, 7950]] },
       // lakeside lanes from each town down to its marsh village
       { pts: [[2050, 7950], [2500, 7450], [2900, 7050]] },
-      { pts: [[1950, 2050], [2500, 2650], [2950, 3100]] },
-      { pts: [[7950, 2050], [7500, 2500], [7050, 2950]] },
-      { pts: [[7950, 7950], [7550, 7550], [7150, 7150]] },
+      { pts: [[1950, 2050], [2400, 2550], [2850, 2950]] },
+      { pts: [[7950, 2050], [7450, 2400], [6950, 2780]] },
+      { pts: [[7950, 7950], [7450, 7650], [6950, 7400]] },
       // river-mouth tracks to the trade posts
-      { pts: [[5900, 1700], [5700, 2400], [5650, 2900]] },
+      { pts: [[5900, 1700], [5750, 2300], [5750, 2750]] },
       { pts: [[4100, 8300], [4200, 7750], [4250, 7300]] },
     ],
     bridges: [
@@ -120,9 +120,9 @@
       { id: 'heronnest', k: 'nest', name: 'Heron Isle Eyrie', x: 4950, y: 6500, guard: [['ogre', 2]] },
       // marsh villages on each realm's shore
       { id: 'reedwick', k: 'village', name: 'Reedwick', x: 2900, y: 7050 },
-      { id: 'mossfen', k: 'village', name: 'Mossfen', x: 2950, y: 3150 },
-      { id: 'rimeholm', k: 'village', name: 'Rimeholm', x: 7050, y: 2950 },
-      { id: 'gloomwater', k: 'village', name: 'Gloomwater', x: 7150, y: 7150 },
+      { id: 'mossfen', k: 'village', name: 'Mossfen', x: 2850, y: 2950 },
+      { id: 'rimeholm', k: 'village', name: 'Rimeholm', x: 6950, y: 2780 },
+      { id: 'gloomwater', k: 'village', name: 'Gloomwater', x: 6950, y: 7400 },
       // lookouts over the lake
       { id: 'heronwatch', k: 'watchtower', name: 'Heronwatch', x: 2550, y: 6250 },
       { id: 'mistwatch', k: 'watchtower', name: 'Mistwatch', x: 3550, y: 2600 },
@@ -139,7 +139,7 @@
       { id: 'rimebridge', k: 'bridge', name: 'Rimebridge', x: 5150, y: 1750 },
       { id: 'tinmoss', k: 'goldmine', name: 'Tinmoss Mine', x: 4150, y: 850, guard: [['ogre', 1], ['bandit', 3]] },
       { id: 'coldharbour', k: 'village', name: 'Coldharbour', x: 6150, y: 2450, guard: [['wolf', 3]] },
-      { id: 'northmarket', k: 'tradepost', name: 'Fishgate Market', x: 5650, y: 2950 },
+      { id: 'northmarket', k: 'tradepost', name: 'Fishgate Market', x: 5750, y: 2800 },
       { id: 'greywater', k: 'fort', name: 'Greywater Fort', x: 4250, y: 2550, guard: [['bandit', 4], ['ogre', 1]] },
       { id: 'gate_n', k: 'waygate', name: 'Rimewater Waygate', x: 6350, y: 850 },
       { id: 'fellruin', k: 'ruins', name: 'Fellstone Ruins', x: 2850, y: 700, guard: [['bandit', 3], ['wolf', 2]] },
@@ -155,7 +155,7 @@
       { id: 'cinderfold', k: 'goldmine', name: 'Cinderfold Mine', x: 5850, y: 9150, guard: [['ogre', 1], ['bandit', 3]] },
       { id: 'sedgeford', k: 'village', name: 'Sedgeford', x: 3850, y: 7550, guard: [['wolf', 3]] },
       { id: 'southmarket', k: 'tradepost', name: 'Eelmarket', x: 4250, y: 7300 },
-      { id: 'drownedfort', k: 'fort', name: 'Mirefast', x: 5750, y: 7450, guard: [['bandit', 4], ['ogre', 1]] },
+      { id: 'drownedfort', k: 'fort', name: 'Mirefast', x: 5800, y: 7550, guard: [['bandit', 4], ['ogre', 1]] },
       { id: 'gate_s', k: 'waygate', name: 'Sedgerun Waygate', x: 3650, y: 9150 },
       { id: 'downsruin', k: 'ruins', name: 'Sunken Chapel', x: 7150, y: 9300, guard: [['bandit', 3], ['wolf', 2]] },
       // behind the towns
