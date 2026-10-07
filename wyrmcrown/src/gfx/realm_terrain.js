@@ -135,8 +135,10 @@
     work(budget, queue) {
       if (!this.asyncInit()) return super.work(budget, queue);
       this.texel();
-      // the worker pool keeps a few requests in flight, nearest first
+      // the worker pool keeps a few requests in flight, nearest first; then any
+      // places the camera may jump to (warmAt) get shaded in the background
       const pool = this._wk;
+      if (this._pre) { this._pre = this._pre.filter((q) => !this.cache.has(q[0] * 10000 + q[1])); if (this._pre.length) queue = queue.concat(this._pre); else this._pre = null; }
       for (const q of queue) {
         const key = q[0] * 10000 + q[1];
         if (this.cache.has(key) || this._req.has(key) || this._ready.some((r) => r.cx === q[0] && r.cy === q[1]) || (this._fin && this._fin.key === key)) continue;
@@ -156,6 +158,19 @@
         const r = this._fin.it.next();
         if (r.done) { this.store(this._fin.key, this._fin.cx, this._fin.cy, r.value); this._fin = null; }
       }
+    }
+    /* shade, ahead of time, the chunks a view of w × h around each point would show —
+     * where a jump of the camera (waygate travel, respawning at the roost) lands */
+    warmAt(pts, w, h) {
+      if (!this._wk) return;
+      const out = [], seen = new Set();
+      for (const p of pts) {
+        for (let cy = Math.floor((p.y - h / 2 - 64) / CH); cy <= Math.floor((p.y + h / 2 + 64) / CH); cy++)
+          for (let cx = Math.floor((p.x - w / 2 - 64) / CH); cx <= Math.floor((p.x + w / 2 + 64) / CH); cx++) {
+            const k = cx * 10000 + cy; if (seen.has(k) || this.cache.has(k)) continue; seen.add(k); out.push([cx, cy]);
+          }
+      }
+      this._pre = out.length ? out : null;
     }
     get async() { return !!this._wk; }
     texel() {

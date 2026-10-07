@@ -392,6 +392,18 @@
         for (let k = rg.sheets.length - 1; k >= 0; k--) if (rg.sheets[k].left > 0) F.want(rg.sheets[k], d.angle || 0);
       }
       F.fill(0); // hand any new work to the forge workers straight away
+      // terrain where the camera may jump next: the other waygates when the player is
+      // near one of theirs, the roost while the player's dragon is down
+      const p = this.player;
+      if (p && this.terrain.warmAt) {
+        const pts = [];
+        if (p.down > 0 || p.hidden) { const h = this.roostOf(p.faction); pts.push({ x: h.x, y: h.y - 40 }); }
+        else if (AS.Sites && AS.Sites.gatesOf) {
+          const gates = AS.Sites.gatesOf(this, p.team);
+          if (gates.some((s) => Math.hypot(p.x - s.x, p.y - s.y) < 900)) for (const s of gates) if (Math.hypot(p.x - s.x, p.y - s.y) > 900) pts.push({ x: s.x, y: s.y });
+        }
+        if (pts.length) this.terrain.warmAt(pts, cam.w * 1.1, cam.h * 1.1);
+      }
     }
 
     /* ================= rendering hooks ================= */
