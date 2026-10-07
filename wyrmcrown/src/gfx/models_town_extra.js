@@ -1347,7 +1347,7 @@
         // string course between the storeys
         wallP(k, (c) => S.poly(c, leafPts(B.x, B.y, B.L + 0.5, B.W + 0.45, 0, 1, 0.35)), 8.7, 9.3, { side: k.silS, top: k.rib, bevel: false, ao: 0.1 }),
         leafFrames(k, B, upU, 10, 13.6, 0.72), leafWins(k, B, upU, 10, 13.6, 0.72),
-        leafFrames(k, B, [PI * 0.5], 9.7, 13.8, 1), leafWins(k, B, [PI * 0.5], 9.7, 13.8, 1, k.door),
+        leafWins(k, B, [PI * 0.5], 9.7, 13.8, 1, k.door),
         ...leafRoof(k, { x: B.x, y: B.y, L: B.L + 1.6, W: B.W + 0.9, rot: 0, z0: 16, H: 6.5, sb: 0.35, veins: 5, horns: false }),
       ]));
       // crescent balcony on silver brackets, with a railing
@@ -1364,7 +1364,6 @@
         frontBand(k, tp, 3.4, 19.2, 20),
         ...capRoof(k, { pts: tp, R: 4.2, z0: 20, H: 11, prof: 'spire', ribs: 4, finial: 4 }),
       ]));
-      parts.push(...anchor([0, 12], lantern(k, [[-7.5, 12.5], [7.5, 12.5]], 4.5)));
       R = 23; H = 37;
     } else if (v === 1) {
       const sx = 0, sy = 1, R0 = 6.4, Z1 = 9.5;
@@ -1427,7 +1426,7 @@
       const ap = [[-12.5, 9], [-5.5, 9]];
       parts.push(...anchor([0, 9], [
         { z0: 0, z1: 6.4, side: k.silS, top: k.silver, bevel: false, ao: 0.3, shape: (c, zt) => { for (const q of ap) S.circ(c, q[0], q[1], 0.36 + (zt < 0.07 ? 0.45 : 0)); } },
-        ...leafRoof(k, { x: -9, y: 5.6, L: 6.2, W: 4, rot: 0, z0: 6.4, H: 2.2, veins: 3, hornH: 1.8, sb: 0.6 }),
+        ...leafRoof(k, { x: -9, y: 5.6, L: 6.2, W: 4, rot: 0, z0: 6.4, H: 2.2, veins: 0, horns: false, sb: 0.6 }),
       ]));
       parts.push(...anchor([0, 11], [
         { z0: 0, z1: 2.6, side: k.wdS, top: k.wdT, ao: 0.3, shape: (c) => S.rect(c, -13, 9.8, 8.4, 2.6), detail: (c) => S.lines(c, rgba(k.p.d, 0.3), 0.3, [-12.5, 11.1, -5, 11.1]) },
@@ -1436,12 +1435,10 @@
         { z0: 2.6, z1: 4.2, side: k.glS, top: k.glHi, flat: true, bevel: false, ao: -0.2, shape: (c, zt) => { const r = 0.5 * Math.sin(zt * PI * 0.9) + 0.25; S.circ(c, -8, 11.4, r); S.circ(c, -10.7, 11.5, r * 0.7); },
           detail: (c) => { glowDot(c, k.gl, -8, 11.4 + 1.5, 2, 0.4); glowDot(c, '#ff9ac8', -11.6, 11.1 + 1.5, 2, 0.35); glowDot(c, fire, -9.4, 10.9 + 1.5, 2, 0.35); } },
         { z0: 0, z1: 2.2, side: k.wdS, top: k.wdT, ao: 0.25, shape: (c) => S.rect(c, -2.6, 10.4, 2.4, 2.4), detail: (c) => { c.fillStyle = mx(k.hay, '#ffffff', 0.35); c.beginPath(); S.rect(c, -2.3, 10.7, 1.8, 1.8); c.fill(); } },
-        ...lantern(k, [[6, 10.5]], 4),
       ]));
       R = 17; H = 26;
     } else {
       const cx = 0, cy = -1, cp = [[cx, cy]], TY = cy + 2;
-      parts.push(...anchor([0, -30], tree(k, { x: -13.5, y: -10, th: 8, cr: 6.4, ch: 7.5, seed: 41 })));
       parts.push(...anchor([0, -5], [
         plinth(k, (c) => S.circ(c, cx, TY, 13.5), 1.5, { detail: (c) => { ring(c, k.fil, cx, TY, 10.8, 0.4); curlRing(c, k.fil, cx, TY, 12.3, 10, 1.5, 0.35); S.lines(c, k.seam, 0.3, [-3.5, TY + 8, -3.5, TY + 13, 3.5, TY + 8, 3.5, TY + 13]); } }),
         // round pavilion with three wide tea-room arches
@@ -1463,7 +1460,7 @@
       parts.push(...anchor([0, 1], [
         wallP(k, (c) => S.poly(c, leafPts(A.x, A.y, A.L, A.W, A.rot, 1, 0.6)), 1.5, 6.4),
         leafFrames(k, A, [PI * 0.5], 1.5, 5.9, 1.75), leafWins(k, A, [PI * 0.5], 1.5, 5.9, 1.75, k.door),
-        ...leafRoof(k, { x: A.x, y: A.y, L: A.L + 1.5, W: A.W + 1.4, rot: A.rot, z0: 6.4, H: 3.6, veins: 3, hornH: 2.6, sb: 0.6 }),
+        ...leafRoof(k, { x: A.x, y: A.y, L: A.L + 1.5, W: A.W + 1.4, rot: A.rot, z0: 6.4, H: 3.6, veins: 3, horns: false, sb: 0.6 }),
         { z0: 0, z1: 2.6, side: k.hayS, top: k.hay, ao: 0.3, shape: (c, zt) => S.blob(c, -16.5, 9.5, 2.2 * Math.sqrt(1 - zt * zt * 0.8) + 0.1, 5, 9, 0.15) },
       ]));
       // moon-lantern sign on a silver post, steps, path lanterns
@@ -1474,7 +1471,7 @@
       ]));
       parts.push(...anchor([0, 20], stairs(k, cx, TY + 11.2, TY + 15, 7.5, 1.5)));
       parts.push(...anchor([0, 14], lantern(k, [[-7.5, TY + 11.5], [7.5, TY + 11.5]], 4)));
-      R = 22; H = 28;
+      R = 21; H = 28;
     }
     return { r: R, h: H, parts: sorted(parts), style: 'unit', bevel: 0.8 };
   };
@@ -1921,7 +1918,6 @@
       plinth(parts, k, 2, 1.5, 24, 0.68, 31, 1.2);
       // chimney behind the ridge (drawn before the roof so the roof hides its base)
       parts.push(box(8.5, -7.5, 11.9, -4.3, 10, 23, k.stD, k.stT, { detail: (c) => { c.fillStyle = k.win; c.fillRect(9.2, -6.8, 2.1, 2); } }));
-      parts.push(box(8.2, -7.8, 12.2, -4, 23, 23.9, k.snS, k.sn, { bevel: false }));
       parts.push(bbox(-15.5, -9, 15.5, 5, 1.2, 12.5, 0.5, k.st, k.stT));
       F.mas(masonry(-15.1, 15.1, 5, 1.2, 12.5, 2.6, 4.6, 17));
       F.quoins(-14.8, 5, 1.2, 12.5).quoins(14.8, 5, 1.2, 12.5);
@@ -1935,7 +1931,6 @@
       F.door(0, 12.5, 3.8, 1.2, 7.4);
       F.win(-4.3, 12.5, 1.8, 3.6, 6.2, 'peak').win(4.3, 12.5, 1.8, 3.6, 6.2, 'peak');
       F.shields([-4.5, 4.5], 12.5, 8.7, 1.25);
-      F.flush(parts);
       roofY(parts, k, { xc: 0, y0: -4, y1: 13, hw: 9, z0: 10.5, z1: 19.5, horn: 4.5, cut: (z) => (z < 12.5 ? 4.8 : Math.max(-4, -2 + 8.8 * (1 - (z - 12.5) / 8))), rows: 1 });
       const ant = mix(k.p.b, '#d8c8a8', 0.55), az = 13.2, ay = 13.05, its = [];
       for (const sg of [-1, 1]) its.push(diag(sg * 0.7, az, sg * 3.4, az + 3.4, ay, 0.5, 0.3, 0.3), diag(sg * 1.9, az + 1.5, sg * 1.3, az + 3, ay, 0.4, 0.3, 0.3), diag(sg * 2.8, az + 2.6, sg * 2.5, az + 4, ay, 0.4, 0.3, 0.3), diag(sg * 3.4, az + 3.4, sg * 4.3, az + 4.3, ay, 0.4, 0.3, 0.3));
@@ -1943,14 +1938,11 @@
       parts.push(deco(ant, its, { flat: false, ao: 0.1 }));
       // walled yard on the right: low stone wall with a timber gate, woodpile and a snowy haystack
       parts.push({ z0: 1.2, z1: 4.4, side: k.st, top: k.sn, ao: 0.3, shape: (c) => { c.rect(22.2, -2, 1.6, 15.4); c.rect(7.5, 11.8, 7, 1.6); c.rect(18.6, 11.8, 5.2, 1.6); } });
-      parts.push(beams([[14.5, 12.6, 1.2, 14.5, 12.6, 5.4, 1], [18.6, 12.6, 1.2, 18.6, 12.6, 5.4, 1]], k.wdD, k.wd));
-      parts.push(box(15, 12.2, 18.1, 12.9, 1.2, 4.2, k.wdD, k.wd));
+      parts.push({ z0: 1.2, z1: 5.4, side: k.wdD, top: k.wd, ao: 0.2, shape: (c, zt) => { S.circ(c, 14.5, 12.6, 0.5); S.circ(c, 18.6, 12.6, 0.5); if (zt < 0.72) c.rect(15, 12.2, 3.1, 0.7); } });
       F.add('woodD', It.vl(15.6, 12.9, 1.2, 4.2, 0.3, 0.4, 0.35)).add('woodD', It.vl(16.6, 12.9, 1.2, 4.2, 0.3, 0.4, 0.35)).add('woodD', It.vl(17.6, 12.9, 1.2, 4.2, 0.3, 0.4, 0.35)).add('iron', It.hl(15.2, 17.9, 12.9, 2.4, 0.45, 0.4, 0.45));
       F.mas(masonry(7.8, 14.2, 13.4, 1.2, 4.4, 1.6, 2.4, 5)).mas(masonry(18.9, 23.5, 13.4, 1.2, 4.4, 1.6, 2.4, 6));
       F.flush(parts);
       logsY(parts, k, [[11, 1.85], [12.3, 1.85], [13.6, 1.85], [11.65, 2.95], [12.95, 2.95]], 7.6, 1.6, 0.62);
-      hay(parts, k, [[18.5, 7.2, 2.4, 2.8]], 1.2);
-      braziers(parts, k, [[-10, 15], [10, 15]], 1.2, 0.8);
       flags(parts, k, [[-10, 9.5, 1.2, 19, 5.5, -1], [10, 9.5, 1.2, 19, 5.5, 1]]);
       return { r: 25, h: 27, parts, style: 'unit', bevel: 0.7 };
     }
@@ -2009,8 +2001,8 @@
     F.flush(parts);
     roofY(parts, k, { xc: 0, y0: -13, y1: 11.5, hw: 14, z0: 10, z1: 20, horn: 0, rows: 2 });
     // longboat prow rising from the apex, dragon head with frost eyes
-    parts.push({ z0: 19.4, z1: 27.5, side: k.wdD, top: k.wd, bevel: false, ao: 0.1, shape: (c, zt) => { const y = 11.9 + Math.pow(zt, 1.5) * 5.4; if (zt > 0.86) S.ell(c, 0, y + 0.5, 1.3, 1); else S.circ(c, 0, y, 0.72 - zt * 0.22); },
-      detail: (c) => { S.dot(c, k.gl, -0.55, 17.2, 0.26); S.dot(c, k.gl, 0.55, 17.2, 0.26); } });
+    parts.push({ z0: 19.4, z1: 28, side: k.wdD, top: k.wd, bevel: false, ao: 0.1, shape: (c, zt) => { const y = 11.9 + Math.pow(zt, 1.5) * 5.8; if (zt > 0.84) S.ell(c, 0, y + 0.7, 1.7, 1.25); else S.circ(c, 0, y, 0.95 - zt * 0.3); },
+      detail: (c) => { S.dot(c, k.gl, -0.7, 18, 0.3); S.dot(c, k.gl, 0.7, 18, 0.3); } });
     // stable lean-to on the right with a wide plank door
     parts.push(box(11.5, -4, 20, 8, 1.2, 6.5, k.st, k.stT));
     F.mas(masonry(11.8, 19.7, 8, 1.2, 6.5, 2.4, 3.8, 29));
@@ -2018,12 +2010,11 @@
     F.add('woodD', It.vl(15.8, 8.1, 1.2, 5.6, 0.4, 0.5, 0.45));
     F.flush(parts);
     parts.push({ z0: 6.5, z1: 9.6, side: mix(k.snS, k.p.a, 0.12), top: k.snL, ao: 0.12, bevel: false, shape: (c, zt) => c.rect(11, -4.7, 9.6 * (1 - zt) + 0.3, 13.6) });
-    parts.push(icicles(k, 12, 20, 8.9, 6.4, 7));
     // barrels, brazier, banners
     parts.push(barrels([[-14.5, 9, 1.3, 3.2], [-14.2, 12.2, 1.3, 3.2], [-11.5, 13.4, 1.3, 3.2]], k, 1.2));
     braziers(parts, k, [[9.5, 13.5]], 1.2, 0.9);
     flags(parts, k, [[-15.5, 10.5, 1.2, 18.5, 5.5, -1], [23, 2, 1.2, 15, 5, 1]]);
-    return { r: 25, h: 29, parts, style: 'unit', bevel: 0.7 };
+    return { r: 25, h: 30, parts, style: 'unit', bevel: 0.7 };
   };
 
   /* ============================================================== SHED
@@ -2066,6 +2057,709 @@
     roofY(parts, k, { xc: 0, y0: -6.4, y1: 6, hw: 6.8, z0: 12, z1: 17.6, horn: 3, rows: 1, gwin: false, bt: 1.2 });
     parts.push({ z0: 1, z1: 8.6, side: k.wdD, top: k.wdL, bevel: false, ao: 0.15, shape: (c, zt) => { const y = 11.6 - zt * 6.2; c.rect(-1.3, y - 0.7, 2.6, 1.3); } });
     return { r: 8, h: 22, parts, style: 'unit', bevel: 0.7 };
+  };
+})(window.AS = window.AS || {});
+
+/* =============================================================================
+ * DOMINION OF MORGRAVE (undead) — elevation-slab technique of models_undead.js
+ * ============================================================================= */
+(function (AS) {
+  const U = AS.U, C = U.C, TAU = U.TAU, S = AS.Shapes;
+  const M = (AS.Models = AS.Models || {});
+  const PI = Math.PI;
+  const DEF = { a: '#3b3741', b: '#6d6773', t: '#2b2532', g: '#93ff6a', d: '#141219', k: '#5c2a6c', k2: '#b0ff8a', w: '#3a3028', s: '#d8cfb6', skin: '#b8c4a8' };
+  const okCol = (v) => typeof v === 'string' && /^#?[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(v);
+  function P(p) { const o = {}; for (const k in DEF) o[k] = p && okCol(p[k]) ? p[k] : DEF[k]; return o; }
+  const hx = (c) => '#' + C.hex(c).map((v) => ('0' + Math.round(U.clamp(v, 0, 255)).toString(16)).slice(-2)).join('');
+  const sh = (c, k) => hx(C.shade(c, k));
+  const mx = (a, b, t) => hx(C.mix(a, b, t));
+  const cs = (c, a) => C.str(c, a);
+  /* material set derived from the palette (never hard-coded faction colours) */
+  function mats(pal) {
+    const p = P(pal);
+    return {
+      p,
+      wall: mx(p.a, p.b, 0.1), wallT: mx(p.a, p.b, 0.9), wallD: mx(p.a, p.d, 0.4),
+      trim: mx(p.b, p.s, 0.4), trimS: mx(p.a, p.b, 0.6),
+      corn: mx(p.s, p.a, 0.5), cornT: mx(p.s, p.b, 0.3),
+      patch: mx(p.a, p.b, 0.4),
+      roofL: mx(mx(p.t, p.b, 0.85), p.k, 0.2), roofS: mx(p.t, p.k, 0.1), roofLn: mx(p.t, p.d, 0.6),
+      roofM: mx(mx(mx(p.t, p.b, 0.85), p.k, 0.2), mx(p.t, p.k, 0.1), 0.35),
+      bone: p.s, boneS: mx(p.s, p.a, 0.42), boneT: mx(p.s, '#ffffff', 0.25),
+      iron: mx(p.d, p.a, 0.45), ironT: mx(p.b, '#c4c8d2', 0.35),
+      wood: p.w, woodT: mx(p.w, p.s, 0.3), woodD: mx(p.w, p.d, 0.4),
+      glow: p.g, glowT: mx(p.g, '#ffffff', 0.55), glowS: mx(p.g, p.d, 0.25),
+      vio: mx(p.k, '#e4aaff', 0.6), vioT: mx(p.k, '#ffffff', 0.8),
+      ban: p.k, banT: mx(p.k, '#ffffff', 0.15), banS: mx(p.k, p.d, 0.35), ban2: p.k2,
+      floor: mx(p.a, p.d, 0.3), floorT: mx(p.a, p.b, 0.3),
+      dark: p.d, void: mx(p.d, '#000000', 0.35),
+      earth: mx(p.w, p.d, 0.25), earthT: mx(p.w, p.b, 0.3),
+    };
+  }
+  const SEAM = 'rgba(8,6,12,0.5)', SEAM2 = 'rgba(8,6,12,0.32)';
+
+  /* ================================================================ geometry */
+  const res = () => (AS.Forge && AS.Forge.res) || 2;
+  const dzOf = (z0, z1) => (z1 - z0) / Math.max(1, Math.round((z1 - z0) * res()));
+  const ngon = (n, r, rot, cx, cy, sx, sy) => { const a = []; for (let i = 0; i < n; i++) { const t = (rot || 0) + (i / n) * TAU; a.push((cx || 0) + Math.cos(t) * r * (sx || 1), (cy || 0) + Math.sin(t) * r * (sy || 1)); } return a; };
+  const rectP = (x0, y0, x1, y1) => [x0, y0, x1, y0, x1, y1, x0, y1];
+  // rectangle with a rectangular hole (nonzero winding: inner path reversed)
+  function frame(c, x0, y0, x1, y1, t) { c.rect(x0, y0, x1 - x0, y1 - y0); c.moveTo(x0 + t, y0 + t); c.lineTo(x0 + t, y1 - t); c.lineTo(x1 - t, y1 - t); c.lineTo(x1 - t, y0 + t); c.closePath(); }
+  function annulus(c, x, y, r1, r2) { c.moveTo(x + r1, y); c.arc(x, y, r1, 0, TAU); c.moveTo(x + r2, y); c.arc(x, y, r2, TAU, 0, true); }
+  // screen-left (-1, lit) or screen-right (+1, shaded) half of a disc, whatever the sheet heading
+  function halfDisc(c, x, y, r, side) {
+    const hd = headingOf(c), th = Math.atan2(Math.sin(hd), -Math.cos(hd)), a0 = side < 0 ? th - PI / 2 : th + PI / 2;
+    c.moveTo(x + Math.cos(a0) * r, y + Math.sin(a0) * r); c.arc(x, y, r, a0, a0 + PI); c.closePath();
+  }
+  // screen-space normal of an object-space direction at the current heading
+  const scrN = (c, nx, ny) => { const a = headingOf(c), ca = Math.cos(a), sa = Math.sin(a); return [nx * ca - ny * sa, nx * sa + ny * ca]; };
+  const headingOf = (c) => { const m = c.getTransform(); return Math.atan2(m.b, m.a); };
+  // which y face looks at the camera at this heading: +1, -1 or 0 (edge-on)
+  const faceY = (c) => { const k = Math.cos(headingOf(c)); return k > 0.12 ? 1 : k < -0.12 ? -1 : 0; };
+  function bandX(pts, za, zb) {
+    let lo = Infinity, hi = -Infinity;
+    const n = pts.length / 2;
+    for (let i = 0; i < n; i++) {
+      const x0 = pts[i * 2], z0 = pts[i * 2 + 1], j = (i + 1) % n, x1 = pts[j * 2], z1 = pts[j * 2 + 1];
+      if (z0 >= za && z0 <= zb) { if (x0 < lo) lo = x0; if (x0 > hi) hi = x0; }
+      if ((z0 - za) * (z1 - za) < 0) { const x = x0 + (x1 - x0) * (za - z0) / (z1 - z0); if (x < lo) lo = x; if (x > hi) hi = x; }
+      if ((z0 - zb) * (z1 - zb) < 0) { const x = x0 + (x1 - x0) * (zb - z0) / (z1 - z0); if (x < lo) lo = x; if (x > hi) hi = x; }
+    }
+    return lo <= hi ? [lo, hi] : null;
+  }
+  /* Elevation part: convex polygons drawn in the x-z plane (a facade, gable,
+   * skull, window, flag...) extruded through y in [y0, y1]. Entries may be flat
+   * arrays or { p, y0, y1 }. polys may be a function(anim). ex.auto mirrors the
+   * slab to whichever y face looks at the camera (rotating sheets). */
+  function elev(polys, y0, y1, side, top, ex) {
+    ex = ex || {};
+    const fn = typeof polys === 'function' ? polys : null;
+    let zl = Infinity, zh = -Infinity;
+    const scan = (ps) => { for (const q of ps) { const pts = q.p || q; for (let i = 1; i < pts.length; i += 2) { if (pts[i] < zl) zl = pts[i]; if (pts[i] > zh) zh = pts[i]; } } };
+    if (fn) { for (let a = 0; a < 1; a += 0.125) scan(fn(a)); } else scan(polys);
+    if (!isFinite(zl)) { zl = 0; zh = 0.1; }
+    const z0 = ex.z0 !== undefined ? ex.z0 : zl, z1 = ex.z1 !== undefined ? ex.z1 : zh, dz = dzOf(z0, z1), auto = ex.auto;
+    const part = { z0, z1, side, top: top || side, bevel: false, ao: 0.12, shape: (c, zt, an) => {
+      const z = z0 + zt * (z1 - z0), ps = fn ? fn(an) : polys;
+      let flip = 1;
+      if (auto) { flip = faceY(c); if (!flip) return; }
+      for (const q of ps) {
+        const iv = bandX(q.p || q, z - dz * 0.55, z + dz * 0.55);
+        if (!iv) continue;
+        let ya = q.p ? q.y0 : y0, yb = q.p ? q.y1 : y1;
+        if (flip < 0) { const t = ya; ya = -yb; yb = -t; }
+        c.rect(iv[0], ya, Math.max(0.06, iv[1] - iv[0]), yb - ya);
+      }
+    } };
+    for (const k in ex) if (k !== 'z0' && k !== 'z1' && k !== 'auto') part[k] = ex[k];
+    return part;
+  }
+  // x-z polygon shorthands
+  const lancet = (x, zb, w, h, k) => { const t = Math.min(h * 0.9, w * (k || 0.8)); return [x - w / 2, zb, x + w / 2, zb, x + w / 2, zb + h - t, x + w * 0.3, zb + h - t * 0.35, x, zb + h, x - w * 0.3, zb + h - t * 0.35, x - w / 2, zb + h - t]; };
+  const archP = (x, zb, w, h) => { const r = w / 2, s = zb + h - r, a = []; a.push(x - r, zb, x + r, zb); for (let i = 0; i <= 6; i++) { const t = (i / 6) * PI; a.push(x + Math.cos(t) * r, s + Math.sin(t) * r); } return a; };
+  const rectXZ = (x0, z0, x1, z1) => [x0, z0, x1, z0, x1, z1, x0, z1];
+  const diamond = (x, z, r, rz) => [x, z - (rz || r), x + r, z, x, z + (rz || r), x - r, z];
+  const triXZ = (x0, x1, zb, zt, xa) => [x0, zb, x1, zb, xa === undefined ? (x0 + x1) / 2 : xa, zt];
+  // skull face in the x-z plane: cranium + jaw (bone); eyes / nose for a second part
+  const skullP = (x, z, r) => [ngon(8, r, PI / 8, x, z + r * 0.18), [x - r * 0.52, z - r * 0.92, x + r * 0.52, z - r * 0.92, x + r * 0.66, z - r * 0.25, x - r * 0.66, z - r * 0.25]];
+  const skullEyes = (x, z, r) => [diamond(x - r * 0.36, z + r * 0.06, r * 0.24, r * 0.27), diamond(x + r * 0.36, z + r * 0.06, r * 0.24, r * 0.27), [x - r * 0.12, z - r * 0.42, x + r * 0.12, z - r * 0.42, x, z - r * 0.18]];
+
+  /* ================================================================ builders */
+  const box = (x0, y0, x1, y1, z0, z1, side, top, ex) => Object.assign({ z0, z1, side, top, shape: (c) => c.rect(x0, y0, x1 - x0, y1 - y0) }, ex || {});
+  const polyPart = (pts, z0, z1, side, top, ex) => Object.assign({ z0, z1, side, top, shape: (c) => S.poly(c, pts) }, ex || {});
+  // cylinders: list of [x, y, r, (z0), (z1)] (per-item heights share one part)
+  function drums(list, z0, z1, side, top, ex) {
+    let zl = z0, zh = z1;
+    for (const q of list) { if (q[3] !== undefined) zl = Math.min(zl, q[3]); if (q[4] !== undefined) zh = Math.max(zh, q[4]); }
+    return Object.assign({ z0: zl, z1: zh, side, top, shape: (c, zt) => {
+      const z = zl + zt * (zh - zl);
+      for (const q of list) { const a = q[3] !== undefined ? q[3] : z0, b = q[4] !== undefined ? q[4] : z1; if (z >= a - 0.01 && z <= b + 0.01) S.circ(c, q[0], q[1], q[2]); }
+    } }, ex || {});
+  }
+  // cones split into a lit left and a shaded right half: list [x, y, r, (z0), (h)]; pw = profile exponent
+  function cones(list, z0, h, lit, shade, ex) {
+    ex = ex || {};
+    const pw = ex.pw || 1.25, tip = ex.tip || 0.12;
+    let zl = z0, zh = z0 + h;
+    for (const q of list) { const a = q[3] !== undefined ? q[3] : z0, b = a + (q[4] !== undefined ? q[4] : h); zl = Math.min(zl, a); zh = Math.max(zh, b); }
+    const mk = (sd, col) => Object.assign({ z0: zl, z1: zh, side: col, top: sd < 0 ? sh(lit, 0.2) : lit, ao: 0.2, bevel: false,
+      shape: (c, zt) => {
+        const z = zl + zt * (zh - zl);
+        for (const q of list) {
+          const a = q[3] !== undefined ? q[3] : z0, hh = q[4] !== undefined ? q[4] : h, u = (z - a) / hh;
+          if (u < -0.01 || u > 1.01) continue;
+          halfDisc(c, q[0], q[1], q[2] * Math.pow(1 - U.clamp(u, 0, 1), pw) + tip, sd);
+        }
+      } }, ex.extra || {});
+    return [mk(-1, lit), mk(1, shade)];
+  }
+  // rectangular spire split left / right: list [x, y, hw, hd]
+  function pyramids(list, z0, h, lit, shade, ex) {
+    ex = ex || {};
+    const pw = ex.pw || 1.15;
+    const mk = (sd, col) => Object.assign({ z0, z1: z0 + h, side: col, top: sd < 0 ? sh(lit, 0.2) : lit, ao: 0.18, bevel: false,
+      shape: (c, zt) => { const k = Math.pow(1 - zt, pw); for (const q of list) { const w = q[2] * k + 0.12, d = q[3] * k + 0.12; c.rect(sd < 0 ? q[0] - w : q[0], q[1] - d, w, d * 2); } } }, ex.extra || {});
+    return [mk(-1, lit), mk(1, shade)];
+  }
+  /* Gabled roof: ridge along o.axis ('x' | 'y') over a rectangle centred (x, y),
+   * half length L along the ridge, half width W across, rising h from z0.
+   * hip (0..1) pulls the ridge ends in. Returns [lit, shade] parts:
+   * axis 'x' → back plane then front plane; axis 'y' → left plane then right plane. */
+  function gable(o) {
+    const hip = o.hip || 0;
+    // part 0 (lit colour) draws the half facing away from the camera, part 1 (shade) the camera-facing half
+    const mk = (part, col, top) => ({ z0: o.z0, z1: o.z0 + o.h, side: col, top, ao: o.ao !== undefined ? o.ao : 0.16, bevel: false,
+      shape: (c, zt) => {
+        const w = Math.max(o.ridge ? 0.6 : 0.35, o.W * (1 - zt)), l = Math.max(0.4, o.L - hip * o.W * zt);
+        const n = scrN(c, o.axis === 'x' ? 0 : 1, o.axis === 'x' ? 1 : 0);
+        const key = Math.abs(n[1]) > 0.05 ? n[1] : n[0];
+        const half = (part === 1) === (key > 0) ? 1 : -1; // +1: the +y (axis x) / +x (axis y) half
+        if (o.axis === 'x') c.rect(o.x - l, half < 0 ? o.y - w : o.y, 2 * l, w); else c.rect(half < 0 ? o.x - w : o.x, o.y - l, w, 2 * l);
+      } });
+    return [mk(0, o.lit, o.ridge || sh(o.lit, 0.15)), mk(1, o.shade, o.ridge || o.lit)];
+  }
+  /* Hipped roof / pyramid spire over a rectangle centred (x, y) with half sizes L (x)
+   * and W (y), rising h from z0 (pw > 1 gives a concave gothic spire). Three facet
+   * parts: back + left (lit), front (mid), right (shade). */
+  function hipSlice(o, zt) {
+    const m0 = Math.min(o.L, o.W), d = m0 * (1 - Math.pow(1 - zt, o.pw || 1)), l = Math.max(0.3, o.L - d), w = Math.max(0.3, o.W - d);
+    const x0 = o.x - l, x1 = o.x + l, y0 = o.y - w, y1 = o.y + w;
+    const A = l >= w ? [o.x - l + w, o.y] : [o.x, o.y - w + l], B = l >= w ? [o.x + l - w, o.y] : [o.x, o.y + w - l];
+    return { x0, x1, y0, y1, A, B, l, w };
+  }
+  function hipSectors(q) {
+    const A = q.A, B = q.B;
+    if (q.l >= q.w) return [[0, -1, [q.x0, q.y0, q.x1, q.y0, B[0], B[1], A[0], A[1]]], [-1, 0, [q.x0, q.y0, A[0], A[1], q.x0, q.y1]], [0, 1, [q.x0, q.y1, A[0], A[1], B[0], B[1], q.x1, q.y1]], [1, 0, [q.x1, q.y0, q.x1, q.y1, B[0], B[1]]]];
+    return [[0, -1, [q.x0, q.y0, q.x1, q.y0, A[0], A[1]]], [-1, 0, [q.x0, q.y0, A[0], A[1], B[0], B[1], q.x0, q.y1]], [0, 1, [q.x0, q.y1, B[0], B[1], q.x1, q.y1]], [1, 0, [q.x1, q.y0, q.x1, q.y1, B[0], B[1], A[0], A[1]]]];
+  }
+  // facet class at the current heading: 0 lit (faces the top-left light), 1 shade, 2 camera-facing (mid)
+  function facetOf(c, nx, ny) { const n = scrN(c, nx, ny); if (n[1] > 0.38) return 2; return -0.8 * n[0] - 0.6 * n[1] > 0 ? 0 : 1; }
+  function hipRoof(o) {
+    const mk = (cls, col, top) => ({ z0: o.z0, z1: o.z0 + o.h, side: col, top, ao: o.ao !== undefined ? o.ao : 0.14, bevel: false, shape: (c, zt) => {
+      for (const sct of hipSectors(hipSlice(o, zt))) if (facetOf(c, sct[0], sct[1]) === cls) S.poly(c, sct[2]);
+    } });
+    // drawn lit, shade, then the camera-facing facet last
+    return [mk(0, o.lit, o.ridge || sh(o.lit, 0.15)), mk(1, o.shade, o.ridge || o.lit), mk(2, o.mid || mx(o.lit, o.shade, 0.3), o.ridge || o.lit)];
+  }
+  /* course lines on every facet of a hipRoof() + (optional) bone hip ridges */
+  function hipLines(o, col, step) {
+    step = step || 2.2;
+    const dz = dzOf(0, o.h);
+    return { z0: o.z0, z1: o.z0 + o.h * 0.9, side: col, top: col, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = zt * o.h * 0.9, row = Math.floor(z / step);
+      if (row === Math.floor((z - dz) / step) || z < 0.4) return;
+      const q = hipSlice(o, z / o.h);
+      frame(c, q.x0 - 0.15, q.y0 - 0.15, q.x1 + 0.15, q.y1 + 0.15, 0.5);
+    } };
+  }
+  function hipRidges(o, side, top, wd) {
+    wd = wd || 0.5;
+    return { z0: o.z0, z1: o.z0 + o.h, side, top, bevel: false, ao: 0.1, shape: (c, zt) => {
+      const q = hipSlice(o, zt), r = wd, back = o.h < Math.min(o.L, o.W) * 0.9;
+      for (const p of back ? [[q.x0, q.y1], [q.x1, q.y1], [q.x0, q.y0], [q.x1, q.y0]] : [[q.x0, q.y1], [q.x1, q.y1]]) c.rect(p[0] - r + (p[0] < o.x ? r * 0.6 : -r * 0.6), p[1] - r + (p[1] < o.y ? r * 0.6 : -r * 0.6), r * 2, r * 2);
+      if (zt > 0.985) c.rect(Math.min(q.A[0], q.B[0]) - r, Math.min(q.A[1], q.B[1]) - r, Math.abs(q.B[0] - q.A[0]) + r * 2, Math.abs(q.B[1] - q.A[1]) + r * 2);
+    } };
+  }
+  /* slate course lines (and staggered joints) painted on both planes of a gable() */
+  function roofLines(o, col) {
+    const hip = o.hip || 0, step = o.step || 2.4, z1 = o.h - 0.8, dz = dzOf(0, z1), jstep = o.joint || 3.2;
+    return { z0: o.z0, z1: o.z0 + z1, side: col, top: col, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = zt * z1, w = o.W * (1 - z / o.h), l = o.L - hip * o.W * z / o.h;
+      const row = Math.floor(z / step), line = row !== Math.floor((z - dz) / step) && z > 0.4;
+      if (o.axis === 'x') {
+        if (line) { c.rect(o.x - l, o.y + w - 0.45, 2 * l, 0.6); c.rect(o.x - l, o.y - w - 0.15, 2 * l, 0.55); return; }
+        for (let jx = -l + 1 + (row % 2) * jstep * 0.5; jx < l - 0.6; jx += jstep) c.rect(o.x + jx, o.y + w - 0.35, 0.32, 0.5);
+      } else {
+        if (line) { c.rect(o.x - w - 0.15, o.y - l, 0.55, 2 * l); c.rect(o.x + w - 0.4, o.y - l, 0.55, 2 * l); return; }
+        for (let jy = -l + 1 + (row % 2) * jstep * 0.5; jy < l - 0.6; jy += jstep) { c.rect(o.x - w - 0.1, o.y + jy, 0.45, 0.3); c.rect(o.x + w - 0.35, o.y + jy, 0.45, 0.3); }
+      }
+    } };
+  }
+  /* broken hole in a roof plane (dark void with rafters showing through):
+   * plane = 'front' (axis x), 'left' or 'right' (axis y); u = centre along the ridge,
+   * zc / rz = height centre / half height, ru = half span */
+  function roofHole(o, plane, u, zc, ru, rz, col) {
+    const z0 = zc - rz, z1 = zc + rz;
+    return { z0: o.z0 + z0, z1: o.z0 + z1, side: col, top: col, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = z0 + zt * (z1 - z0), q = (z - zc) / rz, w = o.W * (1 - z / o.h);
+      const hw = ru * Math.sqrt(Math.max(0, 1 - q * q)) * (0.8 + 0.3 * Math.sin(z * 2.7 + u));
+      if (hw < 0.2) return;
+      for (let s = -hw; s < hw; s += 2.2) {
+        const a = s + 0.55, b = Math.min(hw, s + 2.2);
+        if (b <= a) continue;
+        if (plane === 'front') c.rect(o.x + u + a, o.y + w - 0.7, b - a, 0.9);
+        else if (plane === 'left') c.rect(o.x - w - 0.2, o.y + u + a, 0.9, b - a);
+        else c.rect(o.x + w - 0.7, o.y + u + a, 0.9, b - a);
+      }
+    } };
+  }
+  // pointed or spiky merlons along a rectangle's edges
+  function merlonsRect(x0, y0, x1, y1, z0, h, size, gap, side, top, ex) {
+    const pts = [];
+    const run = (ax, ay, bx, by) => { const L = Math.hypot(bx - ax, by - ay), n = Math.max(1, Math.round(L / (size + gap))); for (let i = 0; i <= n; i++) pts.push(ax + (bx - ax) * i / n, ay + (by - ay) * i / n); };
+    run(x0, y0, x1, y0); run(x1, y0, x1, y1); run(x1, y1, x0, y1); run(x0, y1, x0, y0);
+    return merlonsAt(pts, z0, h, size, side, top, ex);
+  }
+  function merlonsAt(pts, z0, h, size, side, top, ex) {
+    const spike = !ex || ex.spike !== false;
+    return Object.assign({ z0, z1: z0 + h, side, top, ao: 0.2, shape: (c, zt) => {
+      const k = spike && zt > 0.45 ? Math.max(0.12, 1 - (zt - 0.45) / 0.55) : 1, s = size * k / 2;
+      for (let i = 0; i < pts.length; i += 2) c.rect(pts[i] - s, pts[i + 1] - s, s * 2, s * 2);
+    } }, ex || {});
+  }
+  function merlonsRing(cx, cy, r, n, z0, h, size, side, top, ex) {
+    const pts = [];
+    for (let i = 0; i < n; i++) { const a = (i + 0.5) / n * TAU; pts.push(cx + Math.cos(a) * r, cy + Math.sin(a) * r); }
+    return merlonsAt(pts, z0, h, size, side, top, ex);
+  }
+  // iron / bone spikes: list [x, y, r, leanX, leanY]
+  const spikes = (list, z0, h, side, top, ex) => Object.assign({ z0, z1: z0 + h, side, top, bevel: false, ao: 0.2, shape: (c, zt) => {
+    const k = Math.pow(1 - zt, 0.9);
+    for (const q of list) S.circ(c, q[0] + (q[3] || 0) * zt * zt, q[1] + (q[4] || 0) * zt * zt, q[2] * k + 0.07);
+  } }, ex || {});
+  // per-item spike heights: list [x, y, r, leanX, leanY, z0, h]
+  const spikeShape = (list) => function (c, zt) {
+    const z = this.z0 + zt * (this.z1 - this.z0);
+    for (const q of list) {
+      const u = (z - q[5]) / q[6];
+      if (u < -0.01 || u > 1.01) continue;
+      const v = U.clamp(u, 0, 1), k = Math.pow(1 - v, 0.9);
+      S.circ(c, q[0] + (q[3] || 0) * v * v, q[1] + (q[4] || 0) * v * v, q[2] * k + 0.07);
+    }
+  };
+  // small window slits / lancets on the front arc of cylinders: [cx, cy, r, angle, zb, h, w]
+  function arcWins(list, col, top, ex) {
+    let zl = Infinity, zh = -Infinity;
+    for (const q of list) { zl = Math.min(zl, q[4]); zh = Math.max(zh, q[4] + q[5]); }
+    const dz = dzOf(zl, zh);
+    return Object.assign({ z0: zl, z1: zh, side: col, top: top || col, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = zl + zt * (zh - zl);
+      for (const q of list) {
+        const iv = bandX(lancet(0, q[4], q[6], q[5]), z - dz * 0.55, z + dz * 0.55);
+        if (!iv) continue;
+        const ca = Math.cos(q[3]), sa = Math.sin(q[3]), tx = -sa, ty = ca, R0 = q[2] - 0.15, R1 = q[2] + 0.45;
+        const px = q[0] + ca * R0, py = q[1] + sa * R0, ox = q[0] + ca * R1, oy = q[1] + sa * R1;
+        c.moveTo(px + tx * iv[0], py + ty * iv[0]); c.lineTo(px + tx * iv[1], py + ty * iv[1]); c.lineTo(ox + tx * iv[1], oy + ty * iv[1]); c.lineTo(ox + tx * iv[0], oy + ty * iv[0]); c.closePath();
+      }
+    } }, ex || {});
+  }
+  // braziers: list [x, y, h, r] → [stand + bowl, flame, core]
+  function braziers(list, m, col) {
+    col = col || m.glow;
+    const top = Math.max.apply(null, list.map((q) => q[2]));
+    const stand = { z0: 0, z1: top + 2, side: m.iron, top: m.dark, ao: 0.25, shape: (c, zt) => {
+      const z = zt * (top + 2);
+      for (const q of list) {
+        const h = q[2], r = q[3] || 1.8;
+        if (z > h + 2) continue;
+        if (z < h) { const k = 0.25 + 0.75 * (1 - z / h); for (const a of [0.5, 2.6, 4.7]) S.circ(c, q[0] + Math.cos(a) * r * 0.55 * k, q[1] + Math.sin(a) * r * 0.55 * k, 0.32); }
+        else S.circ(c, q[0], q[1], r * (0.55 + 0.45 * (z - h) / 2));
+      }
+    }, detail: (c) => { for (const q of list) { if (q[2] + 2 < top + 2 - 0.01) continue; S.dot(c, cs(col, 0.9), q[0], q[1], (q[3] || 1.8) * 0.8); } } };
+    // flames sit on each bowl: shared part from the lowest bowl
+    const zb = Math.min.apply(null, list.map((q) => q[2])) + 1.4, fh = 5.5 + (top - zb);
+    const flame = (k, c1, c2) => ({ z0: zb, z1: zb + fh * k + 1, side: c1, top: c2, flat: true, bevel: false, ao: 0.3, shape: (c, zt, an) => {
+      const z = zb + zt * (fh * k + 1);
+      list.forEach((q, i) => {
+        const base = q[2] + 1.4, hh = (5.5 * k) * (0.85 + 0.15 * Math.sin(an * TAU + i * 2.1)), u = (z - base) / hh;
+        if (u < 0 || u > 1) return;
+        const r = (q[3] || 1.8) * k * 0.95 * Math.pow(1 - u, 0.75) * (1 + 0.18 * Math.sin(u * 7 + an * TAU * 2 + i));
+        const sway = Math.sin(an * TAU + i + u * 2.5) * 0.7 * u;
+        S.circ(c, q[0] + sway, q[1], r + 0.1);
+        if (u < 0.55 && k > 0.8) { S.circ(c, q[0] - r * 0.6 + sway * 0.6, q[1] + 0.2, r * 0.5 * (1 - u)); S.circ(c, q[0] + r * 0.62 + sway, q[1] - 0.2, r * 0.45 * (1 - u)); }
+      });
+    } });
+    return [stand, flame(1, col, mx(col, '#ffffff', 0.4)), flame(0.55, mx(col, '#ffffff', 0.45), mx(col, '#ffffff', 0.8))];
+  }
+  /* hanging banners (gonfalons) on T-poles or flat against a wall:
+   * list [x, y, zTop, w, len, pole(bool)] → parts [poles?, cloth, sigil] */
+  function banners(list, m, ex) {
+    ex = ex || {};
+    const poles = list.filter((q) => q[5]);
+    const out = [];
+    if (poles.length) {
+      const zt = Math.max.apply(null, poles.map((q) => q[2] + 2));
+      out.push({ z0: 0, z1: zt, side: m.iron, top: m.ironT, ao: 0.3, bevel: false, shape: (c, t) => {
+        const z = t * zt;
+        for (const q of poles) {
+          if (z > q[2] + 2) continue;
+          S.circ(c, q[0], q[1] - 0.6, 0.42);
+          if (z > q[2] - 0.5 && z < q[2] + 0.4) c.rect(q[0] - q[3] / 2 - 0.6, q[1] - 0.95, q[3] + 1.2, 0.7);
+        }
+      } });
+      out.push(spikes(poles.map((q) => [q[0], q[1] - 0.6, 0.6]), zt - 2, 3, m.iron, m.boneT));
+    }
+    const cloth = (an) => list.map((q, i) => {
+      const s = Math.sin(an * TAU + i * 1.7) * 0.55, x0 = q[0] - q[3] / 2, x1 = q[0] + q[3] / 2, zt = q[2], zb = q[2] - q[4];
+      return { p: [x0, zt, x1, zt, x1 + s * 0.6, zb + q[3] * 0.55, q[0] + s, zb, x0 + s * 0.6, zb + q[3] * 0.55], y0: q[1] - 0.35, y1: q[1] + 0.25 };
+    });
+    out.push(elev(cloth, 0, 0, m.banT, sh(m.ban, 0.35), { ao: 0.35, z0: Math.min.apply(null, list.map((q) => q[2] - q[4])), z1: Math.max.apply(null, list.map((q) => q[2])) }));
+    const sig = (an) => {
+      const ps = [];
+      list.forEach((q, i) => {
+        const s = Math.sin(an * TAU + i * 1.7) * 0.3, z = q[2] - q[4] * 0.38, r = q[3] * 0.26;
+        for (const pp of skullP(q[0] + s, z, r)) ps.push({ p: pp, y0: q[1] + 0.2, y1: q[1] + 0.45 });
+        ps.push({ p: rectXZ(q[0] - q[3] / 2 + 0.3, q[2] - 1.1, q[0] + q[3] / 2 - 0.3, q[2] - 0.6), y0: q[1] + 0.2, y1: q[1] + 0.45 });
+      });
+      return ps;
+    };
+    out.push(elev(sig, 0, 0, m.ban2, sh(m.ban2, 0.3), { flat: true, ao: 0 }));
+    return out;
+  }
+  // a 3D skull resting on a point (top of a stake / merlon): list [x, y, z, r]
+  function skulls3d(list, m) {
+    const zl = Math.min.apply(null, list.map((q) => q[2])), zh = Math.max.apply(null, list.map((q) => q[2] + q[3] * 1.9));
+    return { z0: zl, z1: zh, side: m.boneS, top: m.bone, ao: 0.3, bevel: false, shape: (c, zt) => {
+      const z = zl + zt * (zh - zl);
+      for (const q of list) {
+        const u = (z - q[2]) / (q[3] * 1.9);
+        if (u < 0 || u > 1) continue;
+        const r = q[3] * (u < 0.35 ? 0.72 : Math.sqrt(Math.max(0.05, 1 - Math.pow((u - 0.45) / 0.58, 2))));
+        S.circ(c, q[0], q[1], r);
+      }
+    }, detail: (c) => {
+      const a = headingOf(c), fx = Math.sin(a), fy = Math.cos(a);
+      for (const q of list) {
+        if (Math.abs(q[2] + q[3] * 1.9 - zh) > 0.6) continue;
+        const r = q[3];
+        S.dot(c, m.void, q[0] + fx * r * 0.35 - fy * r * 0.36, q[1] + fy * r * 0.35 + fx * r * 0.36, r * 0.24);
+        S.dot(c, m.void, q[0] + fx * r * 0.35 + fy * r * 0.36, q[1] + fy * r * 0.35 - fx * r * 0.36, r * 0.24);
+      }
+    } };
+  }
+  /* slice-wise stroked curves (bone ribs, buttresses, sails): fns f(z) → [x, y] | null */
+  function curves(fns, z0, z1, w, side, top, ex) {
+    const dz = dzOf(z0, z1);
+    return Object.assign({ z0, z1, side, top, stroke: w, bevel: false, ao: 0.25, shape: (c, zt) => {
+      const z = z0 + zt * (z1 - z0);
+      for (const f of fns) {
+        const a = f(z), b = f(Math.min(z1, z + dz * 1.1));
+        if (!a || !b) continue;
+        c.moveTo(a[0], a[1]); c.lineTo(b[0] + (a[0] === b[0] && a[1] === b[1] ? 0.01 : 0), b[1]);
+      }
+    } }, ex || {});
+  }
+  /* quarter-ellipse rib from (xa, ya, za) arching out and down to (xb, yb, zb) */
+  const ribF = (xa, ya, za, xb, yb, zb) => (z) => {
+    if (z > za + 0.01 || z < zb - 0.01) return null;
+    const ct = U.clamp((z - zb) / (za - zb), 0, 1), st = Math.sqrt(1 - ct * ct);
+    return [xa + (xb - xa) * st, ya + (yb - ya) * st];
+  };
+  /* arch rib rising from (x0, y0) to height h and down at (x1, y1) */
+  const archF = (x0, y0, x1, y1, h, zb) => [0, 1].map((leg) => (z) => {
+    const q = (z - (zb || 0)) / h;
+    if (q < -0.01 || q > 1.01) return null;
+    const s = Math.asin(U.clamp(q, 0, 1)) / PI, t = leg ? 1 - s : s;
+    return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t];
+  });
+  // rune glyph strip in the x-z plane (glowing marks along a facade)
+  function runeRow(x0, x1, zc, sz, seed) {
+    const out = [], rng = new U.RNG(seed || 7);
+    for (let x = x0; x < x1 - sz * 0.5; x += sz * 1.35) {
+      const k = rng.int(0, 3), hz = sz * 0.75;
+      if (k === 0) out.push(rectXZ(x, zc - hz, x + sz * 0.28, zc + hz));
+      else if (k === 1) out.push(diamond(x + sz * 0.4, zc, sz * 0.42, hz));
+      else if (k === 2) { out.push(rectXZ(x, zc - hz, x + sz * 0.24, zc + hz)); out.push([x + sz * 0.24, zc + hz * 0.2, x + sz * 0.8, zc + hz, x + sz * 0.8, zc + hz * 0.5, x + sz * 0.24, zc - hz * 0.3]); }
+      else out.push([x, zc - hz, x + sz * 0.7, zc - hz, x + sz * 0.35, zc + hz]);
+    }
+    return out;
+  }
+  // rune marks around the front arc of cylinders: list [cx, cy, r], band centre zc
+  function runeArcs(list, zc, col, top, seed) {
+    const w = [], rng = new U.RNG(seed || 5);
+    for (const q of list) for (let a = PI * 0.12; a < PI * 0.9; a += 0.36 / Math.max(0.5, q[2] / 8)) w.push([q[0], q[1], q[2], a, zc - 1 + rng.range(-0.5, 0.5), rng.range(1.4, 2.6), rng.next() < 0.3 ? 1 : 0.5]);
+    return arcWins(w, col, top);
+  }
+  // course lines and staggered joints on flat front faces: segs [x0, x1, yFace]
+  function courses(segs, z0, z1, step, col, ex) {
+    const dz = dzOf(z0, z1);
+    return Object.assign({ z0, z1, side: col, top: col, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = zt * (z1 - z0), r = Math.floor(z / step), line = r !== Math.floor((z - dz) / step) && zt > 0.02 && zt < 0.98;
+      for (const s of segs) {
+        if (line) { c.rect(s[0], s[2] - 0.1, s[1] - s[0], 0.42); continue; }
+        const off = (r % 2) * step * 0.95 + (s[3] || 0);
+        for (let x = s[0] + 1.3 + off; x < s[1] - 0.5; x += step * 1.9) c.rect(x, s[2] - 0.1, 0.28, 0.42);
+      }
+    } }, ex || {});
+  }
+  /* top-face texture: flagstones / blocks clipped to a polygon with some patched,
+   * cracked and missing stones */
+  function flagstones(c, pts, cell, seed, light, dark) {
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i < pts.length; i += 2) { x0 = Math.min(x0, pts[i]); x1 = Math.max(x1, pts[i]); y0 = Math.min(y0, pts[i + 1]); y1 = Math.max(y1, pts[i + 1]); }
+    c.save(); c.beginPath(); S.poly(c, pts); c.clip();
+    const rng = new U.RNG(seed * 7919 + 13);
+    let row = 0;
+    for (let y = y0; y < y1; y += cell, row++) {
+      for (let x = x0 - (row % 2) * cell * 0.6; x < x1; x += cell * 1.25) {
+        const r = rng.next();
+        if (r < 0.14) { c.fillStyle = light || 'rgba(255,255,255,0.07)'; c.fillRect(x + 0.3, y + 0.3, cell * 1.25 - 0.6, cell - 0.6); }
+        else if (r < 0.24) { c.fillStyle = dark || 'rgba(0,0,0,0.16)'; c.fillRect(x + 0.3, y + 0.3, cell * 1.25 - 0.6, cell - 0.6); }
+      }
+    }
+    c.strokeStyle = SEAM2; c.lineWidth = 0.32; c.beginPath();
+    row = 0;
+    for (let y = y0; y < y1; y += cell, row++) {
+      c.moveTo(x0, y); c.lineTo(x1, y);
+      for (let x = x0 - (row % 2) * cell * 0.6; x < x1; x += cell * 1.25) { c.moveTo(x, y); c.lineTo(x, y + cell); }
+    }
+    c.stroke();
+    // cracks
+    c.strokeStyle = 'rgba(0,0,0,0.38)'; c.lineWidth = 0.3; c.beginPath();
+    for (let i = 0; i < 4; i++) {
+      let x = x0 + rng.next() * (x1 - x0), y = y0 + rng.next() * (y1 - y0);
+      c.moveTo(x, y);
+      for (let k = 0; k < 4; k++) { x += rng.range(-2.5, 2.5); y += rng.range(-2.5, 2.5); c.lineTo(x, y); }
+    }
+    c.stroke();
+    c.restore();
+  }
+  function glowDot(c, col, x, y, r, a) {
+    const g = c.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, C.str(col, a === undefined ? 0.85 : a)); g.addColorStop(1, C.str(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+  }
+  function boneBits(c, m, list) { // scattered little bones on a top face: [x, y, rot, len]
+    for (const q of list) {
+      const ca = Math.cos(q[2]), sa = Math.sin(q[2]), l = (q[3] || 1.6) / 2;
+      S.lines(c, cs(m.bone, 0.9), 0.45, [q[0] - ca * l, q[1] - sa * l, q[0] + ca * l, q[1] + sa * l]);
+      S.dot(c, cs(m.bone), q[0] - ca * l, q[1] - sa * l, 0.38); S.dot(c, cs(m.bone), q[0] + ca * l, q[1] + sa * l, 0.38);
+    }
+  }
+  const lvl = (o) => U.clamp(Math.round((o && +o.level) || 1), 1, 3);
+
+  /* ===================================================== extra helpers */
+  // slate lean-to roof sloping toward the camera: slab, course lines, optional broken hole
+  function leanRoof(parts, m, x0, x1, yb, yf, zLo, zHi, hole) {
+    const yAt = (zt) => yb + (yf - yb) * (1 - zt) + 0.4;
+    parts.push({ z0: zLo, z1: zHi, side: m.roofS, top: m.roofL, ao: 0.1, bevel: false, shape: (c, zt) => c.rect(x0, yb, x1 - x0, Math.max(0.5, yAt(zt) - yb)) });
+    parts.push({ z0: zLo, z1: zHi, side: m.roofLn, top: m.roofLn, flat: true, bevel: false, ao: 0, shape: (c, zt) => { const z = zt * (zHi - zLo); for (const q of [0.33, 0.66]) if (Math.abs(z - q * (zHi - zLo)) < 0.1) c.rect(x0, yAt(zt) - 0.5, x1 - x0, 0.5); } });
+    if (hole) parts.push({ z0: zLo + 0.3, z1: zHi - 0.3, side: m.void, top: m.void, flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const yf2 = yAt((zLo + 0.3 + zt * (zHi - zLo - 0.6) - zLo) / (zHi - zLo)), hw = hole[1] * Math.sin(zt * PI);
+      for (let s = -hw; s < hw; s += 1.5) { const b = Math.min(hw, s + 1.5); if (b > s + 0.45) c.rect(hole[0] + s + 0.45, yf2 - 0.7, b - s - 0.45, 0.9); }
+    } });
+  }
+  // sickly smoke puffs rising from (x, y, z0)
+  function plume(m, x, y, z0, n) {
+    const col = mx(m.glowS, m.wall, 0.55);
+    return { z0, z1: z0 + n * 2 + 1, side: col, top: mx(col, m.glowT, 0.3), flat: true, bevel: false, ao: 0, shape: (c, zt) => {
+      const z = zt * (n * 2 + 1);
+      for (let i = 0; i < n; i++) { const zc = 0.9 + i * 2, r = 0.65 + i * 0.32, d = z - zc; if (Math.abs(d) < r) S.circ(c, x + i * 1.05 + Math.sin(i * 2) * 0.4, y - i * 0.3, Math.sqrt(r * r - d * d) + 0.05); }
+    } };
+  }
+  // caged lantern of green fire hanging under an iron arm: pole at (px, py), lantern at (lx, ly)
+  function fireLantern(parts, m, px, py, lx, ly, zTop) {
+    parts.push(drums([[px, py, 0.45], [lx, ly, 0.12, zTop - 2, zTop - 0.6]], 1.4, zTop, m.iron, m.ironT, { ao: 0.2 }));
+    parts.push(box(Math.min(px, lx) - 0.3, py - 0.3, Math.max(px, lx) + 0.3, py + 0.3, zTop - 0.6, zTop, m.iron, m.ironT, { bevel: false }));
+    parts.push(drums([[lx, ly, 0.95]], zTop - 4.2, zTop - 2, m.iron, m.dark, { ao: 0.2 }));
+    parts.push(drums([[lx, ly, 0.62]], zTop - 3.9, zTop - 2.3, m.glow, m.glowT, { flat: true, ao: 0, detail: (c) => glowDot(c, m.glow, lx, ly + 0.8, 3.6, 0.6) }));
+  }
+
+  /* ============================================================ HOUSE 2
+   * v0 townhouse: three-storey crumbling block with a fallen corner, gothic gable roofs on
+   *    the block and its front wing, iron ridge spikes, one green-lit window, iron fence
+   * v1 bone shack: tarpaulin stretched under a giant ribcage, patched, skull stake,
+   *    cauldron of green brew, bone picket fence
+   * v2 embalmer's: hipped-roof house with a tall iron stack, open side with glowing vats
+   *    under a slate awning, slab table, skull sign
+   * v3 crypt-tavern: wide hall with a sunken stair, barred lit windows, bone ridge with
+   *    spikes and skulls, green-fire lantern sign, stable annex, barrels, braziers */
+  M.undead_house2 = function (pal, opt) {
+    opt = opt || {};
+    const v = U.clamp(Math.round(+opt.v || 0), 0, 3), m = mats(pal), parts = [];
+    let H = 26, R = 20;
+    if (v === 0) {
+      const base = rectP(-18, -13, 18, 16);
+      parts.push(polyPart(base, 0, 1.4, m.wallD, m.floorT, { ao: 0.3, detail: (c) => { flagstones(c, base, 2.8, 21); boneBits(c, m, [[-15.5, 13.5, 0.5, 1.3], [14.5, -10, 2.1, 1.2], [15, 9, 1.2, 1]]); glowDot(c, m.glow, -4, 16.2, 4.5, 0.2); } }));
+      const X0 = -15, X1 = 9, Y0 = -11, Y1 = 4, Z1 = 18;
+      // crooked chimney behind the ridge, drawn first so the roof hides its base
+      parts.push(box(-12.6, -9.5, -10, -7, 12, 24, m.wall, m.wallT, { detail: (c) => { S.dot(c, m.void, -11.3, -8.25, 1); glowDot(c, m.vio, -11.3, -8.25, 2, 0.8); } }));
+      // main block with a fallen front-right corner
+      const bitePoly = (bite) => [X0, Y0, X1, Y0, X1, Y1 - bite * 1.3, X1 - bite * 0.55, Y1 - bite * 0.75, X1 - bite * 0.95, Y1 - bite * 0.3, X1 - bite * 1.5, Y1, X0, Y1];
+      parts.push({ z0: 1.4, z1: Z1, side: m.wall, top: m.wallT, ao: 0.3, shape: (c, zt) => { const z = 1.4 + zt * (Z1 - 1.4); if (z < 14) c.rect(X0, Y0, X1 - X0, Y1 - Y0); else S.poly(c, bitePoly((z - 14) / (Z1 - 14) * 5.5)); } });
+      parts.push(courses([[X0, X1 - 1, Y1]], 1.4, Z1, 2.3, mx(m.wall, m.dark, 0.4)));
+      parts.push(elev([rectXZ(-13.2, 2.6, -9.8, 5), rectXZ(-1.6, 10.8, 1.8, 12.9), rectXZ(4.2, 6.8, 7.4, 8.8)], Y1 - 0.1, Y1 + 0.3, m.patch, m.patch));
+      const wx = [-11.5, -6, 0.5, 6], frames = [], voids = [], bars = [];
+      for (const row of [[3.2, 4.6], [8.6, 4.4], [13.4, 3.2]]) for (const x of wx) {
+        if (row[0] > 12 && x > 2) continue;
+        frames.push(lancet(x, row[0], 2.6, row[1])); voids.push(lancet(x, row[0] + 0.45, 1.6, row[1] - 0.9)); bars.push(rectXZ(x - 0.14, row[0] + 0.45, x + 0.14, row[0] + row[1] - 0.9));
+      }
+      const lit = voids.splice(5, 1);
+      frames.push(lancet(-3, 1.4, 4.6, 7, 0.6));
+      parts.push(elev(frames, Y1 - 0.1, Y1 + 0.45, m.trimS, m.corn));
+      parts.push(elev(voids, Y1 + 0.45, Y1 + 0.6, m.void, m.dark, { ao: 0 }));
+      parts.push(elev([lancet(-3, 1.4, 3.3, 6.2, 0.6)], Y1 + 0.45, Y1 + 0.65, m.woodD, m.wood, { ao: 0.3 }));
+      parts.push(elev(bars.concat([rectXZ(-3.16, 1.4, -2.84, 6.4), rectXZ(-4.5, 3.6, -1.5, 4), rectXZ(-4.5, 5.8, -1.5, 6.2)]), Y1 + 0.65, Y1 + 0.85, m.iron, m.ironT, { ao: 0 }));
+      parts.push({ z0: Z1, z1: Z1 + 1.4, side: m.corn, top: m.cornT, ao: 0.15, shape: (c) => S.poly(c, bitePoly(5.8).map((q, i) => q + (i % 2 ? (q > (Y0 + Y1) / 2 ? 0.9 : -0.9) : (q > (X0 + X1) / 2 ? 0.9 : -0.9)))) });
+      const RO = { x: -4.5, y: -3.5, L: 11.3, W: 8.4, z0: Z1 + 1.4, h: 10.5, axis: 'x', lit: m.roofL, shade: m.roofS, ridge: m.bone, step: 2.3, joint: 3 };
+      parts.push(...gable(RO));
+      parts.push(roofLines(RO, m.roofLn));
+      parts.push(roofHole(RO, 'front', 6.5, 3.6, 2.6, 2, m.void));
+      const spk = [];
+      for (let x = -14.5; x <= 6.6; x += 3) spk.push([x, -3.5, 0.55]);
+      parts.push(spikes(spk, RO.z0 + RO.h - 0.3, 3.4, m.iron, m.boneT));
+      parts.push(skulls3d([[-15.8, -3.5, RO.z0 + RO.h - 0.6, 1]], m));
+      // front wing with its own steep gable, skull at the apex, a lit lancet pair
+      const WX0 = -2, WX1 = 12, WY0 = 2, WY1 = 15, WZ = 12.6;
+      parts.push(box(WX0, WY0, WX1, WY1, 1.4, WZ, m.wall, m.wallT, { ao: 0.3 }));
+      parts.push(courses([[WX0, WX1, WY1]], 1.4, WZ, 2.3, mx(m.wall, m.dark, 0.4)));
+      parts.push(elev([lancet(2, 3, 2.6, 4.6), lancet(8, 3, 2.6, 4.6), lancet(2, 8.2, 2.6, 4), lancet(8, 8.2, 2.6, 4)], WY1 - 0.1, WY1 + 0.45, m.trimS, m.corn));
+      parts.push(elev([lancet(2, 3.45, 1.6, 3.7), lancet(8, 3.45, 1.6, 3.7), lancet(8, 8.65, 1.6, 3.1)], WY1 + 0.45, WY1 + 0.6, m.void, m.dark, { ao: 0 }));
+      parts.push(elev([{ p: lit[0], y0: Y1 + 0.45, y1: Y1 + 0.65 }, { p: lancet(2, 8.65, 1.6, 3.1), y0: WY1 + 0.45, y1: WY1 + 0.65 }], 0, 0, m.glow, m.glowT, { flat: true, ao: 0.3, detail: (c) => { glowDot(c, m.glow, -6, Y1 + 0.65 + 1.75, 3.6, 0.6); glowDot(c, m.glow, 2, WY1 + 0.65 + 2.35, 3.4, 0.6); } }));
+      parts.push(elev([rectXZ(1.86, 3.45, 2.14, 7.1), rectXZ(7.86, 3.45, 8.14, 7.1), rectXZ(1.86, 8.65, 2.14, 11.7), rectXZ(7.86, 8.65, 8.14, 11.7)], WY1 + 0.65, WY1 + 0.85, m.iron, m.ironT, { ao: 0 }));
+      parts.push(box(WX0 - 0.9, WY0 - 0.9, WX1 + 0.9, WY1 + 0.9, WZ, WZ + 1.2, m.corn, m.cornT, { ao: 0.15 }));
+      const RW = { x: 5, y: 8.5, L: 7.4, W: 7.9, z0: WZ + 1.2, h: 8.5, axis: 'y', lit: m.roofL, shade: m.roofS, ridge: m.bone, step: 2.2, joint: 2.8 };
+      parts.push(...gable(RW));
+      parts.push(roofLines(RW, m.roofLn));
+      const gy = RW.y + RW.L;
+      parts.push(elev([triXZ(WX0 + 0.3, WX1 - 0.3, RW.z0, RW.z0 + RW.h * 6.7 / RW.W)], gy - 0.8, gy, m.wall, m.corn, { ao: 0.25 }));
+      parts.push(elev(skullP(5, RW.z0 + 3, 1.5), gy, gy + 0.6, m.boneS, m.bone));
+      parts.push(elev(skullEyes(5, RW.z0 + 3, 1.5), gy + 0.6, gy + 0.8, m.glow, m.glowT, { flat: true, ao: 0 }));
+      const wsp = []; for (let y = 2.6; y < 15; y += 2.6) wsp.push([5, y, 0.5]);
+      parts.push(spikes(wsp, RW.z0 + RW.h - 0.3, 3, m.iron, m.boneT));
+      // iron railing along the front, gate gap before the wing door
+      const fence = []; for (let x = -17; x <= 17.01; x += 1.5) if (x < -5.5 || x > -1.5) fence.push([x, 16.4, 0.3]);
+      parts.push(spikes(fence, 1.4, 4.4, m.iron, m.ironT, { ao: 0.1 }));
+      parts.push(...braziers([[14.5, 13.2, 2.6, 1.3]], m));
+      H = 34; R = 20;
+    } else if (v === 1) {
+      const base = [-12, -9, -4, -11, 9, -10, 13, -4, 12, 8, 4, 11, -8, 10, -13, 3];
+      parts.push(polyPart(base, 0, 1.2, mx(m.earth, m.dark, 0.2), m.earthT, { ao: 0.3, detail: (c) => { boneBits(c, m, [[9, 6, 0.4, 1.6], [-10, -5, 2.1, 1.3], [7, -7, 1.1, 1.1], [-9.5, 7.5, 0.3, 1.8]]); glowDot(c, m.glow, 8.5, 10, 3.5, 0.22); } }));
+      const tarp = mx(m.roofS, m.patch, 0.4), tarpT = mx(m.roofL, m.patch, 0.3);
+      const TH = 7.2, tx0 = -7.5, tx1 = 6.5, ty0 = -6.5, ty1 = 5.5;
+      const slab = (zt) => { const q = Math.pow(zt, 1.3); return [tx0 + 3.2 * q, ty0 + 2.8 * q, (tx1 - tx0) - 6.4 * q, (ty1 - ty0) - 5.6 * q]; };
+      const yfAt = (zt) => { const q = slab(zt); return q[1] + q[3]; };
+      // back rib under the tarp, then the tarp, then the ribs lying over it
+      parts.push(curves(archF(tx0 - 1.2, -4.5, tx1 + 1.2, -4.5, TH + 1.6, 1.2), 1.2, 1.2 + TH + 1.6, 1.3, m.boneS, m.bone));
+      parts.push({ z0: 1.2, z1: 1.2 + TH, side: tarp, top: tarpT, ao: 0.3, bevel: false, shape: (c, zt) => { const q = slab(zt); S.rrect(c, q[0], q[1], Math.max(0.6, q[2]), Math.max(0.6, q[3]), 1.6 * (1 - zt) + 0.3); } });
+      parts.push({ z0: 1.2, z1: 1.2 + TH * 0.9, side: m.patch, top: m.patch, flat: true, bevel: false, ao: 0, shape: (c, zt) => { const yf = yfAt(zt * 0.9), z = zt * TH * 0.9; if (z > 2.2 && z < 4.2) c.rect(-5.8, yf - 0.7, 2.4, 0.9); if (z > 3.4 && z < 5.2) c.rect(2.2, yf - 0.7, 2.2, 0.9); } });
+      parts.push({ z0: 1.2, z1: 1.2 + TH * 0.9, side: m.bone, top: m.bone, flat: true, bevel: false, ao: 0, shape: (c, zt) => { const yf = yfAt(zt * 0.9), z = zt * TH * 0.9; if ((z > 2.2 && z < 4.2) || (z > 3.4 && z < 5.2)) for (let i = 0; i < 3; i++) { if (z > 2.2 && z < 4.2) c.rect(-5.5 + i * 0.8, yf - 0.6, 0.25, 0.4); if (z > 3.4 && z < 5.2) c.rect(2.5 + i * 0.8, yf - 0.6, 0.25, 0.4); } } });
+      parts.push({ z0: 1.2, z1: 5.4, side: m.void, top: m.void, flat: true, bevel: false, ao: 0, shape: (c, zt) => { const yf = yfAt(zt * 4.2 / TH), w = zt > 0.7 ? 1.7 * (1 - (zt - 0.7) / 0.3) + 0.3 : 1.7; c.rect(-1.4 - w, yf - 0.7, w * 2, 0.9); } });
+      parts.push(curves(archF(tx0 - 1.2, -1, tx1 + 1.2, -1, TH + 1.6, 1.2).concat(archF(tx0 - 1.2, 2.5, tx1 + 1.2, 2.5, TH + 1.6, 1.2)), 1.2, 1.2 + TH + 1.6, 1.3, m.boneS, m.bone));
+      parts.push(box(-1, -5.5, 1, 3.5, 1.2 + TH + 1.1, 1.2 + TH + 2.1, m.boneS, m.bone, { ao: 0.2 }));
+      // skull stake, cauldron of brew, bone pickets
+      parts.push(spikes([[10, 3.5, 0.45]], 1.2, 7, m.woodD, m.wood));
+      parts.push(skulls3d([[10, 3.5, 8.2, 1]], m));
+      parts.push(drums([[8.5, 9, 1.6]], 1.2, 3.4, m.iron, m.dark, { ao: 0.3 }));
+      parts.push(drums([[8.5, 9, 1.3]], 3.4, 3.7, m.glowS, m.glow, { flat: true, ao: 0, detail: (c) => glowDot(c, m.glow, 8.5, 9, 3.4, 0.45) }));
+      const pk = []; for (let x = -11.5; x < -4.4; x += 1.3) pk.push([x, 8.8, 0.3]);
+      parts.push(spikes(pk, 1.2, 2.8, m.boneS, m.bone));
+      H = 12; R = 14;
+    } else if (v === 2) {
+      const base = rectP(-17, -11, 19, 14);
+      parts.push(polyPart(base, 0, 1.4, m.wallD, m.floorT, { ao: 0.3, detail: (c) => { flagstones(c, base, 2.8, 31); boneBits(c, m, [[14, 12.4, 0.4, 1.4], [-15, 12.2, 2.4, 1.2], [-5, 10, 1.6, 1]]); glowDot(c, m.glow, 11, 7, 6, 0.22); } }));
+      // iron stack behind the ridge (drawn before the house), with its flared cap and plume
+      parts.push(drums([[-10.5, -6, 1.5]], 9, 23, m.iron, m.dark, { ao: 0.2 }));
+      parts.push(drums([[-10.5, -6, 2.1]], 23, 24.2, m.iron, m.ironT, { ao: 0.1 }));
+      parts.push(drums([[-10.5, -6, 1.1]], 24.2, 24.5, m.glowS, m.glow, { flat: true, ao: 0, detail: (c) => glowDot(c, m.glow, -10.5, -6, 3, 0.4) }));
+      parts.push(plume(m, -10.5, -6, 24.5, 3));
+      // the house
+      parts.push(box(-14, -9, 3, 6, 1.4, 10, m.wall, m.wallT, { ao: 0.3 }));
+      parts.push(courses([[-14, 3, 6]], 1.4, 10, 2.2, mx(m.wall, m.dark, 0.4)));
+      parts.push(elev([rectXZ(-12.5, 2, -9.5, 4.2), rectXZ(-3, 7.2, 0, 9)], 5.9, 6.3, m.patch, m.patch));
+      parts.push(elev([lancet(-10, 1.4, 3.4, 6.2, 0.6), lancet(-4, 4.2, 2.4, 4.4), lancet(0.5, 4.2, 2.4, 4.4)], 5.9, 6.4, m.trimS, m.corn));
+      parts.push(elev([lancet(-10, 1.4, 2.4, 5.4, 0.6)], 6.4, 6.6, m.woodD, m.wood));
+      parts.push(elev([lancet(-4, 4.7, 1.4, 3.4), lancet(0.5, 4.7, 1.4, 3.4)], 6.4, 6.6, m.glow, m.glowT, { flat: true, ao: 0.3 }));
+      parts.push(elev([rectXZ(-10.15, 1.4, -9.85, 6.2), rectXZ(-4.1, 4.7, -3.9, 7.9), rectXZ(0.4, 4.7, 0.6, 7.9)], 6.6, 6.8, m.iron, m.ironT, { ao: 0 }));
+      parts.push(box(-14.9, -9.9, 3.9, 6.9, 10, 11.2, m.corn, m.cornT, { ao: 0.15 }));
+      const RO = { x: -5.5, y: -1.5, L: 9.3, W: 8.3, z0: 11.2, h: 8, pw: 1.15, lit: m.roofL, shade: m.roofS };
+      parts.push(...hipRoof(RO));
+      parts.push(hipLines(RO, m.roofLn, 2));
+      parts.push(hipRidges(RO, m.boneS, m.bone, 0.42));
+      parts.push(spikes([[-5.5, -1.5, 0.6]], 19, 3.5, m.iron, m.boneT));
+      // open side: slate awning on iron posts, vats of glowing brew, slab table, skull sign
+      parts.push(drums([[6, 6, 0.45], [17, 6, 0.45], [6, -2.5, 0.45], [17, -2.5, 0.45]], 1.4, 8.6, m.iron, m.ironT, { ao: 0.2 }));
+      leanRoof(parts, m, 4.4, 18.6, -3.2, 6.6, 8.6, 10.2);
+      parts.push(drums([[7, 5.5, 1.8], [11.2, 7.6, 1.8], [15.6, 6, 1.8]], 1.4, 5, m.iron, m.dark, { ao: 0.3, detail: (c) => { for (const q of [[7, 5.5], [11.2, 7.6], [15.6, 6]]) { c.save(); c.strokeStyle = m.ironT; c.lineWidth = 0.3; c.beginPath(); c.arc(q[0], q[1], 1.5, 0, TAU); c.stroke(); c.restore(); } } }));
+      parts.push(drums([[7, 5.5, 1.5], [11.2, 7.6, 1.5], [15.6, 6, 1.5]], 5, 5.3, m.glowS, m.glow, { flat: true, ao: 0, detail: (c) => { for (const q of [[7, 5.5], [11.2, 7.6], [15.6, 6]]) glowDot(c, m.glow, q[0], q[1], 3.2, 0.45); } }));
+      parts.push(box(7.5, 10, 15.5, 12.8, 1.4, 3.6, m.trimS, m.trim, { ao: 0.3, detail: (c) => { c.fillStyle = cs(m.bone, 0.85); c.beginPath(); S.ell(c, 11.5, 11.4, 3.2, 1); c.fill(); boneBits(c, m, [[9, 11.4, 0.2, 1.2], [13.6, 11.5, 2.9, 1.1]]); } }));
+      parts.push(spikes([[-12.5, 11.5, 0.45]], 1.4, 7.5, m.woodD, m.wood));
+      parts.push(skulls3d([[-12.5, 11.5, 8.6, 1.1]], m));
+      parts.push(...braziers([[4, 12.4, 2.6, 1.3]], m));
+      H = 32; R = 21;
+    } else {
+      const base = rectP(-19, -12, 19, 16);
+      parts.push(polyPart(base, 0, 1.4, m.wallD, m.floorT, { ao: 0.3, detail: (c) => {
+        flagstones(c, base, 2.8, 41);
+        c.fillStyle = cs(m.void, 0.95); c.beginPath(); c.rect(-6.2, 4.2, 6.4, 9.2); c.fill();
+        c.strokeStyle = 'rgba(130,120,136,0.5)'; c.lineWidth = 0.4; c.beginPath(); for (let y = 5.7; y < 13.2; y += 1.5) { c.moveTo(-6, y); c.lineTo(0, y); } c.stroke();
+        glowDot(c, m.glow, -3, 5.6, 5, 0.4);
+        boneBits(c, m, [[14, 13.4, 0.3, 1.4], [-16.5, 14.4, 2, 1.2]]);
+      } }));
+      parts.push({ z0: 1.4, z1: 2.5, side: m.trimS, top: m.trim, ao: 0.2, shape: (c) => { c.rect(-7.2, 4.2, 1, 9.6); c.rect(0.2, 4.2, 1, 9.6); c.rect(-7.2, 13.2, 8.4, 0.8); } });
+      // crooked chimney behind the ridge, drawn before the hall
+      parts.push(box(-13.4, -8.6, -10.8, -6, 10, 23, m.wall, m.wallT, { detail: (c) => { S.dot(c, m.void, -12.1, -7.3, 1); glowDot(c, m.vio, -12.1, -7.3, 2, 0.8); } }));
+      // hall and stable annex (they share the masonry, trim, door and iron parts)
+      parts.push(box(-16, -10, 10, 4, 1.4, 11, m.wall, m.wallT, { ao: 0.3 }));
+      parts.push(box(10, -6, 20, 5, 1.4, 7.5, m.wall, m.wallT, { ao: 0.3 }));
+      parts.push(courses([[-16, 10, 4], [10.5, 20, 5, 0.6]], 1.4, 11, 2.2, mx(m.wall, m.dark, 0.4)));
+      parts.push(elev([rectXZ(-14.6, 6, -11, 8.2), rectXZ(4.8, 2.2, 8.2, 4.6), { p: rectXZ(18, 2, 19.4, 4.4), y0: 4.9, y1: 5.3 }], 3.9, 4.3, m.patch, m.patch));
+      parts.push(elev([lancet(-3, 1.4, 5.2, 7.2, 0.6), lancet(-11, 4.6, 2.8, 4.6), lancet(5, 4.6, 2.8, 4.6), lancet(-7.4, 4.6, 2.8, 4.6), lancet(1.3, 4.6, 2.8, 4.6), { p: rectXZ(12.4, 1.4, 17.6, 6.2), y0: 4.9, y1: 5.4 }], 3.9, 4.4, m.trimS, m.corn));
+      parts.push(elev([lancet(-3, 1.4, 3.8, 6.4, 0.6), { p: rectXZ(12.8, 1.4, 17.2, 5.8), y0: 5.4, y1: 5.6 }], 4.4, 4.6, m.woodD, m.wood, { ao: 0.3 }));
+      parts.push(elev([lancet(-11, 5.1, 1.7, 3.6), lancet(5, 5.1, 1.7, 3.6), lancet(-7.4, 5.1, 1.7, 3.6), lancet(1.3, 5.1, 1.7, 3.6)], 4.4, 4.6, m.glow, m.glowT, { flat: true, ao: 0.3 }));
+      parts.push(elev([rectXZ(-11.1, 5.1, -10.9, 8.6), rectXZ(4.9, 5.1, 5.1, 8.6), rectXZ(-7.5, 5.1, -7.3, 8.6), rectXZ(1.2, 5.1, 1.4, 8.6), rectXZ(-3.15, 1.4, -2.85, 7.2), rectXZ(-4.9, 4.2, -1.1, 4.6), rectXZ(-4.9, 6.2, -1.1, 6.6), { p: rectXZ(12.8, 2.6, 17.2, 3), y0: 5.6, y1: 5.8 }, { p: rectXZ(12.8, 4.6, 17.2, 5), y0: 5.6, y1: 5.8 }, { p: rectXZ(14.86, 1.4, 15.14, 5.8), y0: 5.6, y1: 5.8 }], 4.6, 4.8, m.iron, m.ironT, { ao: 0 }));
+      parts.push(elev(skullP(-3, 9.4, 1.1), 4.4, 4.9, m.boneS, m.bone));
+      parts.push({ z0: 7.5, z1: 12.2, side: m.corn, top: m.cornT, ao: 0.15, shape: (c, zt) => { const z = 7.5 + zt * 4.7; if (z <= 8.4) c.rect(9.4, -6.6, 11.2, 12.2); if (z >= 11) c.rect(-16.9, -10.9, 27.8, 15.8); } });
+      const RO = { x: -3, y: -3, L: 13.9, W: 7.9, z0: 12.2, h: 8.5, axis: 'x', lit: m.roofL, shade: m.roofS, ridge: m.bone, step: 2.3, joint: 3 };
+      parts.push(...gable(RO));
+      parts.push(roofLines(RO, m.roofLn));
+      parts.push(roofHole(RO, 'front', -9, 3.2, 2.4, 1.8, m.void));
+      const spk = []; for (let x = -14; x <= 8.1; x += 3.6) spk.push([x, -3, 0.55]);
+      parts.push(spikes(spk, RO.z0 + RO.h - 0.3, 3.2, m.iron, m.boneT));
+      parts.push(skulls3d([[-16.9, -3, RO.z0 + RO.h - 0.6, 1], [10.9, -3, RO.z0 + RO.h - 0.6, 1]], m));
+      // low hipped roof over the stable annex
+      const RA = { x: 15, y: -0.5, L: 5.6, W: 6.1, z0: 8.4, h: 3.8, lit: m.roofL, shade: m.roofS };
+      parts.push(...hipRoof(RA));
+      parts.push(hipLines(RA, m.roofLn, 1.8));
+      // green-fire lantern sign, barrels, braziers
+      fireLantern(parts, m, 14.5, 9.5, 11.6, 9.5, 10);
+      parts.push(drums([[-12.4, 8.6, 1.4], [-9.4, 10, 1.4], [-11.8, 12, 1.4]], 1.4, 4.6, m.woodD, m.woodT, { ao: 0.3, detail: (c) => { for (const q of [[-12.4, 8.6], [-9.4, 10], [-11.8, 12]]) { c.save(); c.strokeStyle = m.iron; c.lineWidth = 0.35; c.beginPath(); c.arc(q[0], q[1], 1, 0, TAU); c.stroke(); c.restore(); } } }));
+      parts.push(...braziers([[-16.5, 15, 3, 1.4], [3.5, 15, 3, 1.4]], m));
+      H = 26; R = 21;
+    }
+    return { r: R, h: H, parts, style: 'unit', bevel: 0.7 };
+  };
+
+  /* ============================================================== SHED
+   * open-fronted black-stone store under a holed slate lean-to with a bone edge: coffins,
+   * a barrel and skulls inside */
+  M.undead_shed = function (pal, opt) {
+    const m = mats(pal), parts = [];
+    const base = rectP(-8.6, -6, 8.6, 5.6);
+    parts.push(polyPart(base, 0, 1, m.wallD, m.floorT, { ao: 0.3, detail: (c) => { flagstones(c, base, 2.6, 51); c.fillStyle = cs(m.void, 0.3); c.fillRect(-5.8, -3.8, 11.6, 8.2); boneBits(c, m, [[6.6, 4.6, 0.6, 1.3]]); } }));
+    parts.push({ z0: 1, z1: 7.2, side: m.wall, top: m.wallT, ao: 0.32, shape: (c, zt) => {
+      const z = 1 + zt * 6.2, ye = z <= 6 ? 4.4 : 4.4 - (z - 6) / 1.2 * 9.6;
+      c.rect(-7.4, -5.4, 14.8, 1.7);
+      if (ye > -3.5) { c.rect(-7.4, -3.7, 1.6, ye + 3.7); c.rect(5.8, -3.7, 1.6, ye + 3.7); }
+    } });
+    parts.push(courses([[-7.4, -5.8, 4.4], [5.8, 7.4, 4.4]], 1, 6, 2, mx(m.wall, m.dark, 0.4)));
+    parts.push(box(-5.2, -3, -2.2, 3.6, 1, 3, m.woodD, m.trimS, { ao: 0.3, detail: (c) => S.lines(c, cs(m.bone, 0.9), 0.35, [-4.9, -2.6, -2.5, -2.6, -4.9, 3.2, -2.5, 3.2, -3.7, -2.6, -3.7, 3.2]) }));
+    parts.push(box(-1.6, -2.2, 1.2, 3.8, 1, 2.6, m.woodD, m.woodT, { ao: 0.3, detail: (c) => S.lines(c, cs(m.bone, 0.8), 0.3, [-0.2, -1.8, -0.2, 3.4]) }));
+    parts.push(drums([[4, 1.8, 1.3]], 1, 3.9, m.woodD, m.woodT, { ao: 0.3, detail: (c) => { c.save(); c.strokeStyle = m.iron; c.lineWidth = 0.35; c.beginPath(); c.arc(4, 1.8, 0.95, 0, TAU); c.stroke(); c.restore(); } }));
+    parts.push(skulls3d([[3.4, -2.4, 1, 0.8], [5.2, -1.4, 1, 0.65]], m));
+    parts.push(drums([[-6.6, 4.4, 0.4], [6.6, 4.4, 0.4]], 1, 6.3, m.iron, m.ironT, { ao: 0.2 }));
+    leanRoof(parts, m, -8.4, 8.4, -5.8, 4.6, 6.2, 8, [3, 2]);
+    parts.push(box(-8.6, 4.4, 8.6, 5, 5.8, 6.3, m.boneS, m.bone, { bevel: false }));
+    return { r: 10, h: 9, parts, style: 'unit', bevel: 0.7 };
+  };
+
+  /* =========================================================== GRANARY
+   * bone silo: round black-stone drum with bone bands, iron door, dark bat holes, spiked
+   * slate cone, a skull on the cornice */
+  M.undead_granary = function (pal, opt) {
+    const m = mats(pal), parts = [];
+    const base = ngon(8, 6.4, PI / 8, 0, 0.5);
+    parts.push(polyPart(base, 0, 1.2, m.wallD, m.floorT, { ao: 0.3, detail: (c) => { flagstones(c, base, 2.4, 61); boneBits(c, m, [[4.4, 4.2, 0.5, 1.2]]); } }));
+    parts.push(drums([[0, 0, 4.3]], 1.2, 9.6, m.wall, m.wallT, { ao: 0.3 }));
+    parts.push(drums([[0, 0, 4.75]], 5, 5.7, m.corn, m.cornT, { ao: 0.2 }));
+    parts.push(drums([[0, 0, 5]], 9.6, 10.8, m.corn, m.cornT, { ao: 0.2 }));
+    parts.push(arcWins([[0, 0, 4.3, PI / 2, 1.2, 4.6, 2.5]], m.trimS, m.corn));
+    parts.push(arcWins([[0, 0, 4.45, PI / 2, 1.5, 3.9, 1.6]], m.iron, m.ironT));
+    parts.push(arcWins([[0, 0, 4.3, PI * 0.28, 6.8, 2.1, 1.1], [0, 0, 4.3, PI * 0.5, 7.2, 2.1, 1.1], [0, 0, 4.3, PI * 0.72, 6.8, 2.1, 1.1]], m.void, m.dark));
+    parts.push(...cones([[0, 0, 5.5]], 10.8, 6.8, m.roofL, m.roofS, { pw: 1.2 }));
+    parts.push(spikes([[0, 0, 0.6]], 17.3, 3.2, m.iron, m.boneT));
+    parts.push(skulls3d([[0, 4.7, 10.8, 0.8]], m));
+    return { r: 7, h: 21, parts, style: 'unit', bevel: 0.7 };
   };
 })(window.AS = window.AS || {});
 
