@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Lovely mountains. Horrible place to drop a boot",
+  "words": [
+    {
+      "text": "Lovely",
+      "start": 0.24,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -0.000847814604640007
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -0.00010942813969450071
+    },
+    {
+      "text": "mountains.",
+      "start": 0.7,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.008327460860164138
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.34,
+      "type": "spacing",
+      "logprob": -2.8729025871143676e-05
+    },
+    {
+      "text": "Horrible",
+      "start": 1.9,
+      "end": 2.32,
+      "type": "word",
+      "logprob": -1.0996902084059457e-05
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "place",
+      "start": 2.44,
+      "end": 2.7,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 2.74,
+      "end": 2.84,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.86,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "drop",
+      "start": 2.86,
+      "end": 3.06,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.06,
+      "end": 3.12,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "a",
+      "start": 3.12,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -2.1815061700181104e-05
+    },
+    {
+      "text": "boot",
+      "start": 3.3,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -2.1815061700181104e-05
+    }
+  ],
+  "transcription_id": "qwXD6iqHjYKzOg0Jv4FL",
+  "audio_duration_secs": 3.92
+}

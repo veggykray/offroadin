@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They are stealing our herd. How astonishingly common",
+  "words": [
+    {
+      "text": "They",
+      "start": 0.1,
+      "end": 0.2,
+      "type": "word",
+      "logprob": -0.00020752183627337217
+    },
+    {
+      "text": " ",
+      "start": 0.2,
+      "end": 0.22,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "are",
+      "start": 0.22,
+      "end": 0.36,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 0.36,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "stealing",
+      "start": 0.4,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 0.96,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "our",
+      "start": 0.96,
+      "end": 1.1,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 1.1,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -2.634490556374658e-05
+    },
+    {
+      "text": "herd.",
+      "start": 1.2,
+      "end": 1.64,
+      "type": "word",
+      "logprob": -0.001734927018696908
+    },
+    {
+      "text": " ",
+      "start": 1.64,
+      "end": 2.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "How",
+      "start": 2.06,
+      "end": 2.16,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.16,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": -0.0005645350320264697
+    },
+    {
+      "text": "astonishingly",
+      "start": 2.22,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -0.0004777385083011373
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.18,
+      "type": "spacing",
+      "logprob": -4.625213477993384e-05
+    },
+    {
+      "text": "common",
+      "start": 3.18,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -4.625213477993384e-05
+    }
+  ],
+  "transcription_id": "QLauyaze92SCxZSXmHHA",
+  "audio_duration_secs": 3.92
+}

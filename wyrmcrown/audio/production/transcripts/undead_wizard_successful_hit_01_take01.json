@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A fine hit. Shall I reserve a grave?",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.18,
+      "type": "word",
+      "logprob": -0.0004898302140645683
+    },
+    {
+      "text": " ",
+      "start": 0.18,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -3.6477376852417365e-05
+    },
+    {
+      "text": "fine",
+      "start": 0.4,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -3.6477376852417365e-05
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "hit.",
+      "start": 0.92,
+      "end": 1.22,
+      "type": "word",
+      "logprob": -0.019736576820605478
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -1.537788011773955e-05
+    },
+    {
+      "text": "Shall",
+      "start": 1.84,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -1.537788011773955e-05
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "I",
+      "start": 2.16,
+      "end": 2.22,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.22,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -3.814689989667386e-06
+    },
+    {
+      "text": "reserve",
+      "start": 2.26,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -3.814689989667386e-06
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 2.74,
+      "end": 2.84,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.9,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "grave?",
+      "start": 2.9,
+      "end": 3.46,
+      "type": "word",
+      "logprob": -0.0007761833981021482
+    }
+  ],
+  "transcription_id": "uwj5xie9nnf8bkjHQ39r",
+  "audio_duration_secs": 3.76
+}

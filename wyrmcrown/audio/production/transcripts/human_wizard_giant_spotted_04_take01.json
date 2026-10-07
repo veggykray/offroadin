@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Hit the knees. They're practically a postcode",
+  "words": [
+    {
+      "text": "Hit",
+      "start": 0.1,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -0.0013584204716607928
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.32,
+      "type": "spacing",
+      "logprob": -8.821448318485636e-06
+    },
+    {
+      "text": "the",
+      "start": 0.32,
+      "end": 0.38,
+      "type": "word",
+      "logprob": -8.821448318485636e-06
+    },
+    {
+      "text": " ",
+      "start": 0.38,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -6.9141146923357155e-06
+    },
+    {
+      "text": "knees.",
+      "start": 0.46,
+      "end": 1.0,
+      "type": "word",
+      "logprob": -0.0019173055375934684
+    },
+    {
+      "text": " ",
+      "start": 1.0,
+      "end": 1.38,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "They're",
+      "start": 1.38,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -2.9850453529434162e-05
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.64,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "practically",
+      "start": 1.64,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "a",
+      "start": 2.16,
+      "end": 2.28,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.28,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -0.04309651255607605
+    },
+    {
+      "text": "postcode",
+      "start": 2.34,
+      "end": 3.0,
+      "type": "word",
+      "logprob": -0.04309651255607605
+    }
+  ],
+  "transcription_id": "HJFxRXO1kGxlZBg5xqoG",
+  "audio_duration_secs": 3.2
+}

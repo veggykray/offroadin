@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Dragon ahead. Lovely. Another enormous problem",
+  "words": [
+    {
+      "text": "Dragon",
+      "start": 0.18,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -0.0006621075444854796
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -3.2543604902457446e-05
+    },
+    {
+      "text": "ahead.",
+      "start": 0.56,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -0.00043818240495359834
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "Lovely.",
+      "start": 1.5,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -0.0003224136523515751
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "Another",
+      "start": 2.48,
+      "end": 2.92,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 2.92,
+      "end": 3.0,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "enormous",
+      "start": 3.0,
+      "end": 3.64,
+      "type": "word",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": " ",
+      "start": 3.64,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "problem",
+      "start": 3.78,
+      "end": 4.22,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "fYBVyHsLxfDNeqxSEYbj",
+  "audio_duration_secs": 4.4
+}

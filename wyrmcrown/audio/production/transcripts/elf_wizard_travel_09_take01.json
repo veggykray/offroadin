@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The saddle was clearly designed by someone with no spine",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.14,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.28,
+      "type": "spacing",
+      "logprob": -3.4689302992774174e-05
+    },
+    {
+      "text": "saddle",
+      "start": 0.34,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -3.4689302992774174e-05
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "was",
+      "start": 0.82,
+      "end": 1.02,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.02,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "clearly",
+      "start": 1.12,
+      "end": 1.62,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.62,
+      "end": 1.66,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "designed",
+      "start": 1.66,
+      "end": 2.06,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.06,
+      "end": 2.12,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "by",
+      "start": 2.12,
+      "end": 2.28,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.28,
+      "end": 2.36,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "someone",
+      "start": 2.36,
+      "end": 2.68,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.68,
+      "end": 2.72,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "with",
+      "start": 2.72,
+      "end": 2.86,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.86,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "no",
+      "start": 2.92,
+      "end": 3.06,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.06,
+      "end": 3.26,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "spine",
+      "start": 3.34,
+      "end": 3.82,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "FRw1FC7A6SdgyGnPueAC",
+  "audio_duration_secs": 4.16
+}

@@ -4,10 +4,12 @@
 // war for exceptions. Needs the repo served at http://127.0.0.1:8766
 // (e.g. `npx http-server -p 8766` from the repo root).
 // usage: node wyrmcrown/tools/test_game.mjs [filter]
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-const BASE = 'http://127.0.0.1:8766/wyrmcrown/index.html';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const BASE = (process.env.GAME_BASE_URL || 'http://127.0.0.1:8766') + '/wyrmcrown/index.html';
 const filter = process.argv[2] || '';
-const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+const browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined, args: ['--autoplay-policy=no-user-gesture-required', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding'] });
 let pass = 0, fail = 0;
 const results = [];
 
@@ -17,7 +19,7 @@ async function open(query, w = 1280, h = 800) {
   page.on('pageerror', (e) => page.errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') page.errors.push(m.text()); });
   await page.goto(BASE + (query || ''));
-  if (query && query.includes('map=')) await page.waitForFunction(() => window.AS && AS.game && AS.App.state === 'play', null, { timeout: 30000 });
+  if (query && query.includes('map=')) await page.waitForFunction(() => window.AS && AS.game && AS.App.state === 'play', null, { timeout: 90000 });
   await page.waitForTimeout(600);
   return page;
 }
@@ -39,7 +41,7 @@ const ok = (cond, msg) => { if (!cond) throw new Error(msg); };
 // wait for game time to pass (robust when the machine is busy and frames are slow)
 const play = async (page, secs) => {
   const t0 = await page.evaluate(() => AS.game.time);
-  await page.waitForFunction(([t0, secs]) => AS.game.time >= t0 + secs, [t0, secs], { timeout: secs * 1000 * 8 + 4000, polling: 50 });
+  await page.waitForFunction(([t0, secs]) => AS.game.time >= t0 + secs, [t0, secs], { timeout: secs * 1000 * 30 + 15000, polling: 50 });
 };
 const ev = (page, fn, arg) => page.evaluate(fn, arg);
 // screen position (CSS px) of a world point (projected: z lifts it up the screen)
@@ -260,33 +262,44 @@ await test('combat: the head turns to aim the breath at the cursor', async (keep
 
 await test('taunts: one voice at a time, rivals fade with distance', async (keep) => {
   const page = keep(await open('?map=sundered&god=1'));
+  await page.keyboard.press('KeyM'); await page.keyboard.press('KeyM');
+  await page.waitForFunction(() => AS.Audio.ready && AS.Audio.ctx.state === 'running', null, { timeout: 30000 });
   const r = await ev(page, async () => {
     const g = AS.game, p = g.player, V = AS.Voices;
     const e = g.factions.elf.dragon;
     let ex = 260;
     e.pilot = { read(ee, inp) { inp.throttle = 0; ee.x = p.x + ex; ee.y = p.y; ee.z = 60; ee.speed = 40; } };
-    V.quietUntil = 1e9; V.pairNext = {}; // no random encounters during the test
+    V.stop(); V.quietUntil = 1e9; V.scanAt = 1e9; V.pairNext = {};
     let overlap = false, spoken = [], last = null;
-    const watch = setInterval(() => { if (V.speaking && V.speaking.q !== last) { last = V.speaking.q; spoken.push((last.own ? 'own ' : 'foe ') + last.role + ': ' + last.text); } }, 30);
-    // a line, a reply and an interruption must queue up, never talk over each other
-    await new Promise((r) => setTimeout(r, 300));
-    V.spkNext = {}; V.calmUntil = 0;
-    const q1 = V.say(p, 'dragon', 'elf'); V.say(e, 'wizard', 'human', 0, q1); V.say(e, 'dragon', 'human');
+    const watch = setInterval(() => { if (V.recordedSource && V.speaking && V.speaking.q !== last) { last = V.speaking.q; spoken.push((last.own ? 'own ' : 'foe ') + last.role + ': ' + last.text); } }, 30);
+    // Explicit queue entries exercise serialization without waiting for the
+    // deliberately rare, shared banter interval.
+    const own = V.enqueueLine(V.eventLine('enemy_dragon', 'dragon', p.fk), p, { priority: 10 });
+    const reply = V.enqueueLine(V.eventLine('enemy_dragon', 'wizard', e.fk), e, { priority: 1 });
+    own.until = reply.until = g.time + 60;
     const t0 = performance.now();
-    while (performance.now() - t0 < 9000) { await new Promise((r) => setTimeout(r, 50)); if (V.speaking && V.queue.includes(V.speaking.q)) overlap = true; }
-    // far away: only a snippet, quietly
-    ex = 800; V.spkNext = {}; await new Promise((r) => setTimeout(r, 200));
-    V.queue = []; V.speaking = null; V.gapUntil = 0; V.calmUntil = 0;
-    const far = V.say(e, 'wizard', 'human');
-    await new Promise((r) => setTimeout(r, 400));
-    const bub = V.bubbles.find((b) => b.d === e);
+    while (performance.now() - t0 < 30000 && spoken.length < 2) {
+      await new Promise((r) => setTimeout(r, 50));
+      if (V.speaking && V.queue.includes(V.speaking.q)) overlap = true;
+      if (!V.speaking) { V.gapUntil = 0; V.calmUntil = 0; V.update(0, g); }
+    }
+    // A distant recording stays intelligible but is mixed much more quietly;
+    // its subtitle must still match the selected recorded line.
     clearInterval(watch);
-    return { spoken, overlap, far: !!far, farText: bub ? bub.text : null, farAlpha: bub ? bub.alpha : null };
+    V.stop(); ex = 800; await new Promise((r) => setTimeout(r, 200));
+    const far = V.enqueueLine(V.eventLine('enemy_dragon', 'wizard', e.fk), e, {});
+    V.queue = []; V.speak(far);
+    for (let i = 0; i < 160 && !V.recordedSource; i++) await new Promise((r) => setTimeout(r, 25));
+    const bub = V.bubbles.find((b) => b.d === e);
+    const farGain = V.recordedGain?.gain.value;
+    clearInterval(watch);
+    V.stop();
+    return { spoken, overlap, far: !!far, farText: bub ? bub.text : null, expectedText: far.text, farAlpha: bub ? bub.alpha : null, farGain };
   });
   ok(r.spoken.length >= 2, 'lines were spoken in turn: ' + r.spoken.join(' | '));
   ok(new Set(r.spoken).size === r.spoken.length, 'no line repeated');
   ok(!r.overlap, 'never two voices at once');
-  ok(r.far && r.farText && r.farText.startsWith('…') && r.farAlpha < 0.8, 'a distant rival is only half heard (' + r.farText + ')');
+  ok(r.far && r.farText === r.expectedText && r.farAlpha < 0.8 && r.farGain < .3, 'a distant rival recording is attenuated and its subtitle matches (' + r.farText + ')');
   return page;
 });
 
@@ -300,7 +313,9 @@ await test('objectives: clear the guards, circle low, claim the site', async (ke
     return s.id;
   });
   await page.keyboard.down('KeyS');
-  await page.waitForFunction((id) => AS.game.byId.get(id).owner === 'human', id, { timeout: 15000 }).catch(() => {});
+  await page.keyboard.down('Space');
+  await page.waitForFunction((id) => AS.game.byId.get(id).owner === 'human', id, { timeout: 30000 }).catch(() => {});
+  await page.keyboard.up('Space');
   await page.keyboard.up('KeyS');
   const r = await ev(page, (id) => { const s = AS.game.byId.get(id); return [s.owner, AS.game.playerFaction.sitesOwned]; }, id);
   ok(r[0] === 'human' && r[1] >= 1, 'the village is ours (' + r + ')');

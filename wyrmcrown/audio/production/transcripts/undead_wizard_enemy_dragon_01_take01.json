@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A rival dragon. Such a healthy specimen. For now",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.16,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -0.00016723664884921163
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -7.545663538621739e-05
+    },
+    {
+      "text": "rival",
+      "start": 0.38,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -7.545663538621739e-05
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -0.00010954733443213627
+    },
+    {
+      "text": "dragon.",
+      "start": 1.02,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -0.001126747888130402
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "Such",
+      "start": 2.38,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.72,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "a",
+      "start": 2.72,
+      "end": 2.86,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.86,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "healthy",
+      "start": 2.92,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "specimen.",
+      "start": 3.56,
+      "end": 4.14,
+      "type": "word",
+      "logprob": -0.0813892417483607
+    },
+    {
+      "text": " ",
+      "start": 4.14,
+      "end": 4.14,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "For",
+      "start": 4.76,
+      "end": 4.9,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 4.9,
+      "end": 5.04,
+      "type": "spacing",
+      "logprob": -3.814689989667386e-06
+    },
+    {
+      "text": "now",
+      "start": 5.04,
+      "end": 5.54,
+      "type": "word",
+      "logprob": -3.814689989667386e-06
+    }
+  ],
+  "transcription_id": "hii9DYM0UwazYjUuRtWa",
+  "audio_duration_secs": 5.76
+}

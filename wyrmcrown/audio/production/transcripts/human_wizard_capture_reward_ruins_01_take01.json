@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Ruins cleared. A hundred and fifty gold to scoop up and sometimes a magic orb. Keep your eyes on the ground",
+  "words": [
+    {
+      "text": "Ruins",
+      "start": 0.16,
+      "end": 0.48,
+      "type": "word",
+      "logprob": -0.00011437914672569604
+    },
+    {
+      "text": " ",
+      "start": 0.48,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -1.764281842042692e-05
+    },
+    {
+      "text": "cleared.",
+      "start": 0.58,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.0011171285091222671
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -0.5782609581947327
+    },
+    {
+      "text": "A",
+      "start": 1.44,
+      "end": 1.5,
+      "type": "word",
+      "logprob": -0.5782609581947327
+    },
+    {
+      "text": " ",
+      "start": 1.5,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -2.6940935640595853e-05
+    },
+    {
+      "text": "hundred",
+      "start": 1.58,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -2.6940935640595853e-05
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "and",
+      "start": 1.88,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.06,
+      "type": "spacing",
+      "logprob": -0.0002051381452474743
+    },
+    {
+      "text": "fifty",
+      "start": 2.06,
+      "end": 2.32,
+      "type": "word",
+      "logprob": -0.0002051381452474743
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "gold",
+      "start": 2.44,
+      "end": 2.66,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 2.66,
+      "end": 2.72,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "to",
+      "start": 2.72,
+      "end": 2.82,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.82,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -7.354942499659956e-05
+    },
+    {
+      "text": "scoop",
+      "start": 2.88,
+      "end": 3.1,
+      "type": "word",
+      "logprob": -7.354942499659956e-05
+    },
+    {
+      "text": " ",
+      "start": 3.1,
+      "end": 3.18,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "up",
+      "start": 3.18,
+      "end": 3.3,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.3,
+      "end": 3.64,
+      "type": "spacing",
+      "logprob": -0.20141537487506866
+    },
+    {
+      "text": "and",
+      "start": 3.64,
+      "end": 3.78,
+      "type": "word",
+      "logprob": -0.20141537487506866
+    },
+    {
+      "text": " ",
+      "start": 3.78,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "sometimes",
+      "start": 3.86,
+      "end": 4.36,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 4.36,
+      "end": 4.4,
+      "type": "spacing",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": "a",
+      "start": 4.4,
+      "end": 4.46,
+      "type": "word",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": " ",
+      "start": 4.46,
+      "end": 4.52,
+      "type": "spacing",
+      "logprob": -2.109982233378105e-05
+    },
+    {
+      "text": "magic",
+      "start": 4.52,
+      "end": 4.82,
+      "type": "word",
+      "logprob": -2.109982233378105e-05
+    },
+    {
+      "text": " ",
+      "start": 4.82,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": -6.639736966462806e-05
+    },
+    {
+      "text": "orb.",
+      "start": 4.9,
+      "end": 5.18,
+      "type": "word",
+      "logprob": -4.9917236509600116e-05
+    },
+    {
+      "text": " ",
+      "start": 5.18,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": -5.972207145532593e-05
+    },
+    {
+      "text": "Keep",
+      "start": 5.7,
+      "end": 5.86,
+      "type": "word",
+      "logprob": -5.972207145532593e-05
+    },
+    {
+      "text": " ",
+      "start": 5.86,
+      "end": 5.9,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "your",
+      "start": 5.9,
+      "end": 6.02,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.02,
+      "end": 6.08,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "eyes",
+      "start": 6.08,
+      "end": 6.26,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 6.26,
+      "end": 6.3,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "on",
+      "start": 6.3,
+      "end": 6.38,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.38,
+      "end": 6.4,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 6.4,
+      "end": 6.46,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.46,
+      "end": 6.52,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "ground",
+      "start": 6.52,
+      "end": 6.9,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    }
+  ],
+  "transcription_id": "cUpGfKqEeWINJzqpmbKm",
+  "audio_duration_secs": 7.2
+}

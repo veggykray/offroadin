@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A devastating demonstration of taste",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.12,
+      "end": 0.2,
+      "type": "word",
+      "logprob": -0.00021455370006151497
+    },
+    {
+      "text": " ",
+      "start": 0.2,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": "devastating",
+      "start": 0.46,
+      "end": 1.16,
+      "type": "word",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": " ",
+      "start": 1.16,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "demonstration",
+      "start": 1.24,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.0,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 2.0,
+      "end": 2.06,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.06,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": -4.768360213347478e-06
+    },
+    {
+      "text": "taste",
+      "start": 2.22,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -4.768360213347478e-06
+    }
+  ],
+  "transcription_id": "6JXglCSFMFjJz1Gi6Te4",
+  "audio_duration_secs": 3.04
+}

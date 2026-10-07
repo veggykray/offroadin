@@ -1,0 +1,41 @@
+{
+  "id": "ice_home",
+  "source_file": "Ice dragon home.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Ice dragon home.wav",
+  "source_sha256": "c32ab0ce888b68a3c9244e94636e73d467d6748aefc0da282708d5cac6c025a8",
+  "source_info": {
+    "duration_seconds": 210.0,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-15.90",
+    "input_tp": "-4.08",
+    "input_lra": "4.60",
+    "input_thresh": "-25.97",
+    "output_i": "-21.79",
+    "output_tp": "-6.84",
+    "output_lra": "4.60",
+    "output_thresh": "-31.83",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.21"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "f958dbd23a06ed15686ac7e61d0d84e32df1f9782336b373633e2b037f036707",
+  "inspection": {
+    "duration_seconds": 210.05,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -10.4,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

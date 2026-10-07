@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Imrah of Hrimgard has weathered longer winters than this. Keep below the storm and let the impatient ones discover the lightning",
+  "words": [
+    {
+      "text": "Imrah",
+      "start": 0.22,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -0.007269067876040936
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": "of",
+      "start": 0.78,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -0.0004925706889480352
+    },
+    {
+      "text": "Hrimgard",
+      "start": 0.98,
+      "end": 1.62,
+      "type": "word",
+      "logprob": -0.33045067213242874
+    },
+    {
+      "text": " ",
+      "start": 1.62,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "has",
+      "start": 1.68,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.92,
+      "type": "spacing",
+      "logprob": -3.886147169396281e-05
+    },
+    {
+      "text": "weathered",
+      "start": 1.92,
+      "end": 2.2,
+      "type": "word",
+      "logprob": -3.886147169396281e-05
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.32,
+      "type": "spacing",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": "longer",
+      "start": 2.32,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -6.758938252460212e-05
+    },
+    {
+      "text": "winters",
+      "start": 2.74,
+      "end": 3.14,
+      "type": "word",
+      "logprob": -6.758938252460212e-05
+    },
+    {
+      "text": " ",
+      "start": 3.14,
+      "end": 3.18,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "than",
+      "start": 3.18,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.32,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "this.",
+      "start": 3.38,
+      "end": 3.7,
+      "type": "word",
+      "logprob": -4.107532149077997e-05
+    },
+    {
+      "text": " ",
+      "start": 3.7,
+      "end": 3.7,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "Keep",
+      "start": 4.52,
+      "end": 4.72,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 4.72,
+      "end": 4.74,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "below",
+      "start": 4.74,
+      "end": 5.02,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 5.02,
+      "end": 5.06,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 5.06,
+      "end": 5.18,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.18,
+      "end": 5.28,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "storm",
+      "start": 5.28,
+      "end": 5.68,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 5.68,
+      "end": 5.68,
+      "type": "spacing",
+      "logprob": -0.4740784764289856
+    },
+    {
+      "text": "and",
+      "start": 6.06,
+      "end": 6.14,
+      "type": "word",
+      "logprob": -0.4740784764289856
+    },
+    {
+      "text": " ",
+      "start": 6.14,
+      "end": 6.18,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "let",
+      "start": 6.18,
+      "end": 6.32,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 6.32,
+      "end": 6.38,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 6.38,
+      "end": 6.44,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.44,
+      "end": 6.5,
+      "type": "spacing",
+      "logprob": -0.00022516099852509797
+    },
+    {
+      "text": "impatient",
+      "start": 6.5,
+      "end": 7.08,
+      "type": "word",
+      "logprob": -0.00022516099852509797
+    },
+    {
+      "text": " ",
+      "start": 7.08,
+      "end": 7.18,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "ones",
+      "start": 7.22,
+      "end": 7.46,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 7.46,
+      "end": 7.5,
+      "type": "spacing",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": "discover",
+      "start": 7.5,
+      "end": 7.96,
+      "type": "word",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": " ",
+      "start": 7.96,
+      "end": 8.02,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "the",
+      "start": 8.02,
+      "end": 8.1,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 8.1,
+      "end": 8.14,
+      "type": "spacing",
+      "logprob": -0.0005137792322784662
+    },
+    {
+      "text": "lightning",
+      "start": 8.14,
+      "end": 8.58,
+      "type": "word",
+      "logprob": -0.0005137792322784662
+    }
+  ],
+  "transcription_id": "eiR9SVezjZjOx4cP6QA4",
+  "audio_duration_secs": 8.8
+}

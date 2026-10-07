@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our orchards are burning. I will take this personally",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.16,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -1.7762025890988298e-05
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.42,
+      "type": "spacing",
+      "logprob": -0.0010471820132806897
+    },
+    {
+      "text": "orchards",
+      "start": 0.42,
+      "end": 0.84,
+      "type": "word",
+      "logprob": -0.0010471820132806897
+    },
+    {
+      "text": " ",
+      "start": 0.84,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "are",
+      "start": 0.88,
+      "end": 1.06,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "burning.",
+      "start": 1.12,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -0.00027472997297195434
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "I",
+      "start": 2.16,
+      "end": 2.2,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "will",
+      "start": 2.22,
+      "end": 2.34,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "take",
+      "start": 2.42,
+      "end": 2.6,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.66,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "this",
+      "start": 2.66,
+      "end": 2.88,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.88,
+      "end": 2.96,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "personally",
+      "start": 2.96,
+      "end": 3.54,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    }
+  ],
+  "transcription_id": "YKoRo9SddZDHa3NbrorP",
+  "audio_duration_secs": 3.84
+}

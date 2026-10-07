@@ -1,0 +1,254 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our relic. A call the host charge every 110 seconds unless we hold another spell. Reinforcements with purpose",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.14,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.0004009396652691066
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.029784437268972397
+    },
+    {
+      "text": "relic.",
+      "start": 0.38,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -0.025446604743289452
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -0.0019577639177441597
+    },
+    {
+      "text": "A",
+      "start": 1.28,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.0019577639177441597
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -0.47413039207458496
+    },
+    {
+      "text": "call",
+      "start": 1.4,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -0.47413039207458496
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.62,
+      "type": "spacing",
+      "logprob": -0.0025190545711666346
+    },
+    {
+      "text": "the",
+      "start": 1.62,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -0.0025190545711666346
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.74,
+      "type": "spacing",
+      "logprob": -0.0017065736465156078
+    },
+    {
+      "text": "host",
+      "start": 1.74,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -0.0017065736465156078
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.06,
+      "type": "spacing",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": "charge",
+      "start": 2.06,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.5,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "every",
+      "start": 2.5,
+      "end": 2.72,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.72,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -0.17974574863910675
+    },
+    {
+      "text": "110",
+      "start": 2.9,
+      "end": 3.42,
+      "type": "word",
+      "logprob": -3.679404786301651e-05
+    },
+    {
+      "text": " ",
+      "start": 3.42,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "seconds",
+      "start": 3.56,
+      "end": 4.019,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 4.019,
+      "end": 4.32,
+      "type": "spacing",
+      "logprob": -0.03804749622941017
+    },
+    {
+      "text": "unless",
+      "start": 4.32,
+      "end": 4.66,
+      "type": "word",
+      "logprob": -0.03804749622941017
+    },
+    {
+      "text": " ",
+      "start": 4.66,
+      "end": 4.72,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "we",
+      "start": 4.72,
+      "end": 4.8,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.8,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "hold",
+      "start": 4.82,
+      "end": 5.0,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.0,
+      "end": 5.04,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "another",
+      "start": 5.04,
+      "end": 5.32,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 5.32,
+      "end": 5.42,
+      "type": "spacing",
+      "logprob": -1.966933996300213e-05
+    },
+    {
+      "text": "spell.",
+      "start": 5.42,
+      "end": 5.7,
+      "type": "word",
+      "logprob": -3.727130327509561e-05
+    },
+    {
+      "text": " ",
+      "start": 5.7,
+      "end": 5.7,
+      "type": "spacing",
+      "logprob": -0.00014077626110520214
+    },
+    {
+      "text": "Reinforcements",
+      "start": 6.16,
+      "end": 6.96,
+      "type": "word",
+      "logprob": -0.0005406403257178941
+    },
+    {
+      "text": " ",
+      "start": 6.96,
+      "end": 7.24,
+      "type": "spacing",
+      "logprob": -0.005335614550858736
+    },
+    {
+      "text": "with",
+      "start": 7.24,
+      "end": 7.36,
+      "type": "word",
+      "logprob": -0.005335614550858736
+    },
+    {
+      "text": " ",
+      "start": 7.36,
+      "end": 7.5,
+      "type": "spacing",
+      "logprob": -3.58813522325363e-05
+    },
+    {
+      "text": "purpose",
+      "start": 7.5,
+      "end": 8.0,
+      "type": "word",
+      "logprob": -3.58813522325363e-05
+    }
+  ],
+  "transcription_id": "bLSM0oMlD6qGaeeE8nYK",
+  "audio_duration_secs": 8.24
+}

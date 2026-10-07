@@ -87,7 +87,7 @@
       if (list.length >= (d.poly || 4)) { const old = list.shift(); try { old.src.stop(); } catch (e) { /* already stopped */ } }
       const src = this.ctx.createBufferSource();
       src.buffer = b;
-      const rate = (o.rate || 1) * (1 + (Math.random() - 0.5) * 0.06);
+      const rate = (o.rate || 1) * (o.fixedRate ? 1 : 1 + (Math.random() - 0.5) * 0.06);
       src.playbackRate.value = rate;
       const gn = this.ctx.createGain(); gn.gain.value = gain;
       let node = gn;

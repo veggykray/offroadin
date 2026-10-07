@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Mana spent. Allow it to return",
+  "words": [
+    {
+      "text": "Mana",
+      "start": 0.24,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -0.000418575422372669
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -0.0002549561613705009
+    },
+    {
+      "text": "spent.",
+      "start": 0.68,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -0.0010257284884573892
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -4.541770613286644e-05
+    },
+    {
+      "text": "Allow",
+      "start": 1.94,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -4.541770613286644e-05
+    },
+    {
+      "text": " ",
+      "start": 2.3,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "it",
+      "start": 2.34,
+      "end": 2.48,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.48,
+      "end": 2.68,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "to",
+      "start": 2.68,
+      "end": 2.78,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.78,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "return",
+      "start": 2.84,
+      "end": 3.4,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "MstGAYqNTyqD70dtNYuJ",
+  "audio_duration_secs": 3.84
+}

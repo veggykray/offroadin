@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "troll_snort_01",
+    "event": "troll_snort",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Stupid troll thick wet nasal snort, short and comic Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:59:56.177429+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Stupid troll thick wet nasal snort, short and comic Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "2faab20eef8565e66d823638b1296980e4264a919f9a8712e196622252adac88",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\troll_snort_01_take01.mp3",
+  "sha256": "a7a7fcd6840b00848f571a35245bdc00b9317e7437315a8685543b8b99d9cdc3",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -0.19,
+    "rms_dbfs": -9.25,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.1,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -8.23,
+    "rms_dbfs": -18.89,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.16,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

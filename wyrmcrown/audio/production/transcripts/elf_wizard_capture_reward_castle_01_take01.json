@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our castle gold deliveries, four guards, strong defenses, and four extra troop places at last suitable accommodation",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.22,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -0.0010451575508341193
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -0.0010337253334000707
+    },
+    {
+      "text": "castle",
+      "start": 0.44,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -0.0010337253334000707
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": -0.10052984207868576
+    },
+    {
+      "text": "gold",
+      "start": 1.46,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -0.10052984207868576
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": "deliveries,",
+      "start": 1.7,
+      "end": 2.26,
+      "type": "word",
+      "logprob": -0.003639020689413221
+    },
+    {
+      "text": " ",
+      "start": 2.26,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "four",
+      "start": 2.58,
+      "end": 2.74,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.74,
+      "end": 2.82,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "guards,",
+      "start": 2.82,
+      "end": 3.22,
+      "type": "word",
+      "logprob": -0.00017613541626815277
+    },
+    {
+      "text": " ",
+      "start": 3.22,
+      "end": 3.58,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "strong",
+      "start": 3.58,
+      "end": 3.8,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.8,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": -0.0017062166007235646
+    },
+    {
+      "text": "defenses,",
+      "start": 3.86,
+      "end": 4.4,
+      "type": "word",
+      "logprob": -0.023895929360555276
+    },
+    {
+      "text": " ",
+      "start": 4.4,
+      "end": 4.5,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "and",
+      "start": 4.5,
+      "end": 4.6,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.6,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "four",
+      "start": 4.82,
+      "end": 5.08,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 5.08,
+      "end": 5.14,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "extra",
+      "start": 5.14,
+      "end": 5.42,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 5.42,
+      "end": 5.54,
+      "type": "spacing",
+      "logprob": -0.00021741411183029413
+    },
+    {
+      "text": "troop",
+      "start": 5.54,
+      "end": 5.74,
+      "type": "word",
+      "logprob": -0.00021741411183029413
+    },
+    {
+      "text": " ",
+      "start": 5.74,
+      "end": 5.8,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "places",
+      "start": 5.8,
+      "end": 6.24,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": " ",
+      "start": 6.24,
+      "end": 6.24,
+      "type": "spacing",
+      "logprob": -0.12767210602760315
+    },
+    {
+      "text": "at",
+      "start": 6.76,
+      "end": 6.88,
+      "type": "word",
+      "logprob": -0.12767210602760315
+    },
+    {
+      "text": " ",
+      "start": 6.88,
+      "end": 7.1,
+      "type": "spacing",
+      "logprob": -8.22540732769994e-06
+    },
+    {
+      "text": "last",
+      "start": 7.1,
+      "end": 7.6,
+      "type": "word",
+      "logprob": -8.22540732769994e-06
+    },
+    {
+      "text": " ",
+      "start": 7.6,
+      "end": 8.039,
+      "type": "spacing",
+      "logprob": -0.16212522983551025
+    },
+    {
+      "text": "suitable",
+      "start": 8.039,
+      "end": 8.42,
+      "type": "word",
+      "logprob": -0.16212522983551025
+    },
+    {
+      "text": " ",
+      "start": 8.42,
+      "end": 8.48,
+      "type": "spacing",
+      "logprob": -3.9934315282152966e-05
+    },
+    {
+      "text": "accommodation",
+      "start": 8.48,
+      "end": 9.2,
+      "type": "word",
+      "logprob": -3.9934315282152966e-05
+    }
+  ],
+  "transcription_id": "0L7aUUFQER4U0QEUrQuQ",
+  "audio_duration_secs": 9.44
+}

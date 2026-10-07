@@ -1,0 +1,212 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The grove is ours. My energy returns nearby. The trees seem surprisingly unconcerned about me.",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.16,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.011180960573256016
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -0.018168926239013672
+    },
+    {
+      "text": "grove",
+      "start": 0.3,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -0.018168926239013672
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "is",
+      "start": 0.94,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.26,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "ours.",
+      "start": 1.26,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -3.0491756479023025e-05
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.72,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "My",
+      "start": 2.34,
+      "end": 2.5,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.5,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": "energy",
+      "start": 2.58,
+      "end": 2.96,
+      "type": "word",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": " ",
+      "start": 2.96,
+      "end": 3.0,
+      "type": "spacing",
+      "logprob": -3.6954811548639555e-06
+    },
+    {
+      "text": "returns",
+      "start": 3.0,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -3.6954811548639555e-06
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.58,
+      "type": "spacing",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": "nearby.",
+      "start": 3.58,
+      "end": 4.12,
+      "type": "word",
+      "logprob": -1.1188519757914556e-05
+    },
+    {
+      "text": " ",
+      "start": 4.12,
+      "end": 4.12,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "The",
+      "start": 4.72,
+      "end": 4.82,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 4.82,
+      "end": 4.88,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "trees",
+      "start": 4.88,
+      "end": 5.2,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 5.2,
+      "end": 5.28,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "seem",
+      "start": 5.28,
+      "end": 5.52,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 5.52,
+      "end": 5.58,
+      "type": "spacing",
+      "logprob": -2.1457441107486375e-05
+    },
+    {
+      "text": "surprisingly",
+      "start": 5.58,
+      "end": 6.36,
+      "type": "word",
+      "logprob": -2.1457441107486375e-05
+    },
+    {
+      "text": " ",
+      "start": 6.36,
+      "end": 6.44,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "unconcerned",
+      "start": 6.44,
+      "end": 7.14,
+      "type": "word",
+      "logprob": -0.00022173192850128874
+    },
+    {
+      "text": " ",
+      "start": 7.14,
+      "end": 7.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "about",
+      "start": 7.24,
+      "end": 7.5,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.5,
+      "end": 7.54,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "me.",
+      "start": 7.54,
+      "end": 7.74,
+      "type": "word",
+      "logprob": -0.23130756616590512
+    }
+  ],
+  "transcription_id": "x15im612VGyzVCZKkPrm",
+  "audio_duration_secs": 7.92
+}

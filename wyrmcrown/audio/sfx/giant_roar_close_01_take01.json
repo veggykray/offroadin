@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_roar_close_01",
+    "event": "giant_roar_close",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Close giant angry roar, huge human chest and throat, heavy breath, sharply articulated onset Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:15.967350+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Close giant angry roar, huge human chest and throat, heavy breath, sharply articulated onset Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "603846dbc2470a709ee030a3160507c982cb819fa06df42c545083b6eb46cd53",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_roar_close_01_take01.mp3",
+  "sha256": "58c6789b104f15a6410d4b6d8b7427e9e3fbb39fed5a3dfbaac8b8fa2c30fd04",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": -0.42,
+    "rms_dbfs": -10.5,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.72,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": -5.24,
+    "rms_dbfs": -19.23,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.74,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

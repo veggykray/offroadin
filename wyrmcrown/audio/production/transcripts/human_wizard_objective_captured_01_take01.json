@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "That's our flag. Try not to burn it",
+  "words": [
+    {
+      "text": "That's",
+      "start": 0.1,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -4.420508533087286e-05
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -1.07287787614041e-05
+    },
+    {
+      "text": "our",
+      "start": 0.52,
+      "end": 0.82,
+      "type": "word",
+      "logprob": -1.07287787614041e-05
+    },
+    {
+      "text": " ",
+      "start": 0.82,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -5.8412379075889476e-06
+    },
+    {
+      "text": "flag.",
+      "start": 0.9,
+      "end": 1.28,
+      "type": "word",
+      "logprob": -0.0003347056313941721
+    },
+    {
+      "text": " ",
+      "start": 1.28,
+      "end": 1.74,
+      "type": "spacing",
+      "logprob": -1.847726889536716e-05
+    },
+    {
+      "text": "Try",
+      "start": 1.74,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -1.847726889536716e-05
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "not",
+      "start": 1.98,
+      "end": 2.12,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.18,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "to",
+      "start": 2.18,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "burn",
+      "start": 2.38,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.7,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "it",
+      "start": 2.7,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "SPhS7oJjhP3tcb7QIAHn",
+  "audio_duration_secs": 3.04
+}

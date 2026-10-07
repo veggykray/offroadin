@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Not the cattle, you grave-rotting bastard!",
+  "words": [
+    {
+      "text": "Not",
+      "start": 0.22,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.001177690108306706
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -2.777537883957848e-05
+    },
+    {
+      "text": "the",
+      "start": 0.5,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -2.777537883957848e-05
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -0.0014417502097785473
+    },
+    {
+      "text": "cattle,",
+      "start": 1.14,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -0.003923044539988041
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 2.24,
+      "type": "spacing",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": "you",
+      "start": 2.24,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.56,
+      "type": "spacing",
+      "logprob": -4.31528314948082e-05
+    },
+    {
+      "text": "grave-rotting",
+      "start": 2.56,
+      "end": 3.36,
+      "type": "word",
+      "logprob": -0.0012263289939063236
+    },
+    {
+      "text": " ",
+      "start": 3.36,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "bastard!",
+      "start": 3.56,
+      "end": 4.1,
+      "type": "word",
+      "logprob": -0.0029619527013551306
+    }
+  ],
+  "transcription_id": "VCQJCXcvjFHjFzWPfm4e",
+  "audio_duration_secs": 4.32
+}

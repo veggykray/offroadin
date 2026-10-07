@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Their defenses have joined the departed",
+  "words": [
+    {
+      "text": "Their",
+      "start": 0.28,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -4.684815212385729e-05
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -0.001506028464064002
+    },
+    {
+      "text": "defenses",
+      "start": 0.5,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.001506028464064002
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.38,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "have",
+      "start": 1.38,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "joined",
+      "start": 1.68,
+      "end": 2.04,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 2.04,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -3.6954811548639555e-06
+    },
+    {
+      "text": "the",
+      "start": 2.1,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -3.6954811548639555e-06
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": -0.0022027057129889727
+    },
+    {
+      "text": "departed",
+      "start": 2.22,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -0.0022027057129889727
+    }
+  ],
+  "transcription_id": "NMFurK7l3QJmswptsqRW",
+  "audio_duration_secs": 3.36
+}

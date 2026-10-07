@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Their seer watches us. Do not drift into range",
+  "words": [
+    {
+      "text": "Their",
+      "start": 0.2,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -6.115249561844394e-05
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.54,
+      "type": "spacing",
+      "logprob": -0.004246979020535946
+    },
+    {
+      "text": "seer",
+      "start": 0.54,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -0.004246979020535946
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "watches",
+      "start": 1.1,
+      "end": 1.54,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 1.54,
+      "end": 1.64,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "us.",
+      "start": 1.64,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -1.5973670069039752e-05
+    },
+    {
+      "text": " ",
+      "start": 1.88,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "Do",
+      "start": 2.5,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.78,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "not",
+      "start": 2.78,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.2,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "drift",
+      "start": 3.2,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "into",
+      "start": 3.56,
+      "end": 3.76,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.76,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "range",
+      "start": 3.86,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    }
+  ],
+  "transcription_id": "JGCOoITB8JiBRGMl0p3h",
+  "audio_duration_secs": 4.64
+}

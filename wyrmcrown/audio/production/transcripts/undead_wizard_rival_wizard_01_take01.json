@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Another wizard. Shall we compare expiry dates?",
+  "words": [
+    {
+      "text": "Another",
+      "start": 0.18,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -1.3947389561508317e-05
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -0.0002613918040879071
+    },
+    {
+      "text": "wizard.",
+      "start": 0.8,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -0.0013214374193921685
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": "Shall",
+      "start": 1.94,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "we",
+      "start": 2.22,
+      "end": 2.34,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "compare",
+      "start": 2.38,
+      "end": 2.9,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.9,
+      "end": 2.96,
+      "type": "spacing",
+      "logprob": -3.516612196108326e-05
+    },
+    {
+      "text": "expiry",
+      "start": 2.96,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -3.516612196108326e-05
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "dates?",
+      "start": 3.72,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -0.0026738820597055715
+    }
+  ],
+  "transcription_id": "iheKqN5wr5hPjSlYaZHc",
+  "audio_duration_secs": 4.48
+}

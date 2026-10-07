@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Got you! That'll teach you to be over there",
+  "words": [
+    {
+      "text": "Got",
+      "start": 0.2,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.004178128205239773
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -0.00011324241495458409
+    },
+    {
+      "text": "you!",
+      "start": 0.52,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.06307302679670101
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "That'll",
+      "start": 1.24,
+      "end": 1.52,
+      "type": "word",
+      "logprob": -5.619863746427914e-07
+    },
+    {
+      "text": " ",
+      "start": 1.52,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "teach",
+      "start": 1.58,
+      "end": 1.8,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 1.8,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "you",
+      "start": 1.84,
+      "end": 1.94,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 1.96,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 1.96,
+      "end": 2.04,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.04,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "be",
+      "start": 2.08,
+      "end": 2.18,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "over",
+      "start": 2.26,
+      "end": 2.46,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "there",
+      "start": 2.52,
+      "end": 2.78,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "EkcdBDKdYHNplSDtrBgo",
+  "audio_duration_secs": 3.12
+}

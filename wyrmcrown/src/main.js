@@ -103,7 +103,7 @@
       AS.UI && AS.UI.showResults && AS.UI.showResults(res);
     },
     // court / town menu and other in-game overlays that pause the action
-    openOverlay(name) { this.overlay = name; if (this.game) this.game.uiBlocking = true; },
+    openOverlay(name) { AS.Voices && AS.Voices.stop(); this.overlay = name; if (this.game) this.game.uiBlocking = true; },
     closeOverlay() { this.overlay = null; if (this.game) this.game.uiBlocking = false; },
 
     loop(ts) {

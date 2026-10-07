@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Beyond our realm, the standards fall immediately.",
+  "words": [
+    {
+      "text": "Beyond",
+      "start": 0.18,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -0.0006579380133189261
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": "our",
+      "start": 0.8,
+      "end": 0.94,
+      "type": "word",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": " ",
+      "start": 0.94,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -0.00020430385484360158
+    },
+    {
+      "text": "realm,",
+      "start": 1.08,
+      "end": 1.48,
+      "type": "word",
+      "logprob": -0.0010720908127647515
+    },
+    {
+      "text": " ",
+      "start": 1.48,
+      "end": 1.48,
+      "type": "spacing",
+      "logprob": -1.9073304429184645e-05
+    },
+    {
+      "text": "the",
+      "start": 2.12,
+      "end": 2.22,
+      "type": "word",
+      "logprob": -1.9073304429184645e-05
+    },
+    {
+      "text": " ",
+      "start": 2.22,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -4.565611743601039e-05
+    },
+    {
+      "text": "standards",
+      "start": 2.34,
+      "end": 2.92,
+      "type": "word",
+      "logprob": -4.565611743601039e-05
+    },
+    {
+      "text": " ",
+      "start": 2.92,
+      "end": 2.98,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "fall",
+      "start": 3.0,
+      "end": 3.24,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.24,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "immediately.",
+      "start": 3.3,
+      "end": 4.04,
+      "type": "word",
+      "logprob": -0.006584813196828539
+    }
+  ],
+  "transcription_id": "ANjxtK6aPvyaVO9M01kU",
+  "audio_duration_secs": 4.4
+}

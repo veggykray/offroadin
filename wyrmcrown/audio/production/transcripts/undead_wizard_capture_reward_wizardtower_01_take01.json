@@ -1,0 +1,226 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our tower now. It shoots magic at enemies and reveals nearby land. A delightfully hostile landlord",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.2,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -0.00010358751023886725
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -0.005234939511865377
+    },
+    {
+      "text": "tower",
+      "start": 0.46,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -0.005234939511865377
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.84,
+      "type": "spacing",
+      "logprob": -0.0001967951684491709
+    },
+    {
+      "text": "now.",
+      "start": 0.84,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -0.001274916485272115
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "It",
+      "start": 1.6,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "shoots",
+      "start": 1.78,
+      "end": 2.06,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.06,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "magic",
+      "start": 2.2,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.56,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "at",
+      "start": 2.56,
+      "end": 2.68,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.68,
+      "end": 2.76,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "enemies",
+      "start": 2.76,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.18,
+      "end": 3.2,
+      "type": "spacing",
+      "logprob": -1.0371154530730564e-05
+    },
+    {
+      "text": "and",
+      "start": 3.2,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -1.0371154530730564e-05
+    },
+    {
+      "text": " ",
+      "start": 3.32,
+      "end": 3.36,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "reveals",
+      "start": 3.36,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 3.96,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "nearby",
+      "start": 3.96,
+      "end": 4.36,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 4.36,
+      "end": 4.42,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "land.",
+      "start": 4.42,
+      "end": 4.84,
+      "type": "word",
+      "logprob": -8.85531479070778e-05
+    },
+    {
+      "text": " ",
+      "start": 4.84,
+      "end": 4.84,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "A",
+      "start": 5.28,
+      "end": 5.34,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 5.34,
+      "end": 5.4,
+      "type": "spacing",
+      "logprob": -0.00020168177434243262
+    },
+    {
+      "text": "delightfully",
+      "start": 5.4,
+      "end": 6.26,
+      "type": "word",
+      "logprob": -0.00020168177434243262
+    },
+    {
+      "text": " ",
+      "start": 6.26,
+      "end": 6.36,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "hostile",
+      "start": 6.36,
+      "end": 6.92,
+      "type": "word",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": " ",
+      "start": 6.92,
+      "end": 7.02,
+      "type": "spacing",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": "landlord",
+      "start": 7.02,
+      "end": 7.66,
+      "type": "word",
+      "logprob": -6.6756979322235566e-06
+    }
+  ],
+  "transcription_id": "Eg9s3CJLOcgZHTDrEQwM",
+  "audio_duration_secs": 7.84
+}

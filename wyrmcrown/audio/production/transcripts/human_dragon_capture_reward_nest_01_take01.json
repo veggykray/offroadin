@@ -1,0 +1,268 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Eerie claimed. We can see the surrounding land from here. A proper perch for keeping an eye on trouble",
+  "words": [
+    {
+      "text": "Eerie",
+      "start": 0.16,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.17240820229053497
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -0.00015829740732442588
+    },
+    {
+      "text": "claimed.",
+      "start": 0.58,
+      "end": 1.16,
+      "type": "word",
+      "logprob": -0.00801975487593154
+    },
+    {
+      "text": " ",
+      "start": 1.16,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -0.3174090087413788
+    },
+    {
+      "text": "We",
+      "start": 1.8,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -0.3174090087413788
+    },
+    {
+      "text": " ",
+      "start": 1.88,
+      "end": 1.92,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "can",
+      "start": 1.92,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "see",
+      "start": 2.2,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "the",
+      "start": 2.42,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "surrounding",
+      "start": 2.58,
+      "end": 3.14,
+      "type": "word",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": " ",
+      "start": 3.14,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "land",
+      "start": 3.24,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 3.6,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "from",
+      "start": 3.66,
+      "end": 3.84,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.84,
+      "end": 3.88,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "here.",
+      "start": 3.88,
+      "end": 4.24,
+      "type": "word",
+      "logprob": -0.007683170586369669
+    },
+    {
+      "text": " ",
+      "start": 4.24,
+      "end": 4.24,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "A",
+      "start": 4.76,
+      "end": 4.84,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 4.84,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "proper",
+      "start": 4.9,
+      "end": 5.2,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 5.2,
+      "end": 5.36,
+      "type": "spacing",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": "perch",
+      "start": 5.36,
+      "end": 5.8,
+      "type": "word",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": " ",
+      "start": 5.8,
+      "end": 5.84,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "for",
+      "start": 5.84,
+      "end": 5.96,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 5.96,
+      "end": 6.02,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "keeping",
+      "start": 6.02,
+      "end": 6.3,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 6.3,
+      "end": 6.34,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "an",
+      "start": 6.34,
+      "end": 6.44,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.44,
+      "end": 6.5,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "eye",
+      "start": 6.5,
+      "end": 6.68,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 6.68,
+      "end": 6.74,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "on",
+      "start": 6.74,
+      "end": 6.88,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.88,
+      "end": 6.98,
+      "type": "spacing",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": "trouble",
+      "start": 6.98,
+      "end": 7.46,
+      "type": "word",
+      "logprob": -4.410734163684538e-06
+    }
+  ],
+  "transcription_id": "mnPS4aWiD7IGeM78XUJV",
+  "audio_duration_secs": 7.76
+}

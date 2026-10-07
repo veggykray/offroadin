@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Missed. Correct your aim",
+  "words": [
+    {
+      "text": "Missed.",
+      "start": 0.28,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -0.0008953551462432026
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -1.4066597032069694e-05
+    },
+    {
+      "text": "Correct",
+      "start": 1.32,
+      "end": 1.76,
+      "type": "word",
+      "logprob": -1.4066597032069694e-05
+    },
+    {
+      "text": " ",
+      "start": 1.76,
+      "end": 1.82,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "your",
+      "start": 1.82,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "aim",
+      "start": 2.1,
+      "end": 2.4,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    }
+  ],
+  "transcription_id": "Z8e1UVQwAmDVml7tE1XZ",
+  "audio_duration_secs": 2.72
+}

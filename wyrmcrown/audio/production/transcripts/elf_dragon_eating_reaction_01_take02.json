@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Acceptable for livestock",
+  "words": [
+    {
+      "text": "Acceptable",
+      "start": 0.24,
+      "end": 1.06,
+      "type": "word",
+      "logprob": -0.004593412578083189
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.06,
+      "type": "spacing",
+      "logprob": -0.008905455470085144
+    },
+    {
+      "text": "for",
+      "start": 1.8,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -0.008905455470085144
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 2.12,
+      "type": "spacing",
+      "logprob": -5.2569914259947836e-05
+    },
+    {
+      "text": "livestock",
+      "start": 2.12,
+      "end": 2.9,
+      "type": "word",
+      "logprob": -5.2569914259947836e-05
+    }
+  ],
+  "transcription_id": "KeP8cHz1iCgrR59F9TJY",
+  "audio_duration_secs": 3.2
+}

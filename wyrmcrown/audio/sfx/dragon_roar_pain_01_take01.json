@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "dragon_roar_pain_01",
+    "event": "dragon_roar_pain",
+    "kind": "sfx",
+    "fallback": "dragon_roar_pain",
+    "text": "Dragon agony roar, huge lungs and throat breaking into rough breath Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:06:11.921683+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Dragon agony roar, huge lungs and throat breaking into rough breath Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "ebf474827d12d7c57cfc640f765269183b5f1e75d99f4d4009e39522b44909a7",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\dragon_roar_pain_01_take01.mp3",
+  "sha256": "0ffb6edfa6a4e35696c22fc6f25d3a1fc4ad3e6aef480e3876501b1fa14d054d",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": -0.35,
+    "rms_dbfs": -11.54,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.34,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": -8.27,
+    "rms_dbfs": -21.01,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.4,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

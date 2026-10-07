@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "You need dinner before dinner becomes us",
+  "words": [
+    {
+      "text": "You",
+      "start": 0.28,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -5.602679812000133e-05
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -1.0490362910786644e-05
+    },
+    {
+      "text": "need",
+      "start": 0.52,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -1.0490362910786644e-05
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -0.0008823553798720241
+    },
+    {
+      "text": "dinner",
+      "start": 0.92,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.0008823553798720241
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.34,
+      "type": "spacing",
+      "logprob": -0.017289161682128906
+    },
+    {
+      "text": "before",
+      "start": 1.98,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -0.017289161682128906
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": "dinner",
+      "start": 2.52,
+      "end": 3.0,
+      "type": "word",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "becomes",
+      "start": 3.06,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": " ",
+      "start": 3.6,
+      "end": 3.96,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "us",
+      "start": 3.96,
+      "end": 4.36,
+      "type": "word",
+      "logprob": -2.3841830625315197e-06
+    }
+  ],
+  "transcription_id": "svNzDaOiw3bjYrmkOOdJ",
+  "audio_duration_secs": 4.48
+}

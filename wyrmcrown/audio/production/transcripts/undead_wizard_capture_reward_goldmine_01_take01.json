@@ -1,0 +1,198 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Are mine now. Gold carts for the treasury. Even the dead have running expenses",
+  "words": [
+    {
+      "text": "Are",
+      "start": 0.2,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -0.0015817285748198628
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": "mine",
+      "start": 0.4,
+      "end": 0.66,
+      "type": "word",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": " ",
+      "start": 0.66,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -4.2914423829643056e-05
+    },
+    {
+      "text": "now.",
+      "start": 0.74,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -6.0705014220729936e-05
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "Gold",
+      "start": 1.58,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.92,
+      "type": "spacing",
+      "logprob": -0.004629963543266058
+    },
+    {
+      "text": "carts",
+      "start": 1.92,
+      "end": 2.22,
+      "type": "word",
+      "logprob": -0.004629963543266058
+    },
+    {
+      "text": " ",
+      "start": 2.22,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "for",
+      "start": 2.26,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.4,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "the",
+      "start": 2.4,
+      "end": 2.48,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 2.48,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -0.0009124883217737079
+    },
+    {
+      "text": "treasury.",
+      "start": 2.54,
+      "end": 3.02,
+      "type": "word",
+      "logprob": -0.000814160393525122
+    },
+    {
+      "text": " ",
+      "start": 3.02,
+      "end": 3.02,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "Even",
+      "start": 3.54,
+      "end": 3.74,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.74,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "the",
+      "start": 3.78,
+      "end": 3.86,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 3.86,
+      "end": 3.98,
+      "type": "spacing",
+      "logprob": -8.702239938429557e-06
+    },
+    {
+      "text": "dead",
+      "start": 3.98,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -8.702239938429557e-06
+    },
+    {
+      "text": " ",
+      "start": 4.28,
+      "end": 4.34,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "have",
+      "start": 4.34,
+      "end": 4.52,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.52,
+      "end": 4.58,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "running",
+      "start": 4.58,
+      "end": 4.84,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 4.84,
+      "end": 4.88,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "expenses",
+      "start": 4.88,
+      "end": 5.52,
+      "type": "word",
+      "logprob": -3.099436753473128e-06
+    }
+  ],
+  "transcription_id": "cS9scQxLDhUntrRTx4ar",
+  "audio_duration_secs": 5.76
+}

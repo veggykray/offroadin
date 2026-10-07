@@ -1,0 +1,226 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The trade post is ours. Gold caravans for home. A splendid business with unusually living staff",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.12,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -0.0001463782973587513
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -0.10194048285484314
+    },
+    {
+      "text": "trade",
+      "start": 0.3,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -0.10194048285484314
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.62,
+      "type": "spacing",
+      "logprob": -0.00012146688823122531
+    },
+    {
+      "text": "post",
+      "start": 0.62,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -0.00012146688823122531
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 0.92,
+      "end": 1.06,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "ours.",
+      "start": 1.16,
+      "end": 1.54,
+      "type": "word",
+      "logprob": -0.0006629241153859767
+    },
+    {
+      "text": " ",
+      "start": 1.54,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "Gold",
+      "start": 2.02,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 2.3,
+      "end": 2.36,
+      "type": "spacing",
+      "logprob": -0.00019262365822214633
+    },
+    {
+      "text": "caravans",
+      "start": 2.36,
+      "end": 2.88,
+      "type": "word",
+      "logprob": -0.00019262365822214633
+    },
+    {
+      "text": " ",
+      "start": 2.88,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 2.92,
+      "end": 3.02,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.02,
+      "end": 3.08,
+      "type": "spacing",
+      "logprob": -5.960446742392378e-06
+    },
+    {
+      "text": "home.",
+      "start": 3.08,
+      "end": 3.4,
+      "type": "word",
+      "logprob": -0.0017328254736639793
+    },
+    {
+      "text": " ",
+      "start": 3.4,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "A",
+      "start": 3.78,
+      "end": 3.84,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.84,
+      "end": 4.0,
+      "type": "spacing",
+      "logprob": -7.271740287251305e-06
+    },
+    {
+      "text": "splendid",
+      "start": 4.0,
+      "end": 4.48,
+      "type": "word",
+      "logprob": -7.271740287251305e-06
+    },
+    {
+      "text": " ",
+      "start": 4.48,
+      "end": 4.54,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "business",
+      "start": 4.54,
+      "end": 4.92,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.92,
+      "end": 4.96,
+      "type": "spacing",
+      "logprob": -3.158996332786046e-05
+    },
+    {
+      "text": "with",
+      "start": 4.96,
+      "end": 5.06,
+      "type": "word",
+      "logprob": -3.158996332786046e-05
+    },
+    {
+      "text": " ",
+      "start": 5.06,
+      "end": 5.12,
+      "type": "spacing",
+      "logprob": -6.23445157543756e-05
+    },
+    {
+      "text": "unusually",
+      "start": 5.12,
+      "end": 5.84,
+      "type": "word",
+      "logprob": -6.23445157543756e-05
+    },
+    {
+      "text": " ",
+      "start": 5.84,
+      "end": 5.88,
+      "type": "spacing",
+      "logprob": -7.033323527139146e-06
+    },
+    {
+      "text": "living",
+      "start": 5.88,
+      "end": 6.16,
+      "type": "word",
+      "logprob": -7.033323527139146e-06
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.24,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "staff",
+      "start": 6.24,
+      "end": 6.68,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    }
+  ],
+  "transcription_id": "qhtALP3RXdElHoJmVuE8",
+  "audio_duration_secs": 6.96
+}

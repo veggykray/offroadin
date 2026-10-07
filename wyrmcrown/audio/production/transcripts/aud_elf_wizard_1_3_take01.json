@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Illithy L of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing",
+  "words": [
+    {
+      "text": "Illithy",
+      "start": 0.18,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -0.5289804509707859
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -0.5794001817703247
+    },
+    {
+      "text": "L",
+      "start": 0.9,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.5794001817703247
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -0.2816155254840851
+    },
+    {
+      "text": "of",
+      "start": 1.02,
+      "end": 1.1,
+      "type": "word",
+      "logprob": -0.2816155254840851
+    },
+    {
+      "text": " ",
+      "start": 1.1,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -0.05659728869795799
+    },
+    {
+      "text": "Sylvara",
+      "start": 1.22,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -0.07080921796815735
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": -1.764281842042692e-05
+    },
+    {
+      "text": "does",
+      "start": 2.22,
+      "end": 2.46,
+      "type": "word",
+      "logprob": -1.764281842042692e-05
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.56,
+      "type": "spacing",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": "not",
+      "start": 2.56,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -4.8040190449682996e-05
+    },
+    {
+      "text": "retreat.",
+      "start": 2.88,
+      "end": 3.42,
+      "type": "word",
+      "logprob": -0.00012768749229508103
+    },
+    {
+      "text": " ",
+      "start": 3.42,
+      "end": 3.42,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "We",
+      "start": 3.94,
+      "end": 4.04,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 4.04,
+      "end": 4.08,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "merely",
+      "start": 4.08,
+      "end": 4.38,
+      "type": "word",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": " ",
+      "start": 4.38,
+      "end": 4.48,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "leave",
+      "start": 4.48,
+      "end": 4.88,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 4.88,
+      "end": 4.94,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "before",
+      "start": 4.94,
+      "end": 5.18,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 5.18,
+      "end": 5.22,
+      "type": "spacing",
+      "logprob": -0.00018010901112575084
+    },
+    {
+      "text": "the",
+      "start": 5.22,
+      "end": 5.3,
+      "type": "word",
+      "logprob": -0.00018010901112575084
+    },
+    {
+      "text": " ",
+      "start": 5.3,
+      "end": 5.34,
+      "type": "spacing",
+      "logprob": -0.00014065706636756659
+    },
+    {
+      "text": "company",
+      "start": 5.34,
+      "end": 5.7,
+      "type": "word",
+      "logprob": -0.00014065706636756659
+    },
+    {
+      "text": " ",
+      "start": 5.7,
+      "end": 5.74,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "becomes",
+      "start": 5.74,
+      "end": 6.16,
+      "type": "word",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.24,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "any",
+      "start": 6.24,
+      "end": 6.44,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 6.44,
+      "end": 6.52,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "more",
+      "start": 6.52,
+      "end": 6.78,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.78,
+      "end": 6.84,
+      "type": "spacing",
+      "logprob": -4.6491513785440475e-06
+    },
+    {
+      "text": "embarrassing",
+      "start": 6.84,
+      "end": 7.54,
+      "type": "word",
+      "logprob": -4.6491513785440475e-06
+    }
+  ],
+  "transcription_id": "SFp4McwAcXmYf0k9ByFj",
+  "audio_duration_secs": 7.84
+}

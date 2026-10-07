@@ -1,0 +1,68 @@
+{
+  "job": {
+    "id": "breath_fire_01",
+    "event": "breath_fire",
+    "kind": "sfx",
+    "fallback": "breath_fire",
+    "text": "Continuous massive dragon fire jet, low chest pressure, rushing flame, crisp crackle, constant energy, seamless repeating texture, no onset or ending Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": true,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:04:25.321746+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Continuous massive dragon fire jet, low chest pressure, rushing flame, crisp crackle, constant energy, seamless repeating texture, no onset or ending Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": true,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "51b680d35b0ed3952ea289d6b999cc0c658e0d4ca9f6670b980c92d2097bc26d",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\breath_fire_01_take01.mp3",
+  "sha256": "55594400bc87979e1578ef82d5fb3d7cd6dec5410db53144ffab04a62a3f089c",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 3.0,
+    "peak_dbfs": -1.62,
+    "rms_dbfs": -12.49,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.92,
+    "peak_dbfs": -10.08,
+    "rms_dbfs": -20.51,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3",
+  "loop_revision": "wrapped-80ms-1",
+  "loop_crossfade_seconds": 0.08,
+  "loop_master": "audio\\production\\raw\\breath_fire_01_take01.loop.wav"
+}

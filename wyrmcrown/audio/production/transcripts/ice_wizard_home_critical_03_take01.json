@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "One more assault may end the realm. Home",
+  "words": [
+    {
+      "text": "One",
+      "start": 0.22,
+      "end": 0.36,
+      "type": "word",
+      "logprob": -0.00011062010162277147
+    },
+    {
+      "text": " ",
+      "start": 0.36,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "more",
+      "start": 0.46,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.68,
+      "type": "spacing",
+      "logprob": -7.986990567587782e-06
+    },
+    {
+      "text": "assault",
+      "start": 0.68,
+      "end": 1.1,
+      "type": "word",
+      "logprob": -7.986990567587782e-06
+    },
+    {
+      "text": " ",
+      "start": 1.1,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "may",
+      "start": 1.22,
+      "end": 1.36,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 1.36,
+      "end": 1.5,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "end",
+      "start": 1.5,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 1.78,
+      "end": 1.84,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.84,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -0.0052365995943546295
+    },
+    {
+      "text": "realm.",
+      "start": 1.94,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -0.0050240754305074615
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -1.883488948806189e-05
+    },
+    {
+      "text": "Home",
+      "start": 2.9,
+      "end": 3.28,
+      "type": "word",
+      "logprob": -1.883488948806189e-05
+    }
+  ],
+  "transcription_id": "80m6ZbziUI9ZgMvFAJjZ",
+  "audio_duration_secs": 3.52
+}

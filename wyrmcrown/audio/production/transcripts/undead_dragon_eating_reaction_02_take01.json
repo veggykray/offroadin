@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "It tasted almost alive. It tasted almost alive",
+  "words": [
+    {
+      "text": "It",
+      "start": 0.24,
+      "end": 0.36,
+      "type": "word",
+      "logprob": -0.0009128456003963947
+    },
+    {
+      "text": " ",
+      "start": 0.36,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "tasted",
+      "start": 0.44,
+      "end": 0.96,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 0.96,
+      "end": 1.72,
+      "type": "spacing",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": "almost",
+      "start": 1.72,
+      "end": 2.46,
+      "type": "word",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.56,
+      "type": "spacing",
+      "logprob": -3.814689989667386e-06
+    },
+    {
+      "text": "alive.",
+      "start": 2.56,
+      "end": 3.22,
+      "type": "word",
+      "logprob": -4.1698924178490415e-05
+    },
+    {
+      "text": " ",
+      "start": 3.22,
+      "end": 3.22,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "It",
+      "start": 3.82,
+      "end": 3.94,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.94,
+      "end": 4.04,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "tasted",
+      "start": 4.04,
+      "end": 4.52,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 4.52,
+      "end": 5.12,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "almost",
+      "start": 5.12,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.6,
+      "type": "spacing",
+      "logprob": -7.271740287251305e-06
+    },
+    {
+      "text": "alive",
+      "start": 5.6,
+      "end": 6.24,
+      "type": "word",
+      "logprob": -7.271740287251305e-06
+    }
+  ],
+  "transcription_id": "oN6rNh0256KBY6sTtaCb",
+  "audio_duration_secs": 6.4
+}

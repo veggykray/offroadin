@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Away gate. Try to keep your luggage and limbs together",
+  "words": [
+    {
+      "text": "Away",
+      "start": 0.1,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.6338853240013123
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -0.2172265499830246
+    },
+    {
+      "text": "gate.",
+      "start": 0.5,
+      "end": 0.8,
+      "type": "word",
+      "logprob": -0.17690979950129987
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -1.6093124941107817e-05
+    },
+    {
+      "text": "Try",
+      "start": 1.28,
+      "end": 1.48,
+      "type": "word",
+      "logprob": -1.6093124941107817e-05
+    },
+    {
+      "text": " ",
+      "start": 1.48,
+      "end": 1.52,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "to",
+      "start": 1.52,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.66,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "keep",
+      "start": 1.66,
+      "end": 1.82,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 1.82,
+      "end": 1.86,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "your",
+      "start": 1.86,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "luggage",
+      "start": 2.08,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 2.44,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "and",
+      "start": 2.48,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "limbs",
+      "start": 2.74,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.22,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "together",
+      "start": 3.22,
+      "end": 3.66,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "8YGIxdHYsJYjBibyAeJN",
+  "audio_duration_secs": 4.0
+}

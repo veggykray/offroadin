@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A village. Food and shelter, if it survives",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -1.883488948806189e-05
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": "village.",
+      "start": 0.3,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -0.006174770170730426
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": "Food",
+      "start": 1.54,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 2.02,
+      "type": "spacing",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": "and",
+      "start": 2.02,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "shelter,",
+      "start": 2.26,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -0.0018240895587888772
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.7,
+      "type": "spacing",
+      "logprob": -1.3947389561508317e-05
+    },
+    {
+      "text": "if",
+      "start": 3.22,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -1.3947389561508317e-05
+    },
+    {
+      "text": " ",
+      "start": 3.32,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "it",
+      "start": 3.38,
+      "end": 3.5,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": "survives",
+      "start": 3.54,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -7.390948667307384e-06
+    }
+  ],
+  "transcription_id": "aVS64acAdfZtR6tx5U5y",
+  "audio_duration_secs": 4.32
+}

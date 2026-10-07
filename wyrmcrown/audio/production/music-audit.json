@@ -1,0 +1,86 @@
+{
+  "tracks": [
+    {
+      "id": "human_home",
+      "file": "audio/music/human_home.mp3",
+      "sha256": "ec6b96338622b992d4e722107a1dacdb1404eaf9a4a7ccc8c1fe0fc9eaf3d1b1",
+      "duration_seconds": 208.64,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -11.3,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "human_fight",
+      "file": "audio/music/human_fight.mp3",
+      "sha256": "c257b8eba212ff2df470a855b599f522148c84050dfbca88a855b78a7bcd0aef",
+      "duration_seconds": 163.16,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -11.1,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "elf_home",
+      "file": "audio/music/elf_home.mp3",
+      "sha256": "26344f8be68aa7e9e90b650cbd47d3dced41c79dd2595870316357d0b684d1be",
+      "duration_seconds": 184.4,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -10.2,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "elf_fight",
+      "file": "audio/music/elf_fight.mp3",
+      "sha256": "19affc2517834d8113717bcf5263f586025e8aea18a2081d54a8d37d02c63fb7",
+      "duration_seconds": 194.04,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -10.8,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "ice_home",
+      "file": "audio/music/ice_home.mp3",
+      "sha256": "f958dbd23a06ed15686ac7e61d0d84e32df1f9782336b373633e2b037f036707",
+      "duration_seconds": 210.05,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -10.4,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "ice_fight",
+      "file": "audio/music/ice_fight.mp3",
+      "sha256": "1aa560181dcf6927a0fce526fa61ead70d8eacd45b244f244070b0a005eee38f",
+      "duration_seconds": 188.53,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -13.5,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "undead_home",
+      "file": "audio/music/undead_home.mp3",
+      "sha256": "2c2cf52478f512a4a85a66ff9426e35893ef7854ca9b25e670f6f53f04286c0a",
+      "duration_seconds": 153.44,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -9.3,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    },
+    {
+      "id": "undead_fight",
+      "file": "audio/music/undead_fight.mp3",
+      "sha256": "3835e070fa30de82f78237a3cc54f11548c0dea49a4607a293bc9a84d30c2746",
+      "duration_seconds": 194.43,
+      "sample_rate": 44100,
+      "channels": "stereo",
+      "peak_dbfs": -10.8,
+      "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+    }
+  ],
+  "errors": [],
+  "originals": "User-supplied WAVs preserved in their source directory"
+}

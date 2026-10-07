@@ -1,0 +1,29 @@
+DRAGON WARS — WYRMCROWN WITH RECORDED AUDIO
+
+To play:
+1. Extract the whole ZIP.
+2. Open the wyrmcrown-voiced-game folder.
+3. Double-click PLAY_GAME.cmd.
+4. Keep its window open while playing.
+
+Python 3 is required to run the launcher. It is already available on the
+computer used for this integration. The launcher chooses an available local
+port and opens the correct game copy in your default browser.
+
+428 dialogue lines for eight characters and 125 recorded sound-effect assets
+are included. Click once in the game to enable sound, then adjust Voices and
+Sound Effects in Options if needed.
+
+This version adds 68 recorded reward announcements covering all 17 objective
+types. Your wizard or dragon explains the benefit when you capture an objective
+or open a treasure hoard. Urgent warnings can delay the announcement.
+
+The soundtrack now uses all eight music files supplied by you. Soft Flowing
+Strings plays on the opening screens and in the human homeland. Each realm
+has its own home and combat track, with fades between them. Music volume is
+controlled in Options, and voices lower it briefly while speaking.
+
+Keep the wyrmcrown and alien-strike folders together.
+
+Give Claude this updated project as the starting version and ask it to read
+CLAUDE_HANDOVER.txt. Keep the included audio files when making future updates.

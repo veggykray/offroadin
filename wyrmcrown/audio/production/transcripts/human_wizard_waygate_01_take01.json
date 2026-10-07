@@ -1,0 +1,156 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Hold tight. I hate the bit where my stomach arrives last",
+  "words": [
+    {
+      "text": "Hold",
+      "start": 0.08,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -0.0010787388309836388
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "tight.",
+      "start": 0.34,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -8.555064162389196e-05
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "I",
+      "start": 1.3,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.48,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "hate",
+      "start": 1.48,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.74,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 1.74,
+      "end": 1.84,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.84,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "bit",
+      "start": 1.88,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.06,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "where",
+      "start": 2.06,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 2.22,
+      "end": 2.4,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.4,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "stomach",
+      "start": 2.54,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.9,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "arrives",
+      "start": 2.9,
+      "end": 3.24,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 3.24,
+      "end": 3.34,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "last",
+      "start": 3.34,
+      "end": 3.76,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "Q3MQbVN7zmcddx8v0hOi",
+  "audio_duration_secs": 3.92
+}

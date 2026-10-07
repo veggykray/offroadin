@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Leave our bloody sheep alone!",
+  "words": [
+    {
+      "text": "Leave",
+      "start": 0.16,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -9.548207890475169e-05
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "our",
+      "start": 0.46,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "bloody",
+      "start": 0.76,
+      "end": 1.06,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -5.8412379075889476e-06
+    },
+    {
+      "text": "sheep",
+      "start": 1.18,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -5.8412379075889476e-06
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "alone!",
+      "start": 1.54,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -0.06454315284850054
+    }
+  ],
+  "transcription_id": "NaYAxtzChQ87tdCRbxRP",
+  "audio_duration_secs": 2.4
+}

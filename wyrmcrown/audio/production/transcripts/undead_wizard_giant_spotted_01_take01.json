@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A giant. Imagine the size of the coffin",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.22,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -0.0019361099693924189
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -9.77468371274881e-05
+    },
+    {
+      "text": "giant.",
+      "start": 0.5,
+      "end": 1.22,
+      "type": "word",
+      "logprob": -0.10991215307512903
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -1.1801649634435307e-05
+    },
+    {
+      "text": "Imagine",
+      "start": 1.84,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -1.1801649634435307e-05
+    },
+    {
+      "text": " ",
+      "start": 2.42,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "the",
+      "start": 2.48,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "size",
+      "start": 2.74,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "of",
+      "start": 3.22,
+      "end": 3.3,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.3,
+      "end": 3.36,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "the",
+      "start": 3.36,
+      "end": 3.48,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.48,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "coffin",
+      "start": 3.56,
+      "end": 4.2,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "yYeYqzDMlZD23BumyJK6",
+  "audio_duration_secs": 4.48
+}

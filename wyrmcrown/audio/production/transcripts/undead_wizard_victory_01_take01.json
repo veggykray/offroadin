@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Victory! I knew patience would outlive the competition",
+  "words": [
+    {
+      "text": "Victory!",
+      "start": 0.26,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -0.010578971421637107
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "I",
+      "start": 1.6,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "knew",
+      "start": 1.82,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.28,
+      "type": "spacing",
+      "logprob": -0.0001842805795604363
+    },
+    {
+      "text": "patience",
+      "start": 2.28,
+      "end": 2.78,
+      "type": "word",
+      "logprob": -0.0001842805795604363
+    },
+    {
+      "text": " ",
+      "start": 2.78,
+      "end": 2.86,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "would",
+      "start": 2.86,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.04,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "outlive",
+      "start": 3.04,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -9.860242308994721e-06
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 3.54,
+      "end": 3.62,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": -6.794906312279636e-06
+    },
+    {
+      "text": "competition",
+      "start": 3.66,
+      "end": 4.4,
+      "type": "word",
+      "logprob": -6.794906312279636e-06
+    }
+  ],
+  "transcription_id": "OZVL1BzDhoZkgpF7FZwO",
+  "audio_duration_secs": 4.8
+}

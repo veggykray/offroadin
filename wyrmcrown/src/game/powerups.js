@@ -73,6 +73,7 @@
       for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; Pp.spawn({ x: this.x, y: this.y, z: this.z, vx: Math.cos(a) * 160, vy: Math.sin(a) * 110, vz: 40 + Math.random() * 60, shape: Pp.GLOW, col: Math.random() < 0.5 ? '#ffffff' : P.col, size: 3, size2: 0.4, life: 0.7, add: true, drag: 2 }); }
       AS.Renderer.flare(this.x, this.y - this.z, 140, P.col, 0.8, 0.5);
       AS.Audio.sfx('powerup', { x: this.x, y: this.y, vol: d.isPlayer ? 1 : 0.5 });
+      if (d.isPlayer && AS.Voices && AS.Voices.g === g) AS.Voices.event('powerup_collected', { cooldown: 25 });
       if (d.isPlayer) { g.msg(P.name.toUpperCase() + ' — ' + P.desc.toUpperCase(), P.col, 3.2); g.camera.pulseZoom(0.04, 0.6); AS.HUD && AS.HUD.flashBuff && AS.HUD.flashBuff(this.kind); }
       else if (d.faction && Math.random() < 0.5) g.news(d.name + ' claims ' + P.name, d.fk);
     }
@@ -149,7 +150,7 @@
     /* cast the stored spell */
     cast(d) {
       const g = d.g;
-      if (!d.spell || !(d.spellCharges > 0)) { if (d.isPlayer) { g.msg('NO SPELL STORED — CLAIM SPELL ORBS AT RUNE CIRCLES', '#ffe7a8', 2); AS.Audio.sfx('denied'); } return false; }
+      if (!d.spell || !(d.spellCharges > 0)) { if (d.isPlayer) { g.msg('NO SPELL STORED — CLAIM SPELL ORBS AT RUNE CIRCLES', '#ffe7a8', 2); AS.Audio.sfx('denied'); if (AS.Voices && AS.Voices.g === g) AS.Voices.event('spell_failure', { cooldown: 30 }); } return false; }
       const kind = d.spell;
       d.spellCharges--; if (d.spellCharges <= 0) d.spell = null;
       if (kind === 'storm') {

@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "It tasted almost alive",
+  "words": [
+    {
+      "text": "It",
+      "start": 0.16,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -0.0001599660754436627
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "tasted",
+      "start": 0.34,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -6.079655122448457e-06
+    },
+    {
+      "text": "almost",
+      "start": 1.52,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -6.079655122448457e-06
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": "alive",
+      "start": 2.0,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -3.2186455882765586e-06
+    }
+  ],
+  "transcription_id": "7SgmCWg7Le9njtPfWRFH",
+  "audio_duration_secs": 2.8
+}

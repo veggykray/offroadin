@@ -1,0 +1,68 @@
+{
+  "job": {
+    "id": "breath_magic_01",
+    "event": "breath_magic",
+    "kind": "sfx",
+    "fallback": "breath_fire",
+    "text": "Continuous enormous verdant dragon breath, organic luminous air rush, gently resonant magical pollen hiss, seamless repeating texture Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": true,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:04:41.567771+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Continuous enormous verdant dragon breath, organic luminous air rush, gently resonant magical pollen hiss, seamless repeating texture Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": true,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "14e3373be46d6f51dcfa1c7762369056f2060770634c494669da4166a3bca489",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\breath_magic_01_take01.mp3",
+  "sha256": "f0537f471c533e0b9d95c2fef2ae1ee871ab5790675dc0c2d3a79bdb78342374",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 3.0,
+    "peak_dbfs": -8.7,
+    "rms_dbfs": -26.32,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.92,
+    "peak_dbfs": -7.74,
+    "rms_dbfs": -27.01,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3",
+  "loop_revision": "wrapped-80ms-1",
+  "loop_crossfade_seconds": 0.08,
+  "loop_master": "audio\\production\\raw\\breath_magic_01_take01.loop.wav"
+}

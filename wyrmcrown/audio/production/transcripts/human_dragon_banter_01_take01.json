@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "You were beside dinner",
+  "words": [
+    {
+      "text": "You",
+      "start": 0.34,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -3.8980677345534787e-05
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "were",
+      "start": 0.58,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -0.00010322991875000298
+    },
+    {
+      "text": "beside",
+      "start": 0.82,
+      "end": 1.54,
+      "type": "word",
+      "logprob": -0.00010322991875000298
+    },
+    {
+      "text": " ",
+      "start": 1.54,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -0.6450191140174866
+    },
+    {
+      "text": "dinner",
+      "start": 1.7,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -0.6450191140174866
+    }
+  ],
+  "transcription_id": "AEM7t87tjvuue0YN65LN",
+  "audio_duration_secs": 2.64
+}

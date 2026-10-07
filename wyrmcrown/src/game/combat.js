@@ -25,6 +25,7 @@
     /* ---------------- the dragon rider's weapons ---------------- */
     dragonWeapons(d, dt) {
       const g = d.g, I = d.input;
+      const wasBreathing = d.breathing;
       // wizard bolts
       d.fireCd -= dt;
       const bk = BOLT[d.fdef.rider.bolt] || BOLT.arcane;
@@ -39,7 +40,8 @@
       if (want) {
         if (!d.breathing) {
           d.breathing = true; d.breathT = 0;
-          AS.Audio.sfx('breath_start', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.7 });
+          AS.Audio.sfx('breath_inhale', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.7 });
+          AS.Audio.sfx('breath_ignite', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.7 });
           if (d.isPlayer) g.camera.pulseZoom(0.025, 0.5);
         }
         d.breathT += dt;
@@ -49,6 +51,7 @@
         if (d.breathing) this.breath(d, dt);
       } else if (d.breathing) { d.breathing = false; d.fireDelay = 0.7; }
       if (!d.breathing) this.aimBreath(d, dt);
+      if (wasBreathing && !d.breathing) AS.Audio.sfx(d.breathT < 0.35 ? 'breath_burst' : 'breath_stop', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.7 });
       this.breathSound(d);
     },
     /* the dragon swings its head toward what it breathes at: the cursor (or a
@@ -210,7 +213,9 @@
         const lead = target.isDragon ? 0.6 : 0.85;
         const gx = target.x + (target.vx || 0) * T * lead + U.range(-14, 14), gy = target.y + (target.vy || 0) * T * lead + U.range(-14, 14);
         AS.Proj.lob({ team, sx: src.x, sy: src.y, sz, gx, gy, T, arc: kind === 'rock' ? 60 : 150, land: kind, dmg: (kind === 'rock' ? 34 : 46) * dmgMul, dtype: 'impact', radius: kind === 'rock' ? 26 : 44, col: '#8a7a6a', size: kind === 'rock' ? 4 : 5, owner: src, style: 'stone', warn: kind === 'stone', warnCol: '#ffb04a', extra: { airZ: target.isDragon ? target.z : 0, air: !!target.isDragon } });
-        AS.Audio.sfx(kind === 'rock' ? 'monster_roar' : 'catapult', { x: src.x, y: src.y, vol: 0.6 });
+        if (kind === 'rock' && src.role === 'giant') AS.Audio.sfx('giant_pickup', { x: src.x, y: src.y, vol: 0.35 });
+        AS.Audio.sfx(kind === 'rock' ? src.role === 'giant' ? 'giant_throw_effort' : src.role === 'troll' ? 'troll_roar' : 'monster_roar' : 'catapult', { x: src.x, y: src.y, vol: 0.6 });
+        if (kind === 'rock' && src.role === 'giant') AS.Audio.sfx('giant_rock_air', { x: src.x, y: src.y, vol: 0.4 });
         return;
       }
       const W = {
@@ -284,6 +289,7 @@
     projExpire(g, p) {
       if (p.style === 'bolt') {
         // the bolt bursts on the ground beneath its end point
+        if (p.owner===g.player && p.target && Math.random()<.04 && AS.Voices && AS.Voices.g===g) AS.Voices.event('missed_shot',{cooldown:70});
         AS.FX.groundHit(p.x, p.y + 20, p.col);
         P().spawn({ x: p.x, y: p.y + 20, z: 20, shape: P().GLOW, col: p.col, size: 3, size2: 10, life: 0.18, add: true });
         if (p.extra && p.extra.splash) g.damageArea(p.x, p.y + 30, p.extra.splash, p.dmg * 0.5, 'magic', p.team, p.owner, {});
@@ -423,7 +429,7 @@
         AS.FX.explosion(x, y, 2, R * 0.35, { col: '#fff0d0', col2: '#c8a070', debris: true, debrisCol: '#6a5a4a', dustCol: '#9a8a6a', lightCol: '#ffd0a0' });
         AS.FX.dust(x, y, 10, '#a0907a', 90);
         g.terrain.addDecal('crater', x, y, R * 0.5);
-        AS.Audio.sfx('stone_hit', { x, y });
+        AS.Audio.sfx(p.land === 'rock' && p.owner?.role === 'giant' ? 'giant_rock_impact' : 'stone_hit', { x, y });
         g.shakeNear(x, y, 0.3);
       }
     },

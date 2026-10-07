@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They're stealing the cattle. That is an unlicensed exhumation",
+  "words": [
+    {
+      "text": "They're",
+      "start": 0.1,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -0.00010969790309900418
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "stealing",
+      "start": 0.46,
+      "end": 0.84,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 0.84,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "the",
+      "start": 0.88,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.04,
+      "type": "spacing",
+      "logprob": -0.0007510940195061266
+    },
+    {
+      "text": "cattle.",
+      "start": 1.04,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -0.018785807487022663
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -3.909988299710676e-05
+    },
+    {
+      "text": "That",
+      "start": 1.96,
+      "end": 2.2,
+      "type": "word",
+      "logprob": -3.909988299710676e-05
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.36,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 2.36,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.44,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "an",
+      "start": 2.48,
+      "end": 2.66,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.66,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": "unlicensed",
+      "start": 2.74,
+      "end": 3.48,
+      "type": "word",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": " ",
+      "start": 3.48,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -0.00018463814922142774
+    },
+    {
+      "text": "exhumation",
+      "start": 3.56,
+      "end": 4.38,
+      "type": "word",
+      "logprob": -0.00012752542406815336
+    }
+  ],
+  "transcription_id": "EvKCppO3nJYjMltqf6TE",
+  "audio_duration_secs": 4.64
+}

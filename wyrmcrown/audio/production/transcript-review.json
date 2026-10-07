@@ -1,0 +1,110 @@
+[
+  {
+    "id": "aud_elf_dragon_1_3",
+    "transcript": "I am Verdant of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_elf_dragon_2_3",
+    "transcript": "I am Verdant of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_elf_wizard_1_3",
+    "transcript": "Illithy L of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing",
+    "word_similarity": 0.933,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_elf_wizard_2_3",
+    "transcript": "Illythiel of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing",
+    "word_similarity": 0.966,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_dragon_1_3",
+    "transcript": "I am Pyraxx. Aldermere is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state",
+    "word_similarity": 0.976,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_dragon_1_3",
+    "transcript": "I am Pyrax. Uldaman is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state",
+    "word_similarity": 0.952,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_dragon_2_3",
+    "transcript": "I am Pirax. Agvaldmir is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state",
+    "word_similarity": 0.952,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_wizard_1_3",
+    "transcript": "Pirax, I trained for forty years in Abiville Eldamir. Nobody mentioned the saddle, the sheep, or the smell of burning trousers",
+    "word_similarity": 0.923,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_wizard_1_3",
+    "transcript": "Pirax, I trained for 40 years in Aldamia. Nobody mentioned the saddle, the sheep, or the smell of burning trousers",
+    "word_similarity": 0.919,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_human_wizard_2_3",
+    "transcript": "Perax, I trained for 40 years in Ardouva Eldemir. Nobody mentioned the saddle, the sheep, or the smell of burning trousers",
+    "word_similarity": 0.895,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_ice_dragon_1_3",
+    "transcript": "Skald Frost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_ice_dragon_2_3",
+    "transcript": "Skald-Frost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_ice_wizard_1_3",
+    "transcript": "Imrah of Hrimgard has weathered longer winters than this. Keep below the storm and let the impatient ones discover the lightning",
+    "word_similarity": 0.974,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_ice_wizard_2_3",
+    "transcript": "Imrah of Hriningard has weathered longer winters than this. Keep below the storm and let the impatient ones discover the lightning",
+    "word_similarity": 0.95,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_undead_dragon_1_3",
+    "transcript": "Vorthrax serves Morgrave i have forgotten the taste of sleep but i remember precisely which of you tasted of chicken",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_undead_dragon_2_3",
+    "transcript": "Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_undead_wizard_1_3",
+    "transcript": "Malkar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy",
+    "word_similarity": 0.974,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "aud_undead_wizard_2_3",
+    "transcript": "Malkar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy",
+    "word_similarity": 0.974,
+    "status": "text_consistency_check_passed"
+  }
+]

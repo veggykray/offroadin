@@ -10,9 +10,14 @@ JavaScript, no install, no build step.
 
 ## Run it
 
-Open `wyrmcrown/index.html` in Chrome, Edge or Firefox. Double-clicking works
-(it runs from `file://`). The `alien-strike/` folder must stay next to
-`wyrmcrown/`, because the shared engine loads from there.
+Double-click `PLAY_GAME.cmd` in the parent folder to play with recorded voices
+and sound effects. It starts a local server and opens your default browser.
+Python 3 is required; keep the launcher window open while playing.
+
+Alternatively, run `python wyrmcrown/tools/serve.py` from the parent folder and
+open the printed game URL. The `alien-strike/` folder must stay next to
+`wyrmcrown/`, because the shared engine loads from there. Opening `index.html`
+directly still runs the game, but uses synthesized audio fallbacks.
 
 Click once anywhere to start the sound (browsers keep audio off until you
 interact with the page).
@@ -90,11 +95,30 @@ B snatches, X holds court, Y casts a spell, LB sprints.
    When every rival stronghold has fallen, the Wyrmcrown is yours. If yours
    falls, the war is lost.
 
-Wizards and dragons trade insults as they meet and fight, each in their own
-voice: squeaky wizards, deep-voiced dragons. Your own pair always comes
-through clearly; rivals are only heard nearby, fading with distance. The
-voices use your browser's speech synthesiser; the options screen sets their
-volume or turns them off, and subtitles show what was said.
+Eight recorded wizard and dragon voices deliver 428 dialogue lines for combat,
+exploration, resources, home warnings, victories and occasional exchanges.
+Your own pair comes through clearly; nearby rivals fade with distance. Urgent
+home warnings interrupt chatter, and routine lines have cooldowns. Options
+controls voice and sound-effect volume and subtitles. Recorded speech plays at
+its original speed and pitch.
+
+Capturing an objective prompts your wizard or dragon to explain its reward.
+There are 68 new recorded lines: one for every objective type in each realm.
+They explain gold deliveries, troop places, nearby recovery, defences, map
+vision, spell charges and waygate travel. Cave and ruin lines remind you to
+collect the dropped treasure. Urgent warnings take priority over these lines.
+
+The soundtrack uses the eight supplied recordings. **Soft Flowing Strings**
+is the opening theme and human home music. The elf, ice and undead lands each
+have their own home theme, and all four realms have a combat track. Music
+follows the territory, with your own realm's pair in neutral land. Tracks
+crossfade, loop continuously and soften while a character speaks. Adjust the
+Music slider in Options. The game streams stereo MP3s at their original speed.
+
+Recorded effects cover wingbeats, four breath types, livestock, rapid feeding,
+dragon reactions, giants, trolls, catapults and collapsing buildings. The
+complete library and production history are included in `audio/`. Existing
+synthesized effects and ambience remain available as fallbacks.
 
 Realms that fall behind gather strength (up to +35% income), and the lords
 gang up on a runaway leader. Magic runes rise across the map, so a war is

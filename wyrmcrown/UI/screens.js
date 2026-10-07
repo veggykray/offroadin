@@ -132,7 +132,7 @@
       } catch (e) { console.warn('attract mode failed', e); }
       this.menuMusic();
     },
-    menuMusic() { if (AS.Music && AS.Music.play) AS.Music.play({ id: 210, music: AS.Data.factions.human.music }); },
+    menuMusic() { if (AS.Music && AS.Music.play) AS.Music.play({ id: 210, key: 'music:menu', realm: 'human' }); },
     tick(dt) {},
 
     /* ---------- title ---------- */
@@ -147,7 +147,7 @@
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
           btn('How to Play', () => this.showControls('menu')),
           btn('Options', () => this.showOptions('menu')))));
-      s.appendChild(h('div', { class: 'foot' }, 'Built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL) · all art, sound and music generated in code'));
+      s.appendChild(h('div', { class: 'foot' }, 'Built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL)'));
       if (P && P.stats.played) s.appendChild(h('div', { class: 'stat' }, 'Wars won: ' + P.stats.wins + ' of ' + P.stats.played, h('br'), 'Dragons driven off: ' + P.stats.dragonsDowned));
       this.show('menu');
     },

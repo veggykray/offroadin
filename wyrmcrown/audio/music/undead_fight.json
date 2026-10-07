@@ -1,0 +1,41 @@
+{
+  "id": "undead_fight",
+  "source_file": "Undead dragon fight.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Undead dragon fight.wav",
+  "source_sha256": "5b9188988b26d77cf766b092622fbcb1662e4b66a20c09fd22dfa1223ea3bcd3",
+  "source_info": {
+    "duration_seconds": 194.4,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-15.94",
+    "input_tp": "-4.68",
+    "input_lra": "5.80",
+    "input_thresh": "-26.02",
+    "output_i": "-20.90",
+    "output_tp": "-6.74",
+    "output_lra": "4.40",
+    "output_thresh": "-30.94",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.10"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "3835e070fa30de82f78237a3cc54f11548c0dea49a4607a293bc9a84d30c2746",
+  "inspection": {
+    "duration_seconds": 194.43,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -10.8,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

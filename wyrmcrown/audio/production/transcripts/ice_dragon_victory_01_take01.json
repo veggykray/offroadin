@@ -1,0 +1,212 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Let the long winter end. Let the long winter end. Let the long winter end",
+  "words": [
+    {
+      "text": "Let",
+      "start": 0.34,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -3.2782016205601394e-05
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -4.005352093372494e-05
+    },
+    {
+      "text": "the",
+      "start": 0.64,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -4.005352093372494e-05
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -0.0011738798348233104
+    },
+    {
+      "text": "long",
+      "start": 0.86,
+      "end": 1.26,
+      "type": "word",
+      "logprob": -0.0011738798348233104
+    },
+    {
+      "text": " ",
+      "start": 1.26,
+      "end": 1.32,
+      "type": "spacing",
+      "logprob": -6.067568756407127e-05
+    },
+    {
+      "text": "winter",
+      "start": 1.32,
+      "end": 1.84,
+      "type": "word",
+      "logprob": -6.067568756407127e-05
+    },
+    {
+      "text": " ",
+      "start": 1.84,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "end.",
+      "start": 2.52,
+      "end": 3.0,
+      "type": "word",
+      "logprob": -2.5271335402976547e-05
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.0,
+      "type": "spacing",
+      "logprob": -8.22540732769994e-06
+    },
+    {
+      "text": "Let",
+      "start": 4.1,
+      "end": 4.3,
+      "type": "word",
+      "logprob": -8.22540732769994e-06
+    },
+    {
+      "text": " ",
+      "start": 4.3,
+      "end": 4.38,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 4.38,
+      "end": 4.52,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.52,
+      "end": 4.62,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "long",
+      "start": 4.62,
+      "end": 5.0,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.0,
+      "end": 5.06,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "winter",
+      "start": 5.06,
+      "end": 5.76,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 5.76,
+      "end": 5.76,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "end.",
+      "start": 6.14,
+      "end": 6.58,
+      "type": "word",
+      "logprob": -4.023285285370548e-06
+    },
+    {
+      "text": " ",
+      "start": 6.58,
+      "end": 6.58,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "Let",
+      "start": 7.52,
+      "end": 7.72,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": " ",
+      "start": 7.72,
+      "end": 7.78,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "the",
+      "start": 7.78,
+      "end": 7.88,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 7.88,
+      "end": 8.039,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "long",
+      "start": 8.039,
+      "end": 8.44,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 8.44,
+      "end": 8.52,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "winter",
+      "start": 8.52,
+      "end": 9.04,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 9.04,
+      "end": 9.2,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "end",
+      "start": 9.66,
+      "end": 10.06,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "XzMJLiyBIHi1OoGYCTqc",
+  "audio_duration_secs": 10.32
+}

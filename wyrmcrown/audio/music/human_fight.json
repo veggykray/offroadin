@@ -1,0 +1,41 @@
+{
+  "id": "human_fight",
+  "source_file": "Human dragon fight.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Human dragon fight.wav",
+  "source_sha256": "a1ab763c0de5b59b224af47840e4b57c262101253719c85d5acae01f14deeb88",
+  "source_info": {
+    "duration_seconds": 163.12,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-16.69",
+    "input_tp": "-5.53",
+    "input_lra": "4.50",
+    "input_thresh": "-26.79",
+    "output_i": "-20.65",
+    "output_tp": "-4.83",
+    "output_lra": "2.20",
+    "output_thresh": "-30.68",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.35"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "c257b8eba212ff2df470a855b599f522148c84050dfbca88a855b78a7bcd0aef",
+  "inspection": {
+    "duration_seconds": 163.16,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -11.1,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

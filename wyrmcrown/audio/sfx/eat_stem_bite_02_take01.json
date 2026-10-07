@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "eat_stem_bite_02",
+    "event": "eat_stem_bite",
+    "kind": "sfx",
+    "fallback": "snatch",
+    "text": "One enormous dragon jaw snaps shut, compact tooth clack and a sharp meaty bite, immediate onset Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.75,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:11:42.559926+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "One enormous dragon jaw snaps shut, compact tooth clack and a sharp meaty bite, immediate onset Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "e9babef54c595faf3a5b3dc6e0ae77f79c03ec65b436cd5f4bb715045ebcc4b8",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\eat_stem_bite_02_take01.mp3",
+  "sha256": "ffe433070c8443856fc251ec139278b909904cb6bed6e27455f1781331b6c49f",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": 0.0,
+    "rms_dbfs": -21.27,
+    "clipped_sample_fraction": 0.000189,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.38,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": -4.28,
+    "rms_dbfs": -24.93,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.38,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

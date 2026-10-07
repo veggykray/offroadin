@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Was that cow judging my hat?",
+  "words": [
+    {
+      "text": "Was",
+      "start": 0.14,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -1.6927575416048057e-05
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "that",
+      "start": 0.3,
+      "end": 0.54,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.54,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -5.245071224635467e-05
+    },
+    {
+      "text": "cow",
+      "start": 0.64,
+      "end": 0.96,
+      "type": "word",
+      "logprob": -5.245071224635467e-05
+    },
+    {
+      "text": " ",
+      "start": 0.96,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -8.702239938429557e-06
+    },
+    {
+      "text": "judging",
+      "start": 1.1,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -8.702239938429557e-06
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.44,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 1.44,
+      "end": 1.64,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.64,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "hat?",
+      "start": 1.7,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -2.521151143497491e-05
+    }
+  ],
+  "transcription_id": "IoRaCNiOLcWSyFYUmoQN",
+  "audio_duration_secs": 2.24
+}

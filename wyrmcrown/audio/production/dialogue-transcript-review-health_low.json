@@ -1,0 +1,34 @@
+[
+  {
+    "id": "elf_wizard_health_low_01",
+    "take": "elf_wizard_health_low_01_take01",
+    "expected": "We are badly wounded. This is becoming inelegant.",
+    "transcript": "We are badly wounded. This is becoming inelegant",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_health_low_01",
+    "take": "human_wizard_health_low_01_take01",
+    "expected": "We're HURT. Back to the roost before we fall off!",
+    "transcript": "We're hurt. Back to the roost before we fall off",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_health_low_01",
+    "take": "ice_wizard_health_low_01_take01",
+    "expected": "Wounded. Return to the roost.",
+    "transcript": "Wounded. Return to the roost",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_health_low_01",
+    "take": "undead_wizard_health_low_01_take01",
+    "expected": "We're coming apart. More rapidly than usual.",
+    "transcript": "We're coming apart more rapidly than usual",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

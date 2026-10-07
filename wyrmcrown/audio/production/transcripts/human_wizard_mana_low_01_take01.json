@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "I'm out of mana. Waving harder won't help",
+  "words": [
+    {
+      "text": "I'm",
+      "start": 0.18,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -7.90748283444979e-06
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.32,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "out",
+      "start": 0.32,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "of",
+      "start": 0.48,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -0.007771849632263184
+    },
+    {
+      "text": "mana.",
+      "start": 0.66,
+      "end": 0.96,
+      "type": "word",
+      "logprob": -0.006352688849437982
+    },
+    {
+      "text": " ",
+      "start": 0.96,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -5.924526340095326e-05
+    },
+    {
+      "text": "Waving",
+      "start": 1.54,
+      "end": 1.8,
+      "type": "word",
+      "logprob": -0.00013284939025955586
+    },
+    {
+      "text": " ",
+      "start": 1.8,
+      "end": 1.92,
+      "type": "spacing",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": "harder",
+      "start": 1.92,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.32,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "won't",
+      "start": 2.32,
+      "end": 2.54,
+      "type": "word",
+      "logprob": -1.835820830820012e-06
+    },
+    {
+      "text": " ",
+      "start": 2.54,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "help",
+      "start": 2.6,
+      "end": 2.9,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "ouXROu3fAC3MNeBz9S0O",
+  "audio_duration_secs": 3.2
+}

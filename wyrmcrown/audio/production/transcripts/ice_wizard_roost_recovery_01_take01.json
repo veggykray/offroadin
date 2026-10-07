@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Recovered. Take wing",
+  "words": [
+    {
+      "text": "Recovered.",
+      "start": 0.14,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -0.0037871931213885545
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": "Take",
+      "start": 1.42,
+      "end": 1.64,
+      "type": "word",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": " ",
+      "start": 1.64,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -0.005249762907624245
+    },
+    {
+      "text": "wing",
+      "start": 1.78,
+      "end": 2.1,
+      "type": "word",
+      "logprob": -0.005249762907624245
+    }
+  ],
+  "transcription_id": "qQt0n4Q0FKlLe4ho7ChC",
+  "audio_duration_secs": 2.48
+}

@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Through the gate. Hold steady",
+  "words": [
+    {
+      "text": "Through",
+      "start": 0.2,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.00011586471373448148
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": "the",
+      "start": 0.5,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -2.8729025871143676e-05
+    },
+    {
+      "text": "gate.",
+      "start": 0.64,
+      "end": 0.94,
+      "type": "word",
+      "logprob": -0.001746998583257664
+    },
+    {
+      "text": " ",
+      "start": 0.94,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -1.2755313036905136e-05
+    },
+    {
+      "text": "Hold",
+      "start": 1.64,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -1.2755313036905136e-05
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "steady",
+      "start": 2.08,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    }
+  ],
+  "transcription_id": "CWJHGeJR3XlrGxN34t8u",
+  "audio_duration_secs": 2.72
+}

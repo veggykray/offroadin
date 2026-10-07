@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "An army approaches. A recruitment opportunity.",
+  "words": [
+    {
+      "text": "An",
+      "start": 0.16,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -0.00013612773909699172
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.46,
+      "type": "spacing",
+      "logprob": -0.00018046658078674227
+    },
+    {
+      "text": "army",
+      "start": 0.46,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -0.00018046658078674227
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "approaches.",
+      "start": 0.86,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -0.0029274651826033896
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.6,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "A",
+      "start": 2.2,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.28,
+      "type": "spacing",
+      "logprob": -2.634490556374658e-05
+    },
+    {
+      "text": "recruitment",
+      "start": 2.28,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -2.634490556374658e-05
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.12,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "opportunity.",
+      "start": 3.12,
+      "end": 3.94,
+      "type": "word",
+      "logprob": -0.04824863374217614
+    }
+  ],
+  "transcription_id": "KG9UpNqUzzppp7lZpHuo",
+  "audio_duration_secs": 4.24
+}

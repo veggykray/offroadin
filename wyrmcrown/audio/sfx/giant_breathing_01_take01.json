@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_breathing_01",
+    "event": "giant_breathing",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Huge sleeping humanoid giant slow breathing, chest air and nostril weight, no roaring Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:49.201299+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Huge sleeping humanoid giant slow breathing, chest air and nostril weight, no roaring Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 3,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "bb168df8faa03cd7b2e7e5645023545e9f2f6c6e680835e2ad7e9d1f7b179f70",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_breathing_01_take01.mp3",
+  "sha256": "85c7cca557e621210b48c7594bbae92d4821a65cb7ea53783033b747a7b0a36e",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 3.0,
+    "peak_dbfs": -1.78,
+    "rms_dbfs": -15.09,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.5,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 3.0,
+    "peak_dbfs": -5.31,
+    "rms_dbfs": -18.63,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.58,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

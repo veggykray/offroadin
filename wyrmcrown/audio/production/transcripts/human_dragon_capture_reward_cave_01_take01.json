@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The cave horde is open. Two hundred and twenty gold on the ground. Scoop it up. Admiring it pays for nothing",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.14,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -2.610649426060263e-05
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -0.42887479066848755
+    },
+    {
+      "text": "cave",
+      "start": 0.36,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.42887479066848755
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -0.5234079360961914
+    },
+    {
+      "text": "horde",
+      "start": 0.76,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -0.5234079360961914
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.3,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "is",
+      "start": 1.3,
+      "end": 1.52,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.52,
+      "end": 1.6,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "open.",
+      "start": 1.6,
+      "end": 2.08,
+      "type": "word",
+      "logprob": -0.0007693509104683471
+    },
+    {
+      "text": " ",
+      "start": 2.08,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -0.0009944260818883777
+    },
+    {
+      "text": "Two",
+      "start": 2.74,
+      "end": 2.92,
+      "type": "word",
+      "logprob": -0.0009944260818883777
+    },
+    {
+      "text": " ",
+      "start": 2.92,
+      "end": 3.04,
+      "type": "spacing",
+      "logprob": -5.7338023907504976e-05
+    },
+    {
+      "text": "hundred",
+      "start": 3.04,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -5.7338023907504976e-05
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.42,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "and",
+      "start": 3.42,
+      "end": 3.52,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 3.52,
+      "end": 3.7,
+      "type": "spacing",
+      "logprob": -1.5020257706055418e-05
+    },
+    {
+      "text": "twenty",
+      "start": 3.7,
+      "end": 4.059,
+      "type": "word",
+      "logprob": -1.5020257706055418e-05
+    },
+    {
+      "text": " ",
+      "start": 4.059,
+      "end": 4.22,
+      "type": "spacing",
+      "logprob": -6.556489552167477e-06
+    },
+    {
+      "text": "gold",
+      "start": 4.22,
+      "end": 4.6,
+      "type": "word",
+      "logprob": -6.556489552167477e-06
+    },
+    {
+      "text": " ",
+      "start": 4.6,
+      "end": 4.66,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "on",
+      "start": 4.66,
+      "end": 4.74,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 4.74,
+      "end": 4.78,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 4.78,
+      "end": 4.84,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.84,
+      "end": 4.92,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "ground.",
+      "start": 4.92,
+      "end": 5.46,
+      "type": "word",
+      "logprob": -1.6007457686230608e-05
+    },
+    {
+      "text": " ",
+      "start": 5.46,
+      "end": 5.46,
+      "type": "spacing",
+      "logprob": -0.00025829317746683955
+    },
+    {
+      "text": "Scoop",
+      "start": 5.96,
+      "end": 6.22,
+      "type": "word",
+      "logprob": -0.00025829317746683955
+    },
+    {
+      "text": " ",
+      "start": 6.22,
+      "end": 6.26,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "it",
+      "start": 6.26,
+      "end": 6.34,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 6.34,
+      "end": 6.46,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "up.",
+      "start": 6.46,
+      "end": 6.68,
+      "type": "word",
+      "logprob": -0.016723735878860186
+    },
+    {
+      "text": " ",
+      "start": 6.68,
+      "end": 7.06,
+      "type": "spacing",
+      "logprob": -0.007304627448320389
+    },
+    {
+      "text": "Admiring",
+      "start": 7.06,
+      "end": 7.7,
+      "type": "word",
+      "logprob": -0.0027595750461841817
+    },
+    {
+      "text": " ",
+      "start": 7.7,
+      "end": 7.76,
+      "type": "spacing",
+      "logprob": -5.125986263010418e-06
+    },
+    {
+      "text": "it",
+      "start": 7.76,
+      "end": 7.9,
+      "type": "word",
+      "logprob": -5.125986263010418e-06
+    },
+    {
+      "text": " ",
+      "start": 7.9,
+      "end": 7.96,
+      "type": "spacing",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": "pays",
+      "start": 7.96,
+      "end": 8.2,
+      "type": "word",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": " ",
+      "start": 8.2,
+      "end": 8.24,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "for",
+      "start": 8.24,
+      "end": 8.36,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 8.36,
+      "end": 8.5,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "nothing",
+      "start": 8.5,
+      "end": 8.94,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    }
+  ],
+  "transcription_id": "69LblUfqJhIUOCWCBQwR",
+  "audio_duration_secs": 9.12
+}

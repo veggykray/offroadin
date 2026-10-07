@@ -1,0 +1,194 @@
+[
+  {
+    "id": "elf_wizard_home_critical_01",
+    "take": "elf_wizard_home_critical_01_take01",
+    "expected": "The heart of our realm is FALLING. Home. NOW!",
+    "transcript": "The heart of our realm is falling. Home, now",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_early_01",
+    "take": "elf_wizard_home_early_01_take01",
+    "expected": "An intruder beneath our canopy. Attend to it.",
+    "transcript": "An intruder beneath our canopy. Attend to it",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_farms_01",
+    "take": "elf_wizard_home_farms_01_take01",
+    "expected": "Our orchards are burning. I will take this personally.",
+    "transcript": "Our orchards are burning. I will take this personally",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_livestock_01",
+    "take": "elf_wizard_home_livestock_01_take01",
+    "expected": "They are stealing our herd. How astonishingly common.",
+    "transcript": "They are stealing our herd. How astonishingly common",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_serious_01",
+    "take": "elf_wizard_home_serious_01_take01",
+    "expected": "Our grove is BURNING. Turn us HOME!",
+    "transcript": "Our grove is burning. Turn us home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_wall_01",
+    "take": "elf_wizard_home_wall_01_take01",
+    "expected": "Our walls are BROKEN. An intolerable invitation.",
+    "transcript": "Our walls are broken. An intolerable invitation",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_critical_01",
+    "take": "human_wizard_home_critical_01_take01",
+    "expected": "Forget the gold! We're losing HOME!",
+    "transcript": "Forget the gold. We're losing home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_early_01",
+    "take": "human_wizard_home_early_01_take01",
+    "expected": "Enemy over our fields. Keep an eye on HOME.",
+    "transcript": "Enemy over our fields. Keep an eye on home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_farms_01",
+    "take": "human_wizard_home_farms_01_take01",
+    "expected": "They're burning the FARMS! We eat from those!",
+    "transcript": "They're burning the farms. We eat from those",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_livestock_01",
+    "take": "human_wizard_home_livestock_01_take01",
+    "expected": "Not the CATTLE, you grave-rotting bastard!",
+    "transcript": "Not the cackle, you grave-rotting bastard!",
+    "word_similarity": 0.857,
+    "status": "manual_review_required"
+  },
+  {
+    "id": "human_wizard_home_serious_01",
+    "take": "human_wizard_home_serious_01_take01",
+    "expected": "That's OUR smoke! They're ATTACKING the TOWN!",
+    "transcript": "That's our smoke. They're attacking the town",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_wall_01",
+    "take": "human_wizard_home_wall_01_take01",
+    "expected": "They've breached the bloody WALL!",
+    "transcript": "They've breached the bloody wall",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_critical_01",
+    "take": "ice_wizard_home_critical_01_take01",
+    "expected": "The keep will not hold. HOME. Now!",
+    "transcript": "The keep will not hold. Home, now!",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_early_01",
+    "take": "ice_wizard_home_early_01_take01",
+    "expected": "An enemy crosses our border. Watch the walls.",
+    "transcript": "An enemy crosses our border. Watch the walls",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_farms_01",
+    "take": "ice_wizard_home_farms_01_take01",
+    "expected": "They burn our winter stores. Make them stop.",
+    "transcript": "They burn our winter stores. Make them stop",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_livestock_01",
+    "take": "ice_wizard_home_livestock_01_take01",
+    "expected": "Our cattle. Our winter. Stop the thief.",
+    "transcript": "Our cattle, our winter. Stop the thief",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_serious_01",
+    "take": "ice_wizard_home_serious_01_take01",
+    "expected": "They strike our walls. Return. NOW.",
+    "transcript": "They strike our walls. Return now",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_wall_01",
+    "take": "ice_wizard_home_wall_01_take01",
+    "expected": "The wall has BROKEN. Close the breach.",
+    "transcript": "The wall has broken. Close the breach",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_critical_01",
+    "take": "undead_wizard_home_critical_01_take01",
+    "expected": "Our stronghold is DYING. That was supposed to be THEIR job!",
+    "transcript": "Our stronghold is dying. That was supposed to be their job",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_early_01",
+    "take": "undead_wizard_home_early_01_take01",
+    "expected": "Visitors in the graveyard. They seem distressingly ALIVE.",
+    "transcript": "Visitors in the graveyard. They seem distressingly alive",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_farms_01",
+    "take": "undead_wizard_home_farms_01_take01",
+    "expected": "The farms are burning. Even the dead need an economy.",
+    "transcript": "The farms are burning. Even the dead need an economy",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_livestock_01",
+    "take": "undead_wizard_home_livestock_01_take01",
+    "expected": "They're eating our livestock. I had plans for those BONES.",
+    "transcript": "They're eating our livestock. I had plans for those bones",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_serious_01",
+    "take": "undead_wizard_home_serious_01_take01",
+    "expected": "They're burning the CRYPTS! Those are our PEOPLE!",
+    "transcript": "They're burning the crypts. Those are our people",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_wall_01",
+    "take": "undead_wizard_home_wall_01_take01",
+    "expected": "A hole in the wall. A rather poor place for an open grave.",
+    "transcript": "A hole in the wall. A rather poor place for an open grave",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

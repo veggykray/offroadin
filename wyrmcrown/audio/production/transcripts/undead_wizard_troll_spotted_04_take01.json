@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "It eats wood. At last, someone with a worse diet",
+  "words": [
+    {
+      "text": "It",
+      "start": 0.18,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -8.880697714630514e-05
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -2.3007127310847864e-05
+    },
+    {
+      "text": "eats",
+      "start": 0.4,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -2.3007127310847864e-05
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": "wood.",
+      "start": 0.8,
+      "end": 1.22,
+      "type": "word",
+      "logprob": -0.005579509918607073
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -1.9073304429184645e-05
+    },
+    {
+      "text": "At",
+      "start": 1.78,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -1.9073304429184645e-05
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 2.04,
+      "type": "spacing",
+      "logprob": -1.1444026313256472e-05
+    },
+    {
+      "text": "last,",
+      "start": 2.04,
+      "end": 2.6,
+      "type": "word",
+      "logprob": -0.001053439307725057
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.98,
+      "type": "spacing",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": "someone",
+      "start": 2.98,
+      "end": 3.42,
+      "type": "word",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": " ",
+      "start": 3.42,
+      "end": 3.46,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "with",
+      "start": 3.46,
+      "end": 3.58,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.58,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 3.66,
+      "end": 3.76,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.76,
+      "end": 3.84,
+      "type": "spacing",
+      "logprob": -4.7205765440594405e-05
+    },
+    {
+      "text": "worse",
+      "start": 3.84,
+      "end": 4.2,
+      "type": "word",
+      "logprob": -4.7205765440594405e-05
+    },
+    {
+      "text": " ",
+      "start": 4.2,
+      "end": 4.28,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "diet",
+      "start": 4.28,
+      "end": 4.76,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    }
+  ],
+  "transcription_id": "oUfIitthlKSXAXkGNorx",
+  "audio_duration_secs": 5.04
+}

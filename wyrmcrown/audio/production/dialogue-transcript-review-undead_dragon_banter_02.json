@@ -1,0 +1,18 @@
+[
+  {
+    "id": "undead_dragon_banter_02",
+    "take": "undead_dragon_banter_02_take01",
+    "expected": "Then the scenery... has improved.",
+    "transcript": "Then the scenery has improved. Then the scenery has improved.",
+    "word_similarity": 0.667,
+    "status": "manual_review_required"
+  },
+  {
+    "id": "undead_dragon_banter_02",
+    "take": "undead_dragon_banter_02_take02",
+    "expected": "Then the scenery... has improved.",
+    "transcript": "Then the scenery has improved",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

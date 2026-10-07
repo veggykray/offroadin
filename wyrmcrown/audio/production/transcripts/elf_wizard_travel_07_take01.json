@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A forest with no discernible symmetry. How provincial",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.12,
+      "end": 0.16,
+      "type": "word",
+      "logprob": -3.0636318115284666e-05
+    },
+    {
+      "text": " ",
+      "start": 0.16,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -5.364403477869928e-06
+    },
+    {
+      "text": "forest",
+      "start": 0.34,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -5.364403477869928e-06
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "with",
+      "start": 0.78,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 1.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "no",
+      "start": 1.06,
+      "end": 1.22,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.3,
+      "type": "spacing",
+      "logprob": -0.008679758757352829
+    },
+    {
+      "text": "discernible",
+      "start": 1.3,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -0.008679758757352829
+    },
+    {
+      "text": " ",
+      "start": 1.88,
+      "end": 2.02,
+      "type": "spacing",
+      "logprob": -2.074220174108632e-05
+    },
+    {
+      "text": "symmetry.",
+      "start": 2.02,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -0.0007933839385966874
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "How",
+      "start": 3.26,
+      "end": 3.44,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 3.44,
+      "end": 3.48,
+      "type": "spacing",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": "provincial",
+      "start": 3.48,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -9.536697689327411e-06
+    }
+  ],
+  "transcription_id": "vLF6c9QedSf53SyGmktJ",
+  "audio_duration_secs": 4.4
+}

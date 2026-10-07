@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "That graveyard looks positively overcrowded. Lovely",
+  "words": [
+    {
+      "text": "That",
+      "start": 0.24,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -0.0003494605771265924
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": "graveyard",
+      "start": 0.52,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "looks",
+      "start": 1.2,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -4.6491513785440475e-06
+    },
+    {
+      "text": "positively",
+      "start": 1.58,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -4.6491513785440475e-06
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -1.2755313036905136e-05
+    },
+    {
+      "text": "overcrowded.",
+      "start": 2.44,
+      "end": 3.36,
+      "type": "word",
+      "logprob": -2.31555420668883e-05
+    },
+    {
+      "text": " ",
+      "start": 3.36,
+      "end": 3.36,
+      "type": "spacing",
+      "logprob": -1.0251946150674485e-05
+    },
+    {
+      "text": "Lovely",
+      "start": 3.92,
+      "end": 4.48,
+      "type": "word",
+      "logprob": -1.0251946150674485e-05
+    }
+  ],
+  "transcription_id": "CeXAiXmT1MFqn7DUpocC",
+  "audio_duration_secs": 4.64
+}

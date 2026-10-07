@@ -1,0 +1,198 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Castle secured. Gold carts. Four guards and strong defenses. Capacity for four more troops",
+  "words": [
+    {
+      "text": "Castle",
+      "start": 0.1,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.00039498155820183456
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -2.1457441107486375e-05
+    },
+    {
+      "text": "secured.",
+      "start": 0.48,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.0011429743915414292
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": "Gold",
+      "start": 1.46,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -0.6336615085601807
+    },
+    {
+      "text": "carts.",
+      "start": 1.78,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -0.5361664239317179
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.14,
+      "type": "spacing",
+      "logprob": -1.764281842042692e-05
+    },
+    {
+      "text": "Four",
+      "start": 2.74,
+      "end": 2.88,
+      "type": "word",
+      "logprob": -1.764281842042692e-05
+    },
+    {
+      "text": " ",
+      "start": 2.88,
+      "end": 2.98,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "guards",
+      "start": 2.98,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 3.32,
+      "end": 3.34,
+      "type": "spacing",
+      "logprob": -1.0251946150674485e-05
+    },
+    {
+      "text": "and",
+      "start": 3.34,
+      "end": 3.44,
+      "type": "word",
+      "logprob": -1.0251946150674485e-05
+    },
+    {
+      "text": " ",
+      "start": 3.44,
+      "end": 3.6,
+      "type": "spacing",
+      "logprob": -0.0005119920242577791
+    },
+    {
+      "text": "strong",
+      "start": 3.6,
+      "end": 3.82,
+      "type": "word",
+      "logprob": -0.0005119920242577791
+    },
+    {
+      "text": " ",
+      "start": 3.82,
+      "end": 3.88,
+      "type": "spacing",
+      "logprob": -0.0002972637885250151
+    },
+    {
+      "text": "defenses.",
+      "start": 3.88,
+      "end": 4.48,
+      "type": "word",
+      "logprob": -0.0002676120238902513
+    },
+    {
+      "text": " ",
+      "start": 4.48,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": -7.891343557275832e-05
+    },
+    {
+      "text": "Capacity",
+      "start": 4.9,
+      "end": 5.4,
+      "type": "word",
+      "logprob": -7.891343557275832e-05
+    },
+    {
+      "text": " ",
+      "start": 5.4,
+      "end": 5.5,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "for",
+      "start": 5.5,
+      "end": 5.58,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.58,
+      "end": 5.74,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "four",
+      "start": 5.74,
+      "end": 5.88,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 5.88,
+      "end": 5.96,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "more",
+      "start": 5.96,
+      "end": 6.12,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.12,
+      "end": 6.18,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "troops",
+      "start": 6.18,
+      "end": 6.56,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    }
+  ],
+  "transcription_id": "OU3WhzSND9NkYmiHH3GI",
+  "audio_duration_secs": 6.96
+}

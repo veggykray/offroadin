@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our border is crossed. Prepare to return",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.12,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -1.0371154530730564e-05
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "border",
+      "start": 0.36,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "is",
+      "start": 0.78,
+      "end": 0.92,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -1.1086402082582936e-05
+    },
+    {
+      "text": "crossed.",
+      "start": 0.98,
+      "end": 1.44,
+      "type": "word",
+      "logprob": -2.6031208562926622e-05
+    },
+    {
+      "text": " ",
+      "start": 1.44,
+      "end": 1.86,
+      "type": "spacing",
+      "logprob": -7.045020902296528e-05
+    },
+    {
+      "text": "Prepare",
+      "start": 1.86,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -7.045020902296528e-05
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 2.26,
+      "end": 2.32,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.36,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "return",
+      "start": 2.36,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    }
+  ],
+  "transcription_id": "pLZ7p09rJOc5V9thv0ax",
+  "audio_duration_secs": 3.12
+}

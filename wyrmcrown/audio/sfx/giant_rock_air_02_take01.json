@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_rock_air_02",
+    "event": "giant_rock_air",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Large uneven boulder passing through air, rapid gritty heavy whoosh, no impact Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:59:09.725013+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Large uneven boulder passing through air, rapid gritty heavy whoosh, no impact Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "1dd47c87a89c20d0961936fbe2fbbeca3ba715113c2bd9c9fb458f4807d92568",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_rock_air_02_take01.mp3",
+  "sha256": "e9b20f00f7ee0164ea21544dab1cad16e426380feaa0c0a55efada4af7d549b4",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -1.87,
+    "rms_dbfs": -16.22,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.32,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -7.05,
+    "rms_dbfs": -22.45,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.34,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

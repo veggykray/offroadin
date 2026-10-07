@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "We're coming apart more rapidly than usual",
+  "words": [
+    {
+      "text": "We're",
+      "start": 0.12,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -2.391279557514281e-05
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "coming",
+      "start": 0.34,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": "apart",
+      "start": 0.64,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.64,
+      "type": "spacing",
+      "logprob": -0.015947414562106133
+    },
+    {
+      "text": "more",
+      "start": 1.64,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -0.015947414562106133
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.92,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "rapidly",
+      "start": 1.92,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "than",
+      "start": 2.42,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.72,
+      "type": "spacing",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": "usual",
+      "start": 2.72,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -3.933898824470816e-06
+    }
+  ],
+  "transcription_id": "78R4EohDsJWnnY4HkJfu",
+  "audio_duration_secs": 3.52
+}

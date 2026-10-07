@@ -1,0 +1,282 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken",
+  "words": [
+    {
+      "text": "Vorthrax",
+      "start": 0.24,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -0.006665914843324572
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -2.0146166207268834e-05
+    },
+    {
+      "text": "serves",
+      "start": 1.14,
+      "end": 1.56,
+      "type": "word",
+      "logprob": -2.0146166207268834e-05
+    },
+    {
+      "text": " ",
+      "start": 1.56,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -0.014958124607801437
+    },
+    {
+      "text": "Morgrave.",
+      "start": 1.74,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -0.010551455631179528
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.7,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "I",
+      "start": 3.58,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "have",
+      "start": 3.66,
+      "end": 3.8,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.8,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": "forgotten",
+      "start": 3.86,
+      "end": 4.42,
+      "type": "word",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": " ",
+      "start": 4.42,
+      "end": 4.46,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 4.46,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.64,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "taste",
+      "start": 4.64,
+      "end": 4.92,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 4.92,
+      "end": 4.98,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 4.98,
+      "end": 5.02,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.02,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "sleep,",
+      "start": 5.18,
+      "end": 5.54,
+      "type": "word",
+      "logprob": -0.001241588187819313
+    },
+    {
+      "text": " ",
+      "start": 5.54,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -4.6491513785440475e-06
+    },
+    {
+      "text": "but",
+      "start": 6.1,
+      "end": 6.2,
+      "type": "word",
+      "logprob": -4.6491513785440475e-06
+    },
+    {
+      "text": " ",
+      "start": 6.2,
+      "end": 6.3,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "I",
+      "start": 6.3,
+      "end": 6.34,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.34,
+      "end": 6.38,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "remember",
+      "start": 6.38,
+      "end": 6.72,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 6.72,
+      "end": 6.82,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "precisely",
+      "start": 6.82,
+      "end": 7.66,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 7.66,
+      "end": 7.72,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "which",
+      "start": 7.72,
+      "end": 7.88,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 7.88,
+      "end": 7.94,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 7.94,
+      "end": 8.039,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.039,
+      "end": 8.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "you",
+      "start": 8.08,
+      "end": 8.22,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.22,
+      "end": 8.28,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "tasted",
+      "start": 8.28,
+      "end": 8.66,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 8.66,
+      "end": 8.72,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 8.72,
+      "end": 8.78,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.78,
+      "end": 8.92,
+      "type": "spacing",
+      "logprob": -9.894321920000948e-06
+    },
+    {
+      "text": "chicken",
+      "start": 8.92,
+      "end": 9.28,
+      "type": "word",
+      "logprob": -9.894321920000948e-06
+    }
+  ],
+  "transcription_id": "KcGbiryDlPenMlAKbwvf",
+  "audio_duration_secs": 9.44
+}

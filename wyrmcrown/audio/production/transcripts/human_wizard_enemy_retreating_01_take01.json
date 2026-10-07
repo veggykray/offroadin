@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They're running. I knew they had sense somewhere",
+  "words": [
+    {
+      "text": "They're",
+      "start": 0.1,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -7.400730971239357e-05
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "running.",
+      "start": 0.4,
+      "end": 0.82,
+      "type": "word",
+      "logprob": -0.05926470458348376
+    },
+    {
+      "text": " ",
+      "start": 0.82,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "I",
+      "start": 1.28,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.56,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "knew",
+      "start": 1.6,
+      "end": 1.8,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.8,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "they",
+      "start": 1.84,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -6.4490144723095e-05
+    },
+    {
+      "text": "had",
+      "start": 1.98,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -6.4490144723095e-05
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -0.23134613037109375
+    },
+    {
+      "text": "sense",
+      "start": 2.26,
+      "end": 2.54,
+      "type": "word",
+      "logprob": -0.23134613037109375
+    },
+    {
+      "text": " ",
+      "start": 2.54,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -9.536697689327411e-06
+    },
+    {
+      "text": "somewhere",
+      "start": 2.62,
+      "end": 3.08,
+      "type": "word",
+      "logprob": -9.536697689327411e-06
+    }
+  ],
+  "transcription_id": "gSiZiC0StA50VVJFgQQ6",
+  "audio_duration_secs": 3.36
+}

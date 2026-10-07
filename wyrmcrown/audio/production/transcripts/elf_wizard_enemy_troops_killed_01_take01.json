@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Their soldiers have been excused from further embarrassment",
+  "words": [
+    {
+      "text": "Their",
+      "start": 0.1,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.00037579628406092525
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": "soldiers",
+      "start": 0.34,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "have",
+      "start": 0.94,
+      "end": 1.06,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "been",
+      "start": 1.1,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -3.4450891689630225e-05
+    },
+    {
+      "text": "excused",
+      "start": 1.22,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -3.4450891689630225e-05
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "from",
+      "start": 1.98,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "further",
+      "start": 2.26,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "embarrassment",
+      "start": 2.58,
+      "end": 3.36,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    }
+  ],
+  "transcription_id": "cj0KtxaPIlMqQOWhGuQh",
+  "audio_duration_secs": 3.68
+}

@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Please stop burning the signposts",
+  "words": [
+    {
+      "text": "Please",
+      "start": 0.08,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -5.030505417380482e-05
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -1.0609570381348021e-05
+    },
+    {
+      "text": "stop",
+      "start": 0.7,
+      "end": 1.02,
+      "type": "word",
+      "logprob": -1.0609570381348021e-05
+    },
+    {
+      "text": " ",
+      "start": 1.02,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "burning",
+      "start": 1.08,
+      "end": 1.44,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 1.44,
+      "end": 1.48,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 1.48,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "signposts",
+      "start": 1.68,
+      "end": 2.48,
+      "type": "word",
+      "logprob": -0.0013316949144710735
+    }
+  ],
+  "transcription_id": "KMnmCtedixnFRjRdEzbS",
+  "audio_duration_secs": 2.72
+}

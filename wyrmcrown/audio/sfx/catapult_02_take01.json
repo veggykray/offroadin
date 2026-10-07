@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "catapult_02",
+    "event": "catapult",
+    "kind": "sfx",
+    "fallback": "catapult",
+    "text": "Wooden medieval catapult arm releases, taut rope twang, timber creak, heavy mechanism knock Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:06:43.607715+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Wooden medieval catapult arm releases, taut rope twang, timber creak, heavy mechanism knock Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "46210cca93a41973e0e5afb4e38aa809b65c65e0299d99bded51774bf71f2208",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\catapult_02_take01.mp3",
+  "sha256": "8856ee039720f5892ba5b453eb4a309f986f315b6877494d2727b4c8184b8222",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.0,
+    "peak_dbfs": -0.36,
+    "rms_dbfs": -19.16,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.36,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.0,
+    "peak_dbfs": -4.37,
+    "rms_dbfs": -22.08,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.38,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

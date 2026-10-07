@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "No spell held. Find a rune",
+  "words": [
+    {
+      "text": "No",
+      "start": 0.34,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -9.941560711013153e-05
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -2.6702524337451905e-05
+    },
+    {
+      "text": "spell",
+      "start": 0.64,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -2.6702524337451905e-05
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -1.07287787614041e-05
+    },
+    {
+      "text": "held.",
+      "start": 1.12,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -3.213739182683639e-05
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -1.823885577323381e-05
+    },
+    {
+      "text": "Find",
+      "start": 2.36,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -1.823885577323381e-05
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.62,
+      "type": "spacing",
+      "logprob": -6.90197994117625e-05
+    },
+    {
+      "text": "a",
+      "start": 2.62,
+      "end": 2.72,
+      "type": "word",
+      "logprob": -6.90197994117625e-05
+    },
+    {
+      "text": " ",
+      "start": 2.72,
+      "end": 2.78,
+      "type": "spacing",
+      "logprob": -0.00016926287207752466
+    },
+    {
+      "text": "rune",
+      "start": 2.78,
+      "end": 3.1,
+      "type": "word",
+      "logprob": -0.00016926287207752466
+    }
+  ],
+  "transcription_id": "EWrtBB3QcsH3FWo3fPA4",
+  "audio_duration_secs": 3.44
+}

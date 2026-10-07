@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A troll. Even the flies appear offended",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -8.666139910928905e-05
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.001503528794273734
+    },
+    {
+      "text": "troll.",
+      "start": 0.38,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -0.0027509474117929735
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "Even",
+      "start": 1.5,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.72,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "the",
+      "start": 1.72,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.88,
+      "end": 1.96,
+      "type": "spacing",
+      "logprob": -3.182837463100441e-05
+    },
+    {
+      "text": "flies",
+      "start": 1.96,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -3.182837463100441e-05
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.4,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "appear",
+      "start": 2.4,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.7,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "offended",
+      "start": 2.7,
+      "end": 3.28,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    }
+  ],
+  "transcription_id": "BE7bT6lZPlwIpb0RkYgE",
+  "audio_duration_secs": 3.68
+}

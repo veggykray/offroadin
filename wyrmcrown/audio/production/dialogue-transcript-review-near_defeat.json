@@ -1,0 +1,34 @@
+[
+  {
+    "id": "elf_wizard_near_defeat_01",
+    "take": "elf_wizard_near_defeat_01_take01",
+    "expected": "We stand near ruin. I will not end as a footnote.",
+    "transcript": "We stand near ruin. I will not end as a footnote",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_near_defeat_01",
+    "take": "human_wizard_near_defeat_01_take01",
+    "expected": "We're nearly finished. HOME, before we're homeless!",
+    "transcript": "We're nearly finished. Home before we're homeless",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_near_defeat_01",
+    "take": "ice_wizard_near_defeat_01_take01",
+    "expected": "Defeat approaches. Defend the keep.",
+    "transcript": "Defeat approaches. Defend the keep",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_near_defeat_01",
+    "take": "undead_wizard_near_defeat_01_take01",
+    "expected": "Defeat is close. I am not ready for a second obituary.",
+    "transcript": "Defeat is close. I am not ready for a second obituary",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

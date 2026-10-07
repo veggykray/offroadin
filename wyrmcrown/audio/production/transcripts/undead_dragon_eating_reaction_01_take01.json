@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Fresh meat. A short appointment",
+  "words": [
+    {
+      "text": "Fresh",
+      "start": 0.36,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -0.0015111466636881232
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -0.0004978132783435285
+    },
+    {
+      "text": "meat.",
+      "start": 0.92,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -0.002133375173434615
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.3,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "A",
+      "start": 1.94,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "short",
+      "start": 2.1,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "appointment",
+      "start": 2.42,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    }
+  ],
+  "transcription_id": "LfVpdf13EqiOg9cvZDRk",
+  "audio_duration_secs": 3.36
+}

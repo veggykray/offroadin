@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Why does it have two clubs? One looked quite sufficient.",
+  "words": [
+    {
+      "text": "Why",
+      "start": 0.26,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -0.0001928620331455022
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "does",
+      "start": 0.48,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "it",
+      "start": 0.64,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "have",
+      "start": 0.78,
+      "end": 1.02,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.02,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "two",
+      "start": 1.12,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -4.1126360883936286e-05
+    },
+    {
+      "text": "clubs?",
+      "start": 1.46,
+      "end": 1.9,
+      "type": "word",
+      "logprob": -6.937540698951732e-05
+    },
+    {
+      "text": " ",
+      "start": 1.9,
+      "end": 1.9,
+      "type": "spacing",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": "One",
+      "start": 2.34,
+      "end": 2.5,
+      "type": "word",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": " ",
+      "start": 2.5,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -0.00023445718397852033
+    },
+    {
+      "text": "looked",
+      "start": 2.58,
+      "end": 2.82,
+      "type": "word",
+      "logprob": -0.00023445718397852033
+    },
+    {
+      "text": " ",
+      "start": 2.82,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "quite",
+      "start": 2.88,
+      "end": 3.1,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.1,
+      "end": 3.16,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "sufficient.",
+      "start": 3.16,
+      "end": 3.74,
+      "type": "word",
+      "logprob": -0.05258290876000418
+    }
+  ],
+  "transcription_id": "qVBhGny3A1UVsfN4XJUC",
+  "audio_duration_secs": 3.84
+}

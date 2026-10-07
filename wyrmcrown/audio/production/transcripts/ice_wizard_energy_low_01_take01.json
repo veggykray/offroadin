@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Energy low. Find a herd",
+  "words": [
+    {
+      "text": "Energy",
+      "start": 0.16,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -0.00014649749209638685
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -3.659658250398934e-05
+    },
+    {
+      "text": "low.",
+      "start": 0.64,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.00032309040398104116
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": "Find",
+      "start": 1.68,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 1.98,
+      "end": 2.04,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.04,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -4.0411134250462055e-05
+    },
+    {
+      "text": "herd",
+      "start": 2.1,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -4.0411134250462055e-05
+    }
+  ],
+  "transcription_id": "mtYdWLQ3ejPkJaantszV",
+  "audio_duration_secs": 2.8
+}

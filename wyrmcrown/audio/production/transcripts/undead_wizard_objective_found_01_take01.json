@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "An unclaimed prize? How uncharacteristically thoughtful.",
+  "words": [
+    {
+      "text": "An",
+      "start": 0.12,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -4.8636207793606445e-05
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.42,
+      "type": "spacing",
+      "logprob": -5.9960475482512265e-05
+    },
+    {
+      "text": "unclaimed",
+      "start": 0.42,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -5.9960475482512265e-05
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -3.814689989667386e-06
+    },
+    {
+      "text": "prize?",
+      "start": 1.22,
+      "end": 1.98,
+      "type": "word",
+      "logprob": -0.026731568072136724
+    },
+    {
+      "text": " ",
+      "start": 1.98,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "How",
+      "start": 2.54,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.8,
+      "end": 2.86,
+      "type": "spacing",
+      "logprob": -7.271740287251305e-06
+    },
+    {
+      "text": "uncharacteristically",
+      "start": 2.86,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -0.0005342338186892448
+    },
+    {
+      "text": " ",
+      "start": 4.18,
+      "end": 4.3,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "thoughtful.",
+      "start": 4.3,
+      "end": 4.96,
+      "type": "word",
+      "logprob": -0.035268271509804355
+    }
+  ],
+  "transcription_id": "gDpc6dAnUeyaag0vmAIc",
+  "audio_duration_secs": 5.12
+}

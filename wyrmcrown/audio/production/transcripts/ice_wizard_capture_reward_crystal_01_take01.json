@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Crystal secured. A lightning storm charge every hundred seconds. Keep the spell slot free of other spells",
+  "words": [
+    {
+      "text": "Crystal",
+      "start": 0.12,
+      "end": 0.48,
+      "type": "word",
+      "logprob": -0.000263894529780373
+    },
+    {
+      "text": " ",
+      "start": 0.48,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -0.0005440423847176135
+    },
+    {
+      "text": "secured.",
+      "start": 0.58,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -0.000510662590386346
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "A",
+      "start": 1.62,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.76,
+      "type": "spacing",
+      "logprob": -0.020553462207317352
+    },
+    {
+      "text": "lightning",
+      "start": 1.76,
+      "end": 2.08,
+      "type": "word",
+      "logprob": -0.020553462207317352
+    },
+    {
+      "text": " ",
+      "start": 2.08,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -7.772143726469949e-05
+    },
+    {
+      "text": "storm",
+      "start": 2.2,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -7.772143726469949e-05
+    },
+    {
+      "text": " ",
+      "start": 2.42,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -0.004119719844311476
+    },
+    {
+      "text": "charge",
+      "start": 2.52,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -0.004119719844311476
+    },
+    {
+      "text": " ",
+      "start": 2.8,
+      "end": 2.94,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "every",
+      "start": 2.94,
+      "end": 3.16,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.28,
+      "type": "spacing",
+      "logprob": -0.0028054662980139256
+    },
+    {
+      "text": "hundred",
+      "start": 3.28,
+      "end": 3.52,
+      "type": "word",
+      "logprob": -0.0028054662980139256
+    },
+    {
+      "text": " ",
+      "start": 3.52,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "seconds.",
+      "start": 3.72,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -2.2798751189156974e-06
+    },
+    {
+      "text": " ",
+      "start": 4.16,
+      "end": 4.16,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "Keep",
+      "start": 4.68,
+      "end": 4.84,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 4.84,
+      "end": 4.88,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 4.88,
+      "end": 4.96,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.96,
+      "end": 5.04,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "spell",
+      "start": 5.04,
+      "end": 5.2,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 5.2,
+      "end": 5.32,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "slot",
+      "start": 5.32,
+      "end": 5.52,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 5.52,
+      "end": 5.68,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "free",
+      "start": 5.68,
+      "end": 5.9,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.9,
+      "end": 5.96,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 5.96,
+      "end": 6.04,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.04,
+      "end": 6.08,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "other",
+      "start": 6.08,
+      "end": 6.24,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.24,
+      "end": 6.4,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "spells",
+      "start": 6.4,
+      "end": 6.8,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "5hwZDL1K7kQ9oqVqrrMt",
+  "audio_duration_secs": 7.04
+}

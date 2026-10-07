@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_grunt_angry_02",
+    "event": "giant_grunt_angry",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Enormous giant short angry exertion grunt, rough huge lungs Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:25.698326+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Enormous giant short angry exertion grunt, rough huge lungs Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "60d7ff5fa4f45d12934663eb358c9b3376bd382318aba0109dd573570d2dd585",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_grunt_angry_02_take01.mp3",
+  "sha256": "320cfc70292414fe0d81572f1f218e5bbb6d2128f3621032da5c60104d3bd714",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -0.3,
+    "rms_dbfs": -12.81,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.48,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -8.19,
+    "rms_dbfs": -21.46,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.52,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

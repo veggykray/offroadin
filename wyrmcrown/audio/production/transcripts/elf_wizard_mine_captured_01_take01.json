@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The mine is ours. Let others do the digging",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.1,
+      "end": 0.2,
+      "type": "word",
+      "logprob": -0.00023135847004596144
+    },
+    {
+      "text": " ",
+      "start": 0.2,
+      "end": 0.26,
+      "type": "spacing",
+      "logprob": -0.00015269544383045286
+    },
+    {
+      "text": "mine",
+      "start": 0.26,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -0.00015269544383045286
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "is",
+      "start": 0.7,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 1.0,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "ours.",
+      "start": 1.02,
+      "end": 1.44,
+      "type": "word",
+      "logprob": -0.0045666199176594095
+    },
+    {
+      "text": " ",
+      "start": 1.44,
+      "end": 1.44,
+      "type": "spacing",
+      "logprob": -1.1086402082582936e-05
+    },
+    {
+      "text": "Let",
+      "start": 1.88,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -1.1086402082582936e-05
+    },
+    {
+      "text": " ",
+      "start": 2.02,
+      "end": 2.24,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "others",
+      "start": 2.24,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.66,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "do",
+      "start": 2.66,
+      "end": 2.76,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.76,
+      "end": 2.8,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 2.8,
+      "end": 2.86,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.86,
+      "end": 2.94,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "digging",
+      "start": 2.94,
+      "end": 3.3,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    }
+  ],
+  "transcription_id": "35C29azlFQcLY0P6tGHA",
+  "audio_duration_secs": 3.68
+}

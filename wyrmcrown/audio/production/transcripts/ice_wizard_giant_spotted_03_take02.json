@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Rock incoming. Bank",
+  "words": [
+    {
+      "text": "Rock",
+      "start": 0.18,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.00030119650182314217
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -0.0012466285843402147
+    },
+    {
+      "text": "incoming.",
+      "start": 0.56,
+      "end": 1.06,
+      "type": "word",
+      "logprob": -0.0014040740724239084
+    },
+    {
+      "text": " ",
+      "start": 1.06,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -0.0007377525325864553
+    },
+    {
+      "text": "Bank",
+      "start": 1.46,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -0.0007377525325864553
+    }
+  ],
+  "transcription_id": "9iNWZu5xu51KzrNkD4Dl",
+  "audio_duration_secs": 2.32
+}

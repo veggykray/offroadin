@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "I am Verdant of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised",
+  "words": [
+    {
+      "text": "I",
+      "start": 0.22,
+      "end": 0.36,
+      "type": "word",
+      "logprob": -0.0002814135223161429
+    },
+    {
+      "text": " ",
+      "start": 0.36,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": "am",
+      "start": 0.48,
+      "end": 0.62,
+      "type": "word",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": " ",
+      "start": 0.62,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -0.00917480606585741
+    },
+    {
+      "text": "Verdant",
+      "start": 0.74,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -0.2035810420555728
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -0.33383268117904663
+    },
+    {
+      "text": "of",
+      "start": 1.7,
+      "end": 1.76,
+      "type": "word",
+      "logprob": -0.33383268117904663
+    },
+    {
+      "text": " ",
+      "start": 1.76,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -0.40461915731430054
+    },
+    {
+      "text": "Sylvara.",
+      "start": 1.84,
+      "end": 2.54,
+      "type": "word",
+      "logprob": -0.18404559774353402
+    },
+    {
+      "text": " ",
+      "start": 2.54,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -0.0005535738891921937
+    },
+    {
+      "text": "If",
+      "start": 3.08,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -0.0005535738891921937
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.2,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "you",
+      "start": 3.2,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "insist",
+      "start": 3.3,
+      "end": 3.82,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 3.82,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "on",
+      "start": 3.86,
+      "end": 4.0,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.0,
+      "end": 4.04,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "calling",
+      "start": 4.04,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.28,
+      "end": 4.3,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "this",
+      "start": 4.3,
+      "end": 4.4,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.4,
+      "end": 4.44,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "an",
+      "start": 4.44,
+      "end": 4.6,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.6,
+      "end": 4.68,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "ambush,",
+      "start": 4.68,
+      "end": 5.14,
+      "type": "word",
+      "logprob": -3.5932864973022205e-06
+    },
+    {
+      "text": " ",
+      "start": 5.14,
+      "end": 5.42,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "at",
+      "start": 5.44,
+      "end": 5.52,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.52,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "least",
+      "start": 5.56,
+      "end": 5.78,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 5.78,
+      "end": 5.82,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "have",
+      "start": 5.82,
+      "end": 5.94,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.94,
+      "end": 5.98,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 5.98,
+      "end": 6.06,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.06,
+      "end": 6.2,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "manners",
+      "start": 6.2,
+      "end": 6.58,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 6.58,
+      "end": 6.62,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 6.62,
+      "end": 6.7,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.7,
+      "end": 6.74,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "appear",
+      "start": 6.74,
+      "end": 6.96,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.96,
+      "end": 7.0,
+      "type": "spacing",
+      "logprob": -5.8412379075889476e-06
+    },
+    {
+      "text": "surprised",
+      "start": 7.0,
+      "end": 7.7,
+      "type": "word",
+      "logprob": -5.8412379075889476e-06
+    }
+  ],
+  "transcription_id": "jxbZ67az66nKUkcvMw7X",
+  "audio_duration_secs": 7.84
+}

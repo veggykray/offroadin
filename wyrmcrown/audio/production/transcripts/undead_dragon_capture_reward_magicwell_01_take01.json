@@ -1,0 +1,226 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our well. It heals my wounds and restores mana nearby. Quite an improvement on swamp water",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.24,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -3.361645576660521e-05
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.6,
+      "type": "spacing",
+      "logprob": -0.029756780713796616
+    },
+    {
+      "text": "well.",
+      "start": 0.6,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -0.025539107248187067
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "It",
+      "start": 1.7,
+      "end": 1.78,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.78,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "heals",
+      "start": 1.84,
+      "end": 2.2,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 2.26,
+      "end": 2.46,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "wounds",
+      "start": 2.54,
+      "end": 3.12,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 3.12,
+      "end": 3.16,
+      "type": "spacing",
+      "logprob": -4.017272294731811e-05
+    },
+    {
+      "text": "and",
+      "start": 3.16,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -4.017272294731811e-05
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "restores",
+      "start": 3.3,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 3.98,
+      "type": "spacing",
+      "logprob": -0.0009492897079326212
+    },
+    {
+      "text": "mana",
+      "start": 3.98,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -0.0009492897079326212
+    },
+    {
+      "text": " ",
+      "start": 4.28,
+      "end": 4.36,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "nearby.",
+      "start": 4.36,
+      "end": 4.92,
+      "type": "word",
+      "logprob": -1.8392185085401382e-06
+    },
+    {
+      "text": " ",
+      "start": 4.92,
+      "end": 4.92,
+      "type": "spacing",
+      "logprob": -1.6689160474925302e-05
+    },
+    {
+      "text": "Quite",
+      "start": 5.52,
+      "end": 5.72,
+      "type": "word",
+      "logprob": -1.6689160474925302e-05
+    },
+    {
+      "text": " ",
+      "start": 5.72,
+      "end": 5.78,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "an",
+      "start": 5.78,
+      "end": 5.84,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.84,
+      "end": 5.88,
+      "type": "spacing",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": "improvement",
+      "start": 5.88,
+      "end": 6.5,
+      "type": "word",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": " ",
+      "start": 6.5,
+      "end": 6.58,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "on",
+      "start": 6.58,
+      "end": 6.68,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.68,
+      "end": 6.86,
+      "type": "spacing",
+      "logprob": -8.892617915989831e-05
+    },
+    {
+      "text": "swamp",
+      "start": 6.86,
+      "end": 7.18,
+      "type": "word",
+      "logprob": -8.892617915989831e-05
+    },
+    {
+      "text": " ",
+      "start": 7.18,
+      "end": 7.24,
+      "type": "spacing",
+      "logprob": -3.5523738915799186e-05
+    },
+    {
+      "text": "water",
+      "start": 7.24,
+      "end": 7.5,
+      "type": "word",
+      "logprob": -3.5523738915799186e-05
+    }
+  ],
+  "transcription_id": "kKHS9x3yUOxVyIj6VnKF",
+  "audio_duration_secs": 7.76
+}

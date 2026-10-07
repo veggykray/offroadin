@@ -1,0 +1,18 @@
+[
+  {
+    "id": "human_wizard_home_livestock_01",
+    "take": "human_wizard_home_livestock_01_take01",
+    "expected": "Not the CATTLE, you grave-rotting bastard!",
+    "transcript": "Not the cackle, you grave-rotting bastard!",
+    "word_similarity": 0.857,
+    "status": "manual_review_required"
+  },
+  {
+    "id": "human_wizard_home_livestock_01",
+    "take": "human_wizard_home_livestock_01_take02",
+    "expected": "Not the CATTLE, you grave-rotting bastard!",
+    "transcript": "Not the cattle, you grave-rotting bastard!",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

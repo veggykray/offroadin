@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Then stop asking for directions",
+  "words": [
+    {
+      "text": "Then",
+      "start": 0.22,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.00015448330668732524
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "stop",
+      "start": 0.58,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "asking",
+      "start": 1.24,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "for",
+      "start": 1.82,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 2.02,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "directions",
+      "start": 2.02,
+      "end": 3.1,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    }
+  ],
+  "transcription_id": "rSGW7MuKoG8fDHFbNUZb",
+  "audio_duration_secs": 3.36
+}

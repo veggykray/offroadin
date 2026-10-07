@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The view improves when one ignores the inhabitants",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.16,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -0.00014602071314584464
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": "view",
+      "start": 0.3,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -5.602820692729438e-06
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "improves",
+      "start": 0.56,
+      "end": 1.38,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 1.38,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "when",
+      "start": 1.46,
+      "end": 1.64,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": " ",
+      "start": 1.64,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "one",
+      "start": 1.72,
+      "end": 1.82,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 1.82,
+      "end": 1.86,
+      "type": "spacing",
+      "logprob": -9.179073458653875e-06
+    },
+    {
+      "text": "ignores",
+      "start": 1.86,
+      "end": 2.5,
+      "type": "word",
+      "logprob": -9.179073458653875e-06
+    },
+    {
+      "text": " ",
+      "start": 2.5,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 2.54,
+      "end": 2.6,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -1.0371154530730564e-05
+    },
+    {
+      "text": "inhabitants",
+      "start": 2.64,
+      "end": 3.46,
+      "type": "word",
+      "logprob": -1.0371154530730564e-05
+    }
+  ],
+  "transcription_id": "jNqQVaDoLS5PE1o2Ew2z",
+  "audio_duration_secs": 3.84
+}

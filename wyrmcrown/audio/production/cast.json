@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "status": "casting_approved",
+  "characters": {
+    "human_wizard": {
+      "character": "Magister Aldric",
+      "direction": "Earthy British tavern veteran; sarcasm, worry, heroic urgency. No grand Shakespeare delivery.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Julian after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 55,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Julian",
+          "voice_id": "7p1Ofvcwsv7UBPoFNcpI"
+        },
+        {
+          "key": "2",
+          "name": "Peter",
+          "voice_id": "BH9MXBxDsBzwMiouIxpj"
+        }
+      ],
+      "voice_id": "7p1Ofvcwsv7UBPoFNcpI"
+    },
+    "elf_wizard": {
+      "character": "Archmage Ilythiel",
+      "direction": "Refined, articulate, arrogant, slightly androgynous. Dry contempt; beautiful diction.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Lily after audition review (written lilly).",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 55,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Lily",
+          "voice_id": "pFZP5JQG7iQjIQuC4Bku"
+        },
+        {
+          "key": "2",
+          "name": "Alice",
+          "voice_id": "Xb7hH8MSUJpSbSDYk0k2"
+        }
+      ],
+      "voice_id": "pFZP5JQG7iQjIQuC4Bku"
+    },
+    "ice_wizard": {
+      "character": "Frost-Seer Ymra",
+      "direction": "Deep, severe, restrained northern remoteness. Calm threats; fear cracks through only in real danger.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Ariana after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 55,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Ariana",
+          "voice_id": "ApmTlGpFys2ypvx59okX"
+        },
+        {
+          "key": "2",
+          "name": "Charlotte",
+          "voice_id": "WKWX31A0Kkv2Y4CQRsll"
+        }
+      ],
+      "voice_id": "ApmTlGpFys2ypvx59okX"
+    },
+    "undead_wizard": {
+      "character": "Lich-Lord Malkhar",
+      "direction": "Ancient dry rasp; unsettling cheer. Death is routine and funny. Every consonant remains clear.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Declan after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 55,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Declan",
+          "voice_id": "1BfrkuYXmEwp8AWqSLWk"
+        },
+        {
+          "key": "2",
+          "name": "Grimblewood",
+          "voice_id": "ouL9IsyrSnUkCmfnD02u"
+        }
+      ],
+      "voice_id": "1BfrkuYXmEwp8AWqSLWk"
+    },
+    "human_dragon": {
+      "character": "Pyrrhax",
+      "direction": "Huge booming chest, aggression, hunger, relish. Physical throat and breath, intelligible speech.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Smoke the Dragon after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 35,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Smoke the Dragon",
+          "voice_id": "xsiB5fGhEtknnqzudCO6"
+        },
+        {
+          "key": "2",
+          "name": "Harry",
+          "voice_id": "SOYHLrjzK2X1ezoPC6cr"
+        }
+      ],
+      "voice_id": "xsiB5fGhEtknnqzudCO6"
+    },
+    "elf_dragon": {
+      "character": "Verdanthe",
+      "direction": "Enormous but swift, elegant, proud and intelligent. Quick sarcastic precision; open resonant chest.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Callum after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 35,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Callum",
+          "voice_id": "N2lVS1w4EtoT3dr4eOWO"
+        },
+        {
+          "key": "2",
+          "name": "River",
+          "voice_id": "SAz9YHcvj6GT2YYXdXww"
+        }
+      ],
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO"
+    },
+    "ice_dragon": {
+      "character": "Skaldfrost",
+      "direction": "Ancient glacier-scale chest resonance. Slow controlled breath; tectonic weight, clear consonants.",
+      "approved": true,
+      "selected_candidate": "1",
+      "audition_review": {
+        "notes": "User selected Victor after audition review (written viktor).",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 35,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Victor",
+          "voice_id": "cPoqAvGWCPfCfyPMwe4z"
+        },
+        {
+          "key": "2",
+          "name": "Brian",
+          "voice_id": "nPczCjzI2devNBz1zQrb"
+        }
+      ],
+      "voice_id": "cPoqAvGWCPfCfyPMwe4z"
+    },
+    "undead_dragon": {
+      "character": "Vorthrax",
+      "direction": "Hollow ancient creature, dry breath, sparse throat rattle, macabre wit. Speech stays intelligible.",
+      "approved": true,
+      "selected_candidate": "2",
+      "audition_review": {
+        "notes": "User selected Bill after audition review.",
+        "reviewed_at": "2026-10-06",
+        "source": "human listening review"
+      },
+      "model_id": "eleven_v4",
+      "output_format": "mp3_44100_128",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.82
+      },
+      "processing": {
+        "highpass_hz": 35,
+        "integrated_lufs": -18,
+        "true_peak_db": -2,
+        "pitch_shift": 0,
+        "speech_rate": 1,
+        "reverb": false,
+        "post_limiter": {
+          "limit": 0.45,
+          "auto_level": false,
+          "attack_ms": 5,
+          "release_ms": 50
+        }
+      },
+      "candidates": [
+        {
+          "key": "1",
+          "name": "Gravel Midnight",
+          "voice_id": "M5E055lOUxMi0kJpGyE9"
+        },
+        {
+          "key": "2",
+          "name": "Bill",
+          "voice_id": "pqHfZKP75CvOlQylNhV4"
+        }
+      ],
+      "voice_id": "pqHfZKP75CvOlQylNhV4"
+    }
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Ruins cleared. 150 gold to collect, sometimes a magic orb. The deceased have left a decent tip",
+  "words": [
+    {
+      "text": "Ruins",
+      "start": 0.16,
+      "end": 0.5,
+      "type": "word",
+      "logprob": -0.00041350125429744365
+    },
+    {
+      "text": " ",
+      "start": 0.5,
+      "end": 0.6,
+      "type": "spacing",
+      "logprob": -6.5205356804654e-05
+    },
+    {
+      "text": "cleared.",
+      "start": 0.6,
+      "end": 1.02,
+      "type": "word",
+      "logprob": -0.000659455490676919
+    },
+    {
+      "text": " ",
+      "start": 1.02,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -0.34909936785697937
+    },
+    {
+      "text": "150",
+      "start": 1.56,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -3.6160076888336334e-06
+    },
+    {
+      "text": " ",
+      "start": 2.42,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -0.00020394629973452538
+    },
+    {
+      "text": "gold",
+      "start": 2.52,
+      "end": 2.76,
+      "type": "word",
+      "logprob": -0.00020394629973452538
+    },
+    {
+      "text": " ",
+      "start": 2.76,
+      "end": 2.8,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 2.8,
+      "end": 2.88,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.88,
+      "end": 2.94,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "collect,",
+      "start": 2.94,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -0.006075160111038258
+    },
+    {
+      "text": " ",
+      "start": 3.32,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -9.298280929215252e-06
+    },
+    {
+      "text": "sometimes",
+      "start": 3.66,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -9.298280929215252e-06
+    },
+    {
+      "text": " ",
+      "start": 4.18,
+      "end": 4.22,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "a",
+      "start": 4.22,
+      "end": 4.26,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 4.26,
+      "end": 4.3,
+      "type": "spacing",
+      "logprob": -5.280832192511298e-05
+    },
+    {
+      "text": "magic",
+      "start": 4.3,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -5.280832192511298e-05
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.7,
+      "type": "spacing",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": "orb.",
+      "start": 4.7,
+      "end": 5.02,
+      "type": "word",
+      "logprob": -1.4155990243125416e-05
+    },
+    {
+      "text": " ",
+      "start": 5.02,
+      "end": 5.02,
+      "type": "spacing",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": "The",
+      "start": 5.48,
+      "end": 5.54,
+      "type": "word",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": " ",
+      "start": 5.54,
+      "end": 5.58,
+      "type": "spacing",
+      "logprob": -7.164221460698172e-05
+    },
+    {
+      "text": "deceased",
+      "start": 5.58,
+      "end": 6.04,
+      "type": "word",
+      "logprob": -7.164221460698172e-05
+    },
+    {
+      "text": " ",
+      "start": 6.04,
+      "end": 6.08,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "have",
+      "start": 6.08,
+      "end": 6.22,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.22,
+      "end": 6.26,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "left",
+      "start": 6.26,
+      "end": 6.44,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.44,
+      "end": 6.48,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 6.48,
+      "end": 6.54,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.54,
+      "end": 6.62,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "decent",
+      "start": 6.62,
+      "end": 6.98,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 6.98,
+      "end": 7.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "tip",
+      "start": 7.06,
+      "end": 7.3,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "B5asZKCOBNUOZAXOBvaN",
+  "audio_duration_secs": 7.6
+}

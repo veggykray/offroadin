@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Mine secured. Gold travels home by cart. Protect the deliveries",
+  "words": [
+    {
+      "text": "Mine",
+      "start": 0.16,
+      "end": 0.38,
+      "type": "word",
+      "logprob": -0.0018979170126840472
+    },
+    {
+      "text": " ",
+      "start": 0.38,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -1.2874520507466514e-05
+    },
+    {
+      "text": "secured.",
+      "start": 0.44,
+      "end": 0.94,
+      "type": "word",
+      "logprob": -1.5988784412002133e-05
+    },
+    {
+      "text": " ",
+      "start": 0.94,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "Gold",
+      "start": 1.48,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.8,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "travels",
+      "start": 1.8,
+      "end": 2.16,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 2.16,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "home",
+      "start": 2.2,
+      "end": 2.38,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "by",
+      "start": 2.42,
+      "end": 2.58,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -8.940656698541716e-06
+    },
+    {
+      "text": "cart.",
+      "start": 2.64,
+      "end": 2.92,
+      "type": "word",
+      "logprob": -1.2421506471582689e-05
+    },
+    {
+      "text": " ",
+      "start": 2.92,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": -1.1205610462639015e-05
+    },
+    {
+      "text": "Protect",
+      "start": 3.38,
+      "end": 3.72,
+      "type": "word",
+      "logprob": -1.1205610462639015e-05
+    },
+    {
+      "text": " ",
+      "start": 3.72,
+      "end": 3.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 3.76,
+      "end": 3.84,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.84,
+      "end": 3.88,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "deliveries",
+      "start": 3.88,
+      "end": 4.46,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    }
+  ],
+  "transcription_id": "JPPxEjwvty0VKZw5w2OZ",
+  "audio_duration_secs": 4.72
+}

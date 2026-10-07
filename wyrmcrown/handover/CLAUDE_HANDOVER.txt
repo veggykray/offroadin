@@ -1,0 +1,156 @@
+DRAGON WARS / WYRMCROWN — AUDIO INTEGRATION HANDOVER
+7 October 2026
+
+START FROM THIS VERSION
+This project was copied from the user's supplied Desktop wyrmcrown-game
+folder. Its newer mechanics and artwork were preserved, and the existing
+recorded audio library was merged into that version. Use this as your base.
+Keep the wyrmcrown and alien-strike folders together.
+
+PLAYING
+Double-click PLAY_GAME.cmd at the project root. Python 3 serves the project
+locally and opens the correct game copy on an available port.
+Alternatively: python wyrmcrown/tools/serve.py --port 8766
+Game: http://127.0.0.1:8766/wyrmcrown/index.html
+Audio review: http://127.0.0.1:8766/wyrmcrown/tools/audio-review.html
+Opening index.html directly uses synthesized audio fallbacks.
+
+LIBRARY
+428 unique dialogue lines for eight locked, approved character voices.
+443 dialogue takes include 15 superseded versions; runtime picks the latest.
+125 SFX assets include 12 assembled 0.9-second meal variants and 15 ingredient
+stems used to assemble those meals. 50 auditions and provider originals and
+processing history are preserved.
+Preserve MP3s and JSON sidecars. Regeneration can cost money and does not
+guarantee identical results. Playing the game makes no provider API calls.
+
+RUNTIME
+data/dialogue.js defines line IDs, characters, events and text.
+data/recordings.js is the exported asset and approved-cast manifest.
+src/audio/recorded_audio.js extends AS.Audio's existing mixer, variation and
+loops, using synthesized fallbacks on load failure.
+src/audio/dialogue_director.js extends AS.Voices' existing queue, subtitles,
+priorities, distance attenuation and browser-speech fallback.
+Speech plays at rate 1 with the locked identity/settings. Music and effects
+duck during speech. Urgent home warnings interrupt chatter. Rider/dragon
+banter shares a 180–300-second interval and 90-second introductory quiet period.
+
+HOOKS
+Combat: breath inhale/ignite/bursts/release, four faction loops, rock attacks,
+missed shots and large hits.
+Feeding: sheep, cattle, goat/deer and large-prey meals, with occasional dragon
+reactions. Meals play once at rate 1 without an extra swallow.
+Troops: giant/troll movement, pain, deaths, melee and contextual idle sounds;
+cart losses, nearby troop losses and raised-dead callouts.
+Town/factions: loot, danger, lost livestock/buildings, elimination and victory.
+Victory speech extends the ending display for the selected line.
+Exploration: sites, borders, resources, pickups, spells, waygates, returning
+home and roost recovery.
+Warnings: health, mana, energy, hunger, storms, retreat and broken rival wards.
+Pause, overlays and muting stop speech and pending replies. Held breath loops
+switch to recordings when those assets finish loading.
+
+SOURCE CHANGES
+wyrmcrown/index.html loads the two data files and two audio extensions.
+wyrmcrown/src/main.js stops speech when an overlay opens.
+Audio hooks were added to src/game/combat.js, dragon.js, faction.js, life.js,
+powerups.js, realm.js, sites.js and troops.js.
+alien-strike/src/audio/audio.js adds optional fixedRate for timed recordings.
+wyrmcrown/tools/test_game.mjs now uses a portable Playwright import, optional
+URL/browser settings, background-throttling flags and longer timing allowances
+for the supplied artwork. Non-audio gameplay assertions are preserved; the old
+voice test now checks recorded queues, distance attenuation and matching text.
+The capture test holds S + Space to remain under the capture altitude, as
+described by the supplied game's controls.
+README.md and launch/review/production tools were included or updated.
+
+OBJECTIVE REWARD DIALOGUE UPDATE
+68 recorded capture_reward_<kind> lines cover all 17 objective kinds in all
+four factions. Both wizard and dragon voices participate in each faction.
+onCapture selects the specific benefit line for owned objectives, including
+neutral captures. Site.loot calls onObjectiveReward for caves and ruins.
+Treasure lines tell the player to collect coin pickups; ownership is not
+assigned to hoards. Enemy captures do not congratulate the player.
+
+Pending rewards are separate from the short-lived chatter queue. They play
+at priority 65, below danger warnings, with a 90-second validity window.
+Warnings can defer unsaid rewards, even when interrupting unrelated speech.
+Lost ownership, expired hoards, mute, pause/stop and a new match cancel stale
+announcements. Multiple captures are announced in order, without duplicate
+same-owner events. Existing generic capture recordings are preserved.
+
+tools/objective_dialogue.py is the repeatable source for the 68 new lines.
+dialogue_catalog.py includes these when rebuilding. Unchanged production
+lines retain their existing retake directions. Do not regenerate existing
+audio just to rebuild the catalog.
+For an explicit new recording batch: audio_generate.py dialogue --only
+capture_reward_. The generator preserves existing takes and locked settings.
+
+Read OBJECTIVE_REWARDS.txt for the active benefits behind the wording.
+The supplied data declares wizardtower staff, castle crown and nest passive
+bonuses, but AS.Sites.bonus has no gameplay callers. This dialogue update
+preserves gameplay and does not promise those inactive stat bonuses.
+Spell generators retain their 100/110-second cadence and only add charges
+when the dragon holds no spell or the same spell, capped at three charges.
+
+Follow-up checks:
+- test_objective_dialogue.mjs covers all 68 combinations and reward lifecycle.
+- test_objective_recordings.mjs checks real capture/loot callbacks, all eight
+  recorded voices, original playback rate and matching subtitles in Edge.
+- test_objective_transcripts.py checks cached transcripts and key quantities.
+The 68 transcript checks passed; they do not certify acting or pronunciation.
+
+SUPPLIED SOUNDTRACK UPDATE
+All eight user-supplied WAVs were imported as stereo, 44.1 kHz, 192 kbps MP3s.
+Soft Flowing Strings is both the opening theme and human_home. The Human
+dragon fight track is human_fight; the other six files map to their named
+realm and home/fight role. See MUSIC_HANDOVER.txt for the complete mapping.
+
+index.html now loads src/audio/recorded_music.js instead of the shared
+procedural music.js, plus data/music.js. The replacement retains the Music
+attach/play/stop/setIntensity/stinger/update interface used by the game.
+It streams through two HTML audio elements and MediaElementAudioSourceNodes
+into the existing musicDuck/musicBus/master mixer. Compositions play at rate
+1, fade between tracks and crossfade into another copy at the loop boundary.
+No procedural musical layers or end stingers are scheduled by this game.
+Victory/defeat sound effects stay on their existing effects bus.
+
+realm_audio.js still settles borders for four seconds before changing music.
+Neutral territory resolves to the player's realm. Combat uses the current
+territory's fight track, with a nine-second hold after danger. Pause/overlays
+soften the score, results return to the home theme, and menus restore Soft
+Flowing Strings. screens.js explicitly requests the supplied opening theme
+and no longer claims that all music is generated in code.
+
+tools/prepare_music.py performs a measured two-pass loudness conversion and
+fresh stereo/duration/peak verification. It makes no provider API calls.
+Original supplied WAVs are preserved in the user's Downloads folder; the ZIP
+contains the playable MP3s, metadata, checksums and repeatable import tool.
+tools/test_music.mjs and test_music_browser.mjs cover the new music lifecycle.
+tools/serve.py now supports single HTTP byte ranges for audio files, including
+HEAD, suffix/open ranges, 416 responses and If-Range fallback. This enables
+browser seeking and streaming; test_music_ranges.py verifies the exact bytes.
+Recorded dialogue, objective announcements, sound effects and gameplay are
+retained from the previous updated version.
+Other supplied files, including newer art, scenery, hunting and flight code,
+are preserved. The integration did not replace whole gameplay files with the
+older audio-production game version.
+
+TESTS
+Node.js and Playwright are needed only for browser tests.
+PLAYWRIGHT_MODULE can point to an installed Playwright package.
+PLAYWRIGHT_CHANNEL can be msedge, chrome, or omitted for Playwright Chromium.
+GAME_BASE_URL defaults to http://127.0.0.1:8766.
+Run node wyrmcrown/tools/test_audio.mjs
+Run node wyrmcrown/tools/test_recordings.mjs
+Run node wyrmcrown/tools/test_audio_lifecycle.mjs
+Run node wyrmcrown/tools/test_game.mjs
+See VALIDATION.txt for completed checks and material limitations.
+
+PRODUCTION TOOLS
+Decode audits need FFmpeg or imageio_ffmpeg. Generation/transcription tools
+need their existing dependencies and ELEVENLABS_API_KEY from the environment.
+The game does not need any production dependency or API key.
+Casting choices were approved in the prior audio work. Automated checks verify
+integrity and playback. A full human listening review of acting, pronunciation
+and SFX remains pending. Original and revised takes are included for comparison.

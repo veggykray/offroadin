@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "I became a wizard to avoid walking. Nobody mentioned this",
+  "words": [
+    {
+      "text": "I",
+      "start": 0.18,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -0.0001262346631847322
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.26,
+      "type": "spacing",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": "became",
+      "start": 0.26,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "a",
+      "start": 0.64,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -0.00012361239350866526
+    },
+    {
+      "text": "wizard",
+      "start": 0.76,
+      "end": 1.2,
+      "type": "word",
+      "logprob": -0.00012361239350866526
+    },
+    {
+      "text": " ",
+      "start": 1.2,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "to",
+      "start": 1.24,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "avoid",
+      "start": 1.4,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -8.4638240878121e-06
+    },
+    {
+      "text": "walking.",
+      "start": 1.84,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -7.258142966293235e-05
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -0.00018225439998786896
+    },
+    {
+      "text": "Nobody",
+      "start": 2.9,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -0.00018225439998786896
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.28,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "mentioned",
+      "start": 3.28,
+      "end": 3.68,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 3.68,
+      "end": 3.74,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "this",
+      "start": 3.74,
+      "end": 3.98,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "ojy6R7leBowgDTOmOT5F",
+  "audio_duration_secs": 4.24
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-06T21:23:44.744480+00:00",
+  "choices": {
+    "human_wizard": {
+      "candidate": "1",
+      "notes": "when he says aldemere it glitches"
+    },
+    "elf_wizard": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "ice_wizard": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "undead_wizard": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "human_dragon": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "elf_dragon": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "ice_dragon": {
+      "candidate": "1",
+      "notes": ""
+    },
+    "undead_dragon": {
+      "candidate": "2",
+      "notes": ""
+    }
+  },
+  "source": "audition page selections"
+}

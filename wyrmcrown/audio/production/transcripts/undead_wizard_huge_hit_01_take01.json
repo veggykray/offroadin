@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Splendid. That rearranged several important organs",
+  "words": [
+    {
+      "text": "Splendid.",
+      "start": 0.26,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -0.003582169397203769
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "That",
+      "start": 1.58,
+      "end": 1.82,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 1.82,
+      "end": 1.9,
+      "type": "spacing",
+      "logprob": -0.0002215855201939121
+    },
+    {
+      "text": "rearranged",
+      "start": 1.9,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -0.0002215855201939121
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "several",
+      "start": 2.74,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.22,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "important",
+      "start": 3.22,
+      "end": 3.74,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.74,
+      "end": 3.84,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "organs",
+      "start": 3.84,
+      "end": 4.4,
+      "type": "word",
+      "logprob": -2.861018856492592e-06
+    }
+  ],
+  "transcription_id": "PWqJ1O4rNSblLzfbxQr9",
+  "audio_duration_secs": 4.72
+}

@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Defense destroyed. Press forward",
+  "words": [
+    {
+      "text": "Defense",
+      "start": 0.08,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -0.0007593132322654128
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -2.8490614567999728e-05
+    },
+    {
+      "text": "destroyed.",
+      "start": 0.66,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -3.372361625224585e-05
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.32,
+      "type": "spacing",
+      "logprob": -1.0847986231965479e-05
+    },
+    {
+      "text": "Press",
+      "start": 1.98,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -1.0847986231965479e-05
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.36,
+      "type": "spacing",
+      "logprob": -5.960446742392378e-06
+    },
+    {
+      "text": "forward",
+      "start": 2.36,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -5.960446742392378e-06
+    }
+  ],
+  "transcription_id": "y29yjBTKmkSTkfCBNCdR",
+  "audio_duration_secs": 3.12
+}

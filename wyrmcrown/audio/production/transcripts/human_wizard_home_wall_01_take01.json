@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They've breached the bloody wall",
+  "words": [
+    {
+      "text": "They've",
+      "start": 0.06,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -0.00010506477337912656
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.00012683063687290996
+    },
+    {
+      "text": "breached",
+      "start": 0.38,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -0.00012683063687290996
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 0.74,
+      "end": 0.8,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "bloody",
+      "start": 0.94,
+      "end": 1.22,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.34,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "wall",
+      "start": 1.34,
+      "end": 1.78,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    }
+  ],
+  "transcription_id": "H1xsUaWscsGdu15omAyu",
+  "audio_duration_secs": 2.0
+}

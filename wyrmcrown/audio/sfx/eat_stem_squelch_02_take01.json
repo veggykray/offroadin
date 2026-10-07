@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "eat_stem_squelch_02",
+    "event": "eat_stem_squelch",
+    "kind": "sfx",
+    "fallback": "squelch",
+    "text": "One compact wet meat compression in a huge dragon mouth, thick sticky squelch, immediate onset Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.75,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:12:01.089894+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "One compact wet meat compression in a huge dragon mouth, thick sticky squelch, immediate onset Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "468e58f6e06704780cf8b415e2a46ff68dec43b9cfdc5310084e4d395e9927c4",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\eat_stem_squelch_02_take01.mp3",
+  "sha256": "e376a18b6f94764b323356fdf3c978f6c26b29da06ca19b0ea43ec79036b07f1",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": -8.31,
+    "rms_dbfs": -36.38,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.48,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": -5.94,
+    "rms_dbfs": -32.96,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.48,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

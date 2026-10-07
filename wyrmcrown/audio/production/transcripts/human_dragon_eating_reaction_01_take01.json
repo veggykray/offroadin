@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "That bull had opinions",
+  "words": [
+    {
+      "text": "That",
+      "start": 0.2,
+      "end": 0.52,
+      "type": "word",
+      "logprob": -0.00018892886873800308
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -0.0010388459777459502
+    },
+    {
+      "text": "bull",
+      "start": 0.66,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -0.0010388459777459502
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "had",
+      "start": 1.16,
+      "end": 1.42,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.42,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -3.8980677345534787e-05
+    },
+    {
+      "text": "opinions",
+      "start": 1.58,
+      "end": 2.78,
+      "type": "word",
+      "logprob": -3.8980677345534787e-05
+    }
+  ],
+  "transcription_id": "rJ6GjAr9U2uUuR1Senby",
+  "audio_duration_secs": 3.12
+}

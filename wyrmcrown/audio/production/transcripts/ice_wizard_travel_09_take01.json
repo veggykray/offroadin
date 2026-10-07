@@ -1,0 +1,156 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They built their village in a floodplain a short history awaits",
+  "words": [
+    {
+      "text": "They",
+      "start": 0.28,
+      "end": 0.38,
+      "type": "word",
+      "logprob": -1.3828182090946939e-05
+    },
+    {
+      "text": " ",
+      "start": 0.38,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": "built",
+      "start": 0.52,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "their",
+      "start": 0.8,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 1.06,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "village",
+      "start": 1.06,
+      "end": 1.5,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 1.5,
+      "end": 1.62,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "in",
+      "start": 1.62,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.76,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 1.76,
+      "end": 1.86,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.96,
+      "type": "spacing",
+      "logprob": -0.061968062072992325
+    },
+    {
+      "text": "floodplain",
+      "start": 1.96,
+      "end": 2.68,
+      "type": "word",
+      "logprob": -0.061968062072992325
+    },
+    {
+      "text": " ",
+      "start": 2.68,
+      "end": 2.68,
+      "type": "spacing",
+      "logprob": -0.5227504372596741
+    },
+    {
+      "text": "a",
+      "start": 3.38,
+      "end": 3.46,
+      "type": "word",
+      "logprob": -0.5227504372596741
+    },
+    {
+      "text": " ",
+      "start": 3.46,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "short",
+      "start": 3.56,
+      "end": 3.82,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.82,
+      "end": 3.94,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "history",
+      "start": 3.94,
+      "end": 4.42,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 4.42,
+      "end": 4.52,
+      "type": "spacing",
+      "logprob": -0.00011967896716669202
+    },
+    {
+      "text": "awaits",
+      "start": 4.52,
+      "end": 5.0,
+      "type": "word",
+      "logprob": -0.00011967896716669202
+    }
+  ],
+  "transcription_id": "A9gWCmrlkEVeVsTjn5WG",
+  "audio_duration_secs": 5.2
+}

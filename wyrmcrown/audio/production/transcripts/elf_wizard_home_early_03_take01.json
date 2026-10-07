@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "An enemy beneath our branches. Their final poor decision perhaps",
+  "words": [
+    {
+      "text": "An",
+      "start": 0.08,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.00011693747364915907
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.32,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "enemy",
+      "start": 0.32,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "beneath",
+      "start": 0.7,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "our",
+      "start": 1.02,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "branches.",
+      "start": 1.18,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -0.001358256882213027
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.72,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "Their",
+      "start": 2.14,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "final",
+      "start": 2.44,
+      "end": 2.72,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.72,
+      "end": 2.9,
+      "type": "spacing",
+      "logprob": -0.0003026265767402947
+    },
+    {
+      "text": "poor",
+      "start": 2.9,
+      "end": 3.12,
+      "type": "word",
+      "logprob": -0.0003026265767402947
+    },
+    {
+      "text": " ",
+      "start": 3.12,
+      "end": 3.16,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "decision",
+      "start": 3.16,
+      "end": 3.7,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.7,
+      "end": 3.76,
+      "type": "spacing",
+      "logprob": -0.2014278620481491
+    },
+    {
+      "text": "perhaps",
+      "start": 3.76,
+      "end": 4.24,
+      "type": "word",
+      "logprob": -0.2014278620481491
+    }
+  ],
+  "transcription_id": "MSUVoof9tw5DGrcB7lJV",
+  "audio_duration_secs": 4.4
+}

@@ -1,0 +1,324 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Relic captured. A Call the Host charge every hundred and ten seconds if we're holding no other spell. More lads for the fight",
+  "words": [
+    {
+      "text": "Relic",
+      "start": 0.18,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -7.967567071318627e-05
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.62,
+      "type": "spacing",
+      "logprob": -0.0008450751192867756
+    },
+    {
+      "text": "captured.",
+      "start": 0.62,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -0.01789342239499092
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -0.026554008945822716
+    },
+    {
+      "text": "A",
+      "start": 1.62,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -0.026554008945822716
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.74,
+      "type": "spacing",
+      "logprob": -0.47454383969306946
+    },
+    {
+      "text": "Call",
+      "start": 1.74,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -0.47454383969306946
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -0.008161290548741817
+    },
+    {
+      "text": "the",
+      "start": 1.98,
+      "end": 2.06,
+      "type": "word",
+      "logprob": -0.008161290548741817
+    },
+    {
+      "text": " ",
+      "start": 2.06,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -0.001210314454510808
+    },
+    {
+      "text": "Host",
+      "start": 2.1,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -0.001210314454510808
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -0.00019774865359067917
+    },
+    {
+      "text": "charge",
+      "start": 2.42,
+      "end": 2.74,
+      "type": "word",
+      "logprob": -0.00019774865359067917
+    },
+    {
+      "text": " ",
+      "start": 2.74,
+      "end": 2.82,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "every",
+      "start": 2.82,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.1,
+      "type": "spacing",
+      "logprob": -0.1271645873785019
+    },
+    {
+      "text": "hundred",
+      "start": 3.1,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -0.1271645873785019
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.4,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "and",
+      "start": 3.4,
+      "end": 3.52,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.52,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "ten",
+      "start": 3.56,
+      "end": 3.78,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.78,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "seconds",
+      "start": 3.86,
+      "end": 4.5,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 4.5,
+      "end": 4.58,
+      "type": "spacing",
+      "logprob": -0.00020621081057470292
+    },
+    {
+      "text": "if",
+      "start": 4.58,
+      "end": 4.66,
+      "type": "word",
+      "logprob": -0.00020621081057470292
+    },
+    {
+      "text": " ",
+      "start": 4.66,
+      "end": 4.68,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "we're",
+      "start": 4.68,
+      "end": 4.78,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.78,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "holding",
+      "start": 4.82,
+      "end": 5.12,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.12,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "no",
+      "start": 5.18,
+      "end": 5.32,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.32,
+      "end": 5.38,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "other",
+      "start": 5.38,
+      "end": 5.56,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.56,
+      "end": 5.66,
+      "type": "spacing",
+      "logprob": -7.748573807475623e-06
+    },
+    {
+      "text": "spell.",
+      "start": 5.66,
+      "end": 5.94,
+      "type": "word",
+      "logprob": -1.1404256990014497e-05
+    },
+    {
+      "text": " ",
+      "start": 5.94,
+      "end": 6.02,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "More",
+      "start": 6.48,
+      "end": 6.62,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 6.62,
+      "end": 6.66,
+      "type": "spacing",
+      "logprob": -2.932505594799295e-05
+    },
+    {
+      "text": "lads",
+      "start": 6.66,
+      "end": 6.9,
+      "type": "word",
+      "logprob": -2.932505594799295e-05
+    },
+    {
+      "text": " ",
+      "start": 6.9,
+      "end": 6.94,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 6.94,
+      "end": 7.02,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.02,
+      "end": 7.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "the",
+      "start": 7.06,
+      "end": 7.14,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.14,
+      "end": 7.2,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "fight",
+      "start": 7.2,
+      "end": 7.48,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    }
+  ],
+  "transcription_id": "wzJUpqYqGP0JpwRRZjTl",
+  "audio_duration_secs": 7.76
+}

@@ -1,0 +1,41 @@
+{
+  "id": "elf_home",
+  "source_file": "Elf dragon home.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Elf dragon home.wav",
+  "source_sha256": "0a520f8ba7c22bf3841aeb08ade1d2113f910669e68f327c55d07fc4056ac721",
+  "source_info": {
+    "duration_seconds": 184.36,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-15.38",
+    "input_tp": "-3.31",
+    "input_lra": "6.50",
+    "input_thresh": "-25.48",
+    "output_i": "-21.25",
+    "output_tp": "-5.47",
+    "output_lra": "4.70",
+    "output_thresh": "-31.30",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.75"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "26344f8be68aa7e9e90b650cbd47d3dced41c79dd2595870316357d0b684d1be",
+  "inspection": {
+    "duration_seconds": 184.4,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -10.2,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

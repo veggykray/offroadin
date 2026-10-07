@@ -1,0 +1,282 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our Waygate. Own another to travel between them. Press E at an owned gate. Saves wear on the remaining joints",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.2,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -0.004518893081694841
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -0.20200680196285248
+    },
+    {
+      "text": "Waygate.",
+      "start": 0.5,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -0.0824098389421124
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -3.611976353568025e-05
+    },
+    {
+      "text": "Own",
+      "start": 1.7,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -3.611976353568025e-05
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.9,
+      "type": "spacing",
+      "logprob": -5.364403477869928e-06
+    },
+    {
+      "text": "another",
+      "start": 1.9,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -5.364403477869928e-06
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.4,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "to",
+      "start": 2.4,
+      "end": 2.5,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": " ",
+      "start": 2.5,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "travel",
+      "start": 2.54,
+      "end": 2.88,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 2.88,
+      "end": 2.9,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "between",
+      "start": 2.9,
+      "end": 3.34,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.34,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "them.",
+      "start": 3.38,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -1.2135149131609068e-05
+    },
+    {
+      "text": " ",
+      "start": 3.6,
+      "end": 3.6,
+      "type": "spacing",
+      "logprob": -1.2397689715726301e-05
+    },
+    {
+      "text": "Press",
+      "start": 4.12,
+      "end": 4.38,
+      "type": "word",
+      "logprob": -1.2397689715726301e-05
+    },
+    {
+      "text": " ",
+      "start": 4.38,
+      "end": 4.64,
+      "type": "spacing",
+      "logprob": -4.0411134250462055e-05
+    },
+    {
+      "text": "E",
+      "start": 4.64,
+      "end": 4.86,
+      "type": "word",
+      "logprob": -4.0411134250462055e-05
+    },
+    {
+      "text": " ",
+      "start": 4.86,
+      "end": 4.94,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "at",
+      "start": 4.94,
+      "end": 5.02,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": " ",
+      "start": 5.02,
+      "end": 5.06,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "an",
+      "start": 5.06,
+      "end": 5.2,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 5.2,
+      "end": 5.28,
+      "type": "spacing",
+      "logprob": -0.00023338454775512218
+    },
+    {
+      "text": "owned",
+      "start": 5.28,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -0.00023338454775512218
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.62,
+      "type": "spacing",
+      "logprob": -0.0006288696313276887
+    },
+    {
+      "text": "gate.",
+      "start": 5.62,
+      "end": 5.94,
+      "type": "word",
+      "logprob": -0.0006154784816317261
+    },
+    {
+      "text": " ",
+      "start": 5.94,
+      "end": 5.94,
+      "type": "spacing",
+      "logprob": -0.0006704466650262475
+    },
+    {
+      "text": "Saves",
+      "start": 6.46,
+      "end": 6.78,
+      "type": "word",
+      "logprob": -0.0006704466650262475
+    },
+    {
+      "text": " ",
+      "start": 6.78,
+      "end": 6.84,
+      "type": "spacing",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": "wear",
+      "start": 6.84,
+      "end": 7.14,
+      "type": "word",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": " ",
+      "start": 7.14,
+      "end": 7.18,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "on",
+      "start": 7.2,
+      "end": 7.28,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.28,
+      "end": 7.3,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "the",
+      "start": 7.3,
+      "end": 7.36,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 7.36,
+      "end": 7.4,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "remaining",
+      "start": 7.4,
+      "end": 7.8,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 7.8,
+      "end": 7.92,
+      "type": "spacing",
+      "logprob": -0.07043531537055969
+    },
+    {
+      "text": "joints",
+      "start": 7.92,
+      "end": 8.38,
+      "type": "word",
+      "logprob": -0.07043531537055969
+    }
+  ],
+  "transcription_id": "fYUhlYYySNx1FeKFafx3",
+  "audio_duration_secs": 8.56
+}

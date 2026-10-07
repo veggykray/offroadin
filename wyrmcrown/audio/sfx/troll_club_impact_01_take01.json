@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "troll_club_impact_01",
+    "event": "troll_club_impact",
+    "kind": "sfx",
+    "fallback": "sword_clash",
+    "text": "Huge wooden club strikes a stone wall, blunt heavy wood knock, chips and grit, no explosion Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.9,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:01:04.205213+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Huge wooden club strikes a stone wall, blunt heavy wood knock, chips and grit, no explosion Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.9,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "1ca21000abe12c310b2a52c1cfa75b15d4db33bde68ff95217fe33ba878bf10b",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\troll_club_impact_01_take01.mp3",
+  "sha256": "431e22cd2040eae0beaa57746d3e7729b65fa99670c20c7f6ada558287111321",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.88,
+    "peak_dbfs": -0.43,
+    "rms_dbfs": -16.96,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.52,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.88,
+    "peak_dbfs": -4.47,
+    "rms_dbfs": -19.65,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.52,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

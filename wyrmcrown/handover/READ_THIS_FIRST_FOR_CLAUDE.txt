@@ -1,0 +1,36 @@
+LATEST DRAGON WARS / WYRMCROWN - CODE HANDOFF
+7 October 2026
+
+Use this snapshot as the current version for future updates. It includes the
+complete editable source, generated artwork code, UI, fonts, tools, maps,
+runtime dialogue/recording/music manifests, and production metadata.
+
+Heavy audio/video binaries are intentionally omitted from this upload. The
+user has them in the complete local game folder and the full playable ZIP.
+This code handoff is not a separate playable release with all recordings.
+Preserve every existing media path, identifier and asset reference. Do not
+delete, rename, regenerate, replace or stub audio merely because its binary
+is absent from this code snapshot. Never replace the user's full game folder
+with a fresh empty version. Return changed files for merging over it.
+
+Read CLAUDE_HANDOVER.txt, MUSIC_HANDOVER.txt and OBJECTIVE_REWARDS.txt.
+The current version contains 428 dialogue lines, 125 sound-effect assets and
+eight supplied music tracks. Soft Flowing Strings is the opening and human
+home theme. Each realm has a home/fight pair. Objective reward dialogue is
+implemented for every site type and faction. The launch server supports
+HTTP byte ranges for streamed music.
+
+SOURCE_MANIFEST.json lists all included files and their exact SHA-256 hashes.
+OMITTED_MEDIA.json lists the preserved local media files and hashes, so you
+can distinguish intentionally omitted media from actual missing references.
+Source files in this archive are unmodified copies of the latest local game.
+
+Use the user's subsequent message for the requested change. Do not invent
+new gameplay features. Return only changed/new files in their original paths,
+or a code-only ZIP preserving the root wyrmcrown-voiced-game folder. Explain
+that returned source should be extracted over the existing full project with
+folder contents merged and the audio files retained. Do not claim audio
+playback tests passed when the uploaded copy lacks the actual recordings.
+
+The full local version is:
+C:\Users\STIMP\OneDrive\Documents\ChatGPT\dragon wars\wyrmcrown-voiced-game

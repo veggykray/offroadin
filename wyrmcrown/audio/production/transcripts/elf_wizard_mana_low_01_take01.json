@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "My mana is spent. A humiliating administrative detail.",
+  "words": [
+    {
+      "text": "My",
+      "start": 0.18,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -0.00015925093612167984
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -0.00045253525604493916
+    },
+    {
+      "text": "mana",
+      "start": 0.4,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -0.00045253525604493916
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 0.82,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.04,
+      "type": "spacing",
+      "logprob": -7.510157047363464e-06
+    },
+    {
+      "text": "spent.",
+      "start": 1.04,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -0.0015431099025893975
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -1.5139465176616795e-05
+    },
+    {
+      "text": "A",
+      "start": 2.02,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -1.5139465176616795e-05
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": "humiliating",
+      "start": 2.2,
+      "end": 3.08,
+      "type": "word",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": " ",
+      "start": 3.08,
+      "end": 3.12,
+      "type": "spacing",
+      "logprob": -1.4066597032069694e-05
+    },
+    {
+      "text": "administrative",
+      "start": 3.12,
+      "end": 3.74,
+      "type": "word",
+      "logprob": -1.4066597032069694e-05
+    },
+    {
+      "text": " ",
+      "start": 3.74,
+      "end": 3.84,
+      "type": "spacing",
+      "logprob": -0.0005146132898516953
+    },
+    {
+      "text": "detail.",
+      "start": 3.84,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -0.09947237517085991
+    }
+  ],
+  "transcription_id": "LMISzRkH0YXBf3g0VyA7",
+  "audio_duration_secs": 4.64
+}

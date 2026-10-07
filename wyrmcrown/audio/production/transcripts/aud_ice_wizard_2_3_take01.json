@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Imrah of Hriningard has weathered longer winters than this. Keep below the storm and let the impatient ones discover the lightning",
+  "words": [
+    {
+      "text": "Imrah",
+      "start": 0.18,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -0.014290642726700753
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "of",
+      "start": 0.8,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -0.5860927700996399
+    },
+    {
+      "text": "Hriningard",
+      "start": 0.98,
+      "end": 1.64,
+      "type": "word",
+      "logprob": -0.4328581523383036
+    },
+    {
+      "text": " ",
+      "start": 1.64,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "has",
+      "start": 1.68,
+      "end": 1.84,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 1.84,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": -3.5523738915799186e-05
+    },
+    {
+      "text": "weathered",
+      "start": 1.9,
+      "end": 2.16,
+      "type": "word",
+      "logprob": -3.5523738915799186e-05
+    },
+    {
+      "text": " ",
+      "start": 2.16,
+      "end": 2.3,
+      "type": "spacing",
+      "logprob": -9.894321920000948e-06
+    },
+    {
+      "text": "longer",
+      "start": 2.3,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -9.894321920000948e-06
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -0.00014149141497910023
+    },
+    {
+      "text": "winters",
+      "start": 2.66,
+      "end": 3.06,
+      "type": "word",
+      "logprob": -0.00014149141497910023
+    },
+    {
+      "text": " ",
+      "start": 3.06,
+      "end": 3.1,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "than",
+      "start": 3.1,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "this.",
+      "start": 3.32,
+      "end": 3.68,
+      "type": "word",
+      "logprob": -0.012809662520749044
+    },
+    {
+      "text": " ",
+      "start": 3.68,
+      "end": 3.68,
+      "type": "spacing",
+      "logprob": -5.304672595229931e-05
+    },
+    {
+      "text": "Keep",
+      "start": 4.38,
+      "end": 4.56,
+      "type": "word",
+      "logprob": -5.304672595229931e-05
+    },
+    {
+      "text": " ",
+      "start": 4.56,
+      "end": 4.6,
+      "type": "spacing",
+      "logprob": -9.417489309271332e-06
+    },
+    {
+      "text": "below",
+      "start": 4.6,
+      "end": 4.88,
+      "type": "word",
+      "logprob": -9.417489309271332e-06
+    },
+    {
+      "text": " ",
+      "start": 4.88,
+      "end": 4.94,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 4.94,
+      "end": 5.04,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.04,
+      "end": 5.12,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "storm",
+      "start": 5.12,
+      "end": 5.52,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 5.52,
+      "end": 5.86,
+      "type": "spacing",
+      "logprob": -0.018157804384827614
+    },
+    {
+      "text": "and",
+      "start": 5.86,
+      "end": 5.96,
+      "type": "word",
+      "logprob": -0.018157804384827614
+    },
+    {
+      "text": " ",
+      "start": 5.96,
+      "end": 6.0,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "let",
+      "start": 6.0,
+      "end": 6.14,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 6.14,
+      "end": 6.18,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "the",
+      "start": 6.18,
+      "end": 6.26,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 6.26,
+      "end": 6.32,
+      "type": "spacing",
+      "logprob": -0.0001501924270996824
+    },
+    {
+      "text": "impatient",
+      "start": 6.32,
+      "end": 6.86,
+      "type": "word",
+      "logprob": -0.0001501924270996824
+    },
+    {
+      "text": " ",
+      "start": 6.86,
+      "end": 6.98,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "ones",
+      "start": 6.98,
+      "end": 7.26,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 7.26,
+      "end": 7.3,
+      "type": "spacing",
+      "logprob": -1.1444026313256472e-05
+    },
+    {
+      "text": "discover",
+      "start": 7.3,
+      "end": 7.72,
+      "type": "word",
+      "logprob": -1.1444026313256472e-05
+    },
+    {
+      "text": " ",
+      "start": 7.72,
+      "end": 7.78,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "the",
+      "start": 7.78,
+      "end": 7.86,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 7.86,
+      "end": 7.92,
+      "type": "spacing",
+      "logprob": -0.0001679517881711945
+    },
+    {
+      "text": "lightning",
+      "start": 7.92,
+      "end": 8.36,
+      "type": "word",
+      "logprob": -0.0001679517881711945
+    }
+  ],
+  "transcription_id": "rUuu1vRgXn757FCMkY5U",
+  "audio_duration_secs": 8.56
+}

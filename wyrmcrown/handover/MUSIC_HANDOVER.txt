@@ -1,0 +1,50 @@
+WYRMCROWN — USER-SUPPLIED SOUNDTRACK
+7 October 2026
+
+TRACK MAPPING
+Opening/title/selection screens: Soft Flowing Strings.wav
+Human home: Soft Flowing Strings.wav -> audio/music/human_home.mp3
+Human fight: Human dragon fight.wav -> audio/music/human_fight.mp3
+Elf home: Elf dragon home.wav -> audio/music/elf_home.mp3
+Elf fight: Elf dragon fight.wav -> audio/music/elf_fight.mp3
+Ice home: Ice dragon home.wav -> audio/music/ice_home.mp3
+Ice fight: Ice dragon fight.wav -> audio/music/ice_fight.mp3
+Undead home: Undead dragon home.wav -> audio/music/undead_home.mp3
+Undead fight: Undead dragon fight.wav -> audio/music/undead_fight.mp3
+
+PLAYBACK
+Territory selects the realm after the existing four-second border settling
+period. Neutral territory uses the player's realm. Danger selects that
+realm's fight track and holds it for nine seconds after the threat passes.
+Tracks crossfade over 2.5 seconds; their ends crossfade into a fresh copy.
+The existing Music slider, master volume and speech ducking control the score.
+Pause/court/map soften it. Victory/defeat return to home music; menus restore
+Soft Flowing Strings. No old procedural music generator is loaded by Wyrmcrown.
+
+FILES AND QUALITY
+Game assets are stereo, 44.1 kHz, 192 kbps MP3s, normalized with a measured
+two-pass -22 LUFS / -2 dB true-peak target. Their durations, stereo format,
+decoded sample peaks and checksums were verified. Speed and pitch are kept.
+data/music.js holds the runtime mapping; audio/production/music-manifest.json
+and music-audit.json record provenance and technical checks. Each MP3 has a
+JSON sidecar with the source filename/hash and conversion settings.
+
+The original WAVs remain unchanged in C:\Users\STIMP\Downloads. They are not
+duplicated into this ZIP. Future re-encoding needs those original WAVs.
+Playing needs only the packaged files and the existing launcher/browser.
+
+IMPLEMENTATION / REPEATABLE CHECKS
+src/audio/recorded_music.js streams using two HTML audio elements through
+the existing WebAudio mixer, keeping memory use bounded for long tracks.
+Music keeps the interface expected by realm_audio.js, main.js and faction.js.
+Asynchronous playback requests are cancelled when changing tracks or stopping
+so a delayed load cannot restart music after the player leaves a match.
+The included server supports HTTP byte ranges for media streaming and seeking.
+Use PLAY_GAME.cmd or the included serve.py when checking the loop transitions.
+
+Import: python wyrmcrown/tools/prepare_music.py --source-dir <WAV directory>
+Contracts: node wyrmcrown/tools/test_music.mjs
+Browser: node wyrmcrown/tools/test_music_browser.mjs
+Streaming server: python wyrmcrown/tools/test_music_ranges.py
+The browser check accepts GAME_BASE_URL, PLAYWRIGHT_MODULE and
+PLAYWRIGHT_CHANNEL in the same way as the other included game tests.

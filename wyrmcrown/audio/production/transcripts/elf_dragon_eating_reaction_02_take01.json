@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "An unfortunate vintage",
+  "words": [
+    {
+      "text": "An",
+      "start": 0.26,
+      "end": 0.36,
+      "type": "word",
+      "logprob": -0.00011157367407577112
+    },
+    {
+      "text": " ",
+      "start": 0.36,
+      "end": 0.42,
+      "type": "spacing",
+      "logprob": -1.5258672647178173e-05
+    },
+    {
+      "text": "unfortunate",
+      "start": 0.42,
+      "end": 1.26,
+      "type": "word",
+      "logprob": -1.5258672647178173e-05
+    },
+    {
+      "text": " ",
+      "start": 1.26,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -0.00011526874004630372
+    },
+    {
+      "text": "vintage",
+      "start": 1.4,
+      "end": 1.98,
+      "type": "word",
+      "logprob": -0.00011526874004630372
+    }
+  ],
+  "transcription_id": "I8xQgJZxdyXozswMyOsU",
+  "audio_duration_secs": 2.32
+}

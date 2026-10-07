@@ -1,0 +1,268 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our castle Gold carts, four guards, strong defenses, and four extra troop places. Plenty of room for the departed",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.18,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -5.1973900554003194e-05
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.42,
+      "type": "spacing",
+      "logprob": -0.002476246329024434
+    },
+    {
+      "text": "castle",
+      "start": 0.42,
+      "end": 0.84,
+      "type": "word",
+      "logprob": -0.002476246329024434
+    },
+    {
+      "text": " ",
+      "start": 0.84,
+      "end": 1.44,
+      "type": "spacing",
+      "logprob": -0.3425600528717041
+    },
+    {
+      "text": "Gold",
+      "start": 1.44,
+      "end": 1.66,
+      "type": "word",
+      "logprob": -0.3425600528717041
+    },
+    {
+      "text": " ",
+      "start": 1.66,
+      "end": 1.76,
+      "type": "spacing",
+      "logprob": -0.0020590072963386774
+    },
+    {
+      "text": "carts,",
+      "start": 1.76,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -0.002002707973588258
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -6.437280717364047e-06
+    },
+    {
+      "text": "four",
+      "start": 2.42,
+      "end": 2.6,
+      "type": "word",
+      "logprob": -6.437280717364047e-06
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.72,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "guards,",
+      "start": 2.72,
+      "end": 3.12,
+      "type": "word",
+      "logprob": -1.2942427019879688e-05
+    },
+    {
+      "text": " ",
+      "start": 3.12,
+      "end": 3.42,
+      "type": "spacing",
+      "logprob": -1.0132738680113107e-05
+    },
+    {
+      "text": "strong",
+      "start": 3.42,
+      "end": 3.7,
+      "type": "word",
+      "logprob": -1.0132738680113107e-05
+    },
+    {
+      "text": " ",
+      "start": 3.7,
+      "end": 3.76,
+      "type": "spacing",
+      "logprob": -0.0010338444262742996
+    },
+    {
+      "text": "defenses,",
+      "start": 3.76,
+      "end": 4.32,
+      "type": "word",
+      "logprob": -0.0014323716362317402
+    },
+    {
+      "text": " ",
+      "start": 4.32,
+      "end": 4.56,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "and",
+      "start": 4.56,
+      "end": 4.66,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.66,
+      "end": 4.84,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "four",
+      "start": 4.84,
+      "end": 5.1,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 5.1,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "extra",
+      "start": 5.18,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -0.0002919009421020746
+    },
+    {
+      "text": "troop",
+      "start": 5.56,
+      "end": 5.78,
+      "type": "word",
+      "logprob": -0.0002919009421020746
+    },
+    {
+      "text": " ",
+      "start": 5.78,
+      "end": 5.84,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "places.",
+      "start": 5.84,
+      "end": 6.28,
+      "type": "word",
+      "logprob": -0.0001473204923578513
+    },
+    {
+      "text": " ",
+      "start": 6.28,
+      "end": 6.7,
+      "type": "spacing",
+      "logprob": -2.3603161025675945e-05
+    },
+    {
+      "text": "Plenty",
+      "start": 6.7,
+      "end": 7.1,
+      "type": "word",
+      "logprob": -2.3603161025675945e-05
+    },
+    {
+      "text": " ",
+      "start": 7.1,
+      "end": 7.14,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 7.14,
+      "end": 7.26,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.26,
+      "end": 7.32,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "room",
+      "start": 7.32,
+      "end": 7.56,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.56,
+      "end": 7.6,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 7.6,
+      "end": 7.7,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.7,
+      "end": 7.74,
+      "type": "spacing",
+      "logprob": -8.49926145747304e-05
+    },
+    {
+      "text": "the",
+      "start": 7.74,
+      "end": 7.8,
+      "type": "word",
+      "logprob": -8.49926145747304e-05
+    },
+    {
+      "text": " ",
+      "start": 7.8,
+      "end": 7.84,
+      "type": "spacing",
+      "logprob": -0.05528056249022484
+    },
+    {
+      "text": "departed",
+      "start": 7.84,
+      "end": 8.38,
+      "type": "word",
+      "logprob": -0.05528056249022484
+    }
+  ],
+  "transcription_id": "vmsVrxVXIcU30UtRIL3J",
+  "audio_duration_secs": 8.56
+}

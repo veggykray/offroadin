@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Marvelous. I feel almost offensively vital",
+  "words": [
+    {
+      "text": "Marvelous.",
+      "start": 0.38,
+      "end": 1.2,
+      "type": "word",
+      "logprob": -0.05899920389052795
+    },
+    {
+      "text": " ",
+      "start": 1.2,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "I",
+      "start": 1.78,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "feel",
+      "start": 1.94,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "almost",
+      "start": 2.26,
+      "end": 2.66,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.66,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -0.00015162272029556334
+    },
+    {
+      "text": "offensively",
+      "start": 2.74,
+      "end": 3.66,
+      "type": "word",
+      "logprob": -0.00015162272029556334
+    },
+    {
+      "text": " ",
+      "start": 3.66,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "vital",
+      "start": 3.78,
+      "end": 4.3,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    }
+  ],
+  "transcription_id": "at9U5Gu1DmvhgT5zva4z",
+  "audio_duration_secs": 4.64
+}

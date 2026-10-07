@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "troll_slobber_02",
+    "event": "troll_slobber",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Troll excessive sticky mouth slobber, disgusting tongue smack and dripping saliva Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:00:21.227493+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Troll excessive sticky mouth slobber, disgusting tongue smack and dripping saliva Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "1c2d1ff6e2ea61c6d3d3b898b97f01f9deb55129b9749121f139486b86010905",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\troll_slobber_02_take01.mp3",
+  "sha256": "cee9c2868f47f86d662391c8bc18de2b9c31c4006ae569f2ef53ff22ee060f31",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": 0.0,
+    "rms_dbfs": -17.04,
+    "clipped_sample_fraction": 5.2e-05,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.2,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": -4.55,
+    "rms_dbfs": -21.18,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.2,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

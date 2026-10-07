@@ -217,7 +217,7 @@
       if (AS.Voices && AS.Voices.g === this && by) AS.Voices.onDown(d, by);
       if (AS.Factions && AS.Factions.onDragonDown) AS.Factions.onDragonDown(this, d, src);
     }
-    onDragonRespawn(d) { if (d === this.player) this.msg(d.name.toUpperCase() + ' TAKES WING AGAIN', '#ffe08a', 3); }
+    onDragonRespawn(d) { if (d === this.player) { this.msg(d.name.toUpperCase() + ' TAKES WING AGAIN', '#ffe08a', 3); if (AS.Voices && AS.Voices.g === this) AS.Voices.event('roost_recovery', { cooldown: 45 }); } }
 
     /* ================= update ================= */
     update(dt) {

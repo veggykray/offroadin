@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A spell ready. The dead love a little surprise",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.16,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -0.00022802136663813144
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -5.0424259825376794e-05
+    },
+    {
+      "text": "spell",
+      "start": 0.4,
+      "end": 0.8,
+      "type": "word",
+      "logprob": -5.0424259825376794e-05
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": -7.033100700937212e-05
+    },
+    {
+      "text": "ready.",
+      "start": 0.88,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -0.0006639658580146109
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.3,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "The",
+      "start": 1.86,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.04,
+      "type": "spacing",
+      "logprob": -2.455681169521995e-05
+    },
+    {
+      "text": "dead",
+      "start": 2.04,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -2.455681169521995e-05
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "love",
+      "start": 2.58,
+      "end": 2.9,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.9,
+      "end": 2.94,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "a",
+      "start": 2.94,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.04,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "little",
+      "start": 3.04,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "surprise",
+      "start": 3.38,
+      "end": 4.2,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    }
+  ],
+  "transcription_id": "KqPy2l5NAQ4ouzPOKHhk",
+  "audio_duration_secs": 4.48
+}

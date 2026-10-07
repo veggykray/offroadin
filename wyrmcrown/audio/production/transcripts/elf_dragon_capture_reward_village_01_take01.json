@@ -1,0 +1,212 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A village claimed. Taxes, two more places in our army, and livestock. Finally, useful neighbors",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.2,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -0.0007166677969507873
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -9.63164638960734e-05
+    },
+    {
+      "text": "village",
+      "start": 0.36,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -9.63164638960734e-05
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -8.713819261174649e-05
+    },
+    {
+      "text": "claimed.",
+      "start": 0.86,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -0.002528429200538085
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -0.00023755589791107923
+    },
+    {
+      "text": "Taxes,",
+      "start": 2.0,
+      "end": 2.6,
+      "type": "word",
+      "logprob": -0.00048622017736003426
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.98,
+      "type": "spacing",
+      "logprob": -1.1444026313256472e-05
+    },
+    {
+      "text": "two",
+      "start": 2.98,
+      "end": 3.14,
+      "type": "word",
+      "logprob": -1.1444026313256472e-05
+    },
+    {
+      "text": " ",
+      "start": 3.14,
+      "end": 3.2,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "more",
+      "start": 3.2,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.42,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "places",
+      "start": 3.42,
+      "end": 3.8,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 3.8,
+      "end": 3.86,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "in",
+      "start": 3.86,
+      "end": 3.94,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.94,
+      "end": 4.0,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "our",
+      "start": 4.0,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 4.16,
+      "end": 4.26,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "army,",
+      "start": 4.26,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -0.0028371654349029995
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "and",
+      "start": 4.9,
+      "end": 5.06,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.06,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": -9.775113539944869e-06
+    },
+    {
+      "text": "livestock.",
+      "start": 5.18,
+      "end": 5.86,
+      "type": "word",
+      "logprob": -1.1026790980395163e-05
+    },
+    {
+      "text": " ",
+      "start": 5.86,
+      "end": 5.86,
+      "type": "spacing",
+      "logprob": -0.0001528146385680884
+    },
+    {
+      "text": "Finally,",
+      "start": 6.52,
+      "end": 6.98,
+      "type": "word",
+      "logprob": -0.00028201056193211116
+    },
+    {
+      "text": " ",
+      "start": 6.98,
+      "end": 6.98,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "useful",
+      "start": 7.52,
+      "end": 7.9,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 7.9,
+      "end": 7.96,
+      "type": "spacing",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": "neighbors",
+      "start": 7.96,
+      "end": 8.48,
+      "type": "word",
+      "logprob": -1.2040065485052764e-05
+    }
+  ],
+  "transcription_id": "ukEGpPThJbBPalcWb9Cd",
+  "audio_duration_secs": 8.72
+}

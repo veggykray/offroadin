@@ -1,0 +1,156 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "If my leg falls off, circle back it's the good one",
+  "words": [
+    {
+      "text": "If",
+      "start": 0.26,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.000176652567461133
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "my",
+      "start": 0.44,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.68,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "leg",
+      "start": 0.68,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -1.3351351299206726e-05
+    },
+    {
+      "text": "falls",
+      "start": 0.98,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -1.3351351299206726e-05
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "off,",
+      "start": 1.4,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -0.00012612146383084166
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -3.158996332786046e-05
+    },
+    {
+      "text": "circle",
+      "start": 2.04,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -3.158996332786046e-05
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "back",
+      "start": 2.42,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.8,
+      "end": 2.8,
+      "type": "spacing",
+      "logprob": -0.38751739263534546
+    },
+    {
+      "text": "it's",
+      "start": 3.28,
+      "end": 3.48,
+      "type": "word",
+      "logprob": -0.19375890493384418
+    },
+    {
+      "text": " ",
+      "start": 3.48,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "the",
+      "start": 3.54,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "good",
+      "start": 3.66,
+      "end": 3.86,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.86,
+      "end": 3.92,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "one",
+      "start": 3.92,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    }
+  ],
+  "transcription_id": "JkrdwxCOHJQRKPeLO4wj",
+  "audio_duration_secs": 4.4
+}

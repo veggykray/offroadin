@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "casting": "User approved Julian, Lily, Ariana, Declan, Smoke the Dragon, Callum, Victor and Bill. Exact IDs, model, settings and processing are saved in cast.json.",
+  "counts": {"dialogue_lines": 360, "dialogue_takes": 375, "sfx": 125, "audition_takes": 50, "total_mp3_files": 550},
+  "verification": "Fresh decode, level/clipping and checksum audit passed for every final file. All 360 dialogue jobs have approved cast identity/settings. Real browser playback verified eight voices at rate 1 and 125 decoded SFX through the existing mixer. Feeding, combat, rare banter, warning preemption, victory/defeat and review-page checks passed.",
+  "cadence": {"banter_initial_quiet_seconds": 90, "banter_interval_seconds": [180,300], "travel_interval_seconds": [75,130], "dragon_travel_chance": 0.15},
+  "meals": "Twelve distinct prey-specific mixes; bite, crunch, squelch, chew and swallow assembled into 0.9 seconds. Previous mixes and original provider takes are retained.",
+  "listening": "Casting approved by user. Final production acting, comic timing, pronunciation and SFX listening review remains pending; the agent cannot hear audio in this session.",
+  "active_transcript_flags": [
+    {"line": "elf_wizard_waygate_01", "note": "Scribe merged a waygate into away gate; listen for the intended boundary."},
+    {"line": "human_wizard_spell_failure_01", "note": "Scribe read no spells stored for no spell stored; listen for the word boundary."}
+  ]
+}

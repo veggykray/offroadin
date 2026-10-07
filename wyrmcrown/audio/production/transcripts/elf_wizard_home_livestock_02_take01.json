@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our cattle are being stolen. Such tiresome greed",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.12,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -3.838465272565372e-05
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -2.706014311115723e-05
+    },
+    {
+      "text": "cattle",
+      "start": 0.4,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -2.706014311115723e-05
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "are",
+      "start": 0.74,
+      "end": 0.8,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.84,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "being",
+      "start": 0.84,
+      "end": 1.02,
+      "type": "word",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": " ",
+      "start": 1.02,
+      "end": 1.28,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "stolen.",
+      "start": 1.28,
+      "end": 1.78,
+      "type": "word",
+      "logprob": -0.0035484148455456727
+    },
+    {
+      "text": " ",
+      "start": 1.78,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "Such",
+      "start": 2.16,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -0.00023505308490712196
+    },
+    {
+      "text": "tiresome",
+      "start": 2.6,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -0.00023505308490712196
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -2.6464111215318553e-05
+    },
+    {
+      "text": "greed",
+      "start": 3.32,
+      "end": 3.74,
+      "type": "word",
+      "logprob": -2.6464111215318553e-05
+    }
+  ],
+  "transcription_id": "FYnqZkmhEP4Uw9MqOeLC",
+  "audio_duration_secs": 4.08
+}

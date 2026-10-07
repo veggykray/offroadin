@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They've smashed our gold cart",
+  "words": [
+    {
+      "text": "They've",
+      "start": 0.1,
+      "end": 0.32,
+      "type": "word",
+      "logprob": -2.0946059651448324e-05
+    },
+    {
+      "text": " ",
+      "start": 0.32,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": "smashed",
+      "start": 0.44,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "our",
+      "start": 0.8,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 1.04,
+      "type": "spacing",
+      "logprob": -0.0001045410826918669
+    },
+    {
+      "text": "gold",
+      "start": 1.04,
+      "end": 1.32,
+      "type": "word",
+      "logprob": -0.0001045410826918669
+    },
+    {
+      "text": " ",
+      "start": 1.32,
+      "end": 1.42,
+      "type": "spacing",
+      "logprob": -1.823885577323381e-05
+    },
+    {
+      "text": "cart",
+      "start": 1.42,
+      "end": 1.78,
+      "type": "word",
+      "logprob": -1.823885577323381e-05
+    }
+  ],
+  "transcription_id": "emo46JGczMK6S05CuwLD",
+  "audio_duration_secs": 2.0
+}

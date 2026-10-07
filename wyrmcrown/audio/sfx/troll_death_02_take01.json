@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "troll_death_02",
+    "event": "troll_death",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Troll collapses with a gurgling dying exhale, saliva rattle, short and revolting Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:02:03.825780+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Troll collapses with a gurgling dying exhale, saliva rattle, short and revolting Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "ed87b2bdb90e237149c8ff946822b8b0d8cab83c21624fd808c46f7839df8aae",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\troll_death_02_take01.mp3",
+  "sha256": "97e574cf7b6cc967c13003faca8e703fe7e9bb85793a2cd91a8efba90cec3ed1",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": 0.0,
+    "rms_dbfs": -12.76,
+    "clipped_sample_fraction": 0.000249,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.1,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.76,
+    "peak_dbfs": -7.6,
+    "rms_dbfs": -20.86,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.02,
+    "trailing_quiet_seconds": 0.12,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

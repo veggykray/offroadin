@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They withdraw. Watch for a trap",
+  "words": [
+    {
+      "text": "They",
+      "start": 0.18,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -0.000125281119835563
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -2.90866428258596e-05
+    },
+    {
+      "text": "withdraw.",
+      "start": 0.38,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -3.774859538275955e-05
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 1.0,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "Watch",
+      "start": 1.64,
+      "end": 1.92,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 1.92,
+      "end": 2.02,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 2.02,
+      "end": 2.12,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 2.16,
+      "end": 2.24,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.3,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "trap",
+      "start": 2.3,
+      "end": 2.66,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    }
+  ],
+  "transcription_id": "MSmw6fWqlep9bClc8W31",
+  "audio_duration_secs": 2.96
+}

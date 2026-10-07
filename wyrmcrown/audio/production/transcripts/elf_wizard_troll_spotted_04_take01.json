@@ -1,0 +1,156 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "It has eaten the fence. At least the view is consistent",
+  "words": [
+    {
+      "text": "It",
+      "start": 0.16,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -6.794906312279636e-06
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.28,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "has",
+      "start": 0.28,
+      "end": 0.52,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 0.52,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "eaten",
+      "start": 0.56,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 0.9,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "fence.",
+      "start": 1.14,
+      "end": 1.62,
+      "type": "word",
+      "logprob": -5.364360163184756e-06
+    },
+    {
+      "text": " ",
+      "start": 1.62,
+      "end": 1.62,
+      "type": "spacing",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": "At",
+      "start": 2.2,
+      "end": 2.28,
+      "type": "word",
+      "logprob": -8.583032467868179e-06
+    },
+    {
+      "text": " ",
+      "start": 2.28,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "least",
+      "start": 2.34,
+      "end": 2.56,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.56,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "the",
+      "start": 2.6,
+      "end": 2.72,
+      "type": "word",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": " ",
+      "start": 2.72,
+      "end": 2.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "view",
+      "start": 2.76,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.02,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "is",
+      "start": 3.02,
+      "end": 3.14,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.14,
+      "end": 3.18,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "consistent",
+      "start": 3.18,
+      "end": 3.84,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    }
+  ],
+  "transcription_id": "YZMTotOA2J2ZCghte1SB",
+  "audio_duration_secs": 4.16
+}

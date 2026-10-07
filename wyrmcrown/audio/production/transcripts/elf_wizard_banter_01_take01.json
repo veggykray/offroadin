@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "You have drooled on my robe",
+  "words": [
+    {
+      "text": "You",
+      "start": 0.28,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.44,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "have",
+      "start": 0.44,
+      "end": 0.66,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.66,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -3.0636318115284666e-05
+    },
+    {
+      "text": "drooled",
+      "start": 0.74,
+      "end": 1.28,
+      "type": "word",
+      "logprob": -4.5826320274500176e-05
+    },
+    {
+      "text": " ",
+      "start": 1.28,
+      "end": 1.38,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "on",
+      "start": 1.38,
+      "end": 1.5,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.5,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 1.54,
+      "end": 1.74,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 1.74,
+      "end": 1.82,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "robe",
+      "start": 1.82,
+      "end": 2.26,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    }
+  ],
+  "transcription_id": "r3Waw1vLnO7kBHW0zo4l",
+  "audio_duration_secs": 2.64
+}

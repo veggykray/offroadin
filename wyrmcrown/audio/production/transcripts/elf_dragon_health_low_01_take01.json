@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "That was my favorite scale",
+  "words": [
+    {
+      "text": "That",
+      "start": 0.2,
+      "end": 0.38,
+      "type": "word",
+      "logprob": -1.9073304429184645e-05
+    },
+    {
+      "text": " ",
+      "start": 0.38,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "was",
+      "start": 0.5,
+      "end": 0.66,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.66,
+      "end": 0.72,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "my",
+      "start": 0.72,
+      "end": 0.84,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 0.84,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -0.00010942813969450071
+    },
+    {
+      "text": "favorite",
+      "start": 1.16,
+      "end": 1.66,
+      "type": "word",
+      "logprob": -0.00010942813969450071
+    },
+    {
+      "text": " ",
+      "start": 1.66,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -5.125986263010418e-06
+    },
+    {
+      "text": "scale",
+      "start": 1.78,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -5.125986263010418e-06
+    }
+  ],
+  "transcription_id": "M523NVjekqPNzL1L3niF",
+  "audio_duration_secs": 2.56
+}

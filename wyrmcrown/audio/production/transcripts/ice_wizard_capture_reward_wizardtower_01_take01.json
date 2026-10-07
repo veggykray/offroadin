@@ -1,0 +1,170 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Wizard tower secured. Magical fire against enemies. Vision across the surrounding ground",
+  "words": [
+    {
+      "text": "Wizard",
+      "start": 0.18,
+      "end": 0.5,
+      "type": "word",
+      "logprob": -0.00018952481332235038
+    },
+    {
+      "text": " ",
+      "start": 0.5,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -0.5231438875198364
+    },
+    {
+      "text": "tower",
+      "start": 0.56,
+      "end": 0.82,
+      "type": "word",
+      "logprob": -0.5231438875198364
+    },
+    {
+      "text": " ",
+      "start": 0.82,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -4.887569048150908e-06
+    },
+    {
+      "text": "secured.",
+      "start": 0.92,
+      "end": 1.44,
+      "type": "word",
+      "logprob": -4.484590010633838e-05
+    },
+    {
+      "text": " ",
+      "start": 1.44,
+      "end": 1.44,
+      "type": "spacing",
+      "logprob": -2.4914430468925275e-05
+    },
+    {
+      "text": "Magical",
+      "start": 1.96,
+      "end": 2.32,
+      "type": "word",
+      "logprob": -2.4914430468925275e-05
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.5,
+      "type": "spacing",
+      "logprob": -1.1801649634435307e-05
+    },
+    {
+      "text": "fire",
+      "start": 2.5,
+      "end": 2.82,
+      "type": "word",
+      "logprob": -1.1801649634435307e-05
+    },
+    {
+      "text": " ",
+      "start": 2.82,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "against",
+      "start": 2.88,
+      "end": 3.22,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.22,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "enemies.",
+      "start": 3.32,
+      "end": 3.78,
+      "type": "word",
+      "logprob": -4.008374119734981e-06
+    },
+    {
+      "text": " ",
+      "start": 3.78,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "Vision",
+      "start": 4.4,
+      "end": 4.7,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 4.7,
+      "end": 4.8,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "across",
+      "start": 4.8,
+      "end": 5.18,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 5.18,
+      "end": 5.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 5.22,
+      "end": 5.28,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.28,
+      "end": 5.34,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "surrounding",
+      "start": 5.36,
+      "end": 5.84,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 5.84,
+      "end": 5.94,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "ground",
+      "start": 5.94,
+      "end": 6.34,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    }
+  ],
+  "transcription_id": "n6yICdGRMpkiUDSbybN3",
+  "audio_duration_secs": 6.56
+}

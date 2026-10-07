@@ -1,0 +1,41 @@
+{
+  "id": "elf_fight",
+  "source_file": "Elf dragon fight.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Elf dragon fight.wav",
+  "source_sha256": "721ecf6fdb04c20e07c986d2ef85b0d4487d0546aa01e3c97d0c38c1baeaa3a1",
+  "source_info": {
+    "duration_seconds": 194.0,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-16.21",
+    "input_tp": "-5.10",
+    "input_lra": "4.80",
+    "input_thresh": "-26.39",
+    "output_i": "-20.69",
+    "output_tp": "-5.94",
+    "output_lra": "2.40",
+    "output_thresh": "-30.75",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.31"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "19affc2517834d8113717bcf5263f586025e8aea18a2081d54a8d37d02c63fb7",
+  "inspection": {
+    "duration_seconds": 194.04,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -10.8,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

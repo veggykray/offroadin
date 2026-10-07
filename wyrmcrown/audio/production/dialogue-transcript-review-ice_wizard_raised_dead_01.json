@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ice_wizard_raised_dead_01",
+    "take": "ice_wizard_raised_dead_01_take01",
+    "expected": "The dead rise. Burn them again.",
+    "transcript": "The dead rise bury them again",
+    "word_similarity": 0.833,
+    "status": "manual_review_required"
+  },
+  {
+    "id": "ice_wizard_raised_dead_01",
+    "take": "ice_wizard_raised_dead_01_take02",
+    "expected": "The dead rise. BREAK them again.",
+    "transcript": "The dead rise. Break them again",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

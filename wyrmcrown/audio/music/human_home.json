@@ -1,0 +1,41 @@
+{
+  "id": "human_home",
+  "source_file": "Soft Flowing Strings.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Soft Flowing Strings.wav",
+  "source_sha256": "52993b5c4150379ebee642cbca067c8931bb18a223fe2a612d8280afe6bda2b5",
+  "source_info": {
+    "duration_seconds": 208.6,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-15.63",
+    "input_tp": "-4.71",
+    "input_lra": "4.50",
+    "input_thresh": "-25.69",
+    "output_i": "-21.29",
+    "output_tp": "-10.38",
+    "output_lra": "3.60",
+    "output_thresh": "-31.31",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.71"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "ec6b96338622b992d4e722107a1dacdb1404eaf9a4a7ccc8c1fe0fc9eaf3d1b1",
+  "inspection": {
+    "duration_seconds": 208.64,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -11.3,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

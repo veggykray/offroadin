@@ -1,0 +1,282 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Relic secured. Call the Host gains a charge every hundred and ten seconds. Keep other spells out of the slot",
+  "words": [
+    {
+      "text": "Relic",
+      "start": 0.18,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.00016332181839970872
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -0.0001227780303452164
+    },
+    {
+      "text": "secured.",
+      "start": 0.48,
+      "end": 1.0,
+      "type": "word",
+      "logprob": -0.00011152852857776452
+    },
+    {
+      "text": " ",
+      "start": 1.0,
+      "end": 1.0,
+      "type": "spacing",
+      "logprob": -2.729855441430118e-05
+    },
+    {
+      "text": "Call",
+      "start": 1.5,
+      "end": 1.66,
+      "type": "word",
+      "logprob": -2.729855441430118e-05
+    },
+    {
+      "text": " ",
+      "start": 1.66,
+      "end": 1.7,
+      "type": "spacing",
+      "logprob": -0.0006273209000937641
+    },
+    {
+      "text": "the",
+      "start": 1.7,
+      "end": 1.8,
+      "type": "word",
+      "logprob": -0.0006273209000937641
+    },
+    {
+      "text": " ",
+      "start": 1.8,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -0.020557083189487457
+    },
+    {
+      "text": "Host",
+      "start": 1.84,
+      "end": 2.1,
+      "type": "word",
+      "logprob": -0.020557083189487457
+    },
+    {
+      "text": " ",
+      "start": 2.1,
+      "end": 2.18,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "gains",
+      "start": 2.18,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.42,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "a",
+      "start": 2.42,
+      "end": 2.48,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 2.48,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": "charge",
+      "start": 2.54,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -7.152531907195225e-06
+    },
+    {
+      "text": " ",
+      "start": 2.8,
+      "end": 2.94,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "every",
+      "start": 2.94,
+      "end": 3.12,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.12,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -2.8729025871143676e-05
+    },
+    {
+      "text": "hundred",
+      "start": 3.24,
+      "end": 3.52,
+      "type": "word",
+      "logprob": -2.8729025871143676e-05
+    },
+    {
+      "text": " ",
+      "start": 3.52,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "and",
+      "start": 3.54,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": "ten",
+      "start": 3.72,
+      "end": 3.88,
+      "type": "word",
+      "logprob": -4.410734163684538e-06
+    },
+    {
+      "text": " ",
+      "start": 3.88,
+      "end": 4.04,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "seconds.",
+      "start": 4.04,
+      "end": 4.48,
+      "type": "word",
+      "logprob": -9.238711911052633e-07
+    },
+    {
+      "text": " ",
+      "start": 4.48,
+      "end": 4.48,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "Keep",
+      "start": 5.02,
+      "end": 5.28,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 5.28,
+      "end": 5.34,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "other",
+      "start": 5.36,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.66,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "spells",
+      "start": 5.66,
+      "end": 6.0,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 6.0,
+      "end": 6.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "out",
+      "start": 6.08,
+      "end": 6.16,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.22,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 6.22,
+      "end": 6.28,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.28,
+      "end": 6.32,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 6.32,
+      "end": 6.42,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.42,
+      "end": 6.48,
+      "type": "spacing",
+      "logprob": -5.304672595229931e-05
+    },
+    {
+      "text": "slot",
+      "start": 6.48,
+      "end": 6.8,
+      "type": "word",
+      "logprob": -5.304672595229931e-05
+    }
+  ],
+  "transcription_id": "EkIOhGBnZUytkGDqUEQm",
+  "audio_duration_secs": 7.04
+}

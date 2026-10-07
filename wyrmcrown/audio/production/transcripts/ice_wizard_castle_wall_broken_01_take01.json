@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Wall breached. Advance",
+  "words": [
+    {
+      "text": "Wall",
+      "start": 0.32,
+      "end": 0.54,
+      "type": "word",
+      "logprob": -0.0005496421363204718
+    },
+    {
+      "text": " ",
+      "start": 0.54,
+      "end": 0.68,
+      "type": "spacing",
+      "logprob": -0.0004508670826908201
+    },
+    {
+      "text": "breached.",
+      "start": 0.68,
+      "end": 1.2,
+      "type": "word",
+      "logprob": -0.00041831961102111056
+    },
+    {
+      "text": " ",
+      "start": 1.2,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -9.60780744208023e-05
+    },
+    {
+      "text": "Advance",
+      "start": 1.86,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -9.60780744208023e-05
+    }
+  ],
+  "transcription_id": "S2KS3nIvdKqxSsZD3o6o",
+  "audio_duration_secs": 2.88
+}

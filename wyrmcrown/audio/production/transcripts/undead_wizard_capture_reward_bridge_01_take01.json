@@ -1,0 +1,254 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our bridge. Passing enemy gold carts pay 15%. The tower shoots at foes. Death and taxes beautifully combined",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.16,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.00017212340026162565
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.07889790087938309
+    },
+    {
+      "text": "bridge.",
+      "start": 0.38,
+      "end": 0.8,
+      "type": "word",
+      "logprob": -0.06841859268024564
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -2.0265373677830212e-05
+    },
+    {
+      "text": "Passing",
+      "start": 1.36,
+      "end": 1.74,
+      "type": "word",
+      "logprob": -2.0265373677830212e-05
+    },
+    {
+      "text": " ",
+      "start": 1.74,
+      "end": 1.8,
+      "type": "spacing",
+      "logprob": -1.0609570381348021e-05
+    },
+    {
+      "text": "enemy",
+      "start": 1.8,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -1.0609570381348021e-05
+    },
+    {
+      "text": " ",
+      "start": 2.02,
+      "end": 2.14,
+      "type": "spacing",
+      "logprob": -0.003602326614782214
+    },
+    {
+      "text": "gold",
+      "start": 2.14,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -0.003602326614782214
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.46,
+      "type": "spacing",
+      "logprob": -0.34885069727897644
+    },
+    {
+      "text": "carts",
+      "start": 2.46,
+      "end": 2.74,
+      "type": "word",
+      "logprob": -0.34885069727897644
+    },
+    {
+      "text": " ",
+      "start": 2.74,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -1.0132738680113107e-05
+    },
+    {
+      "text": "pay",
+      "start": 2.84,
+      "end": 3.08,
+      "type": "word",
+      "logprob": -1.0132738680113107e-05
+    },
+    {
+      "text": " ",
+      "start": 3.08,
+      "end": 3.12,
+      "type": "spacing",
+      "logprob": -0.00023100091493688524
+    },
+    {
+      "text": "15%.",
+      "start": 3.12,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -8.183048339560628e-05
+    },
+    {
+      "text": " ",
+      "start": 4.18,
+      "end": 4.18,
+      "type": "spacing",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": "The",
+      "start": 4.58,
+      "end": 4.7,
+      "type": "word",
+      "logprob": -1.4543427823809907e-05
+    },
+    {
+      "text": " ",
+      "start": 4.7,
+      "end": 4.76,
+      "type": "spacing",
+      "logprob": -0.0006267252028919756
+    },
+    {
+      "text": "tower",
+      "start": 4.76,
+      "end": 5.1,
+      "type": "word",
+      "logprob": -0.0006267252028919756
+    },
+    {
+      "text": " ",
+      "start": 5.1,
+      "end": 5.24,
+      "type": "spacing",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": "shoots",
+      "start": 5.24,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.52,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "at",
+      "start": 5.52,
+      "end": 5.6,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.6,
+      "end": 5.72,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "foes.",
+      "start": 5.72,
+      "end": 6.16,
+      "type": "word",
+      "logprob": -1.7427703642169946e-05
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.16,
+      "type": "spacing",
+      "logprob": -8.821448318485636e-06
+    },
+    {
+      "text": "Death",
+      "start": 6.64,
+      "end": 6.86,
+      "type": "word",
+      "logprob": -8.821448318485636e-06
+    },
+    {
+      "text": " ",
+      "start": 6.86,
+      "end": 6.88,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "and",
+      "start": 6.88,
+      "end": 6.98,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 6.98,
+      "end": 7.08,
+      "type": "spacing",
+      "logprob": -0.0003880701260641217
+    },
+    {
+      "text": "taxes",
+      "start": 7.08,
+      "end": 7.64,
+      "type": "word",
+      "logprob": -0.0003880701260641217
+    },
+    {
+      "text": " ",
+      "start": 7.64,
+      "end": 8.06,
+      "type": "spacing",
+      "logprob": -0.5231742858886719
+    },
+    {
+      "text": "beautifully",
+      "start": 8.06,
+      "end": 8.64,
+      "type": "word",
+      "logprob": -0.5231742858886719
+    },
+    {
+      "text": " ",
+      "start": 8.64,
+      "end": 8.68,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "combined",
+      "start": 8.68,
+      "end": 9.3,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "FC5UnTdm2oUJRWwF0mn7",
+  "audio_duration_secs": 9.44
+}

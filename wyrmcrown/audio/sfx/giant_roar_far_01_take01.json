@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_roar_far_01",
+    "event": "giant_roar_far",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Distant enormous humanoid giant roar, outdoor low chest bellow with natural distance, not a dragon Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:08.588399+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Distant enormous humanoid giant roar, outdoor low chest bellow with natural distance, not a dragon Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "f95bab12cc9b74fb2e66582950d4282588b2364f52662aa2b2ecc7f429094622",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_roar_far_01_take01.mp3",
+  "sha256": "c96aee6739d2d00adff61cb94e752bbf7f4b15e9f33291e7f2ba10cf49e29fa0",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 2.2,
+    "peak_dbfs": -0.41,
+    "rms_dbfs": -13.47,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.92,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.2,
+    "peak_dbfs": -10.54,
+    "rms_dbfs": -23.65,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 1.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

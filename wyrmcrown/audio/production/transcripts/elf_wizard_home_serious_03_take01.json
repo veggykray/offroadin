@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our people are beneath those flames. Fly home",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.14,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -1.0132738680113107e-05
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "people",
+      "start": 0.38,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "are",
+      "start": 0.74,
+      "end": 0.84,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 0.84,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": "beneath",
+      "start": 0.88,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -3.3378546504536644e-06
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.32,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "those",
+      "start": 1.34,
+      "end": 1.56,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 1.56,
+      "end": 1.66,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "flames.",
+      "start": 1.66,
+      "end": 2.08,
+      "type": "word",
+      "logprob": -0.00038544956571838284
+    },
+    {
+      "text": " ",
+      "start": 2.08,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -7.867782187531702e-06
+    },
+    {
+      "text": "Fly",
+      "start": 2.44,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -7.867782187531702e-06
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -7.033323527139146e-06
+    },
+    {
+      "text": "home",
+      "start": 2.88,
+      "end": 3.32,
+      "type": "word",
+      "logprob": -7.033323527139146e-06
+    }
+  ],
+  "transcription_id": "k7oVLkeT3c73hDJ8ridU",
+  "audio_duration_secs": 3.68
+}

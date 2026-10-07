@@ -1,0 +1,170 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Well secured. Stay nearby. Wounds heal. Mana returns. Then we strike again",
+  "words": [
+    {
+      "text": "Well",
+      "start": 0.2,
+      "end": 0.38,
+      "type": "word",
+      "logprob": -1.2397689715726301e-05
+    },
+    {
+      "text": " ",
+      "start": 0.38,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -0.0004372832481749356
+    },
+    {
+      "text": "secured.",
+      "start": 0.52,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -0.00039722512701700907
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "Stay",
+      "start": 1.76,
+      "end": 1.94,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 1.94,
+      "end": 2.0,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "nearby.",
+      "start": 2.0,
+      "end": 2.6,
+      "type": "word",
+      "logprob": -2.4863561195940875e-06
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.62,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "Wounds",
+      "start": 3.22,
+      "end": 3.64,
+      "type": "word",
+      "logprob": -8.920785376176354e-06
+    },
+    {
+      "text": " ",
+      "start": 3.64,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -1.2159273865108844e-05
+    },
+    {
+      "text": "heal.",
+      "start": 3.72,
+      "end": 4.16,
+      "type": "word",
+      "logprob": -0.028546336234285263
+    },
+    {
+      "text": " ",
+      "start": 4.16,
+      "end": 4.2,
+      "type": "spacing",
+      "logprob": -8.153582894010469e-05
+    },
+    {
+      "text": "Mana",
+      "start": 4.68,
+      "end": 5.06,
+      "type": "word",
+      "logprob": -8.153582894010469e-05
+    },
+    {
+      "text": " ",
+      "start": 5.06,
+      "end": 5.12,
+      "type": "spacing",
+      "logprob": -1.0013530300057027e-05
+    },
+    {
+      "text": "returns.",
+      "start": 5.12,
+      "end": 5.86,
+      "type": "word",
+      "logprob": -1.1071497624470794e-05
+    },
+    {
+      "text": " ",
+      "start": 5.86,
+      "end": 5.86,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "Then",
+      "start": 6.36,
+      "end": 6.7,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 6.7,
+      "end": 6.9,
+      "type": "spacing",
+      "logprob": -0.0004306104383431375
+    },
+    {
+      "text": "we",
+      "start": 6.9,
+      "end": 7.04,
+      "type": "word",
+      "logprob": -0.0004306104383431375
+    },
+    {
+      "text": " ",
+      "start": 7.04,
+      "end": 7.18,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "strike",
+      "start": 7.18,
+      "end": 7.5,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.5,
+      "end": 7.58,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "again",
+      "start": 7.58,
+      "end": 8.0,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "MlEjJTaCk2XZGUM5W5cT",
+  "audio_duration_secs": 8.24
+}

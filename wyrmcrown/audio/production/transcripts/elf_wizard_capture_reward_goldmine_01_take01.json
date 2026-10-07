@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The mine is ours. Gold carts will supply our treasury. Keep the road fit for civilized commerce",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.16,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -3.790783375734463e-05
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.32,
+      "type": "spacing",
+      "logprob": -0.00018094333063345402
+    },
+    {
+      "text": "mine",
+      "start": 0.32,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -0.00018094333063345402
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "is",
+      "start": 0.7,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 1.0,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "ours.",
+      "start": 1.0,
+      "end": 1.42,
+      "type": "word",
+      "logprob": -9.389183069288264e-05
+    },
+    {
+      "text": " ",
+      "start": 1.42,
+      "end": 1.42,
+      "type": "spacing",
+      "logprob": -3.111314072157256e-05
+    },
+    {
+      "text": "Gold",
+      "start": 1.94,
+      "end": 2.16,
+      "type": "word",
+      "logprob": -3.111314072157256e-05
+    },
+    {
+      "text": " ",
+      "start": 2.16,
+      "end": 2.24,
+      "type": "spacing",
+      "logprob": -0.0003327769518364221
+    },
+    {
+      "text": "carts",
+      "start": 2.24,
+      "end": 2.56,
+      "type": "word",
+      "logprob": -0.0003327769518364221
+    },
+    {
+      "text": " ",
+      "start": 2.56,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "will",
+      "start": 2.58,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.74,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "supply",
+      "start": 2.74,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": " ",
+      "start": 3.18,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "our",
+      "start": 3.24,
+      "end": 3.36,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.36,
+      "end": 3.44,
+      "type": "spacing",
+      "logprob": -0.0002978596603497863
+    },
+    {
+      "text": "treasury.",
+      "start": 3.44,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -0.0002879942799659653
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 4.36,
+      "type": "spacing",
+      "logprob": -1.0490362910786644e-05
+    },
+    {
+      "text": "Keep",
+      "start": 4.36,
+      "end": 4.56,
+      "type": "word",
+      "logprob": -1.0490362910786644e-05
+    },
+    {
+      "text": " ",
+      "start": 4.56,
+      "end": 4.6,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "the",
+      "start": 4.6,
+      "end": 4.66,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.66,
+      "end": 4.7,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "road",
+      "start": 4.7,
+      "end": 4.9,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 4.9,
+      "end": 5.06,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "fit",
+      "start": 5.06,
+      "end": 5.28,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 5.28,
+      "end": 5.36,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "for",
+      "start": 5.36,
+      "end": 5.5,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.5,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -0.00020418466010596603
+    },
+    {
+      "text": "civilized",
+      "start": 5.58,
+      "end": 6.04,
+      "type": "word",
+      "logprob": -0.00020418466010596603
+    },
+    {
+      "text": " ",
+      "start": 6.04,
+      "end": 6.14,
+      "type": "spacing",
+      "logprob": -3.325883881188929e-05
+    },
+    {
+      "text": "commerce",
+      "start": 6.14,
+      "end": 6.6,
+      "type": "word",
+      "logprob": -3.325883881188929e-05
+    }
+  ],
+  "transcription_id": "65Np62dBuu9eEe3RiC4Z",
+  "audio_duration_secs": 6.8
+}

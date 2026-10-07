@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Foreign graves. Best not disturb them yet",
+  "words": [
+    {
+      "text": "Foreign",
+      "start": 0.28,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.003262912854552269
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -0.0005631053354591131
+    },
+    {
+      "text": "graves.",
+      "start": 0.8,
+      "end": 1.44,
+      "type": "word",
+      "logprob": -0.0005718875410301345
+    },
+    {
+      "text": " ",
+      "start": 1.44,
+      "end": 1.44,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "Best",
+      "start": 2.08,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "not",
+      "start": 2.44,
+      "end": 2.62,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.66,
+      "type": "spacing",
+      "logprob": -7.974783511599526e-05
+    },
+    {
+      "text": "disturb",
+      "start": 2.66,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -7.974783511599526e-05
+    },
+    {
+      "text": " ",
+      "start": 3.18,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "them",
+      "start": 3.24,
+      "end": 3.48,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.48,
+      "end": 3.5,
+      "type": "spacing",
+      "logprob": -0.06096956878900528
+    },
+    {
+      "text": "yet",
+      "start": 4.18,
+      "end": 4.56,
+      "type": "word",
+      "logprob": -0.06096956878900528
+    }
+  ],
+  "transcription_id": "Ytrdan5yOydT19cBT2Ak",
+  "audio_duration_secs": 4.72
+}

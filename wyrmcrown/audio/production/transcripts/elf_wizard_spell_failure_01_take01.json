@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "No spell prepared. Even brilliance requires ingredients",
+  "words": [
+    {
+      "text": "No",
+      "start": 0.32,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -0.0002661589242052287
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -2.3603161025675945e-05
+    },
+    {
+      "text": "spell",
+      "start": 0.66,
+      "end": 0.92,
+      "type": "word",
+      "logprob": -2.3603161025675945e-05
+    },
+    {
+      "text": " ",
+      "start": 0.92,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "prepared.",
+      "start": 0.94,
+      "end": 1.5,
+      "type": "word",
+      "logprob": -0.0001213853174704127
+    },
+    {
+      "text": " ",
+      "start": 1.5,
+      "end": 1.5,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "Even",
+      "start": 2.1,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.3,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -0.0002079985715681687
+    },
+    {
+      "text": "brilliance",
+      "start": 2.44,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -0.0002079985715681687
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "requires",
+      "start": 3.06,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.54,
+      "type": "spacing",
+      "logprob": -1.585470999998506e-05
+    },
+    {
+      "text": "ingredients",
+      "start": 3.54,
+      "end": 4.26,
+      "type": "word",
+      "logprob": -1.585470999998506e-05
+    }
+  ],
+  "transcription_id": "myK6zFBesLdmT6ypyUtW",
+  "audio_duration_secs": 4.48
+}

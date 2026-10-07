@@ -1,0 +1,212 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Cave cleared. Two hundred and twenty gold lies below. Collect the coins before we leave",
+  "words": [
+    {
+      "text": "Cave",
+      "start": 0.16,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -0.001176975667476654
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -8.34461570775602e-06
+    },
+    {
+      "text": "cleared.",
+      "start": 0.58,
+      "end": 1.1,
+      "type": "word",
+      "logprob": -2.7535678555068444e-05
+    },
+    {
+      "text": " ",
+      "start": 1.1,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -0.009805843234062195
+    },
+    {
+      "text": "Two",
+      "start": 1.68,
+      "end": 1.88,
+      "type": "word",
+      "logprob": -0.009805843234062195
+    },
+    {
+      "text": " ",
+      "start": 1.88,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "hundred",
+      "start": 1.94,
+      "end": 2.22,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.22,
+      "end": 2.24,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "and",
+      "start": 2.24,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.46,
+      "type": "spacing",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": "twenty",
+      "start": 2.46,
+      "end": 2.76,
+      "type": "word",
+      "logprob": -5.722029527532868e-06
+    },
+    {
+      "text": " ",
+      "start": 2.76,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "gold",
+      "start": 2.92,
+      "end": 3.3,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 3.3,
+      "end": 3.42,
+      "type": "spacing",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": "lies",
+      "start": 3.42,
+      "end": 3.72,
+      "type": "word",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": " ",
+      "start": 3.72,
+      "end": 3.76,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "below.",
+      "start": 3.76,
+      "end": 4.22,
+      "type": "word",
+      "logprob": -1.7285312310377776e-06
+    },
+    {
+      "text": " ",
+      "start": 4.22,
+      "end": 4.22,
+      "type": "spacing",
+      "logprob": -1.9550132492440753e-05
+    },
+    {
+      "text": "Collect",
+      "start": 4.82,
+      "end": 5.18,
+      "type": "word",
+      "logprob": -1.9550132492440753e-05
+    },
+    {
+      "text": " ",
+      "start": 5.18,
+      "end": 5.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 5.22,
+      "end": 5.32,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 5.32,
+      "end": 5.38,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "coins",
+      "start": 5.38,
+      "end": 5.82,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 5.82,
+      "end": 5.86,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "before",
+      "start": 5.86,
+      "end": 6.16,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.2,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "we",
+      "start": 6.2,
+      "end": 6.3,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.3,
+      "end": 6.36,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "leave",
+      "start": 6.36,
+      "end": 6.74,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "txAQpvNXL556DMPIKuKA",
+  "audio_duration_secs": 6.96
+}

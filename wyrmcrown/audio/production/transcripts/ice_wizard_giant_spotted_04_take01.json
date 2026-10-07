@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Strike the knees weight is his weakness",
+  "words": [
+    {
+      "text": "Strike",
+      "start": 0.38,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -0.0008958140970207751
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "the",
+      "start": 0.78,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "knees",
+      "start": 0.9,
+      "end": 1.4,
+      "type": "word",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": " ",
+      "start": 1.4,
+      "end": 1.4,
+      "type": "spacing",
+      "logprob": -0.004521859809756279
+    },
+    {
+      "text": "weight",
+      "start": 2.08,
+      "end": 2.4,
+      "type": "word",
+      "logprob": -0.004521859809756279
+    },
+    {
+      "text": " ",
+      "start": 2.4,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "is",
+      "start": 2.64,
+      "end": 2.74,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 2.74,
+      "end": 2.78,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "his",
+      "start": 2.78,
+      "end": 3.0,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "weakness",
+      "start": 3.06,
+      "end": 3.64,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    }
+  ],
+  "transcription_id": "ZrSexZrcnK8EdGKt8YiB",
+  "audio_duration_secs": 3.92
+}

@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Try to be a little less edible",
+  "words": [
+    {
+      "text": "Try",
+      "start": 0.18,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -3.6238969187252223e-05
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.48,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "to",
+      "start": 0.48,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.62,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "be",
+      "start": 0.62,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "a",
+      "start": 0.78,
+      "end": 0.8,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 0.8,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "little",
+      "start": 0.9,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "less",
+      "start": 1.24,
+      "end": 1.62,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 1.62,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -5.304672595229931e-05
+    },
+    {
+      "text": "edible",
+      "start": 1.94,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -5.304672595229931e-05
+    }
+  ],
+  "transcription_id": "ZljXLbANCMs0RPvg47gb",
+  "audio_duration_secs": 2.88
+}

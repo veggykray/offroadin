@@ -1,0 +1,98 @@
+[
+  {
+    "id": "elf_wizard_home_critical_01",
+    "take": "elf_wizard_home_critical_01_take01",
+    "expected": "The heart of our realm is FALLING. Home. NOW!",
+    "transcript": "The heart of our realm is falling. Home, now",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_critical_02",
+    "take": "elf_wizard_home_critical_02_take01",
+    "expected": "Our stronghold is failing! There is no time for elegance!",
+    "transcript": "Our stronghold is failing. There is no time for elegance",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_home_critical_03",
+    "take": "elf_wizard_home_critical_03_take01",
+    "expected": "The realm is on the edge of RUIN. Get us home!",
+    "transcript": "The realm is on the edge of ruin. Get us home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_critical_01",
+    "take": "human_wizard_home_critical_01_take01",
+    "expected": "Forget the gold! We're losing HOME!",
+    "transcript": "Forget the gold. We're losing home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_critical_02",
+    "take": "human_wizard_home_critical_02_take01",
+    "expected": "The KEEP is nearly gone! HOME. NOW!",
+    "transcript": "The keep is nearly gone. Home, now!",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_home_critical_03",
+    "take": "human_wizard_home_critical_03_take01",
+    "expected": "We're about to lose the whole bloody TOWN!",
+    "transcript": "We're about to lose the whole bloody town",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_critical_01",
+    "take": "ice_wizard_home_critical_01_take01",
+    "expected": "The keep will not hold. HOME. Now!",
+    "transcript": "The keep will not hold. Home, now!",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_critical_02",
+    "take": "ice_wizard_home_critical_02_take01",
+    "expected": "The keep is breaking. TURN. NOW.",
+    "transcript": "The keep is breaking. Turn now",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_home_critical_03",
+    "take": "ice_wizard_home_critical_03_take01",
+    "expected": "One more assault may end the realm. HOME.",
+    "transcript": "One more assault may end the realm. Home",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_critical_01",
+    "take": "undead_wizard_home_critical_01_take01",
+    "expected": "Our stronghold is DYING. That was supposed to be THEIR job!",
+    "transcript": "Our stronghold is dying. That was supposed to be their job",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_critical_02",
+    "take": "undead_wizard_home_critical_02_take01",
+    "expected": "They're about to finish our stronghold! I want them DEAD first!",
+    "transcript": "They're about to finish our stronghold. I want them dead first",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_home_critical_03",
+    "take": "undead_wizard_home_critical_03_take01",
+    "expected": "If that keep falls, we're all HISTORY. Again!",
+    "transcript": "If that keep falls, we're all history. Again",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

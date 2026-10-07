@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_laugh_02",
+    "event": "giant_laugh",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Enormous giant belly laugh, three rough chest pulses, foolish delight Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.4,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:45.636340+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Enormous giant belly laugh, three rough chest pulses, foolish delight Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.4,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "789a2e47dacabab44ac6d1ac2e7bb3064b516e9f66639caceee3601e643bf08d",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_laugh_02_take01.mp3",
+  "sha256": "2147b7bbc7e392c56c3389cd1a2768418fadd9fb0c0ee4b0ea03ab11ec68ee16",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 2.4,
+    "peak_dbfs": 0.0,
+    "rms_dbfs": -13.23,
+    "clipped_sample_fraction": 0.000156,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.3,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.4,
+    "peak_dbfs": -7.41,
+    "rms_dbfs": -20.8,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.32,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

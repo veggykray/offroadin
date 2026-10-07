@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-06",
+  "source": "User's explicit audition choices in this chat: julian, lilly, ariana, declan, smoke, callum, viktor, bill",
+  "choices": {
+    "human_wizard": {"candidate": "1", "notes": "User selected Julian after audition review."},
+    "elf_wizard": {"candidate": "1", "notes": "User selected Lily after audition review (written lilly)."},
+    "ice_wizard": {"candidate": "1", "notes": "User selected Ariana after audition review."},
+    "undead_wizard": {"candidate": "1", "notes": "User selected Declan after audition review."},
+    "human_dragon": {"candidate": "1", "notes": "User selected Smoke the Dragon after audition review."},
+    "elf_dragon": {"candidate": "1", "notes": "User selected Callum after audition review."},
+    "ice_dragon": {"candidate": "1", "notes": "User selected Victor after audition review (written viktor)."},
+    "undead_dragon": {"candidate": "2", "notes": "User selected Bill after audition review."}
+  }
+}

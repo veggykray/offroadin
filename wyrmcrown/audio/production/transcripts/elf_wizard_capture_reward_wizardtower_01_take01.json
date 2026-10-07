@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our wizard tower. Magic to repel intruders and a clearer view of the surrounding land. Quite acceptable",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.12,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -0.004460979253053665
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -0.0788920596241951
+    },
+    {
+      "text": "wizard",
+      "start": 0.4,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -0.0788920596241951
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -8.570780482841656e-05
+    },
+    {
+      "text": "tower.",
+      "start": 0.8,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -0.0002458741109876428
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.18,
+      "type": "spacing",
+      "logprob": -8.940656698541716e-06
+    },
+    {
+      "text": "Magic",
+      "start": 1.68,
+      "end": 2.06,
+      "type": "word",
+      "logprob": -8.940656698541716e-06
+    },
+    {
+      "text": " ",
+      "start": 2.06,
+      "end": 2.18,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 2.18,
+      "end": 2.24,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.24,
+      "end": 2.28,
+      "type": "spacing",
+      "logprob": -0.0005690624238923192
+    },
+    {
+      "text": "repel",
+      "start": 2.28,
+      "end": 2.6,
+      "type": "word",
+      "logprob": -0.0005690624238923192
+    },
+    {
+      "text": " ",
+      "start": 2.6,
+      "end": 2.66,
+      "type": "spacing",
+      "logprob": -0.00014482879487331957
+    },
+    {
+      "text": "intruders",
+      "start": 2.66,
+      "end": 3.24,
+      "type": "word",
+      "logprob": -0.00014482879487331957
+    },
+    {
+      "text": " ",
+      "start": 3.24,
+      "end": 3.58,
+      "type": "spacing",
+      "logprob": -0.0011705459328368306
+    },
+    {
+      "text": "and",
+      "start": 3.58,
+      "end": 3.66,
+      "type": "word",
+      "logprob": -0.0011705459328368306
+    },
+    {
+      "text": " ",
+      "start": 3.66,
+      "end": 3.7,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "a",
+      "start": 3.7,
+      "end": 3.78,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.78,
+      "end": 3.82,
+      "type": "spacing",
+      "logprob": -6.806619057897478e-05
+    },
+    {
+      "text": "clearer",
+      "start": 3.82,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -6.806619057897478e-05
+    },
+    {
+      "text": " ",
+      "start": 4.18,
+      "end": 4.28,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "view",
+      "start": 4.28,
+      "end": 4.5,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 4.5,
+      "end": 4.56,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 4.56,
+      "end": 4.62,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.62,
+      "end": 4.68,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 4.68,
+      "end": 4.76,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.76,
+      "end": 4.8,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "surrounding",
+      "start": 4.8,
+      "end": 5.24,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": " ",
+      "start": 5.24,
+      "end": 5.32,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "land.",
+      "start": 5.32,
+      "end": 5.7,
+      "type": "word",
+      "logprob": -3.170946320096846e-06
+    },
+    {
+      "text": " ",
+      "start": 5.7,
+      "end": 5.7,
+      "type": "spacing",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": "Quite",
+      "start": 6.18,
+      "end": 6.38,
+      "type": "word",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": " ",
+      "start": 6.38,
+      "end": 6.42,
+      "type": "spacing",
+      "logprob": -7.629365427419543e-06
+    },
+    {
+      "text": "acceptable",
+      "start": 6.42,
+      "end": 6.98,
+      "type": "word",
+      "logprob": -7.629365427419543e-06
+    }
+  ],
+  "transcription_id": "7Zzxvtp7zDpLIlpCoye9",
+  "audio_duration_secs": 7.36
+}

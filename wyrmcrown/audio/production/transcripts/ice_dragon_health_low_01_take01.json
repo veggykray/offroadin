@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Even glaciers can break",
+  "words": [
+    {
+      "text": "Even",
+      "start": 0.18,
+      "end": 0.48,
+      "type": "word",
+      "logprob": -3.71926071238704e-05
+    },
+    {
+      "text": " ",
+      "start": 0.48,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -5.328513361746445e-05
+    },
+    {
+      "text": "glaciers",
+      "start": 0.56,
+      "end": 1.38,
+      "type": "word",
+      "logprob": -5.328513361746445e-05
+    },
+    {
+      "text": " ",
+      "start": 1.38,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "can",
+      "start": 1.84,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.02,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "break",
+      "start": 2.16,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    }
+  ],
+  "transcription_id": "ynAlYs6crE5odF5KhQoE",
+  "audio_duration_secs": 2.96
+}

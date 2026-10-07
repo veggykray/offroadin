@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Their blood will grow still",
+  "words": [
+    {
+      "text": "Their",
+      "start": 0.32,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -0.00011407678539399058
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -1.585470999998506e-05
+    },
+    {
+      "text": "blood",
+      "start": 0.74,
+      "end": 1.22,
+      "type": "word",
+      "logprob": -1.585470999998506e-05
+    },
+    {
+      "text": " ",
+      "start": 1.22,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "will",
+      "start": 1.86,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 2.02,
+      "end": 2.14,
+      "type": "spacing",
+      "logprob": -2.992108420585282e-05
+    },
+    {
+      "text": "grow",
+      "start": 2.14,
+      "end": 2.44,
+      "type": "word",
+      "logprob": -2.992108420585282e-05
+    },
+    {
+      "text": " ",
+      "start": 2.44,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -4.0531076592742465e-06
+    },
+    {
+      "text": "still",
+      "start": 2.72,
+      "end": 3.14,
+      "type": "word",
+      "logprob": -4.0531076592742465e-06
+    }
+  ],
+  "transcription_id": "Ie2XYONMfDsERTZITsXt",
+  "audio_duration_secs": 3.52
+}

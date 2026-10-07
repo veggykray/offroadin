@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "More fire, fewer instructions",
+  "words": [
+    {
+      "text": "More",
+      "start": 0.28,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -3.6238969187252223e-05
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -0.00014006110723130405
+    },
+    {
+      "text": "fire,",
+      "start": 0.82,
+      "end": 1.42,
+      "type": "word",
+      "logprob": -0.0016404414316639304
+    },
+    {
+      "text": " ",
+      "start": 1.42,
+      "end": 1.42,
+      "type": "spacing",
+      "logprob": -1.490105023549404e-05
+    },
+    {
+      "text": "fewer",
+      "start": 1.98,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -1.490105023549404e-05
+    },
+    {
+      "text": " ",
+      "start": 2.42,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "instructions",
+      "start": 2.52,
+      "end": 3.56,
+      "type": "word",
+      "logprob": -5.245195097813848e-06
+    }
+  ],
+  "transcription_id": "LTXx6aLKlKbjaNu7X2Sb",
+  "audio_duration_secs": 3.92
+}

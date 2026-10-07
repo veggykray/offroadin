@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Lightning, a dreadful way to become briefly illuminated",
+  "words": [
+    {
+      "text": "Lightning,",
+      "start": 0.2,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -0.036844044970348475
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -4.0649541915627196e-05
+    },
+    {
+      "text": "a",
+      "start": 1.24,
+      "end": 1.32,
+      "type": "word",
+      "logprob": -4.0649541915627196e-05
+    },
+    {
+      "text": " ",
+      "start": 1.32,
+      "end": 1.42,
+      "type": "spacing",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": "dreadful",
+      "start": 1.42,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "way",
+      "start": 2.1,
+      "end": 2.32,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 2.38,
+      "end": 2.46,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "become",
+      "start": 2.48,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "briefly",
+      "start": 2.92,
+      "end": 3.4,
+      "type": "word",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": " ",
+      "start": 3.4,
+      "end": 3.46,
+      "type": "spacing",
+      "logprob": -1.5139465176616795e-05
+    },
+    {
+      "text": "illuminated",
+      "start": 3.46,
+      "end": 4.2,
+      "type": "word",
+      "logprob": -1.5139465176616795e-05
+    }
+  ],
+  "transcription_id": "MkwKFOT6OqyTX3fkurS8",
+  "audio_duration_secs": 4.56
+}

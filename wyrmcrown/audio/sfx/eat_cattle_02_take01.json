@@ -1,0 +1,110 @@
+{
+  "job": {
+    "id": "eat_cattle_02",
+    "event": "eat_cattle",
+    "kind": "sfx",
+    "fallback": "bone_crunch",
+    "text": "Enormous dragon devours cattle in one quick comic sequence. At 0.00 jaws snap BITE, 0.10 sharp bone CRUNCH, 0.22 wet meat SQUELCH, 0.38 one short CHEW, 0.62 huge throaty SWALLOW ending by 0.90 seconds. Quick satisfying physical mouth action, slightly grotesque, no long chewing. Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.75,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:02:51.261418+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Enormous dragon devours cattle in one quick comic sequence. At 0.00 jaws snap BITE, 0.10 sharp bone CRUNCH, 0.22 wet meat SQUELCH, 0.38 one short CHEW, 0.62 huge throaty SWALLOW ending by 0.90 seconds. Quick satisfying physical mouth action, slightly grotesque, no long chewing. Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "42962a1e93ec56d6c4e17f9191bc1fc496f901b06ae8a24e9daf557a9bdf3fe0",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\eat_cattle_02_take01.mp3",
+  "sha256": "3eb2fa301244a08606eba42900178a8933078f5868e2437333c0d13c180a3bcf",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.0,
+    "peak_dbfs": 0.0,
+    "rms_dbfs": -22.42,
+    "clipped_sample_fraction": 0.000125,
+    "leading_quiet_seconds": 0.06,
+    "trailing_quiet_seconds": 0.34,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.9,
+    "peak_dbfs": -6.95,
+    "rms_dbfs": -21.83,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.0,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3",
+  "assembly_revision": "rapid-five-stems-2",
+  "assembly": [
+    {
+      "stage": "bite",
+      "at_seconds": 0,
+      "duration_seconds": 0.12,
+      "relative_weight": 1,
+      "source": "audio/sfx/eat_stem_bite_03_take01.mp3",
+      "source_sha256": "e9493b80044154afc6b7d433da6eaa392917ef4f20e4a639bd3c2c49ccda7163"
+    },
+    {
+      "stage": "crunch",
+      "at_seconds": 0.11,
+      "duration_seconds": 0.19,
+      "relative_weight": 1.15,
+      "source": "audio/sfx/eat_stem_crunch_02_take01.mp3",
+      "source_sha256": "7e0e7c4ef18c3654794ead3eefc22f95cdf0302103e1457396f18c897e8894b9"
+    },
+    {
+      "stage": "squelch",
+      "at_seconds": 0.29,
+      "duration_seconds": 0.15,
+      "relative_weight": 0.85,
+      "source": "audio/sfx/eat_stem_squelch_01_take01.mp3",
+      "source_sha256": "8259325a6de84822fedcfe60066a1743d50379592c065c3b8ccec754cf01ec34"
+    },
+    {
+      "stage": "chew",
+      "at_seconds": 0.45,
+      "duration_seconds": 0.13,
+      "relative_weight": 0.65,
+      "source": "audio/sfx/eat_stem_chew_03_take01.mp3",
+      "source_sha256": "4c95870e0783cb3584ccd24f6eac848979ff1dfec5593501877e82f0dc75275f"
+    },
+    {
+      "stage": "swallow",
+      "at_seconds": 0.63,
+      "duration_seconds": 0.26,
+      "relative_weight": 1,
+      "source": "audio/sfx/eat_stem_swallow_02_take01.mp3",
+      "source_sha256": "bd0471fa20a3c0edf8e322ac21597d4188b9b5b142096b46567bf07974038de9"
+    }
+  ],
+  "assembled_master": "audio\\production\\raw\\eat_cattle_02_take01.assembled-v2.wav",
+  "prey_profile": "cattle"
+}

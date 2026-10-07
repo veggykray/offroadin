@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_footstep_02",
+    "event": "giant_footstep",
+    "kind": "sfx",
+    "fallback": "giant_stomp",
+    "text": "Single giant bare foot compressing soil, grounded bass weight with gravel grit and quick dirt settling; not an explosion Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:57:59.889520+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Single giant bare foot compressing soil, grounded bass weight with gravel grit and quick dirt settling; not an explosion Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.8,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "3058f2b9ba85c7cafa93cdfa7710c42d96392a500997e0a8dd98d90f5bce4532",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_footstep_02_take01.mp3",
+  "sha256": "99b74d0ad8257ce904e8c7e0038ddfcb41d092c0460d955d5c7e05275582402c",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -13.66,
+    "rms_dbfs": -37.77,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.6,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.8,
+    "peak_dbfs": -4.5,
+    "rms_dbfs": -28.18,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.4,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

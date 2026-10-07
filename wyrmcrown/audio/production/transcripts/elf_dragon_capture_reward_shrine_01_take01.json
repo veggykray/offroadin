@@ -1,0 +1,268 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our shrine. Healing for me nearby and a wider view of the land. A place with remarkably good manners",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.24,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -8.427741704508662e-05
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.6,
+      "type": "spacing",
+      "logprob": -0.0036104037426412106
+    },
+    {
+      "text": "shrine.",
+      "start": 0.6,
+      "end": 1.16,
+      "type": "word",
+      "logprob": -0.005170005639748914
+    },
+    {
+      "text": " ",
+      "start": 1.16,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -0.0002553137019276619
+    },
+    {
+      "text": "Healing",
+      "start": 1.92,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -0.0002553137019276619
+    },
+    {
+      "text": " ",
+      "start": 2.3,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": -0.00028081765049137175
+    },
+    {
+      "text": "for",
+      "start": 2.38,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -0.00028081765049137175
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": -1.2159273865108844e-05
+    },
+    {
+      "text": "me",
+      "start": 2.64,
+      "end": 2.78,
+      "type": "word",
+      "logprob": -1.2159273865108844e-05
+    },
+    {
+      "text": " ",
+      "start": 2.78,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -9.417489309271332e-06
+    },
+    {
+      "text": "nearby",
+      "start": 2.84,
+      "end": 3.72,
+      "type": "word",
+      "logprob": -9.417489309271332e-06
+    },
+    {
+      "text": " ",
+      "start": 3.72,
+      "end": 3.78,
+      "type": "spacing",
+      "logprob": -0.029758170247077942
+    },
+    {
+      "text": "and",
+      "start": 3.78,
+      "end": 3.86,
+      "type": "word",
+      "logprob": -0.029758170247077942
+    },
+    {
+      "text": " ",
+      "start": 3.86,
+      "end": 3.94,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "a",
+      "start": 3.94,
+      "end": 4.019,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.019,
+      "end": 4.1,
+      "type": "spacing",
+      "logprob": -1.549708758830093e-05
+    },
+    {
+      "text": "wider",
+      "start": 4.1,
+      "end": 4.46,
+      "type": "word",
+      "logprob": -1.549708758830093e-05
+    },
+    {
+      "text": " ",
+      "start": 4.46,
+      "end": 4.54,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "view",
+      "start": 4.54,
+      "end": 4.78,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.78,
+      "end": 4.84,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "of",
+      "start": 4.84,
+      "end": 4.92,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.92,
+      "end": 4.96,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "the",
+      "start": 4.96,
+      "end": 5.06,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 5.06,
+      "end": 5.12,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "land.",
+      "start": 5.12,
+      "end": 5.54,
+      "type": "word",
+      "logprob": -1.807139578886563e-05
+    },
+    {
+      "text": " ",
+      "start": 5.54,
+      "end": 5.54,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "A",
+      "start": 6.16,
+      "end": 6.22,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 6.22,
+      "end": 6.28,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "place",
+      "start": 6.28,
+      "end": 6.62,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.62,
+      "end": 6.66,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "with",
+      "start": 6.66,
+      "end": 6.82,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 6.82,
+      "end": 6.9,
+      "type": "spacing",
+      "logprob": -2.062299427052494e-05
+    },
+    {
+      "text": "remarkably",
+      "start": 6.9,
+      "end": 7.66,
+      "type": "word",
+      "logprob": -2.062299427052494e-05
+    },
+    {
+      "text": " ",
+      "start": 7.66,
+      "end": 7.72,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "good",
+      "start": 7.72,
+      "end": 7.88,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.88,
+      "end": 7.94,
+      "type": "spacing",
+      "logprob": -3.576214658096433e-05
+    },
+    {
+      "text": "manners",
+      "start": 7.94,
+      "end": 8.44,
+      "type": "word",
+      "logprob": -3.576214658096433e-05
+    }
+  ],
+  "transcription_id": "j1V28ypoxVwXCaq5wiQ5",
+  "audio_duration_secs": 8.64
+}

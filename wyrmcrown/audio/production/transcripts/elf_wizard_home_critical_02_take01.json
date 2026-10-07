@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our stronghold is failing. There is no time for elegance",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.12,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -0.00017331528943032026
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.00024232311989180744
+    },
+    {
+      "text": "stronghold",
+      "start": 0.38,
+      "end": 0.94,
+      "type": "word",
+      "logprob": -0.00024232311989180744
+    },
+    {
+      "text": " ",
+      "start": 0.94,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "is",
+      "start": 1.02,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.28,
+      "type": "spacing",
+      "logprob": -5.8412379075889476e-06
+    },
+    {
+      "text": "failing.",
+      "start": 1.28,
+      "end": 1.76,
+      "type": "word",
+      "logprob": -0.00141812871095226
+    },
+    {
+      "text": " ",
+      "start": 1.76,
+      "end": 2.1,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "There",
+      "start": 2.1,
+      "end": 2.22,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.22,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "is",
+      "start": 2.26,
+      "end": 2.4,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.4,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "no",
+      "start": 2.48,
+      "end": 2.68,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.68,
+      "end": 2.76,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "time",
+      "start": 2.76,
+      "end": 3.04,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.12,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 3.12,
+      "end": 3.24,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.24,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -2.5987286790041253e-05
+    },
+    {
+      "text": "elegance",
+      "start": 3.3,
+      "end": 3.82,
+      "type": "word",
+      "logprob": -2.5987286790041253e-05
+    }
+  ],
+  "transcription_id": "VS8WRXDSkLJdGOjjOJYH",
+  "audio_duration_secs": 4.16
+}

@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The cattle look well fed a sound strategic resource",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.16,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -9.417489309271332e-06
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -0.0002184867626056075
+    },
+    {
+      "text": "cattle",
+      "start": 0.34,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -0.0002184867626056075
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "look",
+      "start": 0.74,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "well",
+      "start": 0.98,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.3,
+      "type": "spacing",
+      "logprob": -0.474115788936615
+    },
+    {
+      "text": "fed",
+      "start": 1.3,
+      "end": 1.62,
+      "type": "word",
+      "logprob": -0.474115788936615
+    },
+    {
+      "text": " ",
+      "start": 1.62,
+      "end": 1.62,
+      "type": "spacing",
+      "logprob": -0.030299333855509758
+    },
+    {
+      "text": "a",
+      "start": 2.3,
+      "end": 2.42,
+      "type": "word",
+      "logprob": -0.030299333855509758
+    },
+    {
+      "text": " ",
+      "start": 2.42,
+      "end": 2.5,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "sound",
+      "start": 2.5,
+      "end": 2.76,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 2.76,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -0.0009139174944721162
+    },
+    {
+      "text": "strategic",
+      "start": 2.92,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -0.0009139174944721162
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "resource",
+      "start": 3.72,
+      "end": 4.34,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    }
+  ],
+  "transcription_id": "mKIOUofMMSqGdxdXNxPe",
+  "audio_duration_secs": 4.48
+}

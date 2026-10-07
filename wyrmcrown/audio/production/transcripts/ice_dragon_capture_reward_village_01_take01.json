@@ -1,0 +1,212 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Village secured. Taxes by cart. Capacity for two more troops. A herd to feed us",
+  "words": [
+    {
+      "text": "Village",
+      "start": 0.22,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -0.00022432672267314047
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.66,
+      "type": "spacing",
+      "logprob": -1.823885577323381e-05
+    },
+    {
+      "text": "secured.",
+      "start": 0.68,
+      "end": 1.28,
+      "type": "word",
+      "logprob": -0.0005354352476842905
+    },
+    {
+      "text": " ",
+      "start": 1.28,
+      "end": 1.28,
+      "type": "spacing",
+      "logprob": -0.0001045410826918669
+    },
+    {
+      "text": "Taxes",
+      "start": 1.76,
+      "end": 2.3,
+      "type": "word",
+      "logprob": -0.0001045410826918669
+    },
+    {
+      "text": " ",
+      "start": 2.3,
+      "end": 2.34,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "by",
+      "start": 2.34,
+      "end": 2.54,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 2.54,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -0.00030429501202888787
+    },
+    {
+      "text": "cart.",
+      "start": 2.6,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -0.0002529248442442622
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 2.98,
+      "type": "spacing",
+      "logprob": -9.333651541965082e-05
+    },
+    {
+      "text": "Capacity",
+      "start": 3.46,
+      "end": 4.019,
+      "type": "word",
+      "logprob": -9.333651541965082e-05
+    },
+    {
+      "text": " ",
+      "start": 4.019,
+      "end": 4.12,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 4.14,
+      "end": 4.22,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.22,
+      "end": 4.38,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "two",
+      "start": 4.38,
+      "end": 4.52,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 4.52,
+      "end": 4.64,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "more",
+      "start": 4.64,
+      "end": 4.82,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 4.82,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": -6.437280717364047e-06
+    },
+    {
+      "text": "troops.",
+      "start": 4.9,
+      "end": 5.38,
+      "type": "word",
+      "logprob": -3.254156113793475e-05
+    },
+    {
+      "text": " ",
+      "start": 5.38,
+      "end": 5.38,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "A",
+      "start": 5.82,
+      "end": 5.88,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 5.88,
+      "end": 5.96,
+      "type": "spacing",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": "herd",
+      "start": 5.96,
+      "end": 6.34,
+      "type": "word",
+      "logprob": -1.2040065485052764e-05
+    },
+    {
+      "text": " ",
+      "start": 6.34,
+      "end": 6.46,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 6.46,
+      "end": 6.58,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.58,
+      "end": 6.66,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "feed",
+      "start": 6.66,
+      "end": 6.86,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 6.86,
+      "end": 6.94,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "us",
+      "start": 6.94,
+      "end": 7.16,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    }
+  ],
+  "transcription_id": "IT50csbOyspxfF0GPsuy",
+  "audio_duration_secs": 7.36
+}

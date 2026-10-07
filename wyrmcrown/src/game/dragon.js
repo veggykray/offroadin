@@ -498,7 +498,7 @@
       if (!(opts && opts.silent)) {
         this.hurt = 0.18; this.lastHurt = g.time;
         if (src && src !== this) this.lastHitBy = src;
-        if (src && src.isDragon && src !== this && AS.Voices && g === AS.Voices.g) AS.Voices.onHit(src, this);
+        if (src && src.isDragon && src !== this && AS.Voices && g === AS.Voices.g) AS.Voices.onHit(src, this, dmg);
         if (this.isPlayer) { g.camera.shake(Math.min(0.45, 0.06 + dmg * 0.012)); AS.Audio.sfx('dragon_hurt', { vol: Math.min(1, 0.35 + dmg / 40) }); }
         else if (Math.random() < 0.25) AS.Audio.sfx('dragon_hurt', { x: this.x, y: this.y, vol: 0.5 });
       }

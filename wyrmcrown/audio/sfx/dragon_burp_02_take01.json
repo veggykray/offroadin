@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "dragon_burp_02",
+    "event": "dragon_burp",
+    "kind": "sfx",
+    "fallback": "dragon_growl",
+    "text": "Enormous dragon short satisfied chest burp, comedic but not human-pitched-down Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:05:07.453124+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Enormous dragon short satisfied chest burp, comedic but not human-pitched-down Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "28270885b29f6bd2a9d11b9f7bee7f6735d0e7a2484baef6620b4a93aa140fd6",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\dragon_burp_02_take01.mp3",
+  "sha256": "2bc9aaff257896964bbd088ebf7ac3e3c4a3783bdf2c3311643c79d625298fe8",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.0,
+    "peak_dbfs": -0.0,
+    "rms_dbfs": -17.76,
+    "clipped_sample_fraction": 0.000125,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.24,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.0,
+    "peak_dbfs": -4.36,
+    "rms_dbfs": -21.64,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.54,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

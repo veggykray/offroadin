@@ -1,0 +1,88 @@
+DRAGON WARS AUDIO INTEGRATION — VALIDATION
+7 October 2026
+
+Completed checks:
+- 428 unique dialogue line IDs have recordings matching the locked cast.
+- Eight distinct approved character voices play in Microsoft Edge at rate 1.
+- All 125 recorded SFX load and decode through the game's existing AudioContext.
+- Every voice/effect/audition MP3 (618 files, including superseded takes) was
+  freshly decoded; checksums, duration and peak/headroom checks passed.
+- Warning escalation, interruptions, cooldowns, reply sequencing, varied line
+  selection and match restart contracts passed.
+- Subtitles match the selected recorded dialogue.
+- All four breath loops play recordings; a held breath upgrades from its
+  synthesized fallback after the corresponding recording finishes loading.
+- Sheep, cattle, goat/deer and large-prey meals play for 0.9 seconds at rate 1.
+- Pause, overlays and mute stop recorded speech.
+- JavaScript syntax and package links/asset paths passed.
+- The supplied Desktop game was copied; 387 original files remain byte-for-byte
+  identical. Only the documented audio hooks, music routing, loader, mixer
+  option, README, menu music/footer and test adjustments changed existing files.
+
+Objective reward dialogue follow-up:
+- Added 68 recorded lines, one per objective type and faction (17 x 4).
+- Existing 360 production dialogue jobs were preserved exactly.
+- Real capture and loot methods select the correct reward in all 68 cases.
+- Neutral captures, consecutive captures, same-owner deduplication, lost
+  ownership, 90-second expiry, mute/stop and demo exclusions passed.
+- Home warnings take priority and preserve unsaid reward announcements.
+- Browser tests exercised goldmine/village captures in all four factions,
+  plus cave/ruins loot. All eight approved recorded voices played at rate 1
+  and displayed subtitles matching the selected reward text. No page errors.
+- All 68 transcripts passed text comparison (minimum word similarity 0.929).
+  Troop counts, spell intervals, toll percentages and treasure quantities
+  passed explicit checks. Numeric transcript typography is normalized.
+- Existing warning escalation/cadence/casting contracts passed again.
+- Active mechanics were checked against the dialogue. Inactive passive
+  bonuses declared by the original data are documented in OBJECTIVE_REWARDS.txt.
+
+Supplied soundtrack follow-up:
+- All eight supplied WAVs were converted into stereo, 44.1 kHz, 192 kbps MP3s
+  with measured loudness normalization. Original WAVs are unchanged in Downloads.
+- Each music MP3 was freshly decoded. Source/final checksums, stereo format,
+  duration preservation and decoded sample headroom passed.
+- Soft Flowing Strings maps to the opening theme and human home music.
+- Routing, all four home/fight pairs, combat hold, crossfade looping, ending
+  behaviour, pause levels, delayed play cancellation and late unlock contracts
+  passed with the replacement player. The procedural generator is not loaded.
+- Exact HTTP range bytes, suffix/open ranges, invalid requests, HEAD and
+  If-Range fallback passed. Native browser seeking and loop crossfades passed
+  after enabling byte-range serving in the launcher server.
+- The full Edge browser check passed: opening music, all eight real tracks,
+  unchanged playback rate, continuous loop crossfade, recorded speech ducking,
+  the Music slider and return to the opening theme. No page errors occurred.
+
+The previous audio integration passed these 17 browser gameplay scenarios:
+1. Menus and starting a match
+2. Flight thrust, banking, low flight, climbing and braking
+3. Landing, resting and takeoff
+4. Aimed staff bolts
+5. Breath attacks on ground forces
+6. Eating and carrying prey
+7. Firing after eating
+8. Double-click hunting
+9. Loop-the-loop flight and projectile avoidance
+10. Aiming the dragon's head and breath
+11. Recorded voice serialization and distance attenuation
+12. Clearing guards and capturing a site
+13. Town building through the court
+14. Army muster and orders
+15. Victory
+16. Defeat
+17. A three-minute all-AI war without errors
+
+That gameplay run passed 15 scenarios. The two old voice/capture checks
+were then adapted and passed on targeted reruns: the voice test now measures
+recorded playback with the deliberate banter cooldown, and capture uses the
+documented S + Space low-flight controls. Slower artwork startup allowances
+were increased; non-audio gameplay assertions were retained.
+
+Listening limitation:
+These checks verify integrity, playback, routing and gameplay behaviour.
+A full human listening review of acting, fantasy-name pronunciation and
+sound-effect quality remains pending from the prior audio production work.
+Originals, revised takes and transcript review reports are included.
+
+Playing requires Python 3 for the launcher and a modern browser. It does not
+require Node.js, Playwright, FFmpeg, production tools, a provider API key or
+an internet connection.

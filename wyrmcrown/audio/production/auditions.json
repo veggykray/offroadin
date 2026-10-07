@@ -1,0 +1,482 @@
+[
+  {
+    "id": "aud_human_wizard_1_1",
+    "character": "human_wizard",
+    "candidate": "1",
+    "text": "Lovely view... shame about the ARROWS.",
+    "synthesis_text": "[quietly, dry sarcasm] Lovely view... shame about the ARROWS.",
+    "performance": "Dry setup; 350 ms implied pause, stress arrows. Let the joke land without a chuckle.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_wizard_1_2",
+    "character": "human_wizard",
+    "candidate": "1",
+    "text": "That's OUR smoke!  They're ATTACKING the TOWN!",
+    "synthesis_text": "[shocked] That's OUR smoke! [urgent, shouting] They're ATTACKING the TOWN!",
+    "performance": "Shock first, then urgent chest delivery. Strong attacking and town; final word nearly shouted.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_wizard_1_3",
+    "character": "human_wizard",
+    "candidate": "1",
+    "text": "Pyrrhax, I trained for forty years in Aldermere. Nobody mentioned the saddle, the sheep, or the smell of burning trousers.",
+    "synthesis_text": "[conversational, irritated] Pyrrhax, I trained for forty years in Aldermere. Nobody mentioned the saddle, the sheep, or the smell of burning trousers.",
+    "performance": "Natural longer complaint. Stress nobody and trousers, breathe at the sentence break; do not rush the last joke.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_wizard_2_1",
+    "character": "human_wizard",
+    "candidate": "2",
+    "text": "Lovely view... shame about the ARROWS.",
+    "synthesis_text": "[quietly, dry sarcasm] Lovely view... shame about the ARROWS.",
+    "performance": "Dry setup; 350 ms implied pause, stress arrows. Let the joke land without a chuckle.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_wizard_2_2",
+    "character": "human_wizard",
+    "candidate": "2",
+    "text": "That's OUR smoke!  They're ATTACKING the TOWN!",
+    "synthesis_text": "[shocked] That's OUR smoke! [urgent, shouting] They're ATTACKING the TOWN!",
+    "performance": "Shock first, then urgent chest delivery. Strong attacking and town; final word nearly shouted.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_wizard_2_3",
+    "character": "human_wizard",
+    "candidate": "2",
+    "text": "Pyrrhax, I trained for forty years in Aldermere. Nobody mentioned the saddle, the sheep, or the smell of burning trousers.",
+    "synthesis_text": "[conversational, irritated] Pyrrhax, I trained for forty years in Aldermere. Nobody mentioned the saddle, the sheep, or the smell of burning trousers.",
+    "performance": "Natural longer complaint. Stress nobody and trousers, breathe at the sentence break; do not rush the last joke.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_1_1",
+    "character": "elf_wizard",
+    "candidate": "1",
+    "text": "A troll... how terribly appropriate for this neighbourhood.",
+    "synthesis_text": "[quietly, disdainful] A troll... how terribly appropriate for this neighbourhood.",
+    "performance": "Beautiful clear diction, dry contempt; pause before the insult, no theatrical flourish.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_1_2",
+    "character": "elf_wizard",
+    "candidate": "1",
+    "text": "Our grove is BURNING!  Verdanthe, turn us HOME!",
+    "synthesis_text": "[shocked] Our grove is BURNING! [urgent, shouting] Verdanthe, turn us HOME!",
+    "performance": "Composure breaks briefly. Stress burning and home, clip the command sharply.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_1_3",
+    "character": "elf_wizard",
+    "candidate": "1",
+    "text": "Ilythiel of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing.",
+    "synthesis_text": "[measured, sarcastic] Ilythiel of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing.",
+    "performance": "Maintain natural long sentence and articulated names. Pause after retreat; embarrassment is the punchline.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_2_1",
+    "character": "elf_wizard",
+    "candidate": "2",
+    "text": "A troll... how terribly appropriate for this neighbourhood.",
+    "synthesis_text": "[quietly, disdainful] A troll... how terribly appropriate for this neighbourhood.",
+    "performance": "Beautiful clear diction, dry contempt; pause before the insult, no theatrical flourish.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_2_2",
+    "character": "elf_wizard",
+    "candidate": "2",
+    "text": "Our grove is BURNING!  Verdanthe, turn us HOME!",
+    "synthesis_text": "[shocked] Our grove is BURNING! [urgent, shouting] Verdanthe, turn us HOME!",
+    "performance": "Composure breaks briefly. Stress burning and home, clip the command sharply.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_wizard_2_3",
+    "character": "elf_wizard",
+    "candidate": "2",
+    "text": "Ilythiel of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing.",
+    "synthesis_text": "[measured, sarcastic] Ilythiel of Sylvara does not retreat. We merely leave before the company becomes any more embarrassing.",
+    "performance": "Maintain natural long sentence and articulated names. Pause after retreat; embarrassment is the punchline.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_1_1",
+    "character": "ice_wizard",
+    "candidate": "1",
+    "text": "Do not mistake my silence... for MERCY.",
+    "synthesis_text": "[low, quiet, stern] Do not mistake my silence... for MERCY.",
+    "performance": "Deep restraint, controlled pause, mercy cold and quiet, never a growl.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_1_2",
+    "character": "ice_wizard",
+    "candidate": "1",
+    "text": "The glacier wall has BROKEN.  Skaldfrost! HOME. Now!",
+    "synthesis_text": "[controlled urgency] The glacier wall has BROKEN. [shouting] Skaldfrost! HOME. Now!",
+    "performance": "A genuine crack in composure on home. Preserve consonants; now short and absolute.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_1_3",
+    "character": "ice_wizard",
+    "candidate": "1",
+    "text": "Ymra of Hrimgard has weathered longer winters than this. Keep below the storm, and let the impatient ones discover the lightning.",
+    "synthesis_text": "[low, measured] Ymra of Hrimgard has weathered longer winters than this. Keep below the storm, and let the impatient ones discover the lightning.",
+    "performance": "Long breath groups with northern remoteness. Calm threat; no caricature accent.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_2_1",
+    "character": "ice_wizard",
+    "candidate": "2",
+    "text": "Do not mistake my silence... for MERCY.",
+    "synthesis_text": "[low, quiet, stern] Do not mistake my silence... for MERCY.",
+    "performance": "Deep restraint, controlled pause, mercy cold and quiet, never a growl.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_2_2",
+    "character": "ice_wizard",
+    "candidate": "2",
+    "text": "The glacier wall has BROKEN.  Skaldfrost! HOME. Now!",
+    "synthesis_text": "[controlled urgency] The glacier wall has BROKEN. [shouting] Skaldfrost! HOME. Now!",
+    "performance": "A genuine crack in composure on home. Preserve consonants; now short and absolute.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_wizard_2_3",
+    "character": "ice_wizard",
+    "candidate": "2",
+    "text": "Ymra of Hrimgard has weathered longer winters than this. Keep below the storm, and let the impatient ones discover the lightning.",
+    "synthesis_text": "[low, measured] Ymra of Hrimgard has weathered longer winters than this. Keep below the storm, and let the impatient ones discover the lightning.",
+    "performance": "Long breath groups with northern remoteness. Calm threat; no caricature accent.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_1_1",
+    "character": "undead_wizard",
+    "candidate": "1",
+    "text": "Another funeral... I do hope they have kept the receipt.",
+    "synthesis_text": "[quietly, cheerfully dry] Another funeral... I do hope they have kept the receipt.",
+    "performance": "Sparse dry rasp, amiable death joke. Receipt lands after a pause, no sinister cackle.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_1_2",
+    "character": "undead_wizard",
+    "candidate": "1",
+    "text": "They're burning the CRYPTS!  Vorthrax, those are our PEOPLE!",
+    "synthesis_text": "[shocked] They're burning the CRYPTS! [urgent, shouting] Vorthrax, those are our PEOPLE!",
+    "performance": "Sudden possessive panic. Stress crypts and people; remains understandable through rasp.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_1_3",
+    "character": "undead_wizard",
+    "candidate": "1",
+    "text": "Malkhar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy.",
+    "synthesis_text": "[brightly, ancient dry voice] Malkhar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy.",
+    "performance": "Cheerful ancient character, pause before some. Natural long phrasing and clearly spoken names.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_2_1",
+    "character": "undead_wizard",
+    "candidate": "2",
+    "text": "Another funeral... I do hope they have kept the receipt.",
+    "synthesis_text": "[quietly, cheerfully dry] Another funeral... I do hope they have kept the receipt.",
+    "performance": "Sparse dry rasp, amiable death joke. Receipt lands after a pause, no sinister cackle.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_2_2",
+    "character": "undead_wizard",
+    "candidate": "2",
+    "text": "They're burning the CRYPTS!  Vorthrax, those are our PEOPLE!",
+    "synthesis_text": "[shocked] They're burning the CRYPTS! [urgent, shouting] Vorthrax, those are our PEOPLE!",
+    "performance": "Sudden possessive panic. Stress crypts and people; remains understandable through rasp.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_wizard_2_3",
+    "character": "undead_wizard",
+    "candidate": "2",
+    "text": "Malkhar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy.",
+    "synthesis_text": "[brightly, ancient dry voice] Malkhar of Morgrave has buried many rivals. Some were even dead at the time, which I consider a rather generous courtesy.",
+    "performance": "Cheerful ancient character, pause before some. Natural long phrasing and clearly spoken names.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_1_1",
+    "character": "human_dragon",
+    "candidate": "1",
+    "text": "That bull... had OPINIONS.",
+    "synthesis_text": "[low, resonant, amused] That bull... had OPINIONS. [short pleased exhale]",
+    "performance": "Huge chest and a tiny pause. Opinions amused, consonants firm; no pitch manipulation.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_1_2",
+    "character": "human_dragon",
+    "candidate": "1",
+    "text": "MY town! MY dinner! BURN them!",
+    "synthesis_text": "[deep, furious, shouting] MY town! MY dinner! BURN them!",
+    "performance": "Aggression with physical breath. Three clear stress peaks; words cut through the chest resonance.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_1_3",
+    "character": "human_dragon",
+    "candidate": "1",
+    "text": "I am Pyrrhax. Aldermere is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state.",
+    "synthesis_text": "[huge chest resonance, confident] I am Pyrrhax. Aldermere is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state.",
+    "performance": "Hunger and grandeur, full physical scale. Three breath groups, state is the dry punchline.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_2_1",
+    "character": "human_dragon",
+    "candidate": "2",
+    "text": "That bull... had OPINIONS.",
+    "synthesis_text": "[low, resonant, amused] That bull... had OPINIONS. [short pleased exhale]",
+    "performance": "Huge chest and a tiny pause. Opinions amused, consonants firm; no pitch manipulation.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_2_2",
+    "character": "human_dragon",
+    "candidate": "2",
+    "text": "MY town! MY dinner! BURN them!",
+    "synthesis_text": "[deep, furious, shouting] MY town! MY dinner! BURN them!",
+    "performance": "Aggression with physical breath. Three clear stress peaks; words cut through the chest resonance.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_human_dragon_2_3",
+    "character": "human_dragon",
+    "candidate": "2",
+    "text": "I am Pyrrhax. Aldermere is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state.",
+    "synthesis_text": "[huge chest resonance, confident] I am Pyrrhax. Aldermere is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state.",
+    "performance": "Hunger and grandeur, full physical scale. Three breath groups, state is the dry punchline.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_1_1",
+    "character": "elf_dragon",
+    "candidate": "1",
+    "text": "I could eat him... but I have STANDARDS.",
+    "synthesis_text": "[resonant, quiet, sarcastic] I could eat him... but I have STANDARDS.",
+    "performance": "Fast elegant setup, held pause, clipped standards. Still an enormous creature.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_1_2",
+    "character": "elf_dragon",
+    "candidate": "1",
+    "text": "They're beneath our canopy!  OUT of my forest!",
+    "synthesis_text": "[large resonant chest, urgent] They're beneath our canopy! [shouting] OUT of my forest!",
+    "performance": "Threat fast and surgical. Out and forest stressed; no thin human shout.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_1_3",
+    "character": "elf_dragon",
+    "candidate": "1",
+    "text": "I am Verdanthe of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised.",
+    "synthesis_text": "[large resonant chest, articulate, haughty] I am Verdanthe of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised.",
+    "performance": "Quick intelligent articulation, one large breath, disdain peaks on manners and surprised.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_2_1",
+    "character": "elf_dragon",
+    "candidate": "2",
+    "text": "I could eat him... but I have STANDARDS.",
+    "synthesis_text": "[resonant, quiet, sarcastic] I could eat him... but I have STANDARDS.",
+    "performance": "Fast elegant setup, held pause, clipped standards. Still an enormous creature.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_2_2",
+    "character": "elf_dragon",
+    "candidate": "2",
+    "text": "They're beneath our canopy!  OUT of my forest!",
+    "synthesis_text": "[large resonant chest, urgent] They're beneath our canopy! [shouting] OUT of my forest!",
+    "performance": "Threat fast and surgical. Out and forest stressed; no thin human shout.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_elf_dragon_2_3",
+    "character": "elf_dragon",
+    "candidate": "2",
+    "text": "I am Verdanthe of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised.",
+    "synthesis_text": "[large resonant chest, articulate, haughty] I am Verdanthe of Sylvara. If you insist on calling this an ambush, at least have the manners to appear surprised.",
+    "performance": "Quick intelligent articulation, one large breath, disdain peaks on manners and surprised.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_1_1",
+    "character": "ice_dragon",
+    "candidate": "1",
+    "text": "I remember this mountain... when it was SMALL.",
+    "synthesis_text": "[very deep, slow, quiet] I remember this mountain... when it was SMALL.",
+    "performance": "Glacial breath and scale; deliberate pause, small carries the age joke.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_1_2",
+    "character": "ice_dragon",
+    "candidate": "1",
+    "text": "The walls are FALLING.  RETURN.",
+    "synthesis_text": "[massive chest resonance, stern] The walls are FALLING. [deep, roaring speech] RETURN.",
+    "performance": "Clear falling, return like a glacier moving. Do not bury speech in roaring.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_1_3",
+    "character": "ice_dragon",
+    "candidate": "1",
+    "text": "Skaldfrost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow.",
+    "synthesis_text": "[ancient, very deep, measured] Skaldfrost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow.",
+    "performance": "Long controlled breaths, unhurried but not dragging. Final slow dry and threatening.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_2_1",
+    "character": "ice_dragon",
+    "candidate": "2",
+    "text": "I remember this mountain... when it was SMALL.",
+    "synthesis_text": "[very deep, slow, quiet] I remember this mountain... when it was SMALL.",
+    "performance": "Glacial breath and scale; deliberate pause, small carries the age joke.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_2_2",
+    "character": "ice_dragon",
+    "candidate": "2",
+    "text": "The walls are FALLING.  RETURN.",
+    "synthesis_text": "[massive chest resonance, stern] The walls are FALLING. [deep, roaring speech] RETURN.",
+    "performance": "Clear falling, return like a glacier moving. Do not bury speech in roaring.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_ice_dragon_2_3",
+    "character": "ice_dragon",
+    "candidate": "2",
+    "text": "Skaldfrost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow.",
+    "synthesis_text": "[ancient, very deep, measured] Skaldfrost watches over Hrimgard. I have slept beneath greater storms, and I have outlived every creature that thought me slow.",
+    "performance": "Long controlled breaths, unhurried but not dragging. Final slow dry and threatening.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_1_1",
+    "character": "undead_dragon",
+    "candidate": "1",
+    "text": "Fresh meat... such a SHORT appointment.",
+    "synthesis_text": "[hollow, dry, quietly amused] Fresh meat... such a SHORT appointment.",
+    "performance": "Hollow chest, dry exhale, short amused. No rattle over consonants.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_1_2",
+    "character": "undead_dragon",
+    "candidate": "1",
+    "text": "They disturb MY dead!  TAKE their breath!",
+    "synthesis_text": "[hollow, furious, clear] They disturb MY dead! [roaring speech] TAKE their breath!",
+    "performance": "Physical throat but clear diction. My and take sharp; breath ends the threat.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_1_3",
+    "character": "undead_dragon",
+    "candidate": "1",
+    "text": "Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken.",
+    "synthesis_text": "[ancient, hollow chest, macabre amusement] Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken.",
+    "performance": "Sparse throat texture, long natural line. Pause before but; chicken absurdly matter-of-fact.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_2_1",
+    "character": "undead_dragon",
+    "candidate": "2",
+    "text": "Fresh meat... such a SHORT appointment.",
+    "synthesis_text": "[hollow, dry, quietly amused] Fresh meat... such a SHORT appointment.",
+    "performance": "Hollow chest, dry exhale, short amused. No rattle over consonants.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_2_2",
+    "character": "undead_dragon",
+    "candidate": "2",
+    "text": "They disturb MY dead!  TAKE their breath!",
+    "synthesis_text": "[hollow, furious, clear] They disturb MY dead! [roaring speech] TAKE their breath!",
+    "performance": "Physical throat but clear diction. My and take sharp; breath ends the threat.",
+    "kind": "audition",
+    "review": "pending"
+  },
+  {
+    "id": "aud_undead_dragon_2_3",
+    "character": "undead_dragon",
+    "candidate": "2",
+    "text": "Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken.",
+    "synthesis_text": "[ancient, hollow chest, macabre amusement] Vorthrax serves Morgrave. I have forgotten the taste of sleep, but I remember precisely which of you tasted of chicken.",
+    "performance": "Sparse throat texture, long natural line. Pause before but; chicken absurdly matter-of-fact.",
+    "kind": "audition",
+    "review": "pending"
+  }
+]

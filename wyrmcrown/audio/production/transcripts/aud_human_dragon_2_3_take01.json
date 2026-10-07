@@ -1,0 +1,310 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "I am Pirax. Agvaldmir is beneath my wings, the enemy is beneath my claws, and dinner is an urgent matter of state",
+  "words": [
+    {
+      "text": "I",
+      "start": 0.34,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -7.664863369427621e-05
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "am",
+      "start": 0.5,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.8,
+      "type": "spacing",
+      "logprob": -0.6476536989212036
+    },
+    {
+      "text": "Pirax.",
+      "start": 0.8,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -0.330386292188147
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.46,
+      "type": "spacing",
+      "logprob": -0.046992190182209015
+    },
+    {
+      "text": "Agvaldmir",
+      "start": 2.0,
+      "end": 2.86,
+      "type": "word",
+      "logprob": -0.607296404739221
+    },
+    {
+      "text": " ",
+      "start": 2.86,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -0.113292396068573
+    },
+    {
+      "text": "is",
+      "start": 2.92,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -0.113292396068573
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.08,
+      "type": "spacing",
+      "logprob": -1.2993727978027891e-05
+    },
+    {
+      "text": "beneath",
+      "start": 3.08,
+      "end": 3.44,
+      "type": "word",
+      "logprob": -1.2993727978027891e-05
+    },
+    {
+      "text": " ",
+      "start": 3.44,
+      "end": 3.5,
+      "type": "spacing",
+      "logprob": -2.1457441107486375e-05
+    },
+    {
+      "text": "my",
+      "start": 3.5,
+      "end": 3.62,
+      "type": "word",
+      "logprob": -2.1457441107486375e-05
+    },
+    {
+      "text": " ",
+      "start": 3.62,
+      "end": 3.74,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "wings,",
+      "start": 3.74,
+      "end": 4.1,
+      "type": "word",
+      "logprob": -6.357822854852202e-07
+    },
+    {
+      "text": " ",
+      "start": 4.1,
+      "end": 4.1,
+      "type": "spacing",
+      "logprob": -0.1797458529472351
+    },
+    {
+      "text": "the",
+      "start": 4.44,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -0.1797458529472351
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.66,
+      "type": "spacing",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": "enemy",
+      "start": 4.66,
+      "end": 4.94,
+      "type": "word",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": " ",
+      "start": 4.94,
+      "end": 5.0,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "is",
+      "start": 5.0,
+      "end": 5.12,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 5.12,
+      "end": 5.18,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "beneath",
+      "start": 5.18,
+      "end": 5.48,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 5.48,
+      "end": 5.52,
+      "type": "spacing",
+      "logprob": -9.65590606938349e-06
+    },
+    {
+      "text": "my",
+      "start": 5.52,
+      "end": 5.68,
+      "type": "word",
+      "logprob": -9.65590606938349e-06
+    },
+    {
+      "text": " ",
+      "start": 5.68,
+      "end": 5.74,
+      "type": "spacing",
+      "logprob": -3.576272320060525e-06
+    },
+    {
+      "text": "claws,",
+      "start": 5.74,
+      "end": 6.16,
+      "type": "word",
+      "logprob": -5.801489502725114e-06
+    },
+    {
+      "text": " ",
+      "start": 6.16,
+      "end": 6.16,
+      "type": "spacing",
+      "logprob": -5.972207145532593e-05
+    },
+    {
+      "text": "and",
+      "start": 6.54,
+      "end": 6.74,
+      "type": "word",
+      "logprob": -5.972207145532593e-05
+    },
+    {
+      "text": " ",
+      "start": 6.74,
+      "end": 6.8,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "dinner",
+      "start": 6.8,
+      "end": 7.16,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.16,
+      "end": 7.22,
+      "type": "spacing",
+      "logprob": -8.904537389753386e-05
+    },
+    {
+      "text": "is",
+      "start": 7.22,
+      "end": 7.3,
+      "type": "word",
+      "logprob": -8.904537389753386e-05
+    },
+    {
+      "text": " ",
+      "start": 7.3,
+      "end": 7.32,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "an",
+      "start": 7.32,
+      "end": 7.52,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.52,
+      "end": 7.6,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "urgent",
+      "start": 7.6,
+      "end": 7.9,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 7.9,
+      "end": 7.96,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "matter",
+      "start": 7.96,
+      "end": 8.18,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 8.18,
+      "end": 8.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "of",
+      "start": 8.22,
+      "end": 8.34,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 8.34,
+      "end": 8.46,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "state",
+      "start": 8.46,
+      "end": 8.74,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "cEgkgmgOn1PsTzuDe2Ei",
+  "audio_duration_secs": 8.88
+}

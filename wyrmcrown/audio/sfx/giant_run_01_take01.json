@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_run_01",
+    "event": "giant_run",
+    "kind": "sfx",
+    "fallback": "giant_stomp",
+    "text": "Two quick giant running footfalls, heavy heel and dirt displacement, earthy low thumps, no explosion Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:58:03.437760+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Two quick giant running footfalls, heavy heel and dirt displacement, earthy low thumps, no explosion Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "73c2fab4da4d75be3cb949198d472bd769e243ab325559032322b74b5f8b34cf",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_run_01_take01.mp3",
+  "sha256": "66f3f80daa4a5a8c218ec77a4d894f221048308b04c3530297b640fc9766ea4d",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": -0.44,
+    "rms_dbfs": -16.97,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.04,
+    "trailing_quiet_seconds": 0.14,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": -4.4,
+    "rms_dbfs": -22.81,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.04,
+    "trailing_quiet_seconds": 0.18,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

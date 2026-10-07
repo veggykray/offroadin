@@ -89,12 +89,15 @@
     ignite(t, src) { this.burn = Math.max(this.burn, t); this.burnSrc = src; }
     onHurt(dmg, dtype, src) {
       this.hpBarT = 3;
+      if (['giant', 'troll'].includes(this.role) && this.g.time > (this.painSoundAt || 0)) { this.painSoundAt = this.g.time + 2; AS.Audio.sfx(this.role + '_pain', { x: this.x, y: this.y, vol: 0.65 }); }
       if (src && src.alive !== false && src.team !== this.team && !this.target) this.target = src;
       if (this.state === 'guard' || this.state === 'garrison') this.provoked = 6;
     }
     die(src) {
       const g = this.g;
       this.alive = false; this.removed = true;
+      if (AS.Voices && AS.Voices.g===g) AS.Voices.onTroopLost(this,src);
+      if (['giant', 'troll'].includes(this.role)) { AS.Audio.sfx(this.role + '_death', { x: this.x, y: this.y }); if (this.role === 'giant') AS.Audio.sfx('giant_body_fall', { x: this.x, y: this.y, vol: 0.65 }); }
       const skel = this.role === 'skeleton' || (this.tdef.gen || '').includes('skeleton') || (this.faction && this.faction.key === 'undead' && this.role !== 'cart');
       if (this.role === 'cart') {
         AS.FX.explosion(this.x, this.y, 4, 10, { debris: true, debrisCol: '#6a4a2a' });
@@ -102,8 +105,9 @@
         if (this.cargo > 0 && AS.Pickups) AS.Pickups.coins(g, this.x, this.y, Math.round(this.cargo * 0.6));
         AS.Audio.sfx('explode_small', { x: this.x, y: this.y });
         if (this.faction && this.faction.key === g.playerKey) g.msg('A GOLD CART WAS DESTROYED', '#ff8a5a', 2.5);
+        if (this.team === g.playerKey && AS.Voices && AS.Voices.g === g) AS.Voices.event('cart_lost', { priority: 60, cooldown: 45 });
       } else if (skel) { AS.FX.sparks(this.x, this.y, 6, 8, '#e8e0c8'); AS.Audio.sfx('bones', { x: this.x, y: this.y, vol: 0.6 }); }
-      else { AS.FX.splat(this.x, this.y, this.hc, this.tdef.animal ? '#7a2a1a' : '#8a2a1a', this.tdef.big ? 20 : 6); AS.Audio.sfx(this.tdef.hp > 250 ? 'monster_roar' : 'troop_die', { x: this.x, y: this.y, vol: 0.5, rate: this.tdef.big ? 0.6 : U.range(0.9, 1.2) }); }
+      else { AS.FX.splat(this.x, this.y, this.hc, this.tdef.animal ? '#7a2a1a' : '#8a2a1a', this.tdef.big ? 20 : 6); if (!['giant', 'troll'].includes(this.role)) AS.Audio.sfx(this.tdef.hp > 250 ? 'monster_roar' : 'troop_die', { x: this.x, y: this.y, vol: 0.5, rate: this.tdef.big ? 0.6 : U.range(0.9, 1.2) }); }
       if (this.tdef.big) { AS.FX.dust(this.x, this.y, 12, '#8a7a5a', 80); g.shakeNear(this.x, this.y, 0.4); }
       // gold for the victor
       const killer = src && (src.faction || g.factions[src.team]);
@@ -118,6 +122,7 @@
           g.troops.push(u); g.factions.undead.troops.push(u);
           AS.Particles.spawn({ x: this.x, y: this.y, z: 2, shape: AS.Particles.RING, col: '#a8ff6a', size: 4, size2: 20, life: 0.6, add: true, layer: 0 });
           AS.Audio.sfx('bones', { x: this.x, y: this.y });
+          if (AS.Voices && AS.Voices.g === g && Math.hypot(this.x - g.player.x, this.y - g.player.y) < 650) AS.Voices.event('raised_dead', { cooldown: 60 });
         });
       }
       if (this.site && this.site.onGuardKilled) this.site.onGuardKilled(this, src);
@@ -146,6 +151,14 @@
       if (this.root > 0) this.root -= dt;
       if (this.tdef.regen && this.hp < this.maxHp && g.time - (this.lastHurtT || 0) > 3) this.hp = Math.min(this.maxHp, this.hp + this.tdef.regen * dt);
       if (this.role === 'cart') return this.updateCart(dt);
+      if (['giant','troll'].includes(this.role) && g.time>(this.vocalAt||0) && g.time>(g.monsterVocalAt||0) && Math.hypot(this.x-g.player.x,this.y-g.player.y)<900) {
+        this.vocalAt=g.time+U.range(14,28);g.monsterVocalAt=g.time+U.range(6,10);
+        const distance=Math.hypot(this.x-g.player.x,this.y-g.player.y);
+        const idle = this.role === 'giant' ? ['giant_breathing','giant_grunt_confused','giant_laugh'] : ['troll_breathing','troll_slobber','troll_confused','troll_chuckle','troll_scratch'];
+        if (g.life?.animals.some(a => a.alive && !a.carried && Math.hypot(a.x-this.x,a.y-this.y)<100)) idle.push(this.role === 'giant' ? 'giant_eating' : 'troll_food');
+        const sound=this.role==='giant' ? this.target ? distance>500?'giant_roar_far':U.pick(['giant_roar_close','giant_grunt_angry']) : U.pick(idle) : this.target ? U.pick(['troll_growl','troll_roar','troll_snort']) : U.pick(idle);
+        AS.Audio.sfx(sound,{x:this.x,y:this.y,vol:this.target ? .5 : .3});
+      }
       // perception
       this.scanT = (this.scanT || 0) - dt;
       if (this.target && (!this.target.alive || this.target.targetable === false)) this.target = null;
@@ -220,7 +233,9 @@
         this.face(t);
         if (T.melee.splash) {
           g.damageArea(t.x, t.y, T.melee.splash, T.melee.dmg * ai, 'melee', this.team, this, { groundOnly: true, noLife: false });
-          AS.FX.dust(t.x, t.y, 4, '#8a7a5a', 50); AS.Audio.sfx('giant_stomp', { x: this.x, y: this.y, vol: 0.6 });
+          AS.FX.dust(t.x, t.y, 4, '#8a7a5a', 50);
+          if (this.role === 'troll') { AS.Audio.sfx('troll_club_swing', { x: this.x, y: this.y, vol: 0.5 }); AS.Audio.sfx('troll_club_impact', { x: this.x, y: this.y, vol: 0.6 }); }
+          else AS.Audio.sfx(this.role === 'giant' ? 'giant_ground_impact' : 'giant_stomp', { x: this.x, y: this.y, vol: 0.6 });
         } else {
           t.takeDamage(T.melee.dmg * ai * (t.isBuilding ? 0.5 : 1), 'melee', this);
           if (Math.random() < 0.4) AS.Audio.sfx('sword_clash', { x: this.x, y: this.y, vol: 0.4, rate: U.range(0.85, 1.2) });
@@ -252,6 +267,7 @@
       else { this.vx *= -0.3; this.vy *= -0.3; }
       this.x = U.clamp(this.x, 10, g.map.w - 10); this.y = U.clamp(this.y, 10, g.map.h - 10);
       const s = Math.hypot(this.vx, this.vy);
+      if (s > 8 && ['giant', 'troll'].includes(this.role) && g.time >= (this.footSoundAt || 0)) { this.footSoundAt = g.time + (this.role === 'giant' ? 1.1 : 0.7); AS.Audio.sfx(this.role === 'giant' && this.target && s > this.tdef.speed * .8 ? 'giant_run' : this.role + '_footstep', { x: this.x, y: this.y, vol: 0.45 }); }
       this.anim += dt * (s > 4 ? 2 + s * 0.07 : 0);
       if (this.lunge > 0) this.lunge -= dt;
       // the heavy tread of a giant: dust at the feet and a tremor for anyone close

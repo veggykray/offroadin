@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "breath_stop_01",
+    "event": "breath_stop",
+    "kind": "sfx",
+    "fallback": "breath_start",
+    "text": "Dragon fire shuts off, quick dying flame lick and breath exhaust, compact tail Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:04:28.595107+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Dragon fire shuts off, quick dying flame lick and breath exhaust, compact tail Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 0.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "5ed7694434dd42d941f7d8ee2c77c336f377eac5e7b3a1b6e22b13c123a9453d",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\breath_stop_01_take01.mp3",
+  "sha256": "ed659cb083266297504493496806bc6718e13078e33e1ce2c4565feaad3e5a87",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": -0.49,
+    "rms_dbfs": -10.34,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.16,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 0.6,
+    "peak_dbfs": -5.0,
+    "rms_dbfs": -20.48,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.24,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

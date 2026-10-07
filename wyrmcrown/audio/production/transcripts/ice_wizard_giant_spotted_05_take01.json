@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A giant blocks the pass. Make room",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.2,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -4.660974445869215e-05
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -1.4305012882687151e-05
+    },
+    {
+      "text": "giant",
+      "start": 0.4,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -1.4305012882687151e-05
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 1.02,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "blocks",
+      "start": 1.02,
+      "end": 1.32,
+      "type": "word",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": " ",
+      "start": 1.32,
+      "end": 1.38,
+      "type": "spacing",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": "the",
+      "start": 1.38,
+      "end": 1.48,
+      "type": "word",
+      "logprob": -4.172316494077677e-06
+    },
+    {
+      "text": " ",
+      "start": 1.48,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": -0.0005086558521725237
+    },
+    {
+      "text": "pass.",
+      "start": 1.54,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -0.0005424912087619305
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 1.96,
+      "type": "spacing",
+      "logprob": -0.00016437610611319542
+    },
+    {
+      "text": "Make",
+      "start": 2.66,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -0.00016437610611319542
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.96,
+      "type": "spacing",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": "room",
+      "start": 2.96,
+      "end": 3.28,
+      "type": "word",
+      "logprob": -1.156323378381785e-05
+    }
+  ],
+  "transcription_id": "LPIXYCp8j8eRIck8znSp",
+  "audio_duration_secs": 3.68
+}

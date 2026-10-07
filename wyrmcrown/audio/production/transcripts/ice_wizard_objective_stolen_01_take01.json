@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "We lost a position. Take it back",
+  "words": [
+    {
+      "text": "We",
+      "start": 0.18,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "lost",
+      "start": 0.36,
+      "end": 0.64,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 0.64,
+      "end": 0.68,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "a",
+      "start": 0.68,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -0.00013386306818574667
+    },
+    {
+      "text": "position.",
+      "start": 0.78,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.00014274923887569457
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.34,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "Take",
+      "start": 1.96,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "it",
+      "start": 2.16,
+      "end": 2.28,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.28,
+      "end": 2.32,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "back",
+      "start": 2.32,
+      "end": 2.62,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "uoAJGVBO10ObClzOARqu",
+  "audio_duration_secs": 2.96
+}

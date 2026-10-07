@@ -1,0 +1,34 @@
+[
+  {
+    "id": "elf_wizard_starving_01",
+    "take": "elf_wizard_starving_01_take01",
+    "expected": "You are starving. I refuse to be stranded by appetite.",
+    "transcript": "You are starving. I refuse to be stranded by appetite",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_starving_01",
+    "take": "human_wizard_starving_01_take01",
+    "expected": "You're STARVING. Eat before your wings give out!",
+    "transcript": "You're starving. Eat before your wings give out",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_starving_01",
+    "take": "ice_wizard_starving_01_take01",
+    "expected": "Starving. Land and feed. NOW.",
+    "transcript": "Starving. Land and feed. Now",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_starving_01",
+    "take": "undead_wizard_starving_01_take01",
+    "expected": "Eat something! We have enough skeletons already!",
+    "transcript": "Eat something. We have enough skeletons already",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

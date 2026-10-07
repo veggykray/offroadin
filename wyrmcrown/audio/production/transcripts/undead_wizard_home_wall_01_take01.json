@@ -1,0 +1,184 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A hole in the wall. A rather poor place for an open grave",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.22,
+      "type": "word",
+      "logprob": -0.002481121802702546
+    },
+    {
+      "text": " ",
+      "start": 0.22,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -3.671578815556131e-05
+    },
+    {
+      "text": "hole",
+      "start": 0.3,
+      "end": 0.58,
+      "type": "word",
+      "logprob": -3.671578815556131e-05
+    },
+    {
+      "text": " ",
+      "start": 0.58,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "in",
+      "start": 0.64,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "the",
+      "start": 0.76,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.9,
+      "type": "spacing",
+      "logprob": -2.1934269170742482e-05
+    },
+    {
+      "text": "wall.",
+      "start": 0.9,
+      "end": 1.26,
+      "type": "word",
+      "logprob": -0.03374392967089079
+    },
+    {
+      "text": " ",
+      "start": 1.26,
+      "end": 1.26,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "A",
+      "start": 1.76,
+      "end": 1.8,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 1.8,
+      "end": 1.86,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "rather",
+      "start": 1.86,
+      "end": 2.2,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.26,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "poor",
+      "start": 2.26,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.64,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "place",
+      "start": 2.64,
+      "end": 3.0,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "for",
+      "start": 3.06,
+      "end": 3.16,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.16,
+      "end": 3.2,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "an",
+      "start": 3.2,
+      "end": 3.28,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.28,
+      "end": 3.34,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "open",
+      "start": 3.34,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": " ",
+      "start": 3.6,
+      "end": 3.66,
+      "type": "spacing",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": "grave",
+      "start": 3.66,
+      "end": 4.14,
+      "type": "word",
+      "logprob": -6.318072337307967e-06
+    }
+  ],
+  "transcription_id": "dQweqz25tbeTT9KPN31m",
+  "audio_duration_secs": 4.48
+}

@@ -1,5 +1,5 @@
 /* WYRMCROWN — the realm's audio director, on top of the shared audio engine
- * (alien-strike/src/audio/audio.js, synth.js, music.js):
+ * (alien-strike/src/audio/audio.js, synth.js and recorded_music.js):
  *  - ambience beds are mixed by where you are: forest rustle under trees,
  *    babbling water near rivers and lakes, wind everywhere, a blizzard in the
  *    north, village bustle near towns, a cursed drone in the blight;
@@ -7,12 +7,11 @@
  *    crows in the blight, wolves in the wilds, the odd creak of ice;
  *  - the player's dragon: rushing air that rises with speed and a whistle in
  *    the dive (wing beats are one-shots fired by the flight model);
- *  - music: each realm has its own theme (data/factions.js music blocks) and
- *    the heartland its own; crossing a border changes the score. */
+ *  - music: supplied home/fight tracks follow the territory; neutral land uses
+ *    the player's realm. Border changes settle before switching the score. */
 'use strict';
 (function (AS) {
   const U = AS.U;
-  const NEUTRAL_MUSIC = { root: 48, scale: 'dorian', tempo: 90, pad: 'warm', lead: 'flute', arp: 'harp', bell: 'harp', perc: 'frame', drums: 'war', bossLead: 'horn', bossBass: 'bass', name: 'The Heartland' };
   const RA = {
     g: null, regionKey: null, musicKey: null, regionT: 0,
     start(g) {
@@ -35,8 +34,8 @@
     playMusic(key) {
       if (this.musicKey === key || !AS.Music) return;
       this.musicKey = key;
-      const cfg = key === 'neutral' ? NEUTRAL_MUSIC : AS.Data.factions[key].music;
-      AS.Music.play({ id: 200 + AS.Data.factionOrder.indexOf(key), music: cfg, key: 'music:' + key });
+      const realm = key === 'neutral' ? this.g.playerKey : key;
+      AS.Music.play({ realm, key: 'music:' + key });
     },
     update(dt, g) {
       if (!g || g !== this.g) return;

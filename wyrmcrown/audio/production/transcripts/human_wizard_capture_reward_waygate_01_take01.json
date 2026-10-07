@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Waygate captured. Own another and we can travel between them. Press E at an owned gate. Saves my backside some flying",
+  "words": [
+    {
+      "text": "Waygate",
+      "start": 0.1,
+      "end": 0.44,
+      "type": "word",
+      "logprob": -0.08551062590309552
+    },
+    {
+      "text": " ",
+      "start": 0.44,
+      "end": 0.54,
+      "type": "spacing",
+      "logprob": -0.0004558716027531773
+    },
+    {
+      "text": "captured.",
+      "start": 0.54,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.0035801404931892953
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -4.076874756719917e-05
+    },
+    {
+      "text": "Own",
+      "start": 1.44,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -4.076874756719917e-05
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.62,
+      "type": "spacing",
+      "logprob": -4.768360213347478e-06
+    },
+    {
+      "text": "another",
+      "start": 1.62,
+      "end": 1.96,
+      "type": "word",
+      "logprob": -4.768360213347478e-06
+    },
+    {
+      "text": " ",
+      "start": 1.96,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -0.03804267570376396
+    },
+    {
+      "text": "and",
+      "start": 2.08,
+      "end": 2.16,
+      "type": "word",
+      "logprob": -0.03804267570376396
+    },
+    {
+      "text": " ",
+      "start": 2.16,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "we",
+      "start": 2.2,
+      "end": 2.28,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.28,
+      "end": 2.32,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "can",
+      "start": 2.32,
+      "end": 2.44,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.44,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "travel",
+      "start": 2.48,
+      "end": 2.78,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.78,
+      "end": 2.82,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "between",
+      "start": 2.82,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.18,
+      "end": 3.22,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "them.",
+      "start": 3.22,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -2.3364905928247028e-06
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.38,
+      "type": "spacing",
+      "logprob": -0.00010764019680209458
+    },
+    {
+      "text": "Press",
+      "start": 3.88,
+      "end": 4.2,
+      "type": "word",
+      "logprob": -0.00010764019680209458
+    },
+    {
+      "text": " ",
+      "start": 4.2,
+      "end": 4.3,
+      "type": "spacing",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": "E",
+      "start": 4.3,
+      "end": 4.44,
+      "type": "word",
+      "logprob": -2.3841830625315197e-06
+    },
+    {
+      "text": " ",
+      "start": 4.44,
+      "end": 4.5,
+      "type": "spacing",
+      "logprob": -0.00038425691309385
+    },
+    {
+      "text": "at",
+      "start": 4.5,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -0.00038425691309385
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.64,
+      "type": "spacing",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": "an",
+      "start": 4.64,
+      "end": 4.7,
+      "type": "word",
+      "logprob": -2.0265558760002023e-06
+    },
+    {
+      "text": " ",
+      "start": 4.7,
+      "end": 4.76,
+      "type": "spacing",
+      "logprob": -0.00012182447244413197
+    },
+    {
+      "text": "owned",
+      "start": 4.76,
+      "end": 5.0,
+      "type": "word",
+      "logprob": -0.00012182447244413197
+    },
+    {
+      "text": " ",
+      "start": 5.0,
+      "end": 5.04,
+      "type": "spacing",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": "gate.",
+      "start": 5.04,
+      "end": 5.3,
+      "type": "word",
+      "logprob": -5.833483737660572e-05
+    },
+    {
+      "text": " ",
+      "start": 5.3,
+      "end": 5.3,
+      "type": "spacing",
+      "logprob": -0.0010274137603119016
+    },
+    {
+      "text": "Saves",
+      "start": 5.88,
+      "end": 6.1,
+      "type": "word",
+      "logprob": -0.0010274137603119016
+    },
+    {
+      "text": " ",
+      "start": 6.1,
+      "end": 6.14,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 6.14,
+      "end": 6.34,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.34,
+      "end": 6.38,
+      "type": "spacing",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": "backside",
+      "start": 6.38,
+      "end": 6.84,
+      "type": "word",
+      "logprob": -3.4570634852570947e-06
+    },
+    {
+      "text": " ",
+      "start": 6.84,
+      "end": 6.88,
+      "type": "spacing",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": "some",
+      "start": 6.88,
+      "end": 7.04,
+      "type": "word",
+      "logprob": -1.156323378381785e-05
+    },
+    {
+      "text": " ",
+      "start": 7.04,
+      "end": 7.1,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "flying",
+      "start": 7.1,
+      "end": 7.56,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    }
+  ],
+  "transcription_id": "3FWoqYWfzVzQobM6SJEF",
+  "audio_duration_secs": 7.76
+}

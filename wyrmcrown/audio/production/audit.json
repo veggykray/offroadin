@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "audition": 50,
+    "sfx": 125,
+    "dialogue": 443
+  },
+  "duration_seconds": {
+    "audition": 287.28,
+    "sfx": 151.0,
+    "dialogue": 1964.0
+  },
+  "dialogue_characters": {
+    "elf_dragon": 17,
+    "elf_wizard": 91,
+    "human_dragon": 16,
+    "human_wizard": 92,
+    "ice_dragon": 24,
+    "ice_wizard": 93,
+    "undead_dragon": 19,
+    "undead_wizard": 91
+  },
+  "dialogue_jobs_generated": 428,
+  "dialogue_jobs_expected": 428,
+  "missing_dialogue": [],
+  "errors": [],
+  "verification": "Fresh decoded measurements",
+  "listening_status": "Casting approved by user. Production acting, name pronunciation and SFX listening review pending."
+}

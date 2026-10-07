@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Up you get everyone. Retirement is canceled",
+  "words": [
+    {
+      "text": "Up",
+      "start": 0.16,
+      "end": 0.3,
+      "type": "word",
+      "logprob": -1.2755313036905136e-05
+    },
+    {
+      "text": " ",
+      "start": 0.3,
+      "end": 0.36,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "you",
+      "start": 0.36,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.5,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "get",
+      "start": 0.5,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -0.20141518115997314
+    },
+    {
+      "text": "everyone.",
+      "start": 0.82,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.1799986767065194
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": -6.365573790390044e-05
+    },
+    {
+      "text": "Retirement",
+      "start": 1.88,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -6.365573790390044e-05
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 2.84,
+      "end": 3.04,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.04,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -0.0013263961300253868
+    },
+    {
+      "text": "canceled",
+      "start": 3.24,
+      "end": 3.94,
+      "type": "word",
+      "logprob": -0.0013263961300253868
+    }
+  ],
+  "transcription_id": "KZnejvdoJkrW2a6FDh0q",
+  "audio_duration_secs": 4.24
+}

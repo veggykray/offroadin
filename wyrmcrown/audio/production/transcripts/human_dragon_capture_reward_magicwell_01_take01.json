@@ -1,0 +1,282 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our magic well. Stay close and it heals my wounds and restores my mana. I could get used to this",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.2,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.00016080040950328112
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.6,
+      "type": "spacing",
+      "logprob": -0.0013377059949561954
+    },
+    {
+      "text": "magic",
+      "start": 0.6,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -0.0013377059949561954
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -2.539125671319198e-05
+    },
+    {
+      "text": "well.",
+      "start": 1.16,
+      "end": 1.58,
+      "type": "word",
+      "logprob": -0.00013831922406097873
+    },
+    {
+      "text": " ",
+      "start": 1.58,
+      "end": 1.58,
+      "type": "spacing",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": "Stay",
+      "start": 2.3,
+      "end": 2.48,
+      "type": "word",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": " ",
+      "start": 2.48,
+      "end": 2.62,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "close",
+      "start": 2.62,
+      "end": 3.24,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 3.24,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -0.023246262222528458
+    },
+    {
+      "text": "and",
+      "start": 3.3,
+      "end": 3.38,
+      "type": "word",
+      "logprob": -0.023246262222528458
+    },
+    {
+      "text": " ",
+      "start": 3.38,
+      "end": 3.44,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "it",
+      "start": 3.44,
+      "end": 3.54,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.54,
+      "end": 3.64,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "heals",
+      "start": 3.64,
+      "end": 4.019,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 4.019,
+      "end": 4.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 4.08,
+      "end": 4.22,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.22,
+      "end": 4.38,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "wounds",
+      "start": 4.38,
+      "end": 4.82,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 4.82,
+      "end": 4.86,
+      "type": "spacing",
+      "logprob": -9.775113539944869e-06
+    },
+    {
+      "text": "and",
+      "start": 4.86,
+      "end": 4.98,
+      "type": "word",
+      "logprob": -9.775113539944869e-06
+    },
+    {
+      "text": " ",
+      "start": 4.98,
+      "end": 5.02,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "restores",
+      "start": 5.02,
+      "end": 5.72,
+      "type": "word",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": " ",
+      "start": 5.72,
+      "end": 5.8,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "my",
+      "start": 5.8,
+      "end": 5.94,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.94,
+      "end": 6.08,
+      "type": "spacing",
+      "logprob": -0.0001591317413840443
+    },
+    {
+      "text": "mana.",
+      "start": 6.08,
+      "end": 6.52,
+      "type": "word",
+      "logprob": -0.00013054785958956927
+    },
+    {
+      "text": " ",
+      "start": 6.52,
+      "end": 6.54,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "I",
+      "start": 7.52,
+      "end": 7.58,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 7.58,
+      "end": 7.62,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "could",
+      "start": 7.62,
+      "end": 7.76,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 7.76,
+      "end": 7.8,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "get",
+      "start": 7.8,
+      "end": 8.0,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.0,
+      "end": 8.14,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "used",
+      "start": 8.14,
+      "end": 8.34,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 8.34,
+      "end": 8.4,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "to",
+      "start": 8.4,
+      "end": 8.52,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.52,
+      "end": 8.58,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "this",
+      "start": 8.58,
+      "end": 8.96,
+      "type": "word",
+      "logprob": 0.0
+    }
+  ],
+  "transcription_id": "KxfoFZ16hUvYTehYUaKn",
+  "audio_duration_secs": 9.28
+}

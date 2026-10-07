@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Their territory. This explains the appalling scenery",
+  "words": [
+    {
+      "text": "Their",
+      "start": 0.38,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -0.0003094194398727268
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -1.7762025890988298e-05
+    },
+    {
+      "text": "territory.",
+      "start": 0.7,
+      "end": 1.34,
+      "type": "word",
+      "logprob": -0.00018522700720495776
+    },
+    {
+      "text": " ",
+      "start": 1.34,
+      "end": 1.34,
+      "type": "spacing",
+      "logprob": -1.645074735279195e-05
+    },
+    {
+      "text": "This",
+      "start": 1.94,
+      "end": 2.1,
+      "type": "word",
+      "logprob": -1.645074735279195e-05
+    },
+    {
+      "text": " ",
+      "start": 2.1,
+      "end": 2.16,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "explains",
+      "start": 2.16,
+      "end": 2.72,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.72,
+      "end": 2.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 2.76,
+      "end": 2.82,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.82,
+      "end": 2.88,
+      "type": "spacing",
+      "logprob": -5.98412734689191e-05
+    },
+    {
+      "text": "appalling",
+      "start": 2.88,
+      "end": 3.54,
+      "type": "word",
+      "logprob": -5.98412734689191e-05
+    },
+    {
+      "text": " ",
+      "start": 3.54,
+      "end": 3.72,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "scenery",
+      "start": 3.72,
+      "end": 4.14,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "UpdOHJ4Wn1GbPLTR3XeI",
+  "audio_duration_secs": 4.48
+}

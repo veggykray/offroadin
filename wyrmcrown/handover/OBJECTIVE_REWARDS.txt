@@ -1,0 +1,38 @@
+WYRMCROWN — REWARDS USED BY THE NEW CAPTURE DIALOGUE
+7 October 2026
+
+These describe active mechanics in this supplied game version. Gold income
+is delivered by cart (or raven when no ground route exists), not credited as
+a lump sum on capture. Regular owned sites also reveal their surroundings.
+
+Gold Mine: gold production for delivery home. Rich mines produce more.
+Village: taxes, +2 troop capacity, and ownership of the village herd.
+Trade Post: gold caravans for the town.
+Wizard Tower: magical defensive fire and map vision.
+Magic Well: nearby dragon healing and mana recovery within 320 units.
+Enchanted Grove: nearby dragon energy recovery within 320 units.
+Mana Crystal: Lightning Storm charges on a 100-second timer.
+Relic Site: Call the Host charges on a 110-second timer.
+Abandoned Fort: four guards, arrow defences, +3 troop capacity and vision.
+Old Castle: gold deliveries, four guards, strong defences, +4 troop capacity.
+Bridge: 15% toll from rival gold carts crossing it and defensive arrows.
+Shrine: nearby dragon healing within 320 units and wider map vision.
+Cave: drops 220 gold as collectible coins. The hoard later respawns.
+Dragon Eyrie: map vision around the eyrie.
+Watchtower: wide map vision (1700-unit reveal radius).
+Waygate: own at least two to travel between them with E while near a gate.
+Ruins: drops 150 gold as coins, with a 60% chance of a power-up orb.
+
+Crystal/relic charges are not granted immediately on capture. Their timer
+adds a charge only when no different spell occupies the dragon's spell slot;
+the same spell can stack to three charges. Hoards require coin collection,
+and their sites are looted rather than permanently owned.
+
+IMPLEMENTATION NOTE FOR FUTURE GAME DEVELOPMENT
+The original site data advertises a Wizard Tower's +15% bolt/faster-mana
+bonus, a Castle's +10% general-income bonus and an Eyrie's +12% health/faster
+recovery bonus. The AS.Sites.bonus aggregator currently has no callers in
+the gameplay code, so these passive bonuses are not applied. This dialogue
+update describes the active rewards above and preserves the existing rules.
+If those bonuses are implemented later, extend the lines and create explicit
+new takes with the existing approved voices.

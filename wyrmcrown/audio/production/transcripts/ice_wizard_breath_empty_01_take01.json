@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Breath exhausted. Wait",
+  "words": [
+    {
+      "text": "Breath",
+      "start": 0.18,
+      "end": 0.48,
+      "type": "word",
+      "logprob": -0.002939548809081316
+    },
+    {
+      "text": " ",
+      "start": 0.48,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -0.0006909366929903626
+    },
+    {
+      "text": "exhausted.",
+      "start": 0.52,
+      "end": 1.24,
+      "type": "word",
+      "logprob": -0.0006888757750857621
+    },
+    {
+      "text": " ",
+      "start": 1.24,
+      "end": 1.26,
+      "type": "spacing",
+      "logprob": -0.0005181877058930695
+    },
+    {
+      "text": "Wait",
+      "start": 2.06,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -0.0005181877058930695
+    }
+  ],
+  "transcription_id": "OmDAaCXugh1N8gxPaddO",
+  "audio_duration_secs": 2.8
+}

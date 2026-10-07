@@ -411,7 +411,7 @@
           d.heal(d.maxHp * 0.04);
           d.stats.eaten++;
           if (d.isPlayer) { g.stats.eaten++; AS.FX.text(d.x, d.y - d.z, 20, '+' + Math.round(gain) + ' ENERGY', '#ffd27a'); }
-          AS.Audio.sfx('swallow', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.45 });
+          if (!d.recordedEating) AS.Audio.sfx('swallow', { x: d.x, y: d.y, vol: d.isPlayer ? 1 : 0.45 });
         }
         if (d.eatT <= 0) { d.eatT = 0; d.eating = null; }
         return;
@@ -455,9 +455,14 @@
       d.eating = o; d.eatT = 0.9; d.swallowed = false;
       // crunch, a wet squelch, then the swallow (in dragonFeeding)
       const vol = d.isPlayer ? 1 : 0.5;
-      AS.Audio.sfx('bone_crunch', { x: d.x, y: d.y, vol, rate: U.range(0.92, 1.08) });
+      const prey = o.kind === 'sheep' ? 'sheep' : o.kind === 'cow' || o.kind === 'cattle' ? 'cattle' : o.kind === 'goat' || o.kind === 'deer' ? 'goat_deer' : 'large';
+      const eatSound = 'eat_' + prey;
+      d.recordedEating = AS.RecordedAudio && AS.RecordedAudio.has(eatSound);
+      AS.Audio.sfx(d.recordedEating ? eatSound : 'bone_crunch', { x: d.x, y: d.y, vol, rate: d.recordedEating ? 1 : U.range(0.92, 1.08) });
       const later = g.later ? g.later.bind(g) : (t, fn) => setTimeout(fn, t * 1000);
-      later(0.16, () => AS.Audio.sfx('squelch', { x: d.x, y: d.y, vol, rate: U.range(0.9, 1.1) }));
+      if (!d.recordedEating) later(0.16, () => AS.Audio.sfx('squelch', { x: d.x, y: d.y, vol, rate: U.range(0.9, 1.1) }));
+      if (Math.random() < 0.15) later(0.95, () => { if (!g.ended && d.down <= 0) AS.Audio.sfx(U.pick(['dragon_satisfied', 'dragon_burp', 'dragon_snort']), { x: d.x, y: d.y, vol: vol * 0.7 }); });
+      if (AS.Voices && AS.Voices.g === g) AS.Voices.onEat(d);
       AS.FX.splat(d.nodes[0].x, d.nodes[0].y, d.nodes[0].z, '#8a2a1a', 4);
     },
     deposit(g, d, o, F) {

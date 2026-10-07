@@ -356,6 +356,7 @@
       if (this.key === g.playerKey) {
         g.stats.goldEarned += v;
         if (x !== undefined && v >= 2) { AS.FX.text(x, y, 30, '+' + Math.round(v) + ' GOLD', '#ffd24a'); AS.Audio.sfx(v >= 60 ? 'gold_big' : 'coin', { x, y, vol: 0.8 }); }
+        if (why === 'loot' && AS.Voices && AS.Voices.g === g) AS.Voices.event('gold_found', { cooldown: 45 });
       }
     }
     update(dt) {
@@ -425,6 +426,7 @@
     wardMul() { return WARD_MUL[Math.min(4, this.wardStrength())]; }
     onAttacked(b, src) {
       const g = this.g;
+      if (AS.Voices && AS.Voices.g === g) AS.Voices.onTownAttacked(this, b);
       if (src && src.team && src.team !== this.key) this.lastAttacker = src.faction || g.factions[src.team] || null;
       if (g.time - this.attackedT > 25) {
         if (this.key === g.playerKey) { g.msg('YOUR TOWN IS UNDER ATTACK!', '#ff6a4a', 4); g.news(this.def.short + ' is under attack' + (this.lastAttacker ? ' by ' + this.lastAttacker.def.short : '') + '!', this.key, true); }
@@ -435,6 +437,7 @@
     }
     onBuildingLost(b, src) {
       const g = this.g;
+      if (AS.Voices && AS.Voices.g === g) AS.Voices.onBuildingLost(b, src);
       const attacker = src && (src.faction || g.factions[src.team]);
       if (attacker && attacker.addGold && b.kind !== 'wall') attacker.addGold(b.kind === 'house' ? 12 : 40, b.x, b.y, 'raid');
       if (b.kind === 'wardstone') g.news('A wardstone of ' + this.def.short + ' has fallen' + (attacker ? ' to ' + attacker.def.short : '') + '!', this.key, this.key === g.playerKey || (attacker && attacker.key === g.playerKey));
@@ -442,12 +445,14 @@
       if (b.kind === 'house') g.later(70, () => { if (!this.eliminated && b.slot && (!b.slot.used || !b.slot.used.alive)) this.place('house', b.slot, { buildTime: 8 }); });
     }
     onLivestockLost(o, thief) {
+      if (this.key === this.g.playerKey && AS.Voices && AS.Voices.g === this.g) AS.Voices.homeWarning('home_livestock', 2);
       if (thief && thief.faction && this.key === this.g.playerKey && this.g.time - (this.stockWarnT || -99) > 20) { this.stockWarnT = this.g.time; this.g.msg(thief.faction.def.short.toUpperCase() + ' IS STEALING YOUR LIVESTOCK!', '#ff8a5a', 3); }
     }
     eliminate(by) {
       if (this.eliminated) return;
       const g = this.g;
       this.eliminated = true;
+      if (this.key !== g.playerKey && AS.Voices && AS.Voices.g === g) AS.Voices.event('faction_eliminated', { priority: 65, cooldown: 15 });
       g.news(this.def.name + ' has fallen' + (by ? ' to ' + by.def.name : '') + '!', this.key, true);
       if (by) { by.addGold(Math.round(this.gold * 0.5) + 400, this.townPos.x, this.townPos.y, 'conquest'); }
       this.gold = 0;
@@ -485,6 +490,10 @@
       g.result = { won, text, time: g.time, stats: Object.assign({}, g.stats), map: g.map, faction: g.playerKey,
         standings: g.factionList.map((f) => ({ key: f.key, name: f.def.name, eliminated: f.eliminated, gold: Math.round(f.gold), sites: f.sitesOwned, buildings: f.buildings.filter((b) => b.alive).length })) };
       AS.Audio.sfx(won ? 'victory' : 'defeat');
+      if (AS.Voices && AS.Voices.g === g && won) {
+        const line=AS.Voices.event('victory', { priority: 100, force: true });
+        if (line) g.endT=Math.max(g.endT,AS.Voices.durationFor(line.lineId)+1);
+      }
       if (AS.Music && AS.Music.stinger) AS.Music.stinger(won ? 'victory' : 'fail');
       g.msg(won ? 'VICTORY' : 'DEFEAT', won ? '#ffe08a' : '#ff6a4a', 5);
     },

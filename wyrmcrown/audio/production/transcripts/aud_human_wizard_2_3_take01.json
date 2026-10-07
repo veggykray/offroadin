@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Perax, I trained for 40 years in Ardouva Eldemir. Nobody mentioned the saddle, the sheep, or the smell of burning trousers",
+  "words": [
+    {
+      "text": "Perax,",
+      "start": 0.1,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -0.3894137123910089
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "I",
+      "start": 1.08,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.24,
+      "type": "spacing",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": "trained",
+      "start": 1.24,
+      "end": 1.48,
+      "type": "word",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": " ",
+      "start": 1.48,
+      "end": 1.52,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "for",
+      "start": 1.52,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -0.002810340141877532
+    },
+    {
+      "text": "40",
+      "start": 1.8,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -3.2186403586820234e-06
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.24,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "years",
+      "start": 2.24,
+      "end": 2.5,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 2.5,
+      "end": 2.54,
+      "type": "spacing",
+      "logprob": -8.4638240878121e-06
+    },
+    {
+      "text": "in",
+      "start": 2.54,
+      "end": 2.64,
+      "type": "word",
+      "logprob": -8.4638240878121e-06
+    },
+    {
+      "text": " ",
+      "start": 2.64,
+      "end": 2.7,
+      "type": "spacing",
+      "logprob": -0.5954987406730652
+    },
+    {
+      "text": "Ardouva",
+      "start": 2.7,
+      "end": 3.0,
+      "type": "word",
+      "logprob": -0.6740258639412267
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": -0.024750273674726486
+    },
+    {
+      "text": "Eldemir.",
+      "start": 3.06,
+      "end": 3.56,
+      "type": "word",
+      "logprob": -0.516285732794131
+    },
+    {
+      "text": " ",
+      "start": 3.56,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "Nobody",
+      "start": 4.08,
+      "end": 4.36,
+      "type": "word",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": " ",
+      "start": 4.36,
+      "end": 4.42,
+      "type": "spacing",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": "mentioned",
+      "start": 4.42,
+      "end": 4.72,
+      "type": "word",
+      "logprob": -2.861018856492592e-06
+    },
+    {
+      "text": " ",
+      "start": 4.72,
+      "end": 4.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 4.76,
+      "end": 4.9,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.9,
+      "end": 4.98,
+      "type": "spacing",
+      "logprob": -3.659658250398934e-05
+    },
+    {
+      "text": "saddle,",
+      "start": 4.98,
+      "end": 5.3,
+      "type": "word",
+      "logprob": -3.2696825136164466e-05
+    },
+    {
+      "text": " ",
+      "start": 5.3,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "the",
+      "start": 5.56,
+      "end": 5.68,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 5.68,
+      "end": 5.74,
+      "type": "spacing",
+      "logprob": -2.7418097943154862e-06
+    },
+    {
+      "text": "sheep,",
+      "start": 5.74,
+      "end": 6.02,
+      "type": "word",
+      "logprob": -0.0016283090194140943
+    },
+    {
+      "text": " ",
+      "start": 6.02,
+      "end": 6.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "or",
+      "start": 6.16,
+      "end": 6.3,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.3,
+      "end": 6.36,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 6.36,
+      "end": 6.48,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.48,
+      "end": 6.54,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "smell",
+      "start": 6.54,
+      "end": 6.74,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 6.74,
+      "end": 6.76,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 6.76,
+      "end": 6.84,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 6.84,
+      "end": 6.98,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "burning",
+      "start": 6.98,
+      "end": 7.28,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 7.28,
+      "end": 7.4,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "trousers",
+      "start": 7.4,
+      "end": 7.94,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "jWPtr0CYnN37U16K2N8o",
+  "audio_duration_secs": 8.08
+}

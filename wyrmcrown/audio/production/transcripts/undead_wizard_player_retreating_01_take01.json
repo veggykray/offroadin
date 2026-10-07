@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A tactical retreat. Being dead once was quite sufficient",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.16,
+      "end": 0.18,
+      "type": "word",
+      "logprob": -7.688703772146255e-05
+    },
+    {
+      "text": " ",
+      "start": 0.18,
+      "end": 0.4,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "tactical",
+      "start": 0.4,
+      "end": 0.9,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": " ",
+      "start": 0.9,
+      "end": 1.0,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "retreat.",
+      "start": 1.0,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -1.679272881460747e-05
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.6,
+      "type": "spacing",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": "Being",
+      "start": 2.2,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -1.0967194612021558e-05
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "dead",
+      "start": 2.6,
+      "end": 2.84,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.84,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "once",
+      "start": 2.92,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 3.26,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "was",
+      "start": 3.3,
+      "end": 3.5,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.6,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "quite",
+      "start": 3.6,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 3.96,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "sufficient",
+      "start": 3.96,
+      "end": 4.56,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    }
+  ],
+  "transcription_id": "2gmBALC195NmX2kaqUqB",
+  "audio_duration_secs": 4.72
+}

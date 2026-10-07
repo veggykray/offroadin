@@ -1,0 +1,282 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our shrine. Nearby healing for my wounds and a view of the surrounding land. Apparently, the gods do house calls",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.2,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -0.00018940561858471483
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -0.0006409021443687379
+    },
+    {
+      "text": "shrine.",
+      "start": 0.58,
+      "end": 1.14,
+      "type": "word",
+      "logprob": -0.010364116917896484
+    },
+    {
+      "text": " ",
+      "start": 1.14,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -7.545663538621739e-05
+    },
+    {
+      "text": "Nearby",
+      "start": 1.9,
+      "end": 2.34,
+      "type": "word",
+      "logprob": -7.545663538621739e-05
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -0.0007121411035768688
+    },
+    {
+      "text": "healing",
+      "start": 2.44,
+      "end": 2.86,
+      "type": "word",
+      "logprob": -0.0007121411035768688
+    },
+    {
+      "text": " ",
+      "start": 2.86,
+      "end": 2.92,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "for",
+      "start": 2.92,
+      "end": 3.02,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.02,
+      "end": 3.08,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "my",
+      "start": 3.08,
+      "end": 3.22,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.22,
+      "end": 3.3,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "wounds",
+      "start": 3.3,
+      "end": 3.78,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 3.78,
+      "end": 4.2,
+      "type": "spacing",
+      "logprob": -0.018214929848909378
+    },
+    {
+      "text": "and",
+      "start": 4.2,
+      "end": 4.28,
+      "type": "word",
+      "logprob": -0.018214929848909378
+    },
+    {
+      "text": " ",
+      "start": 4.28,
+      "end": 4.34,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "a",
+      "start": 4.34,
+      "end": 4.4,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 4.4,
+      "end": 4.46,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "view",
+      "start": 4.46,
+      "end": 4.7,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 4.7,
+      "end": 4.78,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "of",
+      "start": 4.78,
+      "end": 4.86,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.86,
+      "end": 4.9,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "the",
+      "start": 4.9,
+      "end": 4.98,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 4.98,
+      "end": 5.06,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "surrounding",
+      "start": 5.06,
+      "end": 5.58,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 5.58,
+      "end": 5.66,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "land.",
+      "start": 5.66,
+      "end": 6.06,
+      "type": "word",
+      "logprob": -5.459731892187847e-06
+    },
+    {
+      "text": " ",
+      "start": 6.06,
+      "end": 6.06,
+      "type": "spacing",
+      "logprob": -3.182837463100441e-05
+    },
+    {
+      "text": "Apparently,",
+      "start": 6.7,
+      "end": 7.26,
+      "type": "word",
+      "logprob": -0.002142199617413677
+    },
+    {
+      "text": " ",
+      "start": 7.26,
+      "end": 7.54,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "the",
+      "start": 7.54,
+      "end": 7.62,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 7.62,
+      "end": 7.68,
+      "type": "spacing",
+      "logprob": -0.0007098776986822486
+    },
+    {
+      "text": "gods",
+      "start": 7.68,
+      "end": 8.0,
+      "type": "word",
+      "logprob": -0.0007098776986822486
+    },
+    {
+      "text": " ",
+      "start": 8.0,
+      "end": 8.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "do",
+      "start": 8.06,
+      "end": 8.2,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 8.2,
+      "end": 8.26,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "house",
+      "start": 8.26,
+      "end": 8.5,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 8.5,
+      "end": 8.56,
+      "type": "spacing",
+      "logprob": -6.198863957251888e-06
+    },
+    {
+      "text": "calls",
+      "start": 8.56,
+      "end": 8.96,
+      "type": "word",
+      "logprob": -6.198863957251888e-06
+    }
+  ],
+  "transcription_id": "FLEkBJrq1RqcD6UUiyaB",
+  "audio_duration_secs": 9.2
+}

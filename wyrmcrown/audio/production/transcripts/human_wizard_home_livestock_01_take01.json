@@ -1,0 +1,86 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Not the cackle, you grave-rotting bastard!",
+  "words": [
+    {
+      "text": "Not",
+      "start": 0.18,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -8.189342770492658e-05
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -4.51792984677013e-05
+    },
+    {
+      "text": "the",
+      "start": 0.38,
+      "end": 0.46,
+      "type": "word",
+      "logprob": -4.51792984677013e-05
+    },
+    {
+      "text": " ",
+      "start": 0.46,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -0.00015209948469419032
+    },
+    {
+      "text": "cackle,",
+      "start": 0.64,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.009107205586458025
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "you",
+      "start": 1.1,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.32,
+      "type": "spacing",
+      "logprob": -2.5510462364763953e-05
+    },
+    {
+      "text": "grave-rotting",
+      "start": 1.32,
+      "end": 2.02,
+      "type": "word",
+      "logprob": -0.0038238643768365296
+    },
+    {
+      "text": " ",
+      "start": 2.02,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "bastard!",
+      "start": 2.2,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -0.012539425864517284
+    }
+  ],
+  "transcription_id": "5KpPuuA2W6d7AvXXWnfV",
+  "audio_duration_secs": 2.96
+}

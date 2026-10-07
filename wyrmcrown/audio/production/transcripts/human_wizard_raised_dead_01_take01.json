@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Those troops are getting back up. That's cheating",
+  "words": [
+    {
+      "text": "Those",
+      "start": 0.1,
+      "end": 0.34,
+      "type": "word",
+      "logprob": -2.0503786799963564e-05
+    },
+    {
+      "text": " ",
+      "start": 0.34,
+      "end": 0.42,
+      "type": "spacing",
+      "logprob": -1.8596476365928538e-05
+    },
+    {
+      "text": "troops",
+      "start": 0.42,
+      "end": 0.74,
+      "type": "word",
+      "logprob": -1.8596476365928538e-05
+    },
+    {
+      "text": " ",
+      "start": 0.74,
+      "end": 0.78,
+      "type": "spacing",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": "are",
+      "start": 0.78,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -9.059865078597795e-06
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 0.88,
+      "type": "spacing",
+      "logprob": -2.109982233378105e-05
+    },
+    {
+      "text": "getting",
+      "start": 0.88,
+      "end": 1.08,
+      "type": "word",
+      "logprob": -2.109982233378105e-05
+    },
+    {
+      "text": " ",
+      "start": 1.08,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": "back",
+      "start": 1.16,
+      "end": 1.36,
+      "type": "word",
+      "logprob": -2.264974000354414e-06
+    },
+    {
+      "text": " ",
+      "start": 1.36,
+      "end": 1.48,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "up.",
+      "start": 1.48,
+      "end": 1.66,
+      "type": "word",
+      "logprob": -5.169308860786259e-05
+    },
+    {
+      "text": " ",
+      "start": 1.66,
+      "end": 2.02,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "That's",
+      "start": 2.02,
+      "end": 2.32,
+      "type": "word",
+      "logprob": -1.9868212556654422e-07
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.4,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "cheating",
+      "start": 2.4,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    }
+  ],
+  "transcription_id": "hlSyaAzJueiKkKrYcC6C",
+  "audio_duration_secs": 3.2
+}

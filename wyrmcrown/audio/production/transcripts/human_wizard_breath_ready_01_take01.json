@@ -1,0 +1,142 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Breath's ready. Try pointing the hot end away from me",
+  "words": [
+    {
+      "text": "Breath's",
+      "start": 0.18,
+      "end": 0.48,
+      "type": "word",
+      "logprob": -0.044325618771829056
+    },
+    {
+      "text": " ",
+      "start": 0.48,
+      "end": 0.54,
+      "type": "spacing",
+      "logprob": -6.6756979322235566e-06
+    },
+    {
+      "text": "ready.",
+      "start": 0.54,
+      "end": 0.82,
+      "type": "word",
+      "logprob": -0.0013152425923029416
+    },
+    {
+      "text": " ",
+      "start": 0.82,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -6.985420623095706e-05
+    },
+    {
+      "text": "Try",
+      "start": 1.42,
+      "end": 1.6,
+      "type": "word",
+      "logprob": -6.985420623095706e-05
+    },
+    {
+      "text": " ",
+      "start": 1.6,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": "pointing",
+      "start": 1.72,
+      "end": 2.04,
+      "type": "word",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": " ",
+      "start": 2.04,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "the",
+      "start": 2.1,
+      "end": 2.18,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 2.18,
+      "end": 2.22,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "hot",
+      "start": 2.22,
+      "end": 2.4,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 2.4,
+      "end": 2.46,
+      "type": "spacing",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": "end",
+      "start": 2.46,
+      "end": 2.62,
+      "type": "word",
+      "logprob": -1.6689286894688848e-06
+    },
+    {
+      "text": " ",
+      "start": 2.62,
+      "end": 2.68,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "away",
+      "start": 2.68,
+      "end": 3.02,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 3.02,
+      "end": 3.06,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "from",
+      "start": 3.06,
+      "end": 3.2,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.2,
+      "end": 3.26,
+      "type": "spacing",
+      "logprob": -2.1934269170742482e-05
+    },
+    {
+      "text": "me",
+      "start": 3.26,
+      "end": 3.44,
+      "type": "word",
+      "logprob": -2.1934269170742482e-05
+    }
+  ],
+  "transcription_id": "plaH8Jf6IYVl9dJKAax1",
+  "audio_duration_secs": 3.68
+}

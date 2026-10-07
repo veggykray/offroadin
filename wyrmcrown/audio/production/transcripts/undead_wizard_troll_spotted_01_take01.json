@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A troll smells almost as bad as the living",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.16,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -0.0040955008007586
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.3,
+      "type": "spacing",
+      "logprob": -0.0011710221879184246
+    },
+    {
+      "text": "troll",
+      "start": 0.36,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -0.0011710221879184246
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 0.98,
+      "type": "spacing",
+      "logprob": -0.7153796553611755
+    },
+    {
+      "text": "smells",
+      "start": 1.62,
+      "end": 2.0,
+      "type": "word",
+      "logprob": -0.7153796553611755
+    },
+    {
+      "text": " ",
+      "start": 2.0,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "almost",
+      "start": 2.08,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.56,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "as",
+      "start": 2.56,
+      "end": 2.68,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.68,
+      "end": 2.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "bad",
+      "start": 2.82,
+      "end": 3.06,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.06,
+      "end": 3.1,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "as",
+      "start": 3.1,
+      "end": 3.22,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 3.22,
+      "end": 3.26,
+      "type": "spacing",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": "the",
+      "start": 3.26,
+      "end": 3.36,
+      "type": "word",
+      "logprob": -5.483612312673358e-06
+    },
+    {
+      "text": " ",
+      "start": 3.36,
+      "end": 3.44,
+      "type": "spacing",
+      "logprob": -0.00016091958968900144
+    },
+    {
+      "text": "living",
+      "start": 3.44,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -0.00016091958968900144
+    }
+  ],
+  "transcription_id": "olKdl8nSxk049YeNam1Z",
+  "audio_duration_secs": 4.24
+}

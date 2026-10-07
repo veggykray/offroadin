@@ -1,0 +1,254 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Castle captured. Gold carts, four guards, strong defenses, and room for four more troops. That's a proper prize",
+  "words": [
+    {
+      "text": "Castle",
+      "start": 0.1,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -0.0009390473715029657
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -0.00025328766787424684
+    },
+    {
+      "text": "captured.",
+      "start": 0.52,
+      "end": 0.94,
+      "type": "word",
+      "logprob": -0.0028218569544454417
+    },
+    {
+      "text": " ",
+      "start": 0.94,
+      "end": 0.94,
+      "type": "spacing",
+      "logprob": -6.556489552167477e-06
+    },
+    {
+      "text": "Gold",
+      "start": 1.48,
+      "end": 1.7,
+      "type": "word",
+      "logprob": -6.556489552167477e-06
+    },
+    {
+      "text": " ",
+      "start": 1.7,
+      "end": 1.78,
+      "type": "spacing",
+      "logprob": -0.0011148196645081043
+    },
+    {
+      "text": "carts,",
+      "start": 1.78,
+      "end": 2.12,
+      "type": "word",
+      "logprob": -0.0009345992621092591
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.4,
+      "type": "spacing",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": "four",
+      "start": 2.4,
+      "end": 2.56,
+      "type": "word",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": " ",
+      "start": 2.56,
+      "end": 2.66,
+      "type": "spacing",
+      "logprob": -1.9073468138230965e-06
+    },
+    {
+      "text": "guards,",
+      "start": 2.66,
+      "end": 3.0,
+      "type": "word",
+      "logprob": -2.111705076198892e-06
+    },
+    {
+      "text": " ",
+      "start": 3.0,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": "strong",
+      "start": 3.34,
+      "end": 3.52,
+      "type": "word",
+      "logprob": -9.536738616588991e-07
+    },
+    {
+      "text": " ",
+      "start": 3.52,
+      "end": 3.58,
+      "type": "spacing",
+      "logprob": -0.0024763653054833412
+    },
+    {
+      "text": "defenses,",
+      "start": 3.58,
+      "end": 4.08,
+      "type": "word",
+      "logprob": -0.0027146124177508885
+    },
+    {
+      "text": " ",
+      "start": 4.08,
+      "end": 4.4,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "and",
+      "start": 4.4,
+      "end": 4.52,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.52,
+      "end": 4.58,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "room",
+      "start": 4.58,
+      "end": 4.78,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 4.78,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 4.82,
+      "end": 4.9,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.9,
+      "end": 5.08,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "four",
+      "start": 5.08,
+      "end": 5.26,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 5.26,
+      "end": 5.3,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "more",
+      "start": 5.3,
+      "end": 5.48,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.48,
+      "end": 5.54,
+      "type": "spacing",
+      "logprob": -4.768360213347478e-06
+    },
+    {
+      "text": "troops.",
+      "start": 5.54,
+      "end": 5.88,
+      "type": "word",
+      "logprob": -4.359644013415423e-06
+    },
+    {
+      "text": " ",
+      "start": 5.88,
+      "end": 6.32,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "That's",
+      "start": 6.32,
+      "end": 6.5,
+      "type": "word",
+      "logprob": -1.4702466444305173e-06
+    },
+    {
+      "text": " ",
+      "start": 6.5,
+      "end": 6.58,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "a",
+      "start": 6.58,
+      "end": 6.6,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.6,
+      "end": 6.8,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "proper",
+      "start": 6.8,
+      "end": 7.1,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 7.1,
+      "end": 7.22,
+      "type": "spacing",
+      "logprob": -6.711257447022945e-05
+    },
+    {
+      "text": "prize",
+      "start": 7.22,
+      "end": 7.68,
+      "type": "word",
+      "logprob": -6.711257447022945e-05
+    }
+  ],
+  "transcription_id": "P19rKHwC1VSxBqliZlPY",
+  "audio_duration_secs": 7.84
+}

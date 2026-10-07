@@ -1,0 +1,41 @@
+{
+  "id": "ice_fight",
+  "source_file": "Ice dragon fight.wav",
+  "source_path": "C:\\Users\\STIMP\\Downloads\\Ice dragon fight.wav",
+  "source_sha256": "0fcd136336893b7d2552f34ab0b726b1805232b386e5cfd10846f37e07a56757",
+  "source_info": {
+    "duration_seconds": 188.48,
+    "sample_rate": 48000,
+    "channels": "stereo"
+  },
+  "source_loudness": {
+    "input_i": "-10.52",
+    "input_tp": "-2.76",
+    "input_lra": "8.30",
+    "input_thresh": "-20.89",
+    "output_i": "-20.18",
+    "output_tp": "-5.88",
+    "output_lra": "3.50",
+    "output_thresh": "-30.37",
+    "normalization_type": "dynamic",
+    "target_offset": "-1.82"
+  },
+  "processing": {
+    "target_lufs": -22,
+    "true_peak_db": -2,
+    "loudness_range": 11,
+    "sample_rate": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "speed": 1,
+    "pitch_shift": false
+  },
+  "sha256": "1aa560181dcf6927a0fce526fa61ead70d8eacd45b244f244070b0a005eee38f",
+  "inspection": {
+    "duration_seconds": 188.53,
+    "sample_rate": 44100,
+    "channels": "stereo",
+    "peak_dbfs": -13.5,
+    "verification": "Fresh FFmpeg decode and stereo/sample-peak checks"
+  }
+}

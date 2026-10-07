@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "start": "human_home",
+  "tracks": {
+    "human_home": {
+      "file": "audio/music/human_home.mp3",
+      "title": "Soft Flowing Strings",
+      "source_file": "Soft Flowing Strings.wav",
+      "duration": 208.64,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "human_fight": {
+      "file": "audio/music/human_fight.mp3",
+      "title": "Human dragon fight",
+      "source_file": "Human dragon fight.wav",
+      "duration": 163.16,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "elf_home": {
+      "file": "audio/music/elf_home.mp3",
+      "title": "Elf dragon home",
+      "source_file": "Elf dragon home.wav",
+      "duration": 184.4,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "elf_fight": {
+      "file": "audio/music/elf_fight.mp3",
+      "title": "Elf dragon fight",
+      "source_file": "Elf dragon fight.wav",
+      "duration": 194.04,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "ice_home": {
+      "file": "audio/music/ice_home.mp3",
+      "title": "Ice dragon home",
+      "source_file": "Ice dragon home.wav",
+      "duration": 210.05,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "ice_fight": {
+      "file": "audio/music/ice_fight.mp3",
+      "title": "Ice dragon fight",
+      "source_file": "Ice dragon fight.wav",
+      "duration": 188.53,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "undead_home": {
+      "file": "audio/music/undead_home.mp3",
+      "title": "Undead dragon home",
+      "source_file": "Undead dragon home.wav",
+      "duration": 153.44,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "undead_fight": {
+      "file": "audio/music/undead_fight.mp3",
+      "title": "Undead dragon fight",
+      "source_file": "Undead dragon fight.wav",
+      "duration": 194.43,
+      "sample_rate": 44100,
+      "channels": 2
+    }
+  },
+  "realms": {
+    "human": {
+      "home": "human_home",
+      "fight": "human_fight"
+    },
+    "elf": {
+      "home": "elf_home",
+      "fight": "elf_fight"
+    },
+    "ice": {
+      "home": "ice_home",
+      "fight": "ice_fight"
+    },
+    "undead": {
+      "home": "undead_home",
+      "fight": "undead_fight"
+    }
+  }
+}

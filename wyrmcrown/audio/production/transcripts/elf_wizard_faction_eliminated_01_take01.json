@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "A rival realm has fallen. Order gradually returns.",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.2,
+      "type": "word",
+      "logprob": -0.0001839230244513601
+    },
+    {
+      "text": " ",
+      "start": 0.2,
+      "end": 0.28,
+      "type": "spacing",
+      "logprob": -0.0007164295529946685
+    },
+    {
+      "text": "rival",
+      "start": 0.32,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.0007164295529946685
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -0.00014065706636756659
+    },
+    {
+      "text": "realm",
+      "start": 0.82,
+      "end": 1.18,
+      "type": "word",
+      "logprob": -0.00014065706636756659
+    },
+    {
+      "text": " ",
+      "start": 1.18,
+      "end": 1.22,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "has",
+      "start": 1.22,
+      "end": 1.46,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.46,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": -2.634490556374658e-05
+    },
+    {
+      "text": "fallen.",
+      "start": 1.54,
+      "end": 1.98,
+      "type": "word",
+      "logprob": -0.000199004294180278
+    },
+    {
+      "text": " ",
+      "start": 1.98,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -5.125986263010418e-06
+    },
+    {
+      "text": "Order",
+      "start": 2.64,
+      "end": 2.98,
+      "type": "word",
+      "logprob": -5.125986263010418e-06
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.16,
+      "type": "spacing",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": "gradually",
+      "start": 3.16,
+      "end": 3.72,
+      "type": "word",
+      "logprob": -1.1920922133867862e-06
+    },
+    {
+      "text": " ",
+      "start": 3.72,
+      "end": 3.76,
+      "type": "spacing",
+      "logprob": -3.933898824470816e-06
+    },
+    {
+      "text": "returns.",
+      "start": 3.76,
+      "end": 4.42,
+      "type": "word",
+      "logprob": -0.08664749562063889
+    }
+  ],
+  "transcription_id": "AUqd8fuZlcq4GPW07SCc",
+  "audio_duration_secs": 4.72
+}

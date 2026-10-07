@@ -1,0 +1,44 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Hit confirmed. Again",
+  "words": [
+    {
+      "text": "Hit",
+      "start": 0.26,
+      "end": 0.42,
+      "type": "word",
+      "logprob": -0.0003326578007545322
+    },
+    {
+      "text": " ",
+      "start": 0.42,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -4.529942543740617e-06
+    },
+    {
+      "text": "confirmed.",
+      "start": 0.52,
+      "end": 1.2,
+      "type": "word",
+      "logprob": -0.022787700584058258
+    },
+    {
+      "text": " ",
+      "start": 1.2,
+      "end": 1.2,
+      "type": "spacing",
+      "logprob": -2.50339189733495e-06
+    },
+    {
+      "text": "Again",
+      "start": 1.78,
+      "end": 2.24,
+      "type": "word",
+      "logprob": -2.50339189733495e-06
+    }
+  ],
+  "transcription_id": "0PNWTUQGBbn1bVJF4bdk",
+  "audio_duration_secs": 2.56
+}

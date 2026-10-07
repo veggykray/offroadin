@@ -1,0 +1,18 @@
+[
+  {
+    "id": "elf_dragon_eating_reaction_01",
+    "take": "elf_dragon_eating_reaction_01_take01",
+    "expected": "Acceptable. For livestock.",
+    "transcript": "Acceptable. Acceptable for livestock",
+    "word_similarity": 0.857,
+    "status": "manual_review_required"
+  },
+  {
+    "id": "elf_dragon_eating_reaction_01",
+    "take": "elf_dragon_eating_reaction_01_take02",
+    "expected": "Acceptable. For livestock.",
+    "transcript": "Acceptable for livestock",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

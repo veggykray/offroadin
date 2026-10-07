@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "They're striking our home. Attend to the intrusion",
+  "words": [
+    {
+      "text": "They're",
+      "start": 0.06,
+      "end": 0.24,
+      "type": "word",
+      "logprob": -1.255092579250621e-05
+    },
+    {
+      "text": " ",
+      "start": 0.24,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": "striking",
+      "start": 0.34,
+      "end": 0.78,
+      "type": "word",
+      "logprob": -7.390948667307384e-06
+    },
+    {
+      "text": " ",
+      "start": 0.78,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -9.298280929215252e-06
+    },
+    {
+      "text": "our",
+      "start": 0.86,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -9.298280929215252e-06
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.14,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "home.",
+      "start": 1.14,
+      "end": 1.56,
+      "type": "word",
+      "logprob": -0.012505063414300821
+    },
+    {
+      "text": " ",
+      "start": 1.56,
+      "end": 1.96,
+      "type": "spacing",
+      "logprob": -0.00045813556062057614
+    },
+    {
+      "text": "Attend",
+      "start": 1.98,
+      "end": 2.32,
+      "type": "word",
+      "logprob": -0.00045813556062057614
+    },
+    {
+      "text": " ",
+      "start": 2.32,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "to",
+      "start": 2.38,
+      "end": 2.46,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 2.46,
+      "end": 2.5,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "the",
+      "start": 2.5,
+      "end": 2.56,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 2.56,
+      "end": 2.6,
+      "type": "spacing",
+      "logprob": -0.00017021637177094817
+    },
+    {
+      "text": "intrusion",
+      "start": 2.6,
+      "end": 3.26,
+      "type": "word",
+      "logprob": -0.00017021637177094817
+    }
+  ],
+  "transcription_id": "LwFG3XoI81z5asqsjIpq",
+  "audio_duration_secs": 3.44
+}

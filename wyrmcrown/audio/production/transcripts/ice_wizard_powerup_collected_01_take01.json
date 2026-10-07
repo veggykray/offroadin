@@ -1,0 +1,72 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Power secured. Use it carefully",
+  "words": [
+    {
+      "text": "Power",
+      "start": 0.1,
+      "end": 0.4,
+      "type": "word",
+      "logprob": -9.762764238985255e-05
+    },
+    {
+      "text": " ",
+      "start": 0.4,
+      "end": 0.52,
+      "type": "spacing",
+      "logprob": -9.894321920000948e-06
+    },
+    {
+      "text": "secured.",
+      "start": 0.52,
+      "end": 1.12,
+      "type": "word",
+      "logprob": -1.6182391618713154e-05
+    },
+    {
+      "text": " ",
+      "start": 1.12,
+      "end": 1.12,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "Use",
+      "start": 1.86,
+      "end": 2.04,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.04,
+      "end": 2.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "it",
+      "start": 2.08,
+      "end": 2.2,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.2,
+      "end": 2.38,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "carefully",
+      "start": 2.38,
+      "end": 2.94,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    }
+  ],
+  "transcription_id": "f3Idu0IFmtBLNt72pXdV",
+  "audio_duration_secs": 3.12
+}

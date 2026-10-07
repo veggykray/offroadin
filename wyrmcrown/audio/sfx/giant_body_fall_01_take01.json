@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_body_fall_01",
+    "event": "giant_body_fall",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Enormous giant body falling flat onto earth, broad flesh thud and displaced soil, stone rattles then settle Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:58:10.313904+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Enormous giant body falling flat onto earth, broad flesh thud and displaced soil, stone rattles then settle Distinct performance take 1: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "fa9b22d72aa26c8c1cc12a2e1e649d99d25a023ea175e56bf36e59dfad190a8d",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_body_fall_01_take01.mp3",
+  "sha256": "20b304a17cb5bba32c47a565cac90247e1d3f2b82d0d09b3b440392700e4ae77",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 2.0,
+    "peak_dbfs": -0.0,
+    "rms_dbfs": -14.65,
+    "clipped_sample_fraction": 6.3e-05,
+    "leading_quiet_seconds": 0.02,
+    "trailing_quiet_seconds": 1.32,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.0,
+    "peak_dbfs": -4.26,
+    "rms_dbfs": -22.77,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.04,
+    "trailing_quiet_seconds": 1.4,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

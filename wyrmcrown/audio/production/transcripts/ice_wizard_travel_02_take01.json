@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Snow ahead familiar ground",
+  "words": [
+    {
+      "text": "Snow",
+      "start": 0.4,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.0002975021197926253
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.74,
+      "type": "spacing",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": "ahead",
+      "start": 0.74,
+      "end": 1.16,
+      "type": "word",
+      "logprob": -1.7046782886609435e-05
+    },
+    {
+      "text": " ",
+      "start": 1.16,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -0.39294278621673584
+    },
+    {
+      "text": "familiar",
+      "start": 1.88,
+      "end": 2.4,
+      "type": "word",
+      "logprob": -0.39294278621673584
+    },
+    {
+      "text": " ",
+      "start": 2.4,
+      "end": 2.52,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "ground",
+      "start": 2.52,
+      "end": 3.02,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "iPdbVh10gEyRDrYkxqHT",
+  "audio_duration_secs": 3.28
+}

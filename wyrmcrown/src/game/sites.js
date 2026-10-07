@@ -121,7 +121,7 @@
       if (prev === fk) return;
       if (prev && g.factions[prev]) g.factions[prev].sitesOwned--;
       this.owner = fk; this.controller = fk; this.control = fk ? 1 : 0;
-      if (fk && prev && !silent && AS.Voices && AS.Voices.g === g) AS.Voices.onCapture(this, fk, prev);
+      if ((fk || prev) && !silent && AS.Voices && AS.Voices.g === g) AS.Voices.onCapture(this, fk, prev);
       if (fk) g.factions[fk].sitesOwned++;
       this.recolour = true;
       if (this.herd) { this.herd.owner = fk; for (const o of g.life.animals) if (o.herd === this.herd) o.owner = fk; }
@@ -264,6 +264,7 @@
       const g = this.g;
       if (prev === g.playerKey) { g.msg(this.name.toUpperCase() + ' IS BEING TAKEN!', '#ff8a5a', 2.5); }
       this.setOwner(null, true);
+      if (prev === g.playerKey && AS.Voices && AS.Voices.g === g) AS.Voices.onCapture(this, null, prev);
       if (prev === g.playerKey) AS.Audio.sfx('capture_lost');
     }
     loot(fk) {
@@ -272,6 +273,7 @@
       if (this.chest) this.chest.hidden = true;
       const v = this.def.treasure;
       AS.Pickups.coins(g, this.x, this.y + 20, v);
+      if (AS.Voices && AS.Voices.g === g) AS.Voices.onObjectiveReward(this, fk);
       AS.Audio.sfx('gold_big', { x: this.x, y: this.y });
       g.news(F.def.short + ' plundered the hoard of ' + this.name, fk, fk === g.playerKey);
       if (fk === g.playerKey) g.msg('TREASURE! SCOOP UP THE GOLD', '#ffd24a', 2.5);
@@ -361,6 +363,7 @@
       d.layoutRig(0, true);
       AS.Particles.spawn({ x: d.x, y: d.y, z: 20, shape: AS.Particles.RING, col: '#8affff', size: 10, size2: 120, life: 0.6, add: true, layer: 0, keep: true });
       AS.Audio.sfx('summon', { x: d.x, y: d.y });
+      if (d.isPlayer && AS.Voices && AS.Voices.g === g) AS.Voices.event('waygate', { cooldown: 45 });
       if (d.isPlayer) { g.camera.snap(d.x, d.y - d.z); g.camera.flash(0.4, '#c8ffff'); g.msg('THROUGH THE WAYGATE TO ' + s.name.toUpperCase(), '#8affff', 2.5); }
     },
   };

@@ -1,0 +1,296 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "This mountain was small when I hatched. This mountain was small when I hatched. This mountain was small when I hatched.",
+  "words": [
+    {
+      "text": "This",
+      "start": 0.34,
+      "end": 0.62,
+      "type": "word",
+      "logprob": -0.0004372832481749356
+    },
+    {
+      "text": " ",
+      "start": 0.62,
+      "end": 0.7,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "mountain",
+      "start": 0.7,
+      "end": 1.42,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": " ",
+      "start": 1.42,
+      "end": 1.48,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "was",
+      "start": 1.48,
+      "end": 1.72,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 1.72,
+      "end": 1.84,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "small",
+      "start": 1.84,
+      "end": 2.52,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 2.52,
+      "end": 2.58,
+      "type": "spacing",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": "when",
+      "start": 2.58,
+      "end": 2.7,
+      "type": "word",
+      "logprob": -4.291525328881107e-06
+    },
+    {
+      "text": " ",
+      "start": 2.7,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "I",
+      "start": 2.84,
+      "end": 2.92,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.92,
+      "end": 3.0,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "hatched.",
+      "start": 3.0,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -1.0207157060904137e-05
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.5,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "This",
+      "start": 4.42,
+      "end": 4.7,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 4.7,
+      "end": 4.78,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "mountain",
+      "start": 4.78,
+      "end": 5.26,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 5.26,
+      "end": 5.34,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "was",
+      "start": 5.34,
+      "end": 5.56,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 5.56,
+      "end": 5.68,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "small",
+      "start": 5.68,
+      "end": 6.36,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.36,
+      "end": 6.4,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "when",
+      "start": 6.4,
+      "end": 6.54,
+      "type": "word",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": " ",
+      "start": 6.54,
+      "end": 6.68,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "I",
+      "start": 6.68,
+      "end": 6.76,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.76,
+      "end": 6.84,
+      "type": "spacing",
+      "logprob": -4.136476854910143e-05
+    },
+    {
+      "text": "hatched.",
+      "start": 6.84,
+      "end": 7.34,
+      "type": "word",
+      "logprob": -4.267600934326765e-05
+    },
+    {
+      "text": " ",
+      "start": 7.34,
+      "end": 7.34,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "This",
+      "start": 8.2,
+      "end": 8.46,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 8.46,
+      "end": 8.52,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "mountain",
+      "start": 8.52,
+      "end": 9.0,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 9.0,
+      "end": 9.08,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "was",
+      "start": 9.08,
+      "end": 9.3,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 9.3,
+      "end": 9.42,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "small",
+      "start": 9.42,
+      "end": 10.1,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 10.1,
+      "end": 10.16,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": "when",
+      "start": 10.16,
+      "end": 10.28,
+      "type": "word",
+      "logprob": -8.344646857949556e-07
+    },
+    {
+      "text": " ",
+      "start": 10.28,
+      "end": 10.4,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "I",
+      "start": 10.4,
+      "end": 10.5,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 10.5,
+      "end": 10.56,
+      "type": "spacing",
+      "logprob": -4.768360213347478e-06
+    },
+    {
+      "text": "hatched.",
+      "start": 10.56,
+      "end": 11.08,
+      "type": "word",
+      "logprob": -0.00045419588155937163
+    }
+  ],
+  "transcription_id": "7EKqZmEEOFbB9X8cmOo1",
+  "audio_duration_secs": 11.36
+}

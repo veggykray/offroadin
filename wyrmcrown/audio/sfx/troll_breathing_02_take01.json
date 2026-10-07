@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "troll_breathing_02",
+    "event": "troll_breathing",
+    "kind": "sfx",
+    "fallback": "monster_roar",
+    "text": "Troll disgusting congested breathing, sticky nostril whistle, thick wet chest breath Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T20:02:11.292217+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Troll disgusting congested breathing, sticky nostril whistle, thick wet chest breath Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 2.6,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "f86572954d944ec993ddfae7d448611a74e0bd97bdd21e07c02defe914e6eaac",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\troll_breathing_02_take01.mp3",
+  "sha256": "148bf52a7858fe214e765f4528aa8bf51a38e5406d58f1040da834f82fddffbc",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 2.56,
+    "peak_dbfs": -0.16,
+    "rms_dbfs": -13.45,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.02,
+    "trailing_quiet_seconds": 0.22,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 2.56,
+    "peak_dbfs": -7.51,
+    "rms_dbfs": -20.87,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.02,
+    "trailing_quiet_seconds": 0.26,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

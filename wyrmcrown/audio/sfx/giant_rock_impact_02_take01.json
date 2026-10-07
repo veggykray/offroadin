@@ -1,0 +1,65 @@
+{
+  "job": {
+    "id": "giant_rock_impact_02",
+    "event": "giant_rock_impact",
+    "kind": "sfx",
+    "fallback": "stone_hit",
+    "text": "Heavy boulder impacts stone wall, sharp rock fracture with grounded low thud and rubble, no explosive boom Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55,
+    "gain": 0.65,
+    "review": "pending"
+  },
+  "generated_utc": "2026-10-06T19:59:16.238375+00:00",
+  "provider": "ElevenLabs",
+  "endpoint": "sound-generation?output_format=mp3_44100_128",
+  "voice_id": null,
+  "candidate_key": null,
+  "request": {
+    "text": "Heavy boulder impacts stone wall, sharp rock fracture with grounded low thud and rubble, no explosive boom Distinct performance take 2: vary the rhythm and texture naturally. Isolated game sound; no speech, music, crowd or unrelated ambience.",
+    "duration_seconds": 1.2,
+    "loop": false,
+    "model_id": "eleven_text_to_sound_v2",
+    "prompt_influence": 0.55
+  },
+  "request_sha256": "cce0c24db706a77389cd88443518949a13a6b916e0db59d50f935373d6fb8d4b",
+  "pronunciation_revision": null,
+  "pronunciation_snapshot": null,
+  "processing": {
+    "integrated_lufs": -20,
+    "true_peak_db": -2,
+    "highpass_hz": 25,
+    "post_limiter": {
+      "limit": 0.45,
+      "auto_level": false,
+      "attack_ms": 5,
+      "release_ms": 50
+    }
+  },
+  "raw_file": "audio\\production\\raw\\giant_rock_impact_02_take01.mp3",
+  "sha256": "688d1e19f66f89366cbcdc3f449d4cbffa1501427d3bc8dc648529fa1361b4ad",
+  "provider_request_id": null,
+  "raw_inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": -0.32,
+    "rms_dbfs": -16.29,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.42,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "inspection": {
+    "duration_seconds": 1.2,
+    "peak_dbfs": -4.85,
+    "rms_dbfs": -21.28,
+    "clipped_sample_fraction": 0.0,
+    "leading_quiet_seconds": 0.0,
+    "trailing_quiet_seconds": 0.5,
+    "checks": "decode, duration, peak, RMS, clipping, edge silence; does not establish acting or pronunciation quality"
+  },
+  "audition_review": "pending",
+  "release_status": "technical_checks_only_listening_review_required",
+  "processing_revision": "peak-limited-3"
+}

@@ -1,0 +1,100 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Our grove is burning. Turn us home",
+  "words": [
+    {
+      "text": "Our",
+      "start": 0.08,
+      "end": 0.18,
+      "type": "word",
+      "logprob": -4.3748852476710454e-05
+    },
+    {
+      "text": " ",
+      "start": 0.18,
+      "end": 0.32,
+      "type": "spacing",
+      "logprob": -0.0017219253350049257
+    },
+    {
+      "text": "grove",
+      "start": 0.32,
+      "end": 0.68,
+      "type": "word",
+      "logprob": -0.0017219253350049257
+    },
+    {
+      "text": " ",
+      "start": 0.68,
+      "end": 0.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 0.76,
+      "end": 0.86,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 0.86,
+      "end": 1.06,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "burning.",
+      "start": 1.06,
+      "end": 1.54,
+      "type": "word",
+      "logprob": -0.0004612490301454386
+    },
+    {
+      "text": " ",
+      "start": 1.54,
+      "end": 1.94,
+      "type": "spacing",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": "Turn",
+      "start": 1.94,
+      "end": 2.14,
+      "type": "word",
+      "logprob": -5.245195097813848e-06
+    },
+    {
+      "text": " ",
+      "start": 2.14,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "us",
+      "start": 2.2,
+      "end": 2.34,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.34,
+      "end": 2.44,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "home",
+      "start": 2.44,
+      "end": 2.9,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    }
+  ],
+  "transcription_id": "rE5TTggtDTLvMvuoFzAO",
+  "audio_duration_secs": 3.28
+}

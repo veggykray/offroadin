@@ -1,0 +1,128 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Another realm deceased. I shall send flowers, dead ones",
+  "words": [
+    {
+      "text": "Another",
+      "start": 0.14,
+      "end": 0.56,
+      "type": "word",
+      "logprob": -8.070142939686775e-05
+    },
+    {
+      "text": " ",
+      "start": 0.56,
+      "end": 0.68,
+      "type": "spacing",
+      "logprob": -0.00014280252798926085
+    },
+    {
+      "text": "realm",
+      "start": 0.68,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -0.00014280252798926085
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.1,
+      "type": "spacing",
+      "logprob": -0.0010993395699188113
+    },
+    {
+      "text": "deceased.",
+      "start": 1.1,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -0.001027313549356121
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.86,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "I",
+      "start": 2.52,
+      "end": 2.58,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": " ",
+      "start": 2.58,
+      "end": 2.62,
+      "type": "spacing",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": "shall",
+      "start": 2.62,
+      "end": 2.82,
+      "type": "word",
+      "logprob": -2.9802276912960224e-06
+    },
+    {
+      "text": " ",
+      "start": 2.82,
+      "end": 2.9,
+      "type": "spacing",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": "send",
+      "start": 2.9,
+      "end": 3.18,
+      "type": "word",
+      "logprob": -1.0728830375228426e-06
+    },
+    {
+      "text": " ",
+      "start": 3.18,
+      "end": 3.24,
+      "type": "spacing",
+      "logprob": -1.4305104514278355e-06
+    },
+    {
+      "text": "flowers,",
+      "start": 3.24,
+      "end": 3.86,
+      "type": "word",
+      "logprob": -0.07204595953136561
+    },
+    {
+      "text": " ",
+      "start": 3.86,
+      "end": 3.88,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "dead",
+      "start": 4.46,
+      "end": 4.68,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 4.68,
+      "end": 4.74,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-07
+    },
+    {
+      "text": "ones",
+      "start": 4.74,
+      "end": 5.2,
+      "type": "word",
+      "logprob": -4.768370445162873e-07
+    }
+  ],
+  "transcription_id": "DJ2La55BOiANoA74rNrr",
+  "audio_duration_secs": 5.36
+}

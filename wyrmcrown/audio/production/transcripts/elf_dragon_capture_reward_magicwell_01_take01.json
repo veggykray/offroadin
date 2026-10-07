@@ -1,0 +1,240 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "The well is ours. Nearby, my wounds heal and my mana returns. A suitably refined drinking spot",
+  "words": [
+    {
+      "text": "The",
+      "start": 0.2,
+      "end": 0.26,
+      "type": "word",
+      "logprob": -6.222531374078244e-05
+    },
+    {
+      "text": " ",
+      "start": 0.26,
+      "end": 0.38,
+      "type": "spacing",
+      "logprob": -0.0002965487365145236
+    },
+    {
+      "text": "well",
+      "start": 0.38,
+      "end": 0.7,
+      "type": "word",
+      "logprob": -0.0002965487365145236
+    },
+    {
+      "text": " ",
+      "start": 0.7,
+      "end": 0.86,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "is",
+      "start": 0.86,
+      "end": 1.04,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 1.04,
+      "end": 1.16,
+      "type": "spacing",
+      "logprob": -1.311301275563892e-06
+    },
+    {
+      "text": "ours.",
+      "start": 1.16,
+      "end": 1.68,
+      "type": "word",
+      "logprob": -0.00012782369667547756
+    },
+    {
+      "text": " ",
+      "start": 1.68,
+      "end": 1.68,
+      "type": "spacing",
+      "logprob": -0.0006098079611547291
+    },
+    {
+      "text": "Nearby,",
+      "start": 2.36,
+      "end": 2.94,
+      "type": "word",
+      "logprob": -0.0011852855095639825
+    },
+    {
+      "text": " ",
+      "start": 2.94,
+      "end": 3.32,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "my",
+      "start": 3.32,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "wounds",
+      "start": 3.56,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 3.98,
+      "type": "spacing",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": "heal",
+      "start": 3.98,
+      "end": 4.38,
+      "type": "word",
+      "logprob": -3.099436753473128e-06
+    },
+    {
+      "text": " ",
+      "start": 4.38,
+      "end": 4.42,
+      "type": "spacing",
+      "logprob": -0.00043096792069263756
+    },
+    {
+      "text": "and",
+      "start": 4.42,
+      "end": 4.54,
+      "type": "word",
+      "logprob": -0.00043096792069263756
+    },
+    {
+      "text": " ",
+      "start": 4.54,
+      "end": 4.58,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "my",
+      "start": 4.58,
+      "end": 4.76,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 4.76,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": -0.0006890306831337512
+    },
+    {
+      "text": "mana",
+      "start": 4.82,
+      "end": 5.12,
+      "type": "word",
+      "logprob": -0.0006890306831337512
+    },
+    {
+      "text": " ",
+      "start": 5.12,
+      "end": 5.16,
+      "type": "spacing",
+      "logprob": -3.2186455882765586e-06
+    },
+    {
+      "text": "returns.",
+      "start": 5.16,
+      "end": 5.78,
+      "type": "word",
+      "logprob": -3.6771448293393405e-05
+    },
+    {
+      "text": " ",
+      "start": 5.78,
+      "end": 5.78,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "A",
+      "start": 6.4,
+      "end": 6.48,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 6.48,
+      "end": 6.56,
+      "type": "spacing",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": "suitably",
+      "start": 6.56,
+      "end": 7.02,
+      "type": "word",
+      "logprob": -6.318072337307967e-06
+    },
+    {
+      "text": " ",
+      "start": 7.02,
+      "end": 7.06,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "refined",
+      "start": 7.06,
+      "end": 7.62,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 7.62,
+      "end": 7.66,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "drinking",
+      "start": 7.66,
+      "end": 7.98,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 7.98,
+      "end": 8.14,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-07
+    },
+    {
+      "text": "spot",
+      "start": 8.14,
+      "end": 8.44,
+      "type": "word",
+      "logprob": -2.3841855067985307e-07
+    }
+  ],
+  "transcription_id": "lC0zJ46aa8KdWE4FYZgm",
+  "audio_duration_secs": 8.64
+}

@@ -1,0 +1,546 @@
+[
+  {
+    "id": "elf_dragon_capture_reward_cave_01",
+    "take": "elf_dragon_capture_reward_cave_01_take01",
+    "expected": "The cave yields two hundred and twenty gold. Collect the coins from the ground. We have standards, and expenses.",
+    "transcript": "The cave yields 220 gold. Collect the coins from the ground. We have standards and expenses.",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_dragon_capture_reward_grove_01",
+    "take": "elf_dragon_capture_reward_grove_01_take01",
+    "expected": "Our enchanted grove. My energy returns nearby. Even perfection occasionally requires a rest.",
+    "transcript": "Our enchanted grove My energy returns nearby Even perfection occasionally requires a rest",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_dragon_capture_reward_magicwell_01",
+    "take": "elf_dragon_capture_reward_magicwell_01_take01",
+    "expected": "The well is ours. Nearby, my wounds heal and my mana returns. A suitably refined drinking spot.",
+    "transcript": "The well is ours. Nearby, my wounds heal and my mana returns. A suitably refined drinking spot",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_dragon_capture_reward_nest_01",
+    "take": "elf_dragon_capture_reward_nest_01_take01",
+    "expected": "My eyrie. We gain a view of the surrounding land. At last, a perch worthy of the scenery.",
+    "transcript": "My eyrie. We gain a view of the surrounding land. At last, a perch worthy of the scenery.",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_dragon_capture_reward_shrine_01",
+    "take": "elf_dragon_capture_reward_shrine_01_take01",
+    "expected": "Our shrine. Healing for me nearby, and a wider view of the land. A place with remarkably good manners.",
+    "transcript": "Our shrine. Healing for me nearby and a wider view of the land. A place with remarkably good manners",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_dragon_capture_reward_village_01",
+    "take": "elf_dragon_capture_reward_village_01_take01",
+    "expected": "A village claimed. Taxes, two more places in our army, and livestock. Finally, useful neighbours.",
+    "transcript": "A village claimed. Taxes, two more places in our army, and livestock. Finally, useful neighbors",
+    "word_similarity": 0.933,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_bridge_01",
+    "take": "elf_wizard_capture_reward_bridge_01_take01",
+    "expected": "Our bridge. Fifteen percent from passing enemy gold carts, with a tower to discourage complaints. A civilised toll.",
+    "transcript": "Our bridge. 15% from passing enemy gold carts with a tower to discourage complaints. A civilized toll",
+    "word_similarity": 0.944,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_castle_01",
+    "take": "elf_wizard_capture_reward_castle_01_take01",
+    "expected": "Our castle. Gold deliveries, four guards, strong defences, and four extra troop places. At last, suitable accommodation.",
+    "transcript": "Our castle gold deliveries, four guards, strong defenses, and four extra troop places at last suitable accommodation",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_crystal_01",
+    "take": "elf_wizard_capture_reward_crystal_01_take01",
+    "expected": "Our crystal. A Lightning Storm charge every hundred seconds, provided we hold no different spell. Elegance from above.",
+    "transcript": "Ah, crystal. A lightning storm charge every hundred seconds, provided we hold no different spell. Elegance from above",
+    "word_similarity": 0.944,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_fort_01",
+    "take": "elf_wizard_capture_reward_fort_01_take01",
+    "expected": "Our fort. Four guards, defensive arrows, and three extra troop places. A respectable answer to unwanted guests.",
+    "transcript": "Our fort. Four guards, defensive arrows, and three extra troop places. A respectable answer to unwanted guests",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_goldmine_01",
+    "take": "elf_wizard_capture_reward_goldmine_01_take01",
+    "expected": "The mine is ours. Gold carts will supply our treasury. Keep the road fit for civilised commerce.",
+    "transcript": "The mine is ours. Gold carts will supply our treasury. Keep the road fit for civilized commerce",
+    "word_similarity": 0.941,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_relic_01",
+    "take": "elf_wizard_capture_reward_relic_01_take01",
+    "expected": "Our relic. A Call the Host charge every hundred and ten seconds, unless we hold another spell. Reinforcements, with purpose.",
+    "transcript": "Our relic. A call the host charge every 110 seconds unless we hold another spell. Reinforcements with purpose",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_ruins_01",
+    "take": "elf_wizard_capture_reward_ruins_01_take01",
+    "expected": "The ruins yield a hundred and fifty gold to collect. Sometimes, a magic orb as well. Salvage can have its merits.",
+    "transcript": "The ruins yield 150 gold to collect, sometimes a magic orb as well. Salvage can have its merits",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_tradepost_01",
+    "take": "elf_wizard_capture_reward_tradepost_01_take01",
+    "expected": "Our trade post. Its caravans bring gold home. Protect them; commerce requires a little taste.",
+    "transcript": "Our trade post. Its caravans bring gold home. Protect them. Commerce requires a little taste",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_watchtower_01",
+    "take": "elf_wizard_capture_reward_watchtower_01_take01",
+    "expected": "Our watchtower. A wide stretch of land revealed. We may now judge our neighbours from a sensible distance.",
+    "transcript": "Our watchtower, a wide stretch of land revealed. We may now judge our neighbors from a sensible distance",
+    "word_similarity": 0.944,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_waygate_01",
+    "take": "elf_wizard_capture_reward_waygate_01_take01",
+    "expected": "Our waygate. Claim a second for travel between them. Press E at an owned gate. A more dignified journey.",
+    "transcript": "Our Waygate. Claim a second for travel between them. Press E at an owned gate. A more dignified journey",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "elf_wizard_capture_reward_wizardtower_01",
+    "take": "elf_wizard_capture_reward_wizardtower_01_take01",
+    "expected": "Our wizard tower. Magic to repel intruders, and a clearer view of the surrounding land. Quite acceptable.",
+    "transcript": "Our wizard tower. Magic to repel intruders and a clearer view of the surrounding land. Quite acceptable",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_cave_01",
+    "take": "human_dragon_capture_reward_cave_01_take01",
+    "expected": "The cave hoard is open. Two hundred and twenty gold on the ground. Scoop it up; admiring it pays for nothing.",
+    "transcript": "The cave horde is open. Two hundred and twenty gold on the ground. Scoop it up. Admiring it pays for nothing",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_grove_01",
+    "take": "human_dragon_capture_reward_grove_01_take01",
+    "expected": "Grove claimed. My energy comes back while we're close. Let me catch my breath before your next brilliant idea.",
+    "transcript": "Grove claimed. \"My energy comes back while we're close. Let me catch my breath before your next brilliant idea.\"",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_magicwell_01",
+    "take": "human_dragon_capture_reward_magicwell_01_take01",
+    "expected": "Our magic well. Stay close and it heals my wounds and restores my mana. I could get used to this.",
+    "transcript": "Our magic well. Stay close and it heals my wounds and restores my mana. I could get used to this",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_nest_01",
+    "take": "human_dragon_capture_reward_nest_01_take01",
+    "expected": "Eyrie claimed. We can see the surrounding land from here. A proper perch for keeping an eye on trouble.",
+    "transcript": "Eerie claimed. We can see the surrounding land from here. A proper perch for keeping an eye on trouble",
+    "word_similarity": 0.973,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_shrine_01",
+    "take": "human_dragon_capture_reward_shrine_01_take01",
+    "expected": "Our shrine. Stay nearby and my wounds heal. It also reveals the surrounding land. The gods have finally made themselves useful.",
+    "transcript": "Our shrine. Stay nearby and my wounds heal. It also reveals the surrounding land. The gods have finally made themselves useful",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_dragon_capture_reward_village_01",
+    "take": "human_dragon_capture_reward_village_01_take01",
+    "expected": "Our village. Taxes by cart, room for two more troops, and a herd for my dinner.",
+    "transcript": "Our village. Taxes by cart, room for two more troops, and a herd for my dinner",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_bridge_01",
+    "take": "human_wizard_capture_reward_bridge_01_take01",
+    "expected": "Bridge captured! Enemy gold carts passing through pay us fifteen percent, and the tower shoots at foes. Lovely little earner.",
+    "transcript": "Bridge captured. Enemy gold carts passing through pay us 15%, and the tower shoots at foes. Lovely little earner",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_castle_01",
+    "take": "human_wizard_capture_reward_castle_01_take01",
+    "expected": "Castle captured! Gold carts, four guards, strong defences, and room for four more troops. That's a proper prize!",
+    "transcript": "Castle captured. Gold carts, four guards, strong defenses, and room for four more troops. That's a proper prize",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_crystal_01",
+    "take": "human_wizard_capture_reward_crystal_01_take01",
+    "expected": "Crystal captured! A Lightning Storm charge every hundred seconds, if we're holding no other spell. Lovely weather for our enemies.",
+    "transcript": "Crystal captured. A lightning storm charge every hundred seconds if we're holding no other spell. Lovely weather for our enemies",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_fort_01",
+    "take": "human_wizard_capture_reward_fort_01_take01",
+    "expected": "Fort captured! Four guards, arrow defences, and capacity for three more troops. Finally, somewhere that shoots back for us.",
+    "transcript": "Fort captured. Four guards, arrow defenses, and capacity for three more troops. Finally, somewhere that shoots back for us",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_goldmine_01",
+    "take": "human_wizard_capture_reward_goldmine_01_take01",
+    "expected": "Mine captured! More gold coming home by cart. Guard the road; I've expensive habits.",
+    "transcript": "Mine captured. More gold coming home by cart. Guard the road. I've expensive habits",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_relic_01",
+    "take": "human_wizard_capture_reward_relic_01_take01",
+    "expected": "Relic captured! A Call the Host charge every hundred and ten seconds, if we're holding no other spell. More lads for the fight.",
+    "transcript": "Relic captured. A Call the Host charge every hundred and ten seconds if we're holding no other spell. More lads for the fight",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_ruins_01",
+    "take": "human_wizard_capture_reward_ruins_01_take01",
+    "expected": "Ruins cleared! A hundred and fifty gold to scoop up, and sometimes a magic orb. Keep your eyes on the ground.",
+    "transcript": "Ruins cleared. A hundred and fifty gold to scoop up and sometimes a magic orb. Keep your eyes on the ground",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_tradepost_01",
+    "take": "human_wizard_capture_reward_tradepost_01_take01",
+    "expected": "Trade post captured! More coin comes home by caravan. Keep those merchants alive; they're carrying my wages.",
+    "transcript": "Trade post captured. More coin comes home by caravan. Keep those merchants alive. They're carrying my wages",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_watchtower_01",
+    "take": "human_wizard_capture_reward_watchtower_01_take01",
+    "expected": "Watchtower captured! It reveals a wide stretch of land. We can spot trouble before it arrives at the bloody doorstep.",
+    "transcript": "Watchtower captured. It reveals a wide stretch of land. We can spot trouble before it arrives at the bloody doorstep",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_waygate_01",
+    "take": "human_wizard_capture_reward_waygate_01_take01",
+    "expected": "Waygate captured! Own another and we can travel between them. Press E at an owned gate. Saves my backside some flying.",
+    "transcript": "Waygate captured. Own another and we can travel between them. Press E at an owned gate. Saves my backside some flying",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "human_wizard_capture_reward_wizardtower_01",
+    "take": "human_wizard_capture_reward_wizardtower_01_take01",
+    "expected": "Tower captured! It fires magic at enemies and lets us see the surrounding land. Useful neighbours, for once.",
+    "transcript": "Tower captured. It fires magic at enemies and lets us see the surrounding land. Useful neighbors for once",
+    "word_similarity": 0.944,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_cave_01",
+    "take": "ice_dragon_capture_reward_cave_01_take01",
+    "expected": "Cave cleared. Two hundred and twenty gold lies below. Collect the coins before we leave.",
+    "transcript": "Cave cleared. Two hundred and twenty gold lies below. Collect the coins before we leave",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_grove_01",
+    "take": "ice_dragon_capture_reward_grove_01_take01",
+    "expected": "Grove secured. Stay close to restore my energy. Strength before the next flight.",
+    "transcript": "Grove secured. Stay close to restore my energy. Strength before the next flight",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_magicwell_01",
+    "take": "ice_dragon_capture_reward_magicwell_01_take01",
+    "expected": "Well secured. Stay nearby. Wounds heal. Mana returns. Then we strike again.",
+    "transcript": "Well secured. Stay nearby. Wounds heal. Mana returns. Then we strike again",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_nest_01",
+    "take": "ice_dragon_capture_reward_nest_01_take01",
+    "expected": "Eyrie secured. The surrounding land is visible to us. Watch for movement below.",
+    "transcript": "Eerie secured. The surrounding land is visible to us. Watch for movement below",
+    "word_similarity": 0.96,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_shrine_01",
+    "take": "ice_dragon_capture_reward_shrine_01_take01",
+    "expected": "Shrine secured. Healing nearby. Wider vision across the land. Rest here, and watch the approaches.",
+    "transcript": "Shrine secured. Healing nearby. Wider vision across the land. Rest here and watch the approaches",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_dragon_capture_reward_village_01",
+    "take": "ice_dragon_capture_reward_village_01_take01",
+    "expected": "Village secured. Taxes by cart. Capacity for two more troops. A herd to feed us.",
+    "transcript": "Village secured. Taxes by cart. Capacity for two more troops. A herd to feed us",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_bridge_01",
+    "take": "ice_wizard_capture_reward_bridge_01_take01",
+    "expected": "Bridge secured. Fifteen percent from passing enemy gold carts. The tower covers the crossing.",
+    "transcript": "Bridge secured. 15% from passing enemy gold carts. The tower covers the crossing",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_castle_01",
+    "take": "ice_wizard_capture_reward_castle_01_take01",
+    "expected": "Castle secured. Gold carts. Four guards and strong defences. Capacity for four more troops.",
+    "transcript": "Castle secured. Gold carts. Four guards and strong defenses. Capacity for four more troops",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_crystal_01",
+    "take": "ice_wizard_capture_reward_crystal_01_take01",
+    "expected": "Crystal secured. A Lightning Storm charge every hundred seconds. Keep the spell slot free of other spells.",
+    "transcript": "Crystal secured. A lightning storm charge every hundred seconds. Keep the spell slot free of other spells",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_fort_01",
+    "take": "ice_wizard_capture_reward_fort_01_take01",
+    "expected": "Fort secured. Four guards. Arrow defences. Capacity for three more troops. Hold this ground.",
+    "transcript": "Fort secured. Four guards. Arrow defenses. Capacity for three more troops. Hold this ground",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_goldmine_01",
+    "take": "ice_wizard_capture_reward_goldmine_01_take01",
+    "expected": "Mine secured. Gold travels home by cart. Protect the deliveries.",
+    "transcript": "Mine secured. Gold travels home by cart. Protect the deliveries",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_relic_01",
+    "take": "ice_wizard_capture_reward_relic_01_take01",
+    "expected": "Relic secured. Call the Host gains a charge every hundred and ten seconds. Keep other spells out of the slot.",
+    "transcript": "Relic secured. Call the Host gains a charge every hundred and ten seconds. Keep other spells out of the slot",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_ruins_01",
+    "take": "ice_wizard_capture_reward_ruins_01_take01",
+    "expected": "Ruins cleared. Collect a hundred and fifty gold. A magic orb may appear too.",
+    "transcript": "Ruins cleared. Collect 150 gold. A magic orb may appear too",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_tradepost_01",
+    "take": "ice_wizard_capture_reward_tradepost_01_take01",
+    "expected": "Trade post secured. Gold caravans for our town. Guard their route.",
+    "transcript": "Trade post secured. Gold caravans for our town. Guard their route",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_watchtower_01",
+    "take": "ice_wizard_capture_reward_watchtower_01_take01",
+    "expected": "Watchtower secured. Wide vision across the land. See the next attack coming.",
+    "transcript": "Watchtower secured. Wide vision across the land. See the next attack coming",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_waygate_01",
+    "take": "ice_wizard_capture_reward_waygate_01_take01",
+    "expected": "Waygate secured. Own two to travel between them. Press E at an owned gate.",
+    "transcript": "Waygate secured. Own two to travel between them. Press E at an owned gate",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "ice_wizard_capture_reward_wizardtower_01",
+    "take": "ice_wizard_capture_reward_wizardtower_01_take01",
+    "expected": "Wizard tower secured. Magical fire against enemies. Vision across the surrounding ground.",
+    "transcript": "Wizard tower secured. Magical fire against enemies. Vision across the surrounding ground",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_cave_01",
+    "take": "undead_dragon_capture_reward_cave_01_take01",
+    "expected": "The cave has yielded two hundred and twenty gold. Collect the coins. Their previous owner has stopped objecting.",
+    "transcript": "The cave has yielded two hundred and twenty gold. Collect the coins. Their previous owner has stopped objecting.",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_grove_01",
+    "take": "undead_dragon_capture_reward_grove_01_take01",
+    "expected": "The grove is ours. My energy returns nearby. The trees seem surprisingly unconcerned about me.",
+    "transcript": "The grove is ours. My energy returns nearby. The trees seem surprisingly unconcerned about me.",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_magicwell_01",
+    "take": "undead_dragon_capture_reward_magicwell_01_take01",
+    "expected": "Our well. It heals my wounds and restores mana nearby. Quite an improvement on swamp water.",
+    "transcript": "Our well. It heals my wounds and restores mana nearby. Quite an improvement on swamp water",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_nest_01",
+    "take": "undead_dragon_capture_reward_nest_01_take01",
+    "expected": "Our eyrie. The nearby land is revealed. A fine place to watch things become less alive.",
+    "transcript": "Our EERI. The nearby land is revealed. A fine place to watch things become less alive.",
+    "word_similarity": 0.968,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_shrine_01",
+    "take": "undead_dragon_capture_reward_shrine_01_take01",
+    "expected": "Our shrine. Nearby healing for my wounds, and a view of the surrounding land. Apparently, the gods do house calls.",
+    "transcript": "Our shrine. Nearby healing for my wounds and a view of the surrounding land. Apparently, the gods do house calls",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_dragon_capture_reward_village_01",
+    "take": "undead_dragon_capture_reward_village_01_take01",
+    "expected": "Our village. Taxes, two more troop places, and a herd. Such generous future skeletons.",
+    "transcript": "Our village. Taxes, two more troop places, and a herd. Such generous future skeletons",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_bridge_01",
+    "take": "undead_wizard_capture_reward_bridge_01_take01",
+    "expected": "Our bridge. Passing enemy gold carts pay fifteen percent. The tower shoots at foes. Death and taxes, beautifully combined.",
+    "transcript": "Our bridge. Passing enemy gold carts pay 15%. The tower shoots at foes. Death and taxes beautifully combined",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_castle_01",
+    "take": "undead_wizard_capture_reward_castle_01_take01",
+    "expected": "Our castle. Gold carts, four guards, strong defences, and four extra troop places. Plenty of room for the departed.",
+    "transcript": "Our castle Gold carts, four guards, strong defenses, and four extra troop places. Plenty of room for the departed",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_crystal_01",
+    "take": "undead_wizard_capture_reward_crystal_01_take01",
+    "expected": "Our crystal. A Lightning Storm charge every hundred seconds, if no other spell occupies the slot. A bright future for corpses.",
+    "transcript": "Our crystal. A lightning storm charge every hundred seconds if no other spell occupies the slot. A bright future for corpses",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_fort_01",
+    "take": "undead_wizard_capture_reward_fort_01_take01",
+    "expected": "Our fort. Four guards, arrow defences, and three extra troop places. A most accommodating address for violence.",
+    "transcript": "Our fort. Four guards, arrow defenses, and three extra troop places. A most accommodating address for violence",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_goldmine_01",
+    "take": "undead_wizard_capture_reward_goldmine_01_take01",
+    "expected": "Our mine now. Gold carts for the treasury. Even the dead have running expenses.",
+    "transcript": "Are mine now. Gold carts for the treasury. Even the dead have running expenses",
+    "word_similarity": 0.929,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_relic_01",
+    "take": "undead_wizard_capture_reward_relic_01_take01",
+    "expected": "Our relic. A Call the Host charge every hundred and ten seconds, if no other spell fills the slot. More company for the war.",
+    "transcript": "Our relic. A Call the Host charge every 110 seconds if no other spell fills the slot. More company for the war",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_ruins_01",
+    "take": "undead_wizard_capture_reward_ruins_01_take01",
+    "expected": "Ruins cleared! A hundred and fifty gold to collect, sometimes a magic orb. The deceased have left a decent tip.",
+    "transcript": "Ruins cleared. 150 gold to collect, sometimes a magic orb. The deceased have left a decent tip",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_tradepost_01",
+    "take": "undead_wizard_capture_reward_tradepost_01_take01",
+    "expected": "The trade post is ours. Gold caravans for home. A splendid business with unusually living staff.",
+    "transcript": "The trade post is ours. Gold caravans for home. A splendid business with unusually living staff",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_watchtower_01",
+    "take": "undead_wizard_capture_reward_watchtower_01_take01",
+    "expected": "Our watchtower. A wide stretch of land revealed. So many places for future graves.",
+    "transcript": "Our watchtower. A wide stretch of land revealed. So many places for future graves.",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_waygate_01",
+    "take": "undead_wizard_capture_reward_waygate_01_take01",
+    "expected": "Our waygate. Own another to travel between them. Press E at an owned gate. Saves wear on the remaining joints.",
+    "transcript": "Our Waygate. Own another to travel between them. Press E at an owned gate. Saves wear on the remaining joints",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  },
+  {
+    "id": "undead_wizard_capture_reward_wizardtower_01",
+    "take": "undead_wizard_capture_reward_wizardtower_01_take01",
+    "expected": "Our tower now. It shoots magic at enemies and reveals nearby land. A delightfully hostile landlord.",
+    "transcript": "Our tower now. It shoots magic at enemies and reveals nearby land. A delightfully hostile landlord",
+    "word_similarity": 1.0,
+    "status": "text_consistency_check_passed"
+  }
+]

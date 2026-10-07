@@ -1,0 +1,184 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "Eerie secured. The surrounding land is visible to us. Watch for movement below",
+  "words": [
+    {
+      "text": "Eerie",
+      "start": 0.16,
+      "end": 0.5,
+      "type": "word",
+      "logprob": -0.2545115472166799
+    },
+    {
+      "text": " ",
+      "start": 0.5,
+      "end": 0.58,
+      "type": "spacing",
+      "logprob": -7.056941103655845e-05
+    },
+    {
+      "text": "secured.",
+      "start": 0.62,
+      "end": 1.26,
+      "type": "word",
+      "logprob": -9.17555717023788e-05
+    },
+    {
+      "text": " ",
+      "start": 1.26,
+      "end": 1.26,
+      "type": "spacing",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": "The",
+      "start": 1.78,
+      "end": 1.86,
+      "type": "word",
+      "logprob": -1.7881377516459906e-06
+    },
+    {
+      "text": " ",
+      "start": 1.86,
+      "end": 1.9,
+      "type": "spacing",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": "surrounding",
+      "start": 1.9,
+      "end": 2.38,
+      "type": "word",
+      "logprob": -5.006777428206988e-06
+    },
+    {
+      "text": " ",
+      "start": 2.38,
+      "end": 2.5,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "land",
+      "start": 2.5,
+      "end": 2.8,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 2.8,
+      "end": 2.84,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "is",
+      "start": 2.84,
+      "end": 2.98,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.98,
+      "end": 3.04,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "visible",
+      "start": 3.04,
+      "end": 3.4,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.4,
+      "end": 3.44,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": "to",
+      "start": 3.44,
+      "end": 3.56,
+      "type": "word",
+      "logprob": -1.1920928244535389e-07
+    },
+    {
+      "text": " ",
+      "start": 3.56,
+      "end": 3.62,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "us.",
+      "start": 3.62,
+      "end": 3.84,
+      "type": "word",
+      "logprob": -6.198825455309513e-06
+    },
+    {
+      "text": " ",
+      "start": 3.84,
+      "end": 4.34,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "Watch",
+      "start": 4.34,
+      "end": 4.58,
+      "type": "word",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": " ",
+      "start": 4.58,
+      "end": 4.62,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "for",
+      "start": 4.62,
+      "end": 4.76,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 4.76,
+      "end": 4.82,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": "movement",
+      "start": 4.82,
+      "end": 5.22,
+      "type": "word",
+      "logprob": -7.152555099310121e-07
+    },
+    {
+      "text": " ",
+      "start": 5.22,
+      "end": 5.32,
+      "type": "spacing",
+      "logprob": -2.622600959512056e-06
+    },
+    {
+      "text": "below",
+      "start": 5.32,
+      "end": 5.68,
+      "type": "word",
+      "logprob": -2.622600959512056e-06
+    }
+  ],
+  "transcription_id": "u8M6IiqZkecweTIMV000",
+  "audio_duration_secs": 6.0
+}

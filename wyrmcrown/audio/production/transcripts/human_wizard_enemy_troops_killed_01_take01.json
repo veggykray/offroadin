@@ -1,0 +1,58 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "That's their lot sorted",
+  "words": [
+    {
+      "text": "That's",
+      "start": 0.26,
+      "end": 0.5,
+      "type": "word",
+      "logprob": -3.832479266444958e-05
+    },
+    {
+      "text": " ",
+      "start": 0.5,
+      "end": 0.56,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": "their",
+      "start": 0.56,
+      "end": 0.76,
+      "type": "word",
+      "logprob": -5.960462772236497e-07
+    },
+    {
+      "text": " ",
+      "start": 0.76,
+      "end": 0.82,
+      "type": "spacing",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": "lot",
+      "start": 0.82,
+      "end": 0.98,
+      "type": "word",
+      "logprob": -2.145764938177308e-06
+    },
+    {
+      "text": " ",
+      "start": 0.98,
+      "end": 1.08,
+      "type": "spacing",
+      "logprob": -1.680836794548668e-05
+    },
+    {
+      "text": "sorted",
+      "start": 1.08,
+      "end": 1.52,
+      "type": "word",
+      "logprob": -1.680836794548668e-05
+    }
+  ],
+  "transcription_id": "MHCK6m8KGdwXH3Zra71z",
+  "audio_duration_secs": 1.84
+}

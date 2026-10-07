@@ -1,0 +1,114 @@
+{
+  "language_code": "eng",
+  "language_probability": 1.0,
+  "text": "If that keep falls, we're all history. Again",
+  "words": [
+    {
+      "text": "If",
+      "start": 0.18,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -3.671578815556131e-05
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": "that",
+      "start": 0.34,
+      "end": 0.54,
+      "type": "word",
+      "logprob": -3.576278118089249e-07
+    },
+    {
+      "text": " ",
+      "start": 0.54,
+      "end": 0.62,
+      "type": "spacing",
+      "logprob": -0.0011238694423809648
+    },
+    {
+      "text": "keep",
+      "start": 0.62,
+      "end": 0.88,
+      "type": "word",
+      "logprob": -0.0011238694423809648
+    },
+    {
+      "text": " ",
+      "start": 0.88,
+      "end": 0.92,
+      "type": "spacing",
+      "logprob": -4.935142715112306e-05
+    },
+    {
+      "text": "falls,",
+      "start": 0.92,
+      "end": 1.3,
+      "type": "word",
+      "logprob": -0.00023808259781314214
+    },
+    {
+      "text": " ",
+      "start": 1.3,
+      "end": 1.54,
+      "type": "spacing",
+      "logprob": -1.5497195136049413e-06
+    },
+    {
+      "text": "we're",
+      "start": 1.54,
+      "end": 1.76,
+      "type": "word",
+      "logprob": -6.151122443043278e-06
+    },
+    {
+      "text": " ",
+      "start": 1.76,
+      "end": 1.88,
+      "type": "spacing",
+      "logprob": 0.0
+    },
+    {
+      "text": "all",
+      "start": 1.88,
+      "end": 2.12,
+      "type": "word",
+      "logprob": 0.0
+    },
+    {
+      "text": " ",
+      "start": 2.12,
+      "end": 2.2,
+      "type": "spacing",
+      "logprob": -7.629365427419543e-06
+    },
+    {
+      "text": "history.",
+      "start": 2.2,
+      "end": 2.76,
+      "type": "word",
+      "logprob": -0.013966130067274207
+    },
+    {
+      "text": " ",
+      "start": 2.76,
+      "end": 2.76,
+      "type": "spacing",
+      "logprob": -1.645074735279195e-05
+    },
+    {
+      "text": "Again",
+      "start": 3.14,
+      "end": 3.6,
+      "type": "word",
+      "logprob": -1.645074735279195e-05
+    }
+  ],
+  "transcription_id": "b0Bh4UmLj7RzUzLNm8fc",
+  "audio_duration_secs": 3.92
+}
