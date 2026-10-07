@@ -240,6 +240,7 @@
       ctx.globalCompositeOperation = 'source-over';
       ctx.imageSmoothingQuality = sq;
       if (L.tint) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = L.tint; ctx.fillRect(0, 0, this.bufW, this.bufH); ctx.restore(); }
+      this.lastLights = this.lights.length;
       this.lights.length = 0;
     },
 

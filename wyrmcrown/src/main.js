@@ -5,19 +5,21 @@
  *   ?map=sundered      start that map straight away (skips the menu)
  *   &faction=elf       play another realm (testing; the campaign plays Aldermere)
  *   &god=1             invulnerable dragon      &fps=1  frame-time readout
+ *   &perf=1            developer performance overlay open (F3 toggles it)
  *   &demo=1            all four dragons flown by the AI (attract mode)
  *   &gold=5000         starting gold for every realm (testing) */
 'use strict';
 (function (AS) {
   const U = AS.U;
   const App = {
-    state: 'boot', game: null, last: 0, overlay: null, fps: 60, frameMs: 0,
+    state: 'boot', game: null, last: 0, overlay: null, fps: 60, frameMs: 0, updMs: 0, renMs: 0,
     params: new URLSearchParams(location.search),
     init() {
       AS.Settings = AS.Save.loadSettings();
       AS.Input.setBindings(AS.Settings.bindings);
       const canvas = document.getElementById('game');
       AS.Input.init(canvas);
+      AS.Perf && AS.Perf.init();
       AS.Renderer.viewHeights = { near: 520, normal: 600, far: 700 };
       AS.Renderer.init(canvas);
       // creature sprites are forged in the background (served over http; file:// forges on the page)
@@ -60,6 +62,7 @@
           this.lastMap = id; this.lastOpts = opts;
           AS.UI && AS.UI.hideAll && AS.UI.hideAll();
           this.state = 'play'; this.overlay = null;
+          AS.Perf && AS.Perf.reset(); // (the loading pause is not a frame)
           AS.HUD && AS.HUD.reset && AS.HUD.reset(this.game);
           AS.Audio.startWorld && AS.Audio.startWorld(this.game.world);
           AS.RealmAudio && AS.RealmAudio.start(this.game);
@@ -133,9 +136,10 @@
           }
           AS.HUD && AS.HUD.tabTick && AS.HUD.tabTick(I.down('objectives'), dt);
           // the war map and the court pause the realm
-          if (!this.overlay) { g.update(dt); AS.Voices && AS.Voices.update(dt, g); }
+          if (!this.overlay) { const u0 = performance.now(); g.update(dt); this.updMs = performance.now() - u0; AS.Voices && AS.Voices.update(dt, g); }
           else { AS.Particles.update(0); }
         } else if (this.state === 'results') AS.Particles.update(dt * 0.5);
+        const r0 = performance.now();
         AS.Renderer.renderWorld(g, this.state === 'play' && !this.overlay ? dt : 0);
         AS.Renderer.present();
         const ctx = AS.Renderer.ctx;
@@ -143,6 +147,8 @@
           AS.HUD && AS.HUD.draw(ctx, g, dt);
           if (this.overlay === 'map' && AS.WarMap) AS.WarMap.draw(ctx, g, dt);
         }
+        this.renMs = performance.now() - r0;
+        AS.Perf && AS.Perf.draw(ctx, g);
         AS.Audio.update && AS.Audio.update(dt, g);
       } else if (this.demo && this.state !== 'loading') {
         // attract mode: an all-AI war plays behind the title and menus
@@ -151,6 +157,7 @@
         d.update(dt);
         AS.Renderer.renderWorld(d, dt);
         AS.Renderer.present();
+        AS.Perf && AS.Perf.draw(AS.Renderer.ctx, d);
         AS.game = null;
         AS.UI && AS.UI.tick && AS.UI.tick(dt);
         AS.Audio.update && AS.Audio.update(dt, null);
@@ -159,7 +166,9 @@
         AS.Audio.update && AS.Audio.update(dt, null);
       }
       AS.Music.update && AS.Music.update(dt);
-      this.frameMs = U.lerp(this.frameMs, performance.now() - t0, 0.05);
+      const work = performance.now() - t0;
+      this.frameMs = U.lerp(this.frameMs, work, 0.05);
+      if (AS.Perf) { AS.Perf.frame(ts, work, this.updMs, this.renMs); this.updMs = this.renMs = 0; }
       if (this.params.get('fps') === '1') {
         const c = AS.Renderer.ctx; c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#0f0'; c.font = '14px monospace';
         c.fillText(Math.round(this.fps) + ' fps  ' + this.frameMs.toFixed(1) + 'ms  p:' + AS.Particles.pool.active.length + ' pr:' + AS.Proj.pool.active.length + (g ? ' t:' + g.troops.length + ' b:' + g.buildings.length + (AS.Life ? ' life:' + AS.Life.count(g) : '') : ''), 10, AS.Renderer.canvas.height - 10);

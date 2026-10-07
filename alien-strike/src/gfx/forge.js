@@ -250,7 +250,7 @@
    * direction's shadow silhouette — is rendered the first time anything reads it.
    * A creature seen for the first time so costs the one frame it is drawn in
    * rather than its whole rotation × animation set (over a second for a colossus),
-   * and fill() forges the rest in spare time. The pixels are exactly the same. */
+   * and fill() (or a forge worker) draws the rest in spare time — the same drawing. */
   const cache = new Map();
   const stats = { sync: 0, syncMs: 0, worker: 0, stand: 0 }; // frames forged on the spot / time spent / frames from workers
   const pending = []; // sheets with frames still to forge, most recently requested last
@@ -260,7 +260,6 @@
     const r = Math.ceil(model.r * s), hh = Math.ceil(model.h * s);
     return { ax: (r + pad) / F, ay: (r + hh + pad) / F, w: (r * 2 + pad * 2) / F, h: (r * 2 + hh + pad * 2) / F };
   }
-  // an array whose slots build themselves on first read and then become plain values
   /* On-the-spot forging is capped per frame (beginFrame resets it). Past the cap, a
    * frame that is not forged yet is stood in for by the nearest finished frame of
    * the same sheet — the neighbouring direction or animation phase — until the
@@ -280,6 +279,7 @@
     }
     return null;
   }
+  // an array whose slots build themselves on first read and then become plain values
   function lazyRow(n, build, sh, a) {
     const row = new Array(n);
     for (let i = 0; i < n; i++) {

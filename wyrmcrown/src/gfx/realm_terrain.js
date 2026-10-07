@@ -129,6 +129,7 @@
       if (this._fin && this._fin.key === key) { let r; do { r = this._fin.it.next(); } while (!r.done); this._fin = null; this.store(key, cx, cy, r.value); return r.value; }
       const i = this._ready.findIndex((q) => q.cx === cx && q.cy === cy);
       if (i >= 0) { const q = this._ready.splice(i, 1)[0], it = this.finishGen(q); let r; do { r = it.next(); } while (!r.done); this.store(key, cx, cy, r.value); return r.value; }
+      this.syncN = (this.syncN || 0) + 1; // shaded here and now (the performance overlay counts these)
       return super.getChunk(cx, cy);
     }
     work(budget, queue) {
