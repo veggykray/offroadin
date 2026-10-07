@@ -76,6 +76,7 @@
       get ao() { return get().p.ao; }, get flat() { return get().p.flat; },
       get bevel() { return get().p.bevel; }, get bevelW() { return get().p.bevelW; },
       get stroke() { return get().p.stroke; }, get detail() { return get().p.detail; },
+      get tex() { return get().p.tex; },
       shape(c, zt, an) { get().p.shape(c, zt, an); },
     };
   }
@@ -141,14 +142,14 @@
   function tube(side, top, fn, o) {
     o = o || {};
     const b = o.zr || zBounds(fn);
-    return { z0: b[0], z1: b[1], side: hex(side), top: hex(top || side), bevel: o.bevel || false, ao: o.ao !== undefined ? o.ao : 0.18, flat: o.flat,
+    return { z0: b[0], z1: b[1], side: hex(side), top: hex(top || side), bevel: o.bevel || false, ao: o.ao !== undefined ? o.ao : 0.18, flat: o.flat, tex: o.tex,
       detail: o.detail ? (c, an) => { if (!o.show || o.show(c, an)) o.detail(c, an); } : undefined,
       shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; px(c); const z = lerp(b[0], b[1], zt); for (const pl of fn(an)) sweep(c, z, pl); } };
   }
   /* generic part: fn(c, z, an) appends geometry for absolute height z */
   function gp(side, top, z0, z1, fn, o) {
     o = o || {};
-    return { z0, z1, side: hex(side), top: hex(top || side), ao: o.ao !== undefined ? o.ao : 0.15, bevel: o.bevel || false, flat: o.flat, stroke: o.stroke,
+    return { z0, z1, side: hex(side), top: hex(top || side), ao: o.ao !== undefined ? o.ao : 0.15, bevel: o.bevel || false, flat: o.flat, stroke: o.stroke, tex: o.tex,
       detail: o.detail ? (c, an) => { if (!o.show || o.show(c, an)) o.detail(c, an); } : undefined,
       shape: (c, zt, an) => { if (o.show && !o.show(c, an)) return; px(c); fn(c, lerp(z0, z1, zt), an); } };
   }
@@ -211,7 +212,7 @@
   function stack(side, top, pr, o) {
     o = o || {};
     const z0 = pr[0][0], z1 = pr[pr.length - 1][0];
-    return { z0, z1, side: hex(side), top: hex(top || side), ao: o.ao !== undefined ? o.ao : 0.35, bevel: o.bevel, flat: o.flat, detail: o.detail,
+    return { z0, z1, side: hex(side), top: hex(top || side), ao: o.ao !== undefined ? o.ao : 0.35, bevel: o.bevel, flat: o.flat, detail: o.detail, tex: o.tex,
       shape: (c, zt, an) => {
         const q = profAt(pr, lerp(z0, z1, zt));
         const x = (q[3] || 0) + (o.cx || 0) + (o.sway ? o.sway(an, zt) : 0);
@@ -235,7 +236,7 @@
   function band(col, top, ring, t0, t1, za, zb, o) {
     o = o || {};
     const kO = o.out || 1.06, kI = o.inK || 0.84;
-    return { z0: za, z1: zb, side: hex(col), top: hex(top || col), bevel: false, ao: o.ao !== undefined ? o.ao : 0.08, flat: o.flat,
+    return { z0: za, z1: zb, side: hex(col), top: hex(top || col), bevel: false, ao: o.ao !== undefined ? o.ao : 0.08, flat: o.flat, tex: o.tex,
       shape: (c, zt) => {
         const a = viewA(c), z = lerp(za, zb, zt);
         const T0 = typeof t0 === 'function' ? t0(z) : t0, T1 = typeof t1 === 'function' ? t1(z) : t1;
@@ -286,14 +287,21 @@
   function legLines(R, s, an) {
     const D = R.D, f = R.foot(s, an), x = f[0], y = f[1], up = f[2];
     const kx = x * 0.5 + D.kneeF + up * 0.9, kz = D.hip * 0.5 + up * 0.5;
+    const calf = D.calfK ? [[lerp(x - 0.05, kx, 0.55) - 0.12, y * 0.99, lerp(0.95 + up, kz, 0.55), lerp(D.ankleR, D.kneeR, 0.55) * D.calfK]] : [];
+    const thigh = D.thighK ? [[kx * 0.45, y * 0.95, lerp(kz, D.hip, 0.5), lerp(D.kneeR, D.legR, 0.5) * D.thighK]] : [];
     return {
-      leg: [[x - 0.05, y, 0.95 + up, D.ankleR], [kx, y * 0.98, kz, D.kneeR], [0, y * 0.92, D.hip, D.legR], [0, y * 0.8, D.hip + 0.6, D.legR]],
+      leg: [[x - 0.05, y, 0.95 + up, D.ankleR]].concat(calf, [[kx, y * 0.98, kz, D.kneeR]], thigh, [[0, y * 0.92, D.hip, D.legR], [0, y * 0.8, D.hip + 0.6, D.legR]]),
       boot: [[x + 0.58, y, 0.3 + up * 0.85, D.ankleR * 0.8], [x - 0.12, y, 0.42 + up, D.ankleR * 1.05], [x - 0.04, y, D.bootH + up, D.ankleR + 0.05]],
     };
   }
   function armLines(R, s, an) {
     const D = R.D, A = R.arm(s, an), S0 = R.shoulder(s);
     const w = [lerp(A.e[0], A.h[0], 0.78), lerp(A.e[1], A.h[1], 0.78), lerp(A.e[2], A.h[2], 0.78)];
+    if (D.armShape) { // [shoulder, biceps, elbow, forearm, wrist] radius factors: muscled arms
+      const k = D.armShape, S1 = [S0[0], S0[1] * 0.9, S0[2] + 0.15], m = (P, Q, t) => [lerp(P[0], Q[0], t), lerp(P[1], Q[1], t), lerp(P[2], Q[2], t)];
+      const b = m(S1, A.e, 0.5), f = m(A.e, A.h, 0.35);
+      return [[S1.concat([D.armR * k[0]]), b.concat([D.armR * k[1]]), A.e.concat([D.armR * k[2]]), f.concat([D.armR * k[3]]), w.concat([D.armR * k[4]])]];
+    }
     return [[[S0[0], S0[1] * 0.9, S0[2] + 0.15, D.armR + 0.1], [A.e[0], A.e[1], A.e[2], D.armR], [w[0], w[1], w[2], D.armR * 0.88]]];
   }
   function torsoProf(kind, D) {
@@ -328,16 +336,16 @@
     for (const s of [1, -1]) {
       const d = (a, an) => dep(a, R.foot(s, an)[0] * 0.4, s * D.legY);
       G.push({ key: (a, an) => -0.5 + 0.01 * d(a, an), dk: d, shade: 0.09,
-        parts: [tube(legC, sh(legC, 0.12), (an) => [legLines(R, s, an).leg], { ao: 0.3 }), tube(bootC, sh(bootC, 0.16), (an) => [legLines(R, s, an).boot], { ao: 0.1 })] });
+        parts: [tube(legC, sh(legC, 0.12), (an) => [legLines(R, s, an).leg], { ao: c.legAo !== undefined ? c.legAo : 0.3, tex: c.legTex }), tube(bootC, sh(bootC, 0.16), (an) => [legLines(R, s, an).boot], { ao: 0.1, tex: c.bootTex })] });
     }
     // arms (+ held gear)
     for (const s of [1, -1]) {
       const held = (s > 0 ? c.heldR : c.heldL) || [];
       const sl = hex(c.sleeve || c.torsoSide || p.b), hd = hex(c.hands || skin);
-      const parts = [tube(sl, sh(sl, 0.14), (an) => armLines(R, s, an), { ao: 0.14 })];
+      const parts = [tube(sl, sh(sl, 0.14), (an) => armLines(R, s, an), { ao: 0.14, tex: c.armTex })];
       if (c.pauldron) parts.push(c.pauldron(R, s));
       for (const h of held) if (h.under) parts.push(...h.under);
-      parts.push(tube(hd, sh(hd, 0.12), (an) => [[R.arm(s, an).h.concat([D.handR])]], { ao: 0 }));
+      if (!c.noHands) parts.push(tube(hd, sh(hd, 0.12), (an) => [[R.arm(s, an).h.concat([D.handR])]], { ao: 0, tex: c.handTex }));
       for (const h of held) if (h.over) parts.push(...h.over);
       const d = (a, an) => { const h = R.arm(s, an).h; return dep(a, (h[0] + D.shX) * 0.5, h[1]); };
       G.push({ key: d, shade: 0.07, parts });
@@ -345,13 +353,13 @@
     // core: torso, decals, neck, head, hair, hat
     const prof = torsoProf(c.torso || 'tunic', D);
     const tS = hex(c.torsoSide || p.b), tT = hex(c.torsoTop || sh(tS, 0.16));
-    const core = [stack(tS, tT, prof, { ao: c.torsoAo !== undefined ? c.torsoAo : 0.32, detail: c.torsoDetail, jag: c.jag })];
+    const core = [stack(tS, tT, prof, { ao: c.torsoAo !== undefined ? c.torsoAo : 0.32, detail: c.torsoDetail, jag: c.jag, tex: c.torsoTex })];
     const ring = ringProf(prof);
     for (const b of c.bands || []) core.push(band(b.col, b.top, ring, b.t0, b.t1, b.z0, b.z1, b));
     if (c.coreMid) core.push(...c.coreMid(D, prof));
     const hd = c.head || {};
-    if (!c.noHead) core.push(tube(sh(skin, -0.12), skin, () => [[[D.headX * 0.5 + (prof[prof.length - 1][3] || 0) * 0.5, 0, D.top - 0.4, D.neckR], [D.headX, 0, D.headZ - 0.5, D.neckR]]], { ao: 0.2 }));
-    if (!c.noHead) core.push(...headParts(D, skin, hd));
+    if (!c.noHead) core.push(tube(sh(skin, -0.12), skin, () => [[[D.headX * 0.5 + (prof[prof.length - 1][3] || 0) * 0.5, 0, D.top - 0.4, D.neckR], [D.headX, 0, D.headZ - 0.5, D.neckR]]], { ao: 0.2, tex: c.skinTex }));
+    if (!c.noHead) core.push(...(c.headParts ? c.headParts(D, skin) : headParts(D, skin, hd)));
     G.push({ key: () => 0, parts: core });
     for (const it of c.items || []) G.push(it);
     return { r: c.r || 3.5, h: c.h || 10.7, parts: assemble(G), style: 'unit', scale: c.scale || 1 };

@@ -347,7 +347,9 @@
       }
       // a few frames of the sheet per game frame, inside a small time budget;
       // a machine with no quiet frames still gets one step a frame
-      const budget = AS.App && AS.App.frameMs > 14 ? 1 : 4, t0 = performance.now();
+      const slow = AS.App && AS.App.frameMs > 14;
+      if (slow && (this.warmSkip = ((this.warmSkip || 0) + 1) % 3) !== 0) return; // slow frames: one step every third frame
+      const budget = slow ? 1 : 4, t0 = performance.now();
       try {
         let r;
         do { r = this.warmGen.next(); } while (!r.done && performance.now() - t0 < budget);

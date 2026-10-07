@@ -323,6 +323,28 @@ then material detail.
   banks that drift over the blight's bogs and the forest glades; cloud
   shadows and distance haze from the engine's atmosphere layer.
 
+## Creature finish (`materials.js`, `models_giants.js`, `dragon_art.js`)
+
+- The forge takes an optional per-slice `tex` hook. Stacked slices only show
+  their camera-facing rim, so marks painted slice by slice build a surface on
+  the walls. `AS.Mat.tex` gives body-attached scales, plates, hide, skin, fur,
+  bark, moss, cloth, leather, bone, ice, metal and horn; `AS.Mat.paint`
+  projects features (eyes, lids, brows, nostrils, lips, teeth) onto walls by
+  height.
+- The camera looks down at about 45°, so faces sit where a head's surface
+  faces it: eyes on the upper front of giant and troll heads, the brow above
+  them, mouth and lower teeth on a jutting jaw drawn as a crescent (the forge
+  paints part by part, so a full jaw would paint its hidden half over the face).
+  Things hanging behind a head are drawn before it.
+- `mHead` builds sculpted heads with painted faces, `bigHand` gives knuckled
+  hands with nails or claws; limbs take muscle shapes (`armShape`, `calfK`).
+- Dragons: eyes painted on the head's top and projected onto its side walls,
+  teeth and lip lines in profile, brow crests, cheek plates, shoulders under the
+  wing roots, claws, spines on a ridge, and every segment gets its material by
+  role. Wings draw tapered lit bones with knuckles, membranes that belly between
+  the fingers with veins and root creases, veined leaf feathers, fractured ice
+  facets on struts, and stained torn membrane.
+
 ## Maps
 
 Each map is pure data:

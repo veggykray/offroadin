@@ -169,7 +169,7 @@
   }
 
   /* Render one frame of a stacked model.
-   * model: { r, h, parts:[{z0,z1,shape(ctx,zt,anim),side,top,detail(ctx,anim),stroke}], scale }
+   * model: { r, h, parts:[{z0,z1,shape(ctx,zt,anim),side,top,detail(ctx,anim),tex(ctx,zt,anim,isTop,k,steps),stroke}], scale }
    * Object space: +x is forward. Anchor (ax, ay) is the ground point under the model's centre. */
   function renderModel(model, angle, anim, opts) {
     opts = opts || {};
@@ -213,6 +213,10 @@
         ctx.beginPath();
         p.shape(ctx, zt, anim || 0);
         if (p.stroke) ctx.stroke(); else ctx.fill();
+        // optional surface material: called after every filled slice with the slice path still
+        // current (it may clip to it); slices show only their camera-facing rim, so per-slice
+        // marks build up a texture on the walls and the last slice textures the top face
+        if (p.tex && !p.stroke) p.tex(ctx, zt, anim || 0, isTop, k, steps);
         if (isTop && shadeIt && !p.stroke && p.bevel !== false) {
           // bevel: light rim on edges facing the light, dark rim on the far edges
           ctx.save();

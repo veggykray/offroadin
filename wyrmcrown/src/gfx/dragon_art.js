@@ -68,7 +68,9 @@
   // a row of triangular dorsal spikes along x, rising from z0 to z1
   function spikes(L, z0, z1, side, top, n, w, x0) {
     return { z0, z1, side, top, bevel: false, shape: (c, zt) => {
-      for (let i = 0; i < n; i++) { const x = (x0 || 0) + L / 2 - (i + 0.5) * (L / n), s = (w || 1.3) * (1 - zt * 0.85); c.moveTo(x + s * 1.1, 0); c.lineTo(x - s * 1.9, s * 0.6); c.lineTo(x - s * 1.5, 0); c.lineTo(x - s * 1.9, -s * 0.6); c.closePath(); }
+      // a ridge of thick scutes runs under the spikes so they grow out of the back, not sit on it
+      if (zt < 0.22) { const wr = (w || 1.3) * (0.55 - zt); c.moveTo((x0 || 0) + L / 2, 0); c.ellipse((x0 || 0), 0, L / 2, wr, 0, 0, TAU); c.closePath(); }
+      for (let i = 0; i < n; i++) { const x = (x0 || 0) + L / 2 - (i + 0.5) * (L / n), s = (w || 1.3) * (1 - zt * 0.85); c.moveTo(x + s * 1.1, 0); c.quadraticCurveTo(x - s * 0.6, s * 0.75, x - s * 1.9, s * 0.6); c.lineTo(x - s * 1.5, 0); c.lineTo(x - s * 1.9, -s * 0.6); c.quadraticCurveTo(x - s * 0.6, -s * 0.75, x + s * 1.1, 0); c.closePath(); }
     } };
   }
   // a faceted crystal shard (translucent-looking) standing up from z0
@@ -94,37 +96,156 @@
     ];
   }
 
+  /* ------------------------------------------------------- finishing helpers
+   * The dragons are seen from above at ~45°: the head's top carries the face (eyes on its
+   * flanks under a brow, nostrils, scale rows) and its side walls carry the profile (the eye
+   * again, the lip line and the teeth), painted with AS.Mat (materials.js). */
+  // half-width of a mirrored polygon (S.sym point list, x descending) at x
+  function halfW(pts, x) {
+    for (let i = 0; i + 3 < pts.length; i += 2) { const x0 = pts[i], y0 = pts[i + 1], x1 = pts[i + 2], y1 = pts[i + 3]; if ((x <= x0 && x >= x1) || (x >= x0 && x <= x1)) { const t = (x - x0) / ((x1 - x0) || 1); return y0 + (y1 - y0) * t; } }
+    return 0;
+  }
+  /* an eye on the top of the head, both sides. e: { x, y, len, wid, tilt (outer corner back, rad), iris: [core, rim],
+   *  pupil: 'slit'|'round'|'flame', sock, lid, lower, brow (lit ridge colour), scowl (brow drop toward the snout), glow } */
+  function eyeArt(c, e) {
+    for (const sg of [1, -1]) {
+      c.save(); c.translate(e.x, e.y * sg); c.rotate(-e.tilt * sg); c.scale(1, sg);
+      const L = e.len / 2, W = e.wid / 2;
+      // +v points out over the head's flank, -v toward its crown (the upper lid, seen from above)
+      const almond = (k, dv) => { c.beginPath(); c.moveTo(L * k, dv || 0); c.quadraticCurveTo(L * 0.1, -W * 2.1 * k + (dv || 0), -L * k, (dv || 0) + W * 0.25); c.quadraticCurveTo(-L * 0.1, W * 2.0 * k + (dv || 0), L * k, dv || 0); c.closePath(); };
+      // socket and the brow's shadow
+      almond(1.45, -W * 0.15); c.fillStyle = e.sock; c.fill();
+      if (e.brow) { // the lit brow ridge over the upper lid, dropping toward the snout when scowling
+        c.beginPath(); c.moveTo(L * 1.55, -W * (1.0 - (e.scowl || 0))); c.quadraticCurveTo(0, -W * 2.9, -L * 1.35, -W * 1.9);
+        c.lineWidth = W * 0.85; c.strokeStyle = e.brow; c.lineCap = 'round'; c.stroke();
+      }
+      almond(1); const g = c.createRadialGradient(L * 0.1, 0, 0, 0, 0, L * 1.05); g.addColorStop(0, e.iris[0]); g.addColorStop(0.55, e.iris[1]); g.addColorStop(1, e.iris[2] || C.str(C.shade(e.iris[1], -0.45))); c.fillStyle = g; c.fill();
+      c.save(); almond(1); c.clip();
+      if (e.pupil === 'slit') { c.beginPath(); c.ellipse(L * 0.05, 0, L * 0.14, W * 1.6, 0, 0, TAU); c.fillStyle = '#0a0606'; c.fill(); }
+      else if (e.pupil === 'round') { c.beginPath(); c.arc(L * 0.05, 0, W * 0.75, 0, TAU); c.fillStyle = '#081210'; c.fill(); }
+      else if (e.pupil === 'flame') { const f = c.createRadialGradient(L * 0.05, 0, 0, L * 0.05, 0, W * 1.3); f.addColorStop(0, '#ffffff'); f.addColorStop(0.4, e.iris[0]); f.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = f; c.fillRect(-L, -W * 2, L * 2, W * 4); }
+      // the upper lid's shadow across the top of the eye
+      c.fillStyle = 'rgba(0,0,0,0.38)'; c.fillRect(-L * 1.2, -W * 2.4, L * 2.4, W * 1.25);
+      c.restore();
+      // lids
+      c.beginPath(); c.moveTo(L * 1.08, 0); c.quadraticCurveTo(L * 0.1, -W * 2.15, -L * 1.12, W * 0.2); c.lineWidth = Math.max(0.36, W * 0.42); c.strokeStyle = e.lid; c.stroke();
+      c.beginPath(); c.moveTo(L * 0.95, W * 0.15); c.quadraticCurveTo(-L * 0.1, W * 2.05, -L * 1.0, W * 0.35); c.lineWidth = Math.max(0.28, W * 0.25); c.strokeStyle = e.lower; c.stroke();
+      // the glint, front and toward the crown
+      c.beginPath(); c.arc(L * 0.38, -W * 0.45, Math.max(0.26, W * 0.32), 0, TAU); c.fillStyle = '#ffffff'; c.fill();
+      c.restore();
+    }
+  }
+  /* the same eye and the mouth projected onto the head's side walls (profile views).
+   * pts: the head part's S.sym list, z0/z1 its heights, e as above, teeth: { col, xs: [...], z, h }, lip: colour */
+  function headSides(pts, z0, z1, e, o) {
+    if (!AS.Mat) return null;
+    o = o || {};
+    const fs = [];
+    const side = (x, sg, push) => () => [x, sg * (halfW(pts, x) + (push || 0)), sg * Math.PI / 2];
+    const ez = o.ez !== undefined ? o.ez : z1 - (z1 - z0) * 0.28;
+    for (const sg of [1, -1]) {
+      fs.push({ z: ez + 0.1, h: e.wid * 0.85, w: e.len * 0.7, at: side(e.x, sg), col: e.sock, min: 1 });
+      fs.push({ z: ez, h: e.wid * 0.48, w: e.len * 0.45, at: side(e.x, sg), col: e.iris[1], min: 1.2 });
+      fs.push({ z: ez, h: e.wid * 0.48, w: e.len * 0.08, at: side(e.x + e.len * 0.05, sg), col: e.pupil === 'flame' ? '#ffffff' : '#0a0606', min: 0.5 });
+      fs.push({ z: ez + e.wid * 0.62, h: e.wid * 0.22, w: e.len * 0.55, at: side(e.x, sg), col: e.lid, min: 0.6 });
+      fs.push({ z: ez + e.wid * 0.25, h: 0.12, w: 0.12, at: side(e.x + e.len * 0.2, sg), col: '#ffffff', shape: 'box', min: 0.5 });
+      if (o.teeth) for (const x of o.teeth.xs) fs.push({ z: z0 + (o.teeth.h || 0.5), h: o.teeth.h || 0.5, w: o.teeth.w || 0.35, at: side(x, sg), col: o.teeth.col, shape: 'tooth', min: 0.5 });
+      if (o.lip) fs.push({ z: z0 + 0.12, h: 0.14, w: o.lipW || 5, at: side(o.lipX || 9, sg), col: o.lip, shape: 'box', min: 0.5 });
+      for (const sc of o.scars || []) fs.push({ z: ez - 0.8, h: 0.12, w: 1.6, at: side(sc, sg), col: 'rgba(0,0,0,0.35)', shape: 'box' });
+    }
+    return AS.Mat.paint(z0, z1, fs);
+  }
+  // material hooks, made once AS.Mat exists (dragons are forged lazily, after every script has loaded)
+  let MATS = null;
+  function mats() {
+    if (MATS || !AS.Mat) return MATS;
+    const T = AS.Mat.tex;
+    MATS = {
+      scales: T('scales', { a: 0.42, n: 10, seed: 1 }), scalesL: T('scales', { a: 0.4, n: 7, seed: 2 }), fine: T('scales', { a: 0.34, n: 14, seed: 3 }),
+      plates: T('plates', { a: 0.45, n: 4, seed: 4 }), belly: T('plates', { a: 0.5, n: 3, seed: 5, glint: '#fff4d8' }),
+      horn: T('horn', { a: 0.45, dz: 0.5 }), bone: T('bone', { a: 0.5 }), leaf: T('fur', { a: 0.25, dz: 0 }), ice: T('ice', { a: 0.55 }), hide: T('leather', { a: 0.45 }),
+      cloth: T('cloth', { a: 0.45 }), metal: T('metal', { a: 0.5 }),
+    };
+    return MATS;
+  }
+  // give every plain part of a forged segment its material by role (body scales, belly plates, horn, bone)
+  function finish(m, lk) {
+    const X = mats();
+    if (!X) return m;
+    const bodyT = lk.kind === 'tyrant' ? X.plates : lk.kind === 'serpent' ? X.fine : X.scales;
+    for (const p of m.parts) {
+      if (p.tex || p.stroke || p.flat) continue;
+      const t = p.top, sd = p.side;
+      if (t === lk.top || sd === lk.body || t === lk.body) p.tex = bodyT;
+      else if (t === lk.belly) p.tex = lk.kind === 'bones' ? X.hide : X.belly;
+      else if (t === lk.horn || t === lk.spine) p.tex = X.horn;
+      else if (t === lk.bone || t === lk.bone2) p.tex = X.bone;
+      else if (t === lk.cloth) p.tex = X.cloth;
+      else if (t === lk.gold) p.tex = X.metal;
+    }
+    return m;
+  }
+  // a claw: a short curved horn triangle pointing along angle a
+  function claw(c, x, y, a, len) { const ca = Math.cos(a), sa = Math.sin(a), nx = -sa, ny = ca; c.moveTo(x + nx * len * 0.3, y + ny * len * 0.3); c.quadraticCurveTo(x + ca * len * 0.7 + nx * len * 0.25, y + sa * len * 0.7 + ny * len * 0.25, x + ca * len, y + sa * len); c.lineTo(x - nx * len * 0.3, y - ny * len * 0.3); c.closePath(); }
+
+  // curved claws on tucked feet, mirrored: list [[x, y, angle, len], ...] for the +y side
+  function claws(col, list, z0, z1) {
+    return { z0, z1, side: sh(col, -0.4), top: col, bevel: false, shape: (c, zt) => { const k = 1 - zt * 0.35; for (const sg of [1, -1]) for (const q of list) { claw(c, q[0], sg * q[1], sg * q[2], q[3] * k); } } };
+  }
+  const toeRow = (x, y, a, n, sp, len) => Array.from({ length: n }, (_, i) => [x + Math.cos(a + 1.57) * (i - (n - 1) / 2) * sp * 0.2, y + Math.sin(a + 1.57) * (i - (n - 1) / 2) * sp, a + (i - (n - 1) / 2) * 0.18, len]);
+
   /* ================================================== ALDERMERE · EMBER WYRM */
   const Wyrm = {
     head(lk, open) {
       const b = lk.body, t = lk.top, belly = lk.belly, horn = lk.horn;
       const parts = [], jd = open ? 1.7 : 0;
-      parts.push({ z0: 0, z1: 2.3, side: sh(belly, -0.3), top: belly, shape: (c) => S.poly(c, S.sym([open ? 14.5 : 15.6, 0, 12, 2.6 + jd * 0.4, 6, 3.9, 0, 4.1, -2.4, 0])),
-        detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 4; i++) S.dot(c, horn, 3 + i * 2.6, sg * (3.6 - i * 0.25), 0.45); } });
+      const E = { x: 8.1, y: 3.35, len: 3.4, wid: 1.55, tilt: 0.32, iris: ['#fff2a0', '#f0a020', '#8a3a08'], pupil: 'slit', sock: '#3a0806', lid: '#2a0604', lower: C.str(C.shade(t, 0.25)), brow: C.str(C.shade(t, 0.32)), scowl: 0.55 };
+      const jawPts = S.sym([open ? 14.5 : 15.6, 0, 12, 2.6 + jd * 0.4, 6, 3.9, 0, 4.1, -2.4, 0]);
+      parts.push({ z0: 0, z1: 2.3, side: sh(belly, -0.3), top: belly, shape: (c) => S.poly(c, jawPts),
+        tex: headSides(jawPts, 0, 2.3, E, { ez: -5, teeth: { col: '#fff4e0', xs: [14.2, 12.6, 11, 9.4, 7.8], z: 2.3, h: 0.45, w: 0.32 } }),
+        detail: (c) => { // lower teeth along the jaw's rim, the throat's scutes
+          c.fillStyle = '#fff4e0';
+          for (const sg of [1, -1]) for (let i = 0; i < 5; i++) { const x = 14 - i * 1.6, y = halfW(jawPts, x) - 0.35; c.beginPath(); c.moveTo(x + 0.4, sg * y); c.lineTo(x - 0.1, sg * (y - 0.9)); c.lineTo(x - 0.5, sg * y); c.fill(); }
+          S.lines(c, C.str(C.shade(belly, -0.35)), 0.35, [10, -2.4, 10, 2.4, 6, -3.2, 6, 3.2, 2, -3.5, 2, 3.5]);
+        } });
       if (open) parts.push({ z0: 2.3, z1: 2.3, side: '#5a0a0a', top: '#8a1a14', flat: true, shape: (c) => S.poly(c, S.sym([14, 0, 11, 2.3, 6, 3, 2, 2.6, 1, 0])), detail: (c) => {
         c.fillStyle = '#fff4e0';
         for (let i = 0; i < 5; i++) for (const sg of [1, -1]) { c.beginPath(); c.moveTo(13 - i * 2.2, sg * (2 + i * 0.15)); c.lineTo(12.2 - i * 2.2, sg * (1.2 + i * 0.15)); c.lineTo(11.6 - i * 2.2, sg * (2.1 + i * 0.15)); c.fill(); }
         S.dot(c, lk.breath[1], 9, 0, 1.5);
       } });
-      parts.push({ z0: 2.3 + jd, z1: 6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, S.sym([17.2 - zt * 0.7, 0, 15, 2.5, 9.5, 3.6, 3.5, 4.9 - zt * 0.4, -1.5, 4.3, -3.6, 0])),
+      // cheek plates: the jaw muscles bulging behind the eyes, edged with a frill of small spikes
+      parts.push({ z0: 1.6 + jd, z1: 5.0 + jd, side: sh(b, -0.08), top: sh(t, -0.04), shape: (c, zt) => { for (const sg of [1, -1]) { S.ell(c, 1.6, sg * 4.3, 3.3 * (1 - zt * 0.25), 1.6 * (1 - zt * 0.3), sg * 0.25); } },
+        detail: (c) => { c.fillStyle = C.str(C.shade(lk.spine, 0.1)); for (const sg of [1, -1]) for (let i = 0; i < 3; i++) { c.beginPath(); claw(c, 2.6 - i * 1.5, sg * (5.3 + i * 0.15), sg * (1.9 + i * 0.25), 1.6); c.fill(); } } });
+      const topPts = (zt) => S.sym([17.2 - zt * 0.7, 0, 15, 2.5, 9.5, 3.6, 3.5, 4.9 - zt * 0.4, -1.5, 4.3, -3.6, 0]);
+      parts.push({ z0: 2.3 + jd, z1: 6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, topPts(zt)),
+        tex: AS.Mat ? AS.Mat.join(mats().scales, headSides(topPts(0.5), 2.3 + jd, 6 + jd, E, { ez: 5.0 + jd, teeth: { col: '#fff4e0', xs: [15.2, 13.8, 12.4, 11.0, 9.6, 8.2], h: 0.5, w: 0.3 }, lip: '#3a0806', lipW: 5.5, lipX: 11 })) : null,
         detail: (c) => {
-          S.lines(c, 'rgba(0,0,0,0.35)', 0.4, [14.5, 1.3, 10, 2.4, 14.5, -1.3, 10, -2.4]);
-          // ember-lit nostrils
-          S.dot(c, '#ff8a2a', 16, 1.1, 0.6); S.dot(c, '#ff8a2a', 16, -1.1, 0.6); S.dot(c, '#ffe08a', 16.1, 1.1, 0.25); S.dot(c, '#ffe08a', 16.1, -1.1, 0.25);
-          S.lines(c, sh(t, 0.35), 0.7, [10, 2.9, 5, 4, 10, -2.9, 5, -4]);
-          scalesDetail(c, 8, 7, 'rgba(0,0,0,0.2)', 3);
+          // scale rows down the muzzle, folds behind the eye, the crown's armoured scutes
+          c.save(); c.strokeStyle = 'rgba(40,0,0,0.42)'; c.lineWidth = 0.32; c.beginPath();
+          for (let r = 0; r < 4; r++) for (let i = -2; i <= 2; i++) { const x = 15 - r * 1.6, y = i * 0.75 + (r % 2) * 0.37; if (Math.abs(y) > halfW(topPts(1), x) - 0.5) continue; c.moveTo(x + 0.4, y - 0.36); c.quadraticCurveTo(x - 0.25, y, x + 0.4, y + 0.36); }
+          for (const sg of [1, -1]) for (let i = 0; i < 3; i++) { c.moveTo(5.6 - i * 0.9, sg * (2.4 + i * 0.25)); c.quadraticCurveTo(4.8 - i * 0.9, sg * (3.6 + i * 0.3), 5.4 - i * 0.9, sg * (4.6 + i * 0.2)); }
+          for (let i = 0; i < 3; i++) { c.moveTo(3 - i * 1.7, -1.6); c.quadraticCurveTo(2.2 - i * 1.7, 0, 3 - i * 1.7, 1.6); }
+          c.stroke(); c.restore();
+          // flared nostrils with an ember glow inside
+          for (const sg of [1, -1]) { c.beginPath(); c.ellipse(15.7, sg * 1.15, 0.85, 0.42, sg * 0.5, 0, TAU); c.fillStyle = C.str(C.shade(t, 0.3)); c.fill(); c.beginPath(); c.ellipse(15.8, sg * 1.18, 0.6, 0.26, sg * 0.5, 0, TAU); c.fillStyle = '#2a0402'; c.fill(); c.beginPath(); c.ellipse(15.9, sg * 1.2, 0.3, 0.14, sg * 0.5, 0, TAU); c.fillStyle = '#ffb040'; c.fill(); }
+          // the ridge between the eyes and down the snout
+          S.lines(c, C.str(C.shade(t, 0.28)), 0.55, [14.2, 0, 9.5, 0]);
+          eyeArt(c, E);
         } });
+      // the brow ridges: armoured crests over the eyes, dropping toward the snout in a scowl
+      parts.push({ z0: 5.4 + jd, z1: 6.7 + jd, side: sh(b, -0.18), top: sh(t, 0.14), shape: (c, zt) => { const k = 1 - zt * 0.35; for (const sg of [1, -1]) S.poly(c, [10.8, sg * 2.0, 8.8, sg * (1.85 + 0.35 * k), 5.6, sg * (2.7 + 0.35 * k), 4.4, sg * (3.2 + 0.2 * k), 5.2, sg * 2.3, 8.6, sg * 1.4]); } });
       // a nose horn
       parts.push({ z0: 5.2 + jd, z1: 7.4 + jd, side: sh(horn, -0.3), top: horn, bevel: false, shape: (c, zt) => S.poly(c, [14.2 + zt * 0.6, 0, 12.2, 0.8 * (1 - zt), 12.2, -0.8 * (1 - zt)]) });
-      parts.push({ z0: 5 + jd, z1: 5.8 + jd, side: lk.eye, top: lk.eye, flat: true, bevel: false, shape: (c) => { S.ell(c, 8, 3.3, 1.3, 0.7, 0.3); S.ell(c, 8, -3.3, 1.3, 0.7, -0.3); } });
-      // great swept horns, and a lower pair along the jaw
+      // great swept horns rooted in thick bases, and a lower pair along the jaw
       const hz = 5.4 + jd;
+      parts.push({ z0: hz - 0.6, z1: hz + 1.2, side: sh(b, -0.2), top: sh(t, 0.08), bevel: false, shape: (c) => { for (const sg of [1, -1]) S.ell(c, 3.2, sg * 3.0, 1.7, 1.2, sg * 0.4); } });
       parts.push({ z0: hz, z1: hz + 3.2, side: sh(horn, -0.4), top: horn, stroke: 1.9, bevel: false, shape: (c, zt) => { for (const sg of [1, -1]) { c.moveTo(3.5, sg * 2.8); c.bezierCurveTo(-1, sg * 5, -6, sg * 5.6, -11 + zt * 2.5, sg * (4.4 + zt * 1.4)); } } });
+      parts.push({ z0: hz + 2.2, z1: hz + 3.6, side: sh(horn, -0.25), top: sh(horn, 0.12), bevel: false, shape: (c, zt) => { for (const sg of [1, -1]) { for (const u of [0.25, 0.45, 0.65]) { const x = -1 - u * 9, y = sg * (4.4 + u * 1.3); S.ell(c, x, y, 0.32, 0.95 * (1 - zt * 0.4), sg * -0.4); } } } });
       parts.push({ z0: 2.6 + jd, z1: 4.4 + jd, side: sh(horn, -0.4), top: horn, stroke: 1.2, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(0.5, sg * 4.2); c.quadraticCurveTo(-3.5, sg * 6.4, -7, sg * 6.8); } } });
       // a gold ring on each horn: Aldermere's crown-dragon
       parts.push({ z0: hz + 0.6, z1: hz + 1.6, side: sh(lk.gold, -0.3), top: lk.gold, bevel: false, shape: (c) => { for (const sg of [1, -1]) S.ell(c, -2.8, sg * 4.75, 0.9, 0.75); } });
       parts.push({ z0: 2.6 + jd, z1: 4.4 + jd, side: sh(lk.spine, -0.2), top: lk.spine, bevel: false, shape: (c) => { for (const sg of [1, -1]) S.poly(c, [2, sg * 4, -2.5, sg * 6.6, -3.5, sg * 4.6, -5.5, sg * 6, -4.5, sg * 3.6]); } });
-      return { r: 15, h: 11, style: 'hero', parts, scale: 1.22 };
+      return { r: 16, h: 11, style: 'hero', parts, scale: 1.22 };
     },
     neck(lk, w, i) {
       const parts = [
@@ -140,7 +261,11 @@
       const b = lk.body, t = lk.top;
       return { r: 17, h: 12, style: 'hero', parts: [
         { z0: 0, z1: 2.6, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, 2.4, sg * 7, 3.4, 1.7, sg * 0.5); },
-          detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.horn, 5.2, sg * (6.3 + i * 0.85), 0.42); } },
+          detail: (c) => S.lines(c, 'rgba(40,0,0,0.45)', 0.3, [4.6, 6.6, 3.2, 6.9, 4.4, 7.6, 3.0, 7.7, 4.6, -6.6, 3.2, -6.9, 4.4, -7.6, 3.0, -7.7]) },
+        claws(lk.horn, toeRow(5.2, 7.05, 0.35, 3, 0.8, 1.5), 0.2, 1.6),
+        // heavy shoulders under the wing roots: the flight muscles, banded with larger scales
+        { z0: 3.0, z1: 8.3, side: sh(b, -0.06), top: sh(t, 0.04), shape: (c, zt) => { for (const sg of [1, -1]) S.ell(c, 2.4, sg * 7.4 * (1 - zt * 0.1), 4.2 * (1 - zt * 0.22), 2.7 * (1 - zt * 0.3), sg * 0.28); },
+          detail: (c) => { c.save(); c.strokeStyle = 'rgba(40,0,0,0.4)'; c.lineWidth = 0.35; c.beginPath(); for (const sg of [1, -1]) { c.moveTo(5.6, sg * 6.4); c.quadraticCurveTo(2.4, sg * 8.6, -0.8, sg * 7.0); c.moveTo(4.4, sg * 5.8); c.quadraticCurveTo(2.0, sg * 7.4, 0.2, sg * 6.4); } c.stroke(); c.restore(); } },
         { z0: 0.6, z1: 3.4, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 10, 7.6), detail: (c) => S.lines(c, sh(lk.belly, -0.35), 0.45, [6, -6, 6, 6, 2, -7, 2, 7, -2, -7, -2, 7, -6, -6, -6, 6]) },
         { z0: 3.4, z1: 8.8, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 10.8, 8.8 * (1 - zt * 0.2)), detail: (c) => scalesDetail(c, 17, 13, 'rgba(0,0,0,0.22)', 5) },
         { z0: 5.5, z1: 8.8, side: sh(b, -0.1), top: sh(t, 0.06), shape: (c) => { for (const sg of [1, -1]) S.ell(c, 1, sg * 6, 3.8, 2.6, sg * -0.3); } },
@@ -162,7 +287,8 @@
       const b = lk.body, t = lk.top;
       return { r: 15, h: 11, style: 'hero', parts: [
         { z0: 0, z1: 2.8, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, -3, sg * 6.8, 4.2, 2.1, sg * -0.4); },
-          detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.horn, -7, sg * (6 + i * 0.9), 0.42); } },
+          detail: (c) => S.lines(c, 'rgba(40,0,0,0.45)', 0.3, [-1, 5.4, -3.4, 8.2, -1, -5.4, -3.4, -8.2]) },
+        claws(lk.horn, toeRow(-6.8, 6.9, Math.PI - 0.3, 3, 0.9, 1.5), 0.2, 1.6),
         { z0: 0.6, z1: 3.2, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 9.2, 6.6) },
         { z0: 3.2, z1: 7.8, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 9.8, 7.4 * (1 - zt * 0.24)), detail: (c) => scalesDetail(c, 15, 11, 'rgba(0,0,0,0.22)', 4) },
         // the caparison's back flap
@@ -193,15 +319,24 @@
       const parts = [], jd = open ? 1.4 : 0;
       parts.push({ z0: 0, z1: 1.8, side: sh(belly, -0.3), top: belly, shape: (c) => S.poly(c, S.sym([open ? 16.5 : 18, 0, 14, 1.8 + jd * 0.3, 7, 2.8, 0, 3, -2, 0])) });
       if (open) parts.push({ z0: 1.8, z1: 1.8, side: '#0a3a24', top: '#1a5a3a', flat: true, shape: (c) => S.poly(c, S.sym([16, 0, 12, 1.6, 6, 2.2, 1, 0])), detail: (c) => S.dot(c, lk.breath[1], 10, 0, 1.3) });
-      parts.push({ z0: 1.8 + jd, z1: 4.6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, S.sym([19.5 - zt * 0.8, 0, 16, 1.7, 10, 2.5, 4, 3.4 - zt * 0.3, -1, 3, -3, 0])),
+      const E = { x: 8.0, y: 2.25, len: 3.6, wid: 1.6, tilt: -0.22, iris: ['#e8fff4', '#4ad8b0', '#0a5a48'], pupil: 'round', sock: '#0a2a1c', lid: '#06180e', lower: C.str(C.shade(t, 0.3)), brow: C.str(C.shade(lk.spine, 0.1)), scowl: -0.3 };
+      const sPts = (zt) => S.sym([19.5 - zt * 0.8, 0, 16, 1.7, 10, 2.5, 4, 3.4 - zt * 0.3, -1, 3, -3, 0]);
+      parts.push({ z0: 1.8 + jd, z1: 4.6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, sPts(zt)),
+        tex: AS.Mat ? AS.Mat.join(mats().fine, headSides(sPts(0.5), 1.8 + jd, 4.6 + jd, E, { ez: 3.8 + jd, teeth: { col: '#f4f0dc', xs: [17, 15.6, 14.2, 12.8], h: 0.32, w: 0.22 }, lip: '#0a2a1c', lipW: 6, lipX: 13 })) : null,
         detail: (c) => {
+          eyeArt(c, E);
+          // a lid line sweeping back from each eye, gentle and long
+          c.save(); c.strokeStyle = C.str(C.shade(lk.spine, -0.1)); c.lineWidth = 0.32; c.beginPath(); for (const sg of [1, -1]) { c.moveTo(6.2, sg * 2.7); c.quadraticCurveTo(4.6, sg * 3.1, 3.2, sg * 3.0); } c.stroke(); c.restore();
+          // fine scale rows on the muzzle
+          c.save(); c.strokeStyle = 'rgba(0,30,15,0.35)'; c.lineWidth = 0.28; c.beginPath(); for (let r = 0; r < 4; r++) for (let i = -1; i <= 1; i++) { const x = 16.5 - r * 1.5, y = i * 0.7 + (r % 2) * 0.35; c.moveTo(x + 0.35, y - 0.3); c.quadraticCurveTo(x - 0.2, y, x + 0.35, y + 0.3); } c.stroke(); c.restore();
           // gold filigree swirls along the snout and brow
           c.save(); c.strokeStyle = lk.spine; c.lineWidth = 0.35; c.beginPath();
           for (const sg of [1, -1]) { c.moveTo(16, sg * 0.6); c.bezierCurveTo(12, sg * 2, 8, sg * 0.6, 5, sg * 2.2); c.bezierCurveTo(3, sg * 3, 1, sg * 1.6, -1.5, sg * 2.2); }
           c.stroke(); c.restore();
-          S.dot(c, '#0a2a1a', 18.4, 0.8, 0.35); S.dot(c, '#0a2a1a', 18.4, -0.8, 0.35);
+          for (const sg of [1, -1]) { c.beginPath(); c.ellipse(18.2, sg * 0.85, 0.55, 0.28, sg * 0.4, 0, TAU); c.fillStyle = '#0a2a1a'; c.fill(); c.beginPath(); c.ellipse(18.0, sg * 1.05, 0.55, 0.16, sg * 0.4, 0, TAU); c.fillStyle = C.str(C.shade(t, 0.35)); c.fill(); }
         } });
-      parts.push({ z0: 3.8 + jd, z1: 4.6 + jd, side: lk.eye, top: lk.eye, flat: true, bevel: false, shape: (c) => { S.ell(c, 8.4, 2.3, 1.6, 0.55, 0.25); S.ell(c, 8.4, -2.3, 1.6, 0.55, -0.25); } });
+      // soft brow ridges with gold scales, arched (not scowling)
+      parts.push({ z0: 4.1 + jd, z1: 5.0 + jd, side: sh(b, -0.15), top: sh(t, 0.12), shape: (c, zt) => { const k = 1 - zt * 0.4; for (const sg of [1, -1]) S.poly(c, [10.2, sg * 1.5, 8.2, sg * (1.25 + 0.3 * k), 5.6, sg * (1.6 + 0.4 * k), 5.0, sg * 1.4, 7.8, sg * 0.95]); }, detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.spine, 9 - i * 1.4, sg * (1.3 + i * 0.1), 0.22); } });
       // trailing whiskers (barbels) from the snout
       parts.push({ z0: 2.6 + jd, z1: 3.2 + jd, side: sh(lk.spine, -0.2), top: lk.spine, stroke: 0.55, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(16, sg * 1.6); c.bezierCurveTo(12, sg * 5, 4, sg * 6.5, -6, sg * 4.5); } } });
       // stag antlers, tines hung with small leaves
@@ -218,7 +353,7 @@
       parts.push({ z0: hz + 3.4, z1: hz + 4.4, side: sh(lk.leaf, -0.25), top: lk.leaf, bevel: false, shape: (c) => { for (const sg of [1, -1]) { leafPath(c, 1.6, sg * 6.6, 3, sg * 8.2, 0.4); leafPath(c, -2.6, sg * 9.4, -1.8, sg * 11.2, 0.4); leafPath(c, -7.2, sg * 10.8, -6.8, sg * 12.6, 0.4); leafPath(c, -12, sg * 8.2, -13.8, sg * 8.8, 0.4); } } });
       // leaf-frond ears
       parts.push({ z0: 3 + jd, z1: 4.2 + jd, side: sh(lk.leaf, -0.3), top: lk.leaf, bevel: false, shape: (c) => { for (const sg of [1, -1]) leafPath(c, 0, sg * 2.6, -5.5, sg * 5.4, 0.36); } });
-      return { r: 18, h: 10, style: 'hero', parts, scale: 1.16 };
+      return { r: 19, h: 10, style: 'hero', parts, scale: 1.16 };
     },
     neck(lk, w) {
       return { r: 9, h: 7, style: 'hero', parts: [
@@ -233,6 +368,7 @@
       const b = lk.body, t = lk.top;
       return { r: 15, h: 10, style: 'hero', parts: [
         { z0: 0, z1: 2, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, 2.6, sg * 5.8, 3.4, 1.1, sg * 0.6); } },
+        claws(lk.spine, toeRow(4.9, 7.6, 0.6, 3, 0.55, 1.1), 0.2, 1.3),
         { z0: 0.5, z1: 2.8, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 9.6, 5.8) },
         { z0: 2.8, z1: 7, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 10.4, 6.6 * (1 - zt * 0.22)),
           detail: (c) => {
@@ -251,6 +387,7 @@
       const b = lk.body, t = lk.top;
       return { r: 13, h: 9, style: 'hero', parts: [
         { z0: 0, z1: 2, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, -3, sg * 5.6, 3.6, 1.3, sg * -0.5); } },
+        claws(lk.spine, toeRow(-6.1, 7.3, Math.PI - 0.5, 3, 0.55, 1.1), 0.2, 1.3),
         { z0: 0.5, z1: 2.6, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 8.6, 5) },
         { z0: 2.6, z1: 6.2, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 9.2, 5.8 * (1 - zt * 0.24)),
           detail: (c) => { c.save(); c.strokeStyle = lk.spine; c.lineWidth = 0.35; c.beginPath(); for (const sg of [1, -1]) { c.moveTo(8, sg * 1.5); c.bezierCurveTo(3, sg * 4.6, -2, sg * 1, -8, sg * 3); } c.stroke(); c.restore(); } },
@@ -287,14 +424,19 @@
       // icicle beard: crystal spikes along the jaw
       parts.push({ z0: 0.4, z1: 2.4, side: lk.crystalSide, top: lk.crystal, bevel: false, shape: (c, zt) => { const k = 1 - zt * 0.8; for (const sg of [1, -1]) for (let i = 0; i < 4; i++) { const x = 11 - i * 3.2, y = sg * (3.6 + i * 0.5); S.poly(c, [x + 0.8 * k, y, x - 0.6, y + sg * (2.2 + i * 0.4) * k, x - 1.2 * k, y]); } } });
       if (open) parts.push({ z0: 2.6, z1: 2.6, side: '#1a3a5a', top: '#2a5a8a', flat: true, shape: (c) => S.poly(c, S.sym([13, 0, 11, 3, 6, 3.8, 1, 0])), detail: (c) => { c.fillStyle = '#f4fcff'; for (let i = 0; i < 4; i++) for (const sg of [1, -1]) { c.beginPath(); c.moveTo(12.4 - i * 2.4, sg * (2.6 + i * 0.2)); c.lineTo(11.6 - i * 2.4, sg * (1.6 + i * 0.2)); c.lineTo(10.8 - i * 2.4, sg * (2.7 + i * 0.2)); c.fill(); } S.dot(c, lk.breath[1], 8, 0, 1.6); } });
-      parts.push({ z0: 2.6 + jd, z1: 6.6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, S.sym([15.6 - zt * 0.6, 0, 14.6, 3.2, 10, 4.8 - zt * 0.2, 4, 6 - zt * 0.4, -2, 5.6, -4.2, 0])),
+      const E = { x: 8.5, y: 4.05, len: 3.0, wid: 1.1, tilt: 0.12, iris: ['#ffffff', '#a8e8ff', '#2a6aa0'], pupil: 'slit', sock: '#0a1a30', lid: '#08142a', lower: '#e8f6ff', brow: null };
+      const tPts = (zt) => S.sym([15.6 - zt * 0.6, 0, 14.6, 3.2, 10, 4.8 - zt * 0.2, 4, 6 - zt * 0.4, -2, 5.6, -4.2, 0]);
+      parts.push({ z0: 2.6 + jd, z1: 6.6 + jd, side: b, top: t, shape: (c, zt) => S.poly(c, tPts(zt)),
+        tex: AS.Mat ? AS.Mat.join(mats().plates, headSides(tPts(0.5), 2.6 + jd, 6.6 + jd, E, { ez: 5.2 + jd, teeth: { col: '#f4fcff', xs: [14.2, 12.6, 11, 9.4, 7.8, 6.2], h: 0.55, w: 0.34 }, lip: '#0a1a30', lipW: 5, lipX: 10 })) : null,
         detail: (c) => {
           // armour plates
           S.lines(c, 'rgba(10,30,60,0.4)', 0.45, [13, -2.6, 13, 2.6, 8.6, -4.2, 8.6, 4.2, 3.6, -5.2, 3.6, 5.2, 13, 0, 3.6, 0]);
-          S.lines(c, 'rgba(255,255,255,0.55)', 0.5, [12, 3, 5, 5, 12, -3, 5, -5]); // frosted brow
-          S.dot(c, '#0a1a2a', 14.8, 1.4, 0.5); S.dot(c, '#0a1a2a', 14.8, -1.4, 0.5);
+          eyeArt(c, E);
+          for (const sg of [1, -1]) { c.beginPath(); c.ellipse(14.7, sg * 1.45, 0.6, 0.38, sg * 0.3, 0, TAU); c.fillStyle = '#0a1a2a'; c.fill(); c.beginPath(); c.ellipse(14.55, sg * 1.75, 0.6, 0.16, sg * 0.3, 0, TAU); c.fillStyle = 'rgba(255,255,255,0.7)'; c.fill(); }
         } });
-      parts.push({ z0: 5.6 + jd, z1: 6.4 + jd, side: lk.eye, top: lk.eye, flat: true, bevel: false, shape: (c) => { S.ell(c, 8.6, 3.8, 1.2, 0.8, 0.2); S.ell(c, 8.6, -3.8, 1.2, 0.8, -0.2); } });
+      // the hood: a massive crystal-rimmed brow plate overhanging each eye, so it glares out from under it
+      parts.push({ z0: 6.0 + jd, z1: 7.3 + jd, side: sh(b, -0.12), top: sh(t, 0.16), shape: (c, zt) => { const k = 1 - zt * 0.3; for (const sg of [1, -1]) S.poly(c, [11.2, sg * 2.5, 9.6, sg * (3.05 + 0.3 * k), 6.0, sg * (3.45 + 0.35 * k), 4.6, sg * (3.4 + 0.2 * k), 5.6, sg * 2.7, 9.4, sg * 2.1]); },
+        detail: (c) => { for (const sg of [1, -1]) S.lines(c, 'rgba(255,255,255,0.75)', 0.45, [10.6, sg * 2.75, 6.2, sg * 3.55]); } });
       // a crown of tall crystal horns
       const hz = 6 + jd;
       parts.push(crystal(lk, -0.5, 4.4, hz, 6.5, 1.5, -1), crystal(lk, -0.5, -4.4, hz, 6.5, 1.5, -1));
@@ -315,7 +457,8 @@
       const b = lk.body, t = lk.top;
       return { r: 18, h: 20, style: 'hero', parts: [
         { z0: 0, z1: 3, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, 2.4, sg * 8.2, 4, 2.4, sg * 0.4); },
-          detail: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.dot(c, lk.crystal, 5.8, sg * (7.2 + i * 1), 0.55); } },
+          detail: (c) => S.lines(c, 'rgba(10,30,60,0.45)', 0.35, [5.4, 7.4, 3.6, 7.8, 5.2, 8.8, 3.4, 8.9, 5.4, -7.4, 3.6, -7.8, 5.2, -8.8, 3.4, -8.9]) },
+        claws(lk.crystal, toeRow(6.0, 8.3, 0.4, 3, 1.0, 1.9), 0.3, 2.0),
         { z0: 0.6, z1: 4, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 11, 9) },
         { z0: 4, z1: 10, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 11.8, 10.4 * (1 - zt * 0.18)),
           detail: (c) => {
@@ -339,6 +482,7 @@
       const b = lk.body, t = lk.top;
       return { r: 17, h: 18, style: 'hero', parts: [
         { z0: 0, z1: 3, side: sh(b, -0.3), top: b, shape: (c) => { for (const sg of [1, -1]) S.ell(c, -3, sg * 7.8, 4.6, 2.6, sg * -0.4); } },
+        claws(lk.crystal, toeRow(-7.2, 8.0, Math.PI - 0.35, 3, 1.0, 1.9), 0.3, 2.0),
         { z0: 0.6, z1: 3.6, side: sh(lk.belly, -0.25), top: lk.belly, shape: (c) => S.ell(c, 0, 0, 10, 8) },
         { z0: 3.6, z1: 9, side: b, top: t, shape: (c, zt) => S.ell(c, 0, 0, 10.6, 9 * (1 - zt * 0.2)),
           detail: (c) => { S.lines(c, 'rgba(10,30,60,0.35)', 0.45, [6, -7, 6, 7, 1, -8, 1, 8, -4, -7.5, -4, 7.5]); S.lines(c, 'rgba(255,255,255,0.45)', 0.5, [6, -5, 0, -7]); } },
@@ -377,19 +521,28 @@
         detail: (c) => { c.fillStyle = '#f4eedc'; for (const sg of [1, -1]) for (let i = 0; i < 6; i++) { const x = 13 - i * 2; c.beginPath(); c.moveTo(x, sg * (1.5 + i * 0.15)); c.lineTo(x - 0.5, sg * (0.7 + i * 0.15)); c.lineTo(x - 1, sg * (1.6 + i * 0.15)); c.fill(); } } });
       if (open) parts.push({ z0: 1.8, z1: 1.8, side: '#0a0a08', top: '#14100c', flat: true, shape: (c) => S.poly(c, S.sym([14, 0, 11, 2.2, 5, 2.8, 1, 0])), detail: (c) => S.dot(c, lk.glow, 8, 0, 1.6) });
       // the skull
-      parts.push({ z0: 1.8 + jd, z1: 5.8 + jd, side: sh(bone, -0.3), top: bone, shape: (c, zt) => S.poly(c, S.sym([16.5 - zt * 0.8, 0, 15, 1.8, 11, 2.6, 7, 3.2, 3, 4.6 - zt * 0.4, -1, 4.8 - zt * 0.5, -4.5, 3.2, -5.5, 0])),
+      const E = { x: 5.4, y: 2.75, len: 2.6, wid: 1.5, tilt: 0.35, iris: ['#f0ffd8', '#8cff5a', '#1a3a10'], pupil: 'flame', sock: '#0c060a', lid: '#0c060a', lower: '#0c060a', brow: null };
+      const bPts = (zt) => S.sym([16.5 - zt * 0.8, 0, 15, 1.8, 11, 2.6, 7, 3.2, 3, 4.6 - zt * 0.4, -1, 4.8 - zt * 0.5, -4.5, 3.2, -5.5, 0]);
+      parts.push({ z0: 1.8 + jd, z1: 5.8 + jd, side: sh(bone, -0.3), top: bone, shape: (c, zt) => S.poly(c, bPts(zt)),
+        tex: AS.Mat ? AS.Mat.join(mats().bone, headSides(bPts(0.5), 1.8 + jd, 5.8 + jd, E, { ez: 4.6 + jd, teeth: { col: '#f8f2e0', xs: [14.4, 12.8, 11.2, 9.6, 8.0, 6.4], h: 0.55, w: 0.3 }, lip: '#0c060a', lipW: 6.5, lipX: 9.5 })) : null,
         detail: (c) => {
-          // dark sockets, nasal cavity and cracks
+          // deep sockets under a bony brow, the cheekbone arch below each, nasal cavity and cracks
           c.fillStyle = '#120a10';
-          for (const sg of [1, -1]) { c.beginPath(); c.ellipse(5.4, sg * 2.6, 2.2, 1.3, sg * 0.3, 0, TAU); c.fill(); }
+          for (const sg of [1, -1]) { c.beginPath(); c.ellipse(5.4, sg * 2.6, 2.3, 1.45, sg * 0.35, 0, TAU); c.fill(); }
+          c.save(); c.lineCap = 'round';
+          for (const sg of [1, -1]) {
+            c.beginPath(); c.moveTo(7.9, sg * 1.5); c.quadraticCurveTo(5.4, sg * 0.7, 3.0, sg * 1.9); c.lineWidth = 0.75; c.strokeStyle = '#fbf6e6'; c.stroke(); // brow bone, lit
+            c.beginPath(); c.moveTo(7.4, sg * 3.35); c.quadraticCurveTo(5, sg * 4.6, 2.2, sg * 4.2); c.lineWidth = 0.5; c.strokeStyle = C.str(C.shade(bone, -0.35)); c.stroke(); // cheekbone arch shadow
+          }
+          c.restore();
+          eyeArt(c, E);
           c.beginPath(); c.moveTo(15.4, 0); c.lineTo(13.2, 0.9); c.lineTo(13.2, -0.9); c.fill();
           S.lines(c, 'rgba(60,40,30,0.55)', 0.35, [1, 1, -2.5, 2.4, -1.4, 1.6, -3, 0.6, 10, -1.4, 8, -2]);
           // teeth along the upper jaw
           c.fillStyle = '#f8f2e0';
           for (const sg of [1, -1]) for (let i = 0; i < 7; i++) { const x = 14.4 - i * 1.9; c.beginPath(); c.moveTo(x, sg * (1.7 + i * 0.12)); c.lineTo(x - 0.5, sg * (2.6 + i * 0.12)); c.lineTo(x - 0.9, sg * (1.8 + i * 0.12)); c.fill(); }
         } });
-      // burning green eyes deep in the sockets
-      parts.push({ z0: 4.6 + jd, z1: 5.2 + jd, side: lk.eye, top: lk.eye, flat: true, bevel: false, shape: (c) => { S.circ(c, 5.4, 2.6, 0.9); S.circ(c, 5.4, -2.6, 0.9); } });
+
       // curled ram horns, blackened
       const hz = 4.6 + jd;
       parts.push({ z0: hz, z1: hz + 2.6, side: sh(lk.horn, -0.4), top: lk.horn, stroke: 1.9, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(1, sg * 3.4); c.bezierCurveTo(-3, sg * 8, -8.5, sg * 6, -6, sg * 2.6); c.quadraticCurveTo(-4, sg * 1.8, -4, sg * 3.8); } } });
@@ -410,7 +563,7 @@
       return { r: 16, h: 11, style: 'hero', parts: [
         // bony forelegs
         { z0: 0, z1: 1.6, side: sh(lk.bone2, -0.35), top: lk.bone2, stroke: 1, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(4, sg * 4); c.lineTo(6, sg * 7); c.lineTo(9, sg * 7.4); } } },
-        { z0: 0, z1: 1, side: lk.bone, top: lk.bone, flat: true, bevel: false, shape: (c) => { for (const sg of [1, -1]) for (let i = 0; i < 3; i++) S.circ(c, 9.3, sg * (6.8 + i * 0.6), 0.35); } },
+        claws(lk.bone, toeRow(9.2, 7.4, 0.15, 3, 0.65, 1.5), 0.1, 1.2),
         // shrunken dark hide stretched inside the ribs
         { z0: 1, z1: 5, side: sh(lk.body, -0.25), top: lk.body, shape: (c, zt) => S.ell(c, 0, 0, 9.6, 6 * (1 - zt * 0.2)) },
         // ghost-fire glowing inside the ribcage
@@ -429,6 +582,7 @@
       const bone = lk.bone;
       return { r: 14, h: 9, style: 'hero', parts: [
         { z0: 0, z1: 1.6, side: sh(lk.bone2, -0.35), top: lk.bone2, stroke: 1, bevel: false, shape: (c) => { for (const sg of [1, -1]) { c.moveTo(-2, sg * 4); c.lineTo(-5, sg * 7.2); c.lineTo(-8.5, sg * 7); } } },
+        claws(lk.bone, toeRow(-8.6, 7.0, Math.PI - 0.1, 3, 0.65, 1.5), 0.1, 1.2),
         { z0: 0.8, z1: 4, side: sh(lk.body, -0.25), top: lk.body, shape: (c, zt) => S.ell(c, 0, 0, 7.4, 4.4 * (1 - zt * 0.2)) },
         // pelvis: two flared hip bones
         { z0: 3.6, z1: 6.4, side: sh(bone, -0.35), top: bone, shape: (c, zt) => { const k = 1 - zt * 0.25; for (const sg of [1, -1]) S.poly(c, [4, sg * 1.5, 1.5, sg * 6.6 * k, -3.5, sg * 6 * k, -5, sg * 2.4, -1, sg * 1.2]); },
@@ -486,7 +640,7 @@
     if (r) return r;
     const lk = LOOKS[fk] || LOOKS.human, K = KINDS[fk] || Wyrm, chain = CHAINS[fk] || CHAIN;
     const F = AS.Forge, D = 32;
-    const sc = (m) => { m.scale = (m.scale || 1) * scale; return m; };
+    const sc = (m) => { m.scale = (m.scale || 1) * scale; return finish(m, lk); };
     let neckI = 0;
     const sheets = chain.map((n, i) => {
       const id = 'drg2:' + key + ':' + i;
@@ -710,6 +864,64 @@
       ctx.beginPath(); ctx.moveTo(X(P[0]), Y(P[0])); ctx.lineTo(X(P[1]), Y(P[1])); ctx.lineTo(X(P[2]), Y(P[2])); ctx.stroke();
     },
 
+    // a tapered, lit bone between two screen points: dark underside, the bone, a highlight along its top
+    taperBone(ctx, ax, ay, bx, by, w0, w1, col, k) {
+      const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+      const quad = (e) => { ctx.beginPath(); ctx.moveTo(ax + nx * (w0 / 2 + e), ay + ny * (w0 / 2 + e)); ctx.lineTo(bx + nx * (w1 / 2 + e), by + ny * (w1 / 2 + e)); ctx.lineTo(bx - nx * (w1 / 2 + e), by - ny * (w1 / 2 + e)); ctx.lineTo(ax - nx * (w0 / 2 + e), ay - ny * (w0 / 2 + e)); ctx.closePath(); };
+      quad(0.45); ctx.fillStyle = C.str(C.shade(col, -0.55)); ctx.fill();
+      quad(0); ctx.fillStyle = C.str(C.shade(col, (k - 1) * 0.6)); ctx.fill();
+      // the lit edge faces up-left on screen
+      const sgn = (nx * -0.6 + ny * -0.8) > 0 ? 1 : -1;
+      ctx.beginPath(); ctx.moveTo(ax + nx * sgn * w0 * 0.28, ay + ny * sgn * w0 * 0.28); ctx.lineTo(bx + nx * sgn * w1 * 0.28, by + ny * sgn * w1 * 0.28);
+      ctx.lineWidth = Math.max(0.5, (w0 + w1) * 0.14); ctx.strokeStyle = C.str(C.shade(col, (k - 1) * 0.5 + 0.35), 0.85); ctx.stroke();
+    },
+    knuckle(ctx, x, y, r, col, k) {
+      ctx.beginPath(); ctx.arc(x, y, r + 0.45, 0, TAU); ctx.fillStyle = C.str(C.shade(col, -0.55)); ctx.fill();
+      const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, 0, x, y, r); g.addColorStop(0, C.str(C.shade(col, (k - 1) * 0.5 + 0.35))); g.addColorStop(1, C.str(C.shade(col, (k - 1) * 0.6 - 0.15)));
+      ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = g; ctx.fill();
+    },
+    // the membrane's form: it bellies out between bones (lit down the middle of each panel, shaded along the
+    // bones), creases fan from the root, and veins branch off the fingers
+    membraneForm(ctx, P, X, Y, s, k, mem, path, o) {
+      ctx.save(); path(); ctx.clip();
+      ctx.lineCap = 'round';
+      const W = [X(P[2]), Y(P[2])], tip = (i) => [X(P[i]), Y(P[i])];
+      for (let i = 3; i < 7; i++) {
+        const a = tip(i), b = i < 6 ? tip(i + 1) : [X(P[7]), Y(P[7])];
+        // shade hugging each bone
+        ctx.beginPath(); ctx.moveTo(W[0], W[1]); ctx.lineTo(a[0], a[1]); ctx.lineWidth = 3.2 * s; ctx.strokeStyle = C.str(C.shade(mem, -0.6), 0.22); ctx.stroke();
+        // the bellied middle of the panel catching the light
+        const m = [(a[0] + b[0]) / 2 * 0.8 + W[0] * 0.2, (a[1] + b[1]) / 2 * 0.8 + W[1] * 0.2];
+        const g = ctx.createLinearGradient(W[0], W[1], m[0], m[1]);
+        g.addColorStop(0, C.str(C.shade(mem, 0.5), 0)); g.addColorStop(0.55, C.str(C.shade(mem, 0.45 + (k - 1) * 0.5), 0.26)); g.addColorStop(1, C.str(C.shade(mem, 0.3), 0.08));
+        ctx.beginPath(); ctx.moveTo(W[0], W[1]); ctx.lineTo(m[0], m[1]); ctx.lineWidth = 4.2 * s; ctx.strokeStyle = g; ctx.stroke();
+        // veins branching off the finger into the panel
+        ctx.beginPath();
+        for (const u of [0.32, 0.55, 0.76]) {
+          const fx = U.lerp(W[0], a[0], u), fy = U.lerp(W[1], a[1], u), tx = U.lerp(fx, m[0] + (a[0] - W[0]) * u * 0.25, 0.42), ty = U.lerp(fy, m[1] + (a[1] - W[1]) * u * 0.25, 0.42);
+          ctx.moveTo(fx, fy); ctx.quadraticCurveTo((fx + tx) / 2 + (ty - fy) * 0.2, (fy + ty) / 2 - (tx - fx) * 0.2, tx, ty);
+        }
+        ctx.lineWidth = 0.45; ctx.strokeStyle = C.str(C.shade(mem, -0.5), 0.5); ctx.stroke();
+      }
+      // creases fanning out of the root into the inner panel
+      const S0 = [X(P[0]), Y(P[0])], E1 = [X(P[1]), Y(P[1])], F = [X(P[7]), Y(P[7])], T6 = tip(6);
+      for (let j = 0; j < (o && o.creases || 4); j++) {
+        const u = (j + 1) / 5, st0 = [U.lerp(S0[0], E1[0], u * 0.8), U.lerp(S0[1], E1[1], u * 0.8)], en = [U.lerp(F[0], T6[0], u), U.lerp(F[1], T6[1], u)];
+        const mx = U.lerp(st0[0], en[0], 0.45), my = U.lerp(st0[1], en[1], 0.45);
+        ctx.beginPath(); ctx.moveTo(st0[0], st0[1]); ctx.quadraticCurveTo(mx + 1.2 * s, my + 0.8 * s, U.lerp(st0[0], en[0], 0.7), U.lerp(st0[1], en[1], 0.7));
+        ctx.lineWidth = 0.7; ctx.strokeStyle = C.str(C.shade(mem, -0.6), 0.45); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(st0[0] + 0.7, st0[1] - 0.5); ctx.quadraticCurveTo(mx + 1.9 * s, my + 0.3 * s, U.lerp(st0[0], en[0], 0.68) + 0.7, U.lerp(st0[1], en[1], 0.68) - 0.5);
+        ctx.lineWidth = 0.5; ctx.strokeStyle = C.str(C.shade(mem, 0.45), 0.3); ctx.stroke();
+      }
+      ctx.restore();
+    },
+    // where the wing grows out of the shoulder: a fillet of body scales over the root
+    wingRoot(ctx, P, X, Y, s, lk, k) {
+      const x = X(P[0]), y = Y(P[0]), g = ctx.createRadialGradient(x - s, y - s, 0, x, y, 3.0 * s);
+      g.addColorStop(0, C.str(C.shade(lk.top || lk.body, (k - 1) * 0.5 + 0.12))); g.addColorStop(1, C.str(C.shade(lk.body, (k - 1) * 0.6 - 0.1), 0));
+      ctx.beginPath(); ctx.ellipse(x, y, 3.0 * s, 2.3 * s, 0, 0, TAU); ctx.fillStyle = g; ctx.fill();
+    },
+
     /* Aldermere: a broad bat wing, sunlit through the membrane at the edge */
     batWing(ctx, wp, lk, st, ox, oy) {
       const P = wp.pts, s = st.scale, k = wp.light, mem = lk.membrane;
@@ -725,28 +937,31 @@
       };
       path();
       const gr = ctx.createLinearGradient(X(P[2]), Y(P[2]), (X(P[5]) + X(P[7])) / 2, (Y(P[5]) + Y(P[7])) / 2);
-      gr.addColorStop(0, C.str(C.shade(mem, (k - 1) * 0.9 - 0.18)));
+      gr.addColorStop(0, C.str(C.shade(mem, (k - 1) * 0.9 - 0.22)));
       gr.addColorStop(0.5, C.str(C.shade(mem, (k - 1) * 0.9)));
       gr.addColorStop(1, C.str(C.shade('#ff7a2a', (k - 1) * 0.6 - 0.1), 0.95)); // the sun glowing through the thin trailing edge
       ctx.fillStyle = gr; ctx.fill();
-      // veins: finger bones out to the edge, with branching side veins
-      ctx.strokeStyle = C.str(C.shade(mem, -0.45), 0.55); ctx.lineWidth = 0.55;
-      ctx.beginPath();
+      this.membraneForm(ctx, P, X, Y, s, k, mem, path);
+      // the thin trailing edge, a lighter rim, and the outline
+      path(); ctx.strokeStyle = C.str(C.shade('#ffb070', (k - 1) * 0.5), 0.35); ctx.lineWidth = 1.6; ctx.stroke();
+      path(); ctx.strokeStyle = 'rgba(30,6,4,0.85)'; ctx.lineWidth = 0.8; ctx.stroke();
+      this.wingRoot(ctx, P, X, Y, s, lk, k);
+      // fingers: tapered bones with a knuckle part-way out
       for (let i = 3; i < 7; i++) {
-        const b = i < 6 ? P[i + 1] : P[7], mx = (P[i].x + b.x) / 2, my = (P[i].y - P[i].z + b.y - b.z) / 2;
-        const fx = U.lerp(P[2].x, P[i].x, 0.55) - ox, fy = U.lerp(P[2].y - P[2].z, P[i].y - P[i].z, 0.55) - oy;
-        ctx.moveTo(fx, fy); ctx.quadraticCurveTo((fx + mx - ox) / 2 + 1, (fy + my - oy) / 2, U.lerp(fx, mx - ox, 0.85), U.lerp(fy, my - oy, 0.85));
+        const ax = X(P[2]), ay = Y(P[2]), bx = X(P[i]), by = Y(P[i]);
+        this.taperBone(ctx, ax, ay, bx, by, 1.5 * s, 0.4 * s, lk.bone, k);
+        this.knuckle(ctx, U.lerp(ax, bx, 0.42), U.lerp(ay, by, 0.42), 0.55 * s, lk.bone, k);
       }
-      ctx.stroke();
-      path(); ctx.strokeStyle = 'rgba(30,6,4,0.8)'; ctx.lineWidth = 0.9; ctx.stroke();
-      this.armBones(ctx, P, X, Y, lk, st, k, 2.8);
-      ctx.strokeStyle = C.str(C.shade(lk.bone, (k - 1) * 0.6)); ctx.lineWidth = 0.95 * s;
-      ctx.beginPath(); for (let i = 3; i < 7; i++) { ctx.moveTo(X(P[2]), Y(P[2])); ctx.lineTo(X(P[i]), Y(P[i])); } ctx.stroke();
-      // knuckles and the thumb claw
-      ctx.fillStyle = lk.horn;
-      for (const i of [1, 2]) { ctx.beginPath(); ctx.arc(X(P[i]), Y(P[i]), 1.1 * s, 0, TAU); ctx.fill(); }
-      const tx = X(P[2]), ty = Y(P[2]), dx = X(P[2]) - X(P[1]), dy = Y(P[2]) - Y(P[1]), dl = Math.hypot(dx, dy) || 1;
-      ctx.beginPath(); ctx.moveTo(tx + dx / dl * 4 * s, ty + dy / dl * 4 * s); ctx.lineTo(tx - dy / dl * 1.4 * s, ty + dx / dl * 1.4 * s); ctx.lineTo(tx + dy / dl * 1.4 * s, ty - dx / dl * 1.4 * s); ctx.closePath(); ctx.fill();
+      // the arm: the wing's thick leading edge, shoulder to elbow to wrist
+      this.taperBone(ctx, X(P[0]), Y(P[0]), X(P[1]), Y(P[1]), 3.4 * s, 2.6 * s, lk.bone, k);
+      this.taperBone(ctx, X(P[1]), Y(P[1]), X(P[2]), Y(P[2]), 2.6 * s, 2.0 * s, lk.bone, k);
+      this.knuckle(ctx, X(P[1]), Y(P[1]), 1.45 * s, lk.bone, k);
+      this.knuckle(ctx, X(P[2]), Y(P[2]), 1.3 * s, lk.bone, k);
+      // the thumb claw, hooked forward off the wrist
+      const tx = X(P[2]), ty = Y(P[2]), dx = X(P[2]) - X(P[1]), dy = Y(P[2]) - Y(P[1]), dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl;
+      ctx.beginPath(); ctx.moveTo(tx - uy * 1.0 * s, ty + ux * 1.0 * s); ctx.quadraticCurveTo(tx + ux * 3.2 * s - uy * 0.6 * s, ty + uy * 3.2 * s + ux * 0.6 * s, tx + ux * 4.4 * s + uy * 0.9 * s, ty + uy * 4.4 * s - ux * 0.9 * s);
+      ctx.quadraticCurveTo(tx + ux * 2.4 * s + uy * 0.9 * s, ty + uy * 2.4 * s - ux * 0.9 * s, tx + uy * 1.0 * s, ty - ux * 1.0 * s); ctx.closePath();
+      ctx.fillStyle = C.str(C.shade(lk.horn, (k - 1) * 0.5)); ctx.fill(); ctx.strokeStyle = 'rgba(40,20,10,0.8)'; ctx.lineWidth = 0.5; ctx.stroke();
     },
 
     /* Sylvara: wings of layered leaf-feathers fanning from the arm */
@@ -760,14 +975,21 @@
       };
       const trail = [P[3], P[4], P[5], P[6], P[7]], arm = [P[2], P[1], P[0]];
       const N = 12;
-      const leaf = (bx, by, tx, ty, wk, c0, c1) => {
+      const leaf = (bx, by, tx, ty, wk, c0, c1, veins) => {
+        // the shadow it casts on the leaf beneath, then the leaf with a lit midrib and side veins
+        ctx.beginPath(); leafPath(ctx, bx + 0.8, by + 1.0, tx + 0.8, ty + 1.0, wk); ctx.fillStyle = 'rgba(4,30,14,0.28)'; ctx.fill();
         const gr = ctx.createLinearGradient(bx, by, tx, ty);
         gr.addColorStop(0, c0); gr.addColorStop(1, c1);
         ctx.beginPath(); leafPath(ctx, bx, by, tx, ty, wk);
         ctx.fillStyle = gr; ctx.fill();
-        ctx.strokeStyle = 'rgba(8,40,20,0.7)'; ctx.lineWidth = 0.5; ctx.stroke();
-        ctx.strokeStyle = 'rgba(250,236,160,0.55)'; ctx.lineWidth = 0.4;
-        ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(U.lerp(bx, tx, 0.92), U.lerp(by, ty, 0.92)); ctx.stroke();
+        ctx.strokeStyle = 'rgba(8,40,20,0.75)'; ctx.lineWidth = 0.5; ctx.stroke();
+        ctx.strokeStyle = 'rgba(250,236,160,0.6)'; ctx.lineWidth = 0.42;
+        ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(U.lerp(bx, tx, 0.92), U.lerp(by, ty, 0.92));
+        if (veins) {
+          const dx = tx - bx, dy = ty - by, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, w = L * wk * 0.8;
+          for (const u of [0.3, 0.5, 0.7]) { const px = bx + dx * u, py = by + dy * u; for (const sg of [1, -1]) { ctx.moveTo(px, py); ctx.lineTo(px + dx * 0.12 + nx * w * sg * (1 - u * 0.6), py + dy * 0.12 + ny * w * sg * (1 - u * 0.6)); } }
+        }
+        ctx.stroke();
       };
       const dark = C.str(C.shade(lk.membrane, (k - 1) * 0.8 - 0.22)), mid = C.str(C.shade(lk.leaf, (k - 1) * 0.8)), gold = C.str(C.shade(lk.leaf2, (k - 1) * 0.6));
       // flight feathers: inner ones first, the long outer primaries on top
@@ -775,19 +997,24 @@
         const t = i / (N - 1);
         const [bx, by] = along(arm, Math.min(1, t * 1.08));
         const [tx, ty] = along(trail, t);
-        leaf(bx, by, tx, ty, i < 4 ? 0.13 : 0.17, dark, i < 5 ? gold : mid);
+        leaf(bx, by, tx, ty, i < 4 ? 0.13 : 0.17, dark, i < 5 ? gold : mid, true);
       }
       // a row of short covert leaves along the arm
       for (let i = 0; i < 8; i++) {
         const t = (i + 0.5) / 8;
         const [bx, by] = along(arm, t);
         const [tx, ty] = along(trail, t);
-        leaf(bx, by, U.lerp(bx, tx, 0.42), U.lerp(by, ty, 0.42), 0.26, mid, C.str(C.shade(lk.leaf, (k - 1) * 0.8 + 0.12)));
+        leaf(bx, by, U.lerp(bx, tx, 0.42), U.lerp(by, ty, 0.42), 0.26, mid, C.str(C.shade(lk.leaf, (k - 1) * 0.8 + 0.12)), false);
       }
-      this.armBones(ctx, P, X, Y, lk, st, k, 1.8);
+      this.wingRoot(ctx, P, X, Y, s, lk, k);
+      // the arm: a slim living branch with knots at the joints
+      this.taperBone(ctx, X(P[0]), Y(P[0]), X(P[1]), Y(P[1]), 2.2 * s, 1.7 * s, lk.bone, k);
+      this.taperBone(ctx, X(P[1]), Y(P[1]), X(P[2]), Y(P[2]), 1.7 * s, 1.2 * s, lk.bone, k);
+      this.knuckle(ctx, X(P[1]), Y(P[1]), 1.0 * s, lk.bone, k);
+      this.knuckle(ctx, X(P[2]), Y(P[2]), 0.9 * s, lk.bone, k);
     },
 
-    /* Hrimgard: a membrane of ice facets with a jagged trailing edge */
+    /* Hrimgard: a membrane of ice facets with a jagged trailing edge, held on pale finger struts */
     crystalWing(ctx, wp, lk, st, ox, oy) {
       const P = wp.pts, s = st.scale, k = wp.light, mem = lk.membrane, t = st.t || 0;
       const X = (p) => p.x - ox, Y = (p) => p.y - p.z - oy;
@@ -800,23 +1027,33 @@
       }
       edge.push([X(P[7]), Y(P[7])]);
       const W2 = [X(P[2]), Y(P[2])], E1 = [X(P[1]), Y(P[1])], S0 = [X(P[0]), Y(P[0])];
-      // facets fanning from the wrist and the elbow
+      const rng = new U.RNG(311 + (wp.side > 0 ? 5 : 0));
+      // facets fanning from the wrist and the elbow, each with a fracture inside it
       const tri = (a, b, c, i) => {
         ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.closePath();
         const v = ((i * 37) % 7) / 7 - 0.5;
-        ctx.fillStyle = C.str(C.shade(mem, (k - 1) * 0.9 + v * 0.28), 0.78); ctx.fill();
+        const g = ctx.createLinearGradient(a[0], a[1], (b[0] + c[0]) / 2, (b[1] + c[1]) / 2);
+        g.addColorStop(0, C.str(C.shade(mem, (k - 1) * 0.9 + v * 0.28 - 0.12), 0.82)); g.addColorStop(1, C.str(C.shade(mem, (k - 1) * 0.9 + v * 0.28 + 0.18), 0.7));
+        ctx.fillStyle = g; ctx.fill();
         ctx.strokeStyle = 'rgba(240,252,255,0.55)'; ctx.lineWidth = 0.5; ctx.stroke();
+        const u = 0.3 + rng.next() * 0.4, w = 0.3 + rng.next() * 0.4, px = U.lerp(a[0], U.lerp(b[0], c[0], w), u), py = U.lerp(a[1], U.lerp(b[1], c[1], w), u);
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(U.lerp(px, b[0], 0.5), U.lerp(py, b[1], 0.5)); ctx.moveTo(px, py); ctx.lineTo(U.lerp(px, c[0], 0.35), U.lerp(py, c[1], 0.35));
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 0.35; ctx.stroke();
       };
-      ctx.beginPath(); ctx.moveTo(S0[0], S0[1]); ctx.lineTo(E1[0], E1[1]); ctx.lineTo(W2[0], W2[1]); ctx.closePath();
       for (let i = 0; i < 5; i++) tri(W2, edge[i], edge[i + 1], i);
       for (let i = 5; i < edge.length - 1; i++) tri(E1, edge[i], edge[i + 1], i);
       tri(E1, W2, edge[5], 11); tri(S0, E1, edge[edge.length - 1], 13);
-      // a frosted bright rim
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 0.9;
-      ctx.beginPath(); ctx.moveTo(S0[0], S0[1]); ctx.lineTo(E1[0], E1[1]); ctx.lineTo(W2[0], W2[1]); ctx.lineTo(edge[0][0], edge[0][1]); ctx.stroke();
+      // a frosted bright rim and the dark edge
       ctx.strokeStyle = 'rgba(30,70,120,0.7)'; ctx.lineWidth = 0.7;
       ctx.beginPath(); ctx.moveTo(edge[0][0], edge[0][1]); for (const p of edge) ctx.lineTo(p[0], p[1]); ctx.lineTo(S0[0], S0[1]); ctx.stroke();
-      this.armBones(ctx, P, X, Y, lk, st, k, 2.6);
+      this.wingRoot(ctx, P, X, Y, s, lk, k);
+      // finger struts of pale ice-bone out to the tips, rimed at the joints
+      for (let i = 0; i < 4; i++) { const p = edge[i * 2]; this.taperBone(ctx, W2[0], W2[1], p[0], p[1], 1.3 * s, 0.35 * s, lk.bone, k); this.knuckle(ctx, U.lerp(W2[0], p[0], 0.45), U.lerp(W2[1], p[1], 0.45), 0.5 * s, '#ffffff', k); }
+      this.taperBone(ctx, S0[0], S0[1], E1[0], E1[1], 3.2 * s, 2.5 * s, lk.bone, k);
+      this.taperBone(ctx, E1[0], E1[1], W2[0], W2[1], 2.5 * s, 1.9 * s, lk.bone, k);
+      this.knuckle(ctx, E1[0], E1[1], 1.4 * s, lk.bone, k); this.knuckle(ctx, W2[0], W2[1], 1.25 * s, lk.bone, k);
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(S0[0], S0[1] - 1); ctx.lineTo(E1[0], E1[1] - 1); ctx.lineTo(W2[0], W2[1] - 1); ctx.lineTo(edge[0][0], edge[0][1]); ctx.stroke();
       // glints on the facets
       ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 0.6;
       for (let i = 0; i < 3; i++) {
@@ -865,17 +1102,22 @@
         ctx.beginPath(); ctx.ellipse(hx, hy, (1.8 + rng.next() * 1.6) * s, (1.1 + rng.next()) * s, rng.next() * 3, 0, TAU); ctx.fill();
       }
       ctx.globalCompositeOperation = 'source-over';
-      // the bones: arm, knuckles and long finger bones ending in claws
-      this.armBones(ctx, P, X, Y, lk, st, k, 2.4);
-      ctx.strokeStyle = C.str(C.shade(lk.bone, (k - 1) * 0.6 - 0.05)); ctx.lineWidth = 1.05 * s;
-      ctx.beginPath(); for (let i = 3; i < 7; i++) { ctx.moveTo(X(P[2]), Y(P[2])); ctx.lineTo(X(P[i]), Y(P[i])); } ctx.stroke();
-      ctx.fillStyle = C.str(C.shade(lk.bone, (k - 1) * 0.6));
-      for (const i of [1, 2]) { ctx.beginPath(); ctx.arc(X(P[i]), Y(P[i]), 1.4 * s, 0, TAU); ctx.fill(); }
+      // rot stains and dark veins in what is left of the membrane
+      ctx.save(); ctx.beginPath(); ctx.moveTo(X(P[0]), Y(P[0])); ctx.lineTo(X(P[1]), Y(P[1])); ctx.lineTo(X(P[2]), Y(P[2])); for (let i = 3; i < 7; i++) { const f = fin(i); ctx.lineTo(f[0], f[1]); } ctx.lineTo(X(P[7]), Y(P[7])); ctx.closePath(); ctx.clip();
+      for (let i = 0; i < 5; i++) { const p = P[3 + (i % 4)], q = P[1 + (i % 2)], u = 0.25 + rng.next() * 0.5, hx = U.lerp(X(p), X(q), u), hy = U.lerp(Y(p), Y(q), u), r = (2 + rng.next() * 2.5) * s; const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, r); g.addColorStop(0, 'rgba(20,10,24,0.45)'); g.addColorStop(1, 'rgba(20,10,24,0)'); ctx.fillStyle = g; ctx.fillRect(hx - r, hy - r, r * 2, r * 2); }
+      ctx.beginPath(); for (let i = 3; i < 7; i++) { const W = [X(P[2]), Y(P[2])], a = [X(P[i]), Y(P[i])]; for (const u of [0.35, 0.6]) { const fx = U.lerp(W[0], a[0], u), fy = U.lerp(W[1], a[1], u); ctx.moveTo(fx, fy); ctx.quadraticCurveTo(fx + 2 * s, fy + 2.5 * s, fx + 1 * s, fy + 4.5 * s); } }
+      ctx.lineWidth = 0.45; ctx.strokeStyle = 'rgba(10,4,14,0.6)'; ctx.stroke(); ctx.restore();
+      // the bones: arm, knuckles and long jointed finger bones ending in claws
+      this.taperBone(ctx, X(P[0]), Y(P[0]), X(P[1]), Y(P[1]), 2.8 * s, 2.0 * s, lk.bone, k);
+      this.taperBone(ctx, X(P[1]), Y(P[1]), X(P[2]), Y(P[2]), 2.0 * s, 1.6 * s, lk.bone, k);
       for (let i = 3; i < 7; i++) {
-        const mx = U.lerp(X(P[2]), X(P[i]), 0.5), my = U.lerp(Y(P[2]), Y(P[i]), 0.5);
-        ctx.beginPath(); ctx.arc(mx, my, 0.8 * s, 0, TAU); ctx.fill();
-        ctx.beginPath(); ctx.arc(X(P[i]), Y(P[i]), 0.9 * s, 0, TAU); ctx.fill();
+        const ax = X(P[2]), ay = Y(P[2]), bx = X(P[i]), by = Y(P[i]);
+        this.taperBone(ctx, ax, ay, bx, by, 1.2 * s, 0.45 * s, lk.bone, k);
+        for (const u of [0.38, 0.7]) this.knuckle(ctx, U.lerp(ax, bx, u), U.lerp(ay, by, u), (0.6 - u * 0.3) * s, lk.bone, k);
+        this.knuckle(ctx, bx, by, 0.55 * s, lk.bone, k);
       }
+      this.knuckle(ctx, X(P[1]), Y(P[1]), 1.35 * s, lk.bone, k);
+      this.knuckle(ctx, X(P[2]), Y(P[2]), 1.25 * s, lk.bone, k);
     },
 
     /* ground shadow of the whole dragon (body silhouettes + wing polygons) */
