@@ -83,7 +83,7 @@
     plagueboar: { name: 'Plague Boar', hp: 64, r: 7, speed: 72, armor: 0, melee: { dmg: 9, rate: 1.1, range: 14 }, hc: 6, gold: 4, gen: 'bst_plagueboar', animal: true },
     // colossi: landmark-sized creatures that wander the far wilds and only fight when they are hurt
     titan: { name: 'Wandering Titan', hp: 3200, r: 28, speed: 20, armor: 6, melee: { dmg: 90, rate: 0.35, range: 44, splash: 44 }, throwRock: { range: 420, rate: 0.2 }, hc: 34, gold: 300, gen: 'col_titan', big: true, passive: true, colossus: true, light: { col: '#ffb060', r: 30, a: 0.3 } },
-    spiderqueen: { name: 'Spider Queen', hp: 2200, r: 30, speed: 34, armor: 4, melee: { dmg: 60, rate: 0.6, range: 40, splash: 30 }, hc: 18, gold: 260, gen: 'col_spiderqueen', big: true, passive: true, colossus: true, light: { col: '#b0ffe0', r: 24, a: 0.35 } },
+    spiderqueen: { name: 'Spider Queen', hp: 2200, r: 30, speed: 34, armor: 4, melee: { dmg: 60, rate: 0.6, range: 40, splash: 30 }, hc: 18, gold: 260, gen: 'col_spiderqueen', big: true, passive: true, colossus: true, light: { col: '#ff3a3a', r: 24, a: 0.35 } },
     greatworm: { name: 'Great Worm', hp: 2600, r: 26, speed: 12, armor: 5, melee: { dmg: 80, rate: 0.4, range: 42, splash: 40 }, hc: 30, gold: 280, gen: 'col_greatworm', big: true, passive: true, colossus: true },
     icebehemoth: { name: 'Ice Behemoth', hp: 3000, r: 32, speed: 24, armor: 6, melee: { dmg: 85, rate: 0.4, range: 44, splash: 42 }, throwRock: { range: 380, rate: 0.18 }, hc: 26, gold: 300, gen: 'col_icebehemoth', big: true, passive: true, colossus: true, light: { col: '#9fe8ff', r: 30, a: 0.25 } },
   };

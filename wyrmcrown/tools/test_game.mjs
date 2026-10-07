@@ -47,7 +47,7 @@ const screenOf = (page, x, y, z) => ev(page, ([x, y, z]) => { const R = AS.Rende
 
 await test('menus: title → realm → map → war', async (keep) => {
   const page = keep(await open(''));
-  await page.waitForSelector('#menu.show', { timeout: 15000 });
+  await page.waitForSelector('#menu.show', { timeout: 45000 }); // the attract-mode realm loads synchronously behind the title
   await page.getByText('Begin a War').click();
   await page.waitForSelector('#select.show');
   ok(await page.locator('.realm-card').count() === 4, 'four realm cards');

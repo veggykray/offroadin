@@ -327,25 +327,32 @@
     warmQueue() {
       const p = this.player, q = this.warm = [];
       const seen = new Set();
-      for (const t of this.troops) if (t._sheetFn && !t._sheet) { const k = t.role + ':' + t.team + ':' + (t.v || 0); if (seen.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(t.x - p.x, t.y - p.y) : 0, run: () => { t.sheet; } }); }
-      if (this.life && AS.Life) {
-        for (const o of this.life.animals.concat(this.life.critters || [])) { const k = 'a:' + o.kind + ':' + (o.v || 0); if (seen.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(o.x - p.x, o.y - p.y) : 0, run: () => { AS.Life.sheetFor(o); } }); }
+      for (const t of this.troops) if (t._spec && !t._sheet) { const k = t._spec.key; if (seen.has(k) || AS.Forge.cache.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(t.x - p.x, t.y - p.y) : 0, spec: t._spec }); }
+      if (this.life && AS.Life && AS.Life.sheetSpec) {
+        for (const o of this.life.animals.concat(this.life.critters || [], this.life.people || [])) { const sp = AS.Life.sheetSpec(o); if (!sp || seen.has(sp.key) || AS.Forge.cache.has(sp.key)) continue; seen.add(sp.key); q.push({ d: p ? Math.hypot(o.x - p.x, o.y - p.y) : 0, spec: sp }); }
       }
       q.sort((a, b) => a.d - b.d);
-      this.warmT = 1.5;
+      this.warmGen = null; this.warmT = 1.5;
     }
     warmStep(dt) {
       const q = this.warm;
-      if (!q || !q.length) return;
+      if (!q) return;
       this.warmT -= dt;
       if (this.warmT > 0) return;
-      // only when the frame has room, and never two in a row; a machine that never
-      // has a quiet frame still gets its sheets, just more slowly
-      if (AS.App && AS.App.frameMs > 14 && (this.warmWait = (this.warmWait || 0) + 0.3) < 4) { this.warmT = 0.3; return; }
-      this.warmWait = 0;
-      const job = q.shift();
-      try { job.run(); } catch (e) { /* a missing model falls back on first draw */ }
-      this.warmT = AS.App && AS.App.frameMs > 14 ? 1.5 : 0.45;
+      if (!this.warmGen) {
+        if (!q.length) { this.warm = null; return; }
+        const job = q.shift();
+        if (AS.Forge.cache.has(job.spec.key)) return;
+        this.warmGen = AS.Forge.sheetGen(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims);
+      }
+      // a few frames of the sheet per game frame, inside a small time budget;
+      // a machine with no quiet frames still gets one step a frame
+      const budget = AS.App && AS.App.frameMs > 14 ? 1 : 4, t0 = performance.now();
+      try {
+        let r;
+        do { r = this.warmGen.next(); } while (!r.done && performance.now() - t0 < budget);
+        if (r.done) this.warmGen = null;
+      } catch (e) { this.warmGen = null; } // a broken model: its users fall back on first draw
     }
 
     /* ================= rendering hooks ================= */

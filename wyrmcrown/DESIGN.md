@@ -347,3 +347,11 @@ chokepoints. Map 1 is the reference. `tools/mapview.html` previews any map, and
 - Particles use a fixed pool.
 - Headless Chromium holds about 40–50 fps with around 250 buildings, 80
   troops and 300 creatures on screen-adjacent chunks.
+- Creature sheets are forged on demand, not at load. A troop, animal or
+  critter carries a sheet *spec* (key, model function, directions, frames)
+  and only forges when first drawn. From the first frame of play the realm
+  works through a warm-up queue of every spec in the world, nearest the
+  player first, using the engine's incremental `Forge.sheetGen` (a frame or
+  two of a sheet per game frame, inside a 4 ms budget, 1 ms when frames are
+  already slow), so a creature wandering into view is normally ready before
+  it is seen and a cold one costs at most one hitch.

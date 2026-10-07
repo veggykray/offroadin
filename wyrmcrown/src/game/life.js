@@ -150,7 +150,7 @@
       for (let i = 0; i < n; i++) {
         const a = Math.random() * TAU, d = Math.random() * 60, px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
         if (!g.terrain.groundPassable(px, py)) continue;
-        L.critters.push({ kind: k, A, critter: true, x: px, y: py, a: Math.random() * TAU, vx: 0, vy: 0, hp: A.hp, alive: true, dead: 0, owner: null, herd, state: 'graze', t: Math.random() * 3, anim: Math.random() * 4, scare: 0, tx: px, ty: py, roast: false, carried: false, burn: 0, v: 0 });
+        L.critters.push({ kind: k, A, critter: true, x: px, y: py, a: Math.random() * TAU, vx: 0, vy: 0, hp: A.hp, alive: true, dead: 0, owner: null, herd, state: 'graze', t: Math.random() * 3, anim: Math.random() * 4, scare: 0, tx: px, ty: py, roast: false, carried: false, burn: 0, v: (Math.random() * 3) | 0 });
       }
     },
     // a settlement's people: n villagers wandering between the given spots
@@ -178,25 +178,31 @@
     count(g) { return g.life ? g.life.animals.length + g.life.people.length : 0; },
     livestockOf(g, fk) { let n = 0; for (const a of g.life.animals) if (a.alive && !a.dead && a.owner === fk) n++; return n; },
 
+    /* the recipe for a creature's sheet (key, model function, layout), so the
+     * realm's warm-up can forge it a frame at a time */
+    sheetSpec(o) {
+      if (o.kind in ANIMALS) { const A = ANIMALS[o.kind], v = o.v || 0; return { key: 'ani:' + o.kind + ':' + v + (AS.Models[A.gen] ? '' : ':fb'), fn: AS.Models[A.gen] ? () => AS.Models[A.gen]({}, { v }) : fallbackAnimal(o.kind), dirs: 16, anims: 4 }; }
+      if (o.critter) { const A = CRITTERS[o.kind], v = o.v || 0; return { key: 'crt:' + o.kind + ':' + v, fn: () => AS.Models[A.gen]({}, { v }), dirs: 16, anims: 4 }; }
+      if (PEOPLE[o.kind]) { const gen = PEOPLE[o.kind].gen, key = 'ppl:' + o.kind + ':' + o.v + ':' + (o.team || 'n'); return { key: key + (AS.Models[gen] ? '' : ':fb'), fn: AS.Models[gen] ? () => AS.Models[gen](o.pal, { v: o.v }) : fallbackPerson(o.pal), dirs: 16, anims: 4 }; }
+      return null;
+    },
     sheetFor(o) {
       if (o.kind in ANIMALS) {
         const A = ANIMALS[o.kind], v = o.v || 0;
         A.sheets = A.sheets || [];
-        if (!A.sheets[v]) A.sheets[v] = AS.Forge.sheet('ani:' + o.kind + ':' + v + (AS.Models[A.gen] ? '' : ':fb'), AS.Models[A.gen] ? () => AS.Models[A.gen]({}, { v }) : fallbackAnimal(o.kind), 16, 4);
+        if (!A.sheets[v]) { const sp = this.sheetSpec(o); A.sheets[v] = AS.Forge.sheet(sp.key, sp.fn, sp.dirs, sp.anims); }
         return A.sheets[v];
       }
       if (o.critter) {
-        const A = CRITTERS[o.kind];
-        if (!A.sheet) A.sheet = AS.Forge.sheet('crt:' + o.kind, () => AS.Models[A.gen]({}, {}), 16, 4);
-        return A.sheet;
+        const A = CRITTERS[o.kind], v = o.v || 0;
+        A.sheets = A.sheets || [];
+        if (!A.sheets[v]) { const sp = this.sheetSpec(o); A.sheets[v] = AS.Forge.sheet(sp.key, sp.fn, sp.dirs, sp.anims); }
+        return A.sheets[v];
       }
       const key = 'ppl:' + o.kind + ':' + o.v + ':' + (o.team || 'n');
       this.pplSheets = this.pplSheets || {};
       let sh = this.pplSheets[key];
-      if (!sh) {
-        const gen = PEOPLE[o.kind].gen;
-        sh = this.pplSheets[key] = AS.Forge.sheet(key + (AS.Models[gen] ? '' : ':fb'), AS.Models[gen] ? () => AS.Models[gen](o.pal, { v: o.v }) : fallbackPerson(o.pal), 16, 4);
-      }
+      if (!sh) { const sp = this.sheetSpec(o); sh = this.pplSheets[key] = AS.Forge.sheet(sp.key, sp.fn, sp.dirs, sp.anims); }
       return sh;
     },
 

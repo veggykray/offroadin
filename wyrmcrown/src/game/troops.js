@@ -73,9 +73,10 @@
       this.v = o.v !== undefined ? o.v : (team === 'wild' && gen !== 'mon_bandit' ? (U.hash2(x | 0, y | 0, 77) * 3) | 0 : 0);
       // the sheet is forged when the troop is first drawn, so a realm full of
       // guardians does not stall the loading of the match
-      this._sheetFn = role === 'cart'
-        ? () => AS.Forge.sheet('cart:' + (AS.Models.prop_cart ? 'm' : 'fb') + team, AS.Models.prop_cart ? () => AS.Models.prop_cart(pal, {}) : cartModel(pal), 16, 1)
-        : () => AS.Forge.sheet('trp:' + gen + ':' + team + ':' + this.v + (AS.Models[gen] ? '' : ':fb'), AS.Models[gen] ? () => AS.Models[gen](pal, { v: this.v }) : fallbackModel(role, pal, def.big ? 2.6 : def.hp > 250 ? 1.8 : 1), dirs, role === 'cart' ? 1 : 4);
+      this._spec = role === 'cart'
+        ? { key: 'cart:' + (AS.Models.prop_cart ? 'm' : 'fb') + team, fn: AS.Models.prop_cart ? () => AS.Models.prop_cart(pal, {}) : cartModel(pal), dirs: 16, anims: 1 }
+        : { key: 'trp:' + gen + ':' + team + ':' + this.v + (AS.Models[gen] ? '' : ':fb'), fn: AS.Models[gen] ? () => AS.Models[gen](pal, { v: this.v }) : fallbackModel(role, pal, def.big ? 2.6 : def.hp > 250 ? 1.8 : 1), dirs, anims: 4 };
+      this._sheetFn = () => AS.Forge.sheet(this._spec.key, this._spec.fn, this._spec.dirs, this._spec.anims);
       this._sheet = null;
       this.horse = role === 'cart' ? AS.Life.sheetFor({ kind: 'horse' }) : null;
       this.r = def.r;

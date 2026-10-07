@@ -263,6 +263,33 @@
     return sh;
   }
 
+  /* The same sheet built a frame at a time (a generator), for warming sheets up
+   * in the background without stalling a frame. The result is cached under key
+   * when it completes; a sheet(key) call in the meantime simply builds the rest
+   * synchronously and wins. */
+  function* sheetGen(key, modelFn, dirs, anims, opts) {
+    if (cache.has(key)) return cache.get(key);
+    const model = typeof modelFn === 'function' ? modelFn() : modelFn;
+    dirs = dirs || 1; anims = anims || 1;
+    const frames = [];
+    let ax = 0, ay = 0, w = 0, h = 0;
+    for (let a = 0; a < anims; a++) {
+      const row = [];
+      for (let d = 0; d < dirs; d++) {
+        if (cache.has(key)) return cache.get(key);
+        const f = renderModel(model, (d / dirs) * U.TAU + ((opts && opts.angle) || 0), anims > 1 ? a / anims : 0, opts);
+        row.push(f.img); ax = f.ax; ay = f.ay; w = f.w; h = f.h;
+        yield null;
+      }
+      frames.push(row);
+    }
+    if (cache.has(key)) return cache.get(key);
+    const sh = { frames, dirs, anims, ax, ay, w, h, model, res: (opts && opts.res) || Forge.res };
+    sh.shadows = frames[0].map((img) => silhouette(img, sh.res >= 2 ? sh.res * 0.9 : 0));
+    cache.set(key, sh);
+    return sh;
+  }
+
   const canFilter = (() => { try { return typeof document.createElement('canvas').getContext('2d').filter === 'string'; } catch (e) { return false; } })();
   function silhouette(img, blur) {
     const c = canvas(img.width, img.height);
@@ -328,6 +355,6 @@
     if (F !== Forge.res) { Forge.res = F; clearCache(); }
   }
 
-  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
+  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, sheetGen, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
   AS.Forge = Forge;
 })(window.AS);
