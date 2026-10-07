@@ -307,7 +307,10 @@ then material detail.
   house slots along them (cramped by the main street, looser by the walls);
   a `streets` decal with cart ruts and cobbled junctions; banners, braziers
   and statues round the keep; hedgerows or fences round the fields, orchard
-  rows, hay and a cart at every farm. Two house families per kingdom.
+  rows, hay and a cart at every farm. Two house families per kingdom: the
+  cottages of `models_<realm>`, and a second family in `models_town_extra`
+  (manor, hovel, workshop, tavern) with a shed and a granary for the farms;
+  a house slot picks from all eight.
 - **Destruction** (`building.js`): hurt buildings show soot and cracks;
   burning ones throw flames and embers; a fallen one bursts into masonry
   and roof tiles and leaves a permanent `rubble` decal (wall stubs in the
