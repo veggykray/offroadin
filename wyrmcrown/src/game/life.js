@@ -181,9 +181,9 @@
     /* the recipe for a creature's sheet (key, model function, layout), so the
      * realm's warm-up can forge it a frame at a time */
     sheetSpec(o) {
-      if (o.kind in ANIMALS) { const A = ANIMALS[o.kind], v = o.v || 0; return { key: 'ani:' + o.kind + ':' + v + (AS.Models[A.gen] ? '' : ':fb'), fn: AS.Models[A.gen] ? () => AS.Models[A.gen]({}, { v }) : fallbackAnimal(o.kind), dirs: 16, anims: 4 }; }
-      if (o.critter) { const A = CRITTERS[o.kind], v = o.v || 0; return { key: 'crt:' + o.kind + ':' + v, fn: () => AS.Models[A.gen]({}, { v }), dirs: 16, anims: 4 }; }
-      if (PEOPLE[o.kind]) { const gen = PEOPLE[o.kind].gen, key = 'ppl:' + o.kind + ':' + o.v + ':' + (o.team || 'n'); return { key: key + (AS.Models[gen] ? '' : ':fb'), fn: AS.Models[gen] ? () => AS.Models[gen](o.pal, { v: o.v }) : fallbackPerson(o.pal), dirs: 16, anims: 4 }; }
+      if (o.kind in ANIMALS) { const A = ANIMALS[o.kind], v = o.v || 0; return { key: 'ani:' + o.kind + ':' + v + (AS.Models[A.gen] ? '' : ':fb'), fn: AS.Models[A.gen] ? AS.Forge.recipe(A.gen, {}, { v }) : fallbackAnimal(o.kind), dirs: 16, anims: 4 }; }
+      if (o.critter) { const A = CRITTERS[o.kind], v = o.v || 0; return { key: 'crt:' + o.kind + ':' + v, fn: AS.Forge.recipe(A.gen, {}, { v }), dirs: 16, anims: 4 }; }
+      if (PEOPLE[o.kind]) { const gen = PEOPLE[o.kind].gen, key = 'ppl:' + o.kind + ':' + o.v + ':' + (o.team || 'n'); return { key: key + (AS.Models[gen] ? '' : ':fb'), fn: AS.Models[gen] ? AS.Forge.recipe(gen, o.pal, { v: o.v }) : fallbackPerson(o.pal), dirs: 16, anims: 4 }; }
       return null;
     },
     sheetFor(o) {

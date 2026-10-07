@@ -75,6 +75,99 @@
       this.bridges = []; // [{x0,y0,x1,y1,w}] corridors that make water passable
     }
 
+    /* ---------- background shading: a pool of workers rasterises chunks ----------
+     * The per-texel passes (grid, terraces, shade) run in terrain_worker.js; the page
+     * only uploads the pixels and stamps decor, a step at a time inside work()'s
+     * budget. Without workers (file://, old browsers) the engine's own incremental
+     * path runs unchanged. */
+    asyncInit() {
+      if (this._wk !== undefined) return !!this._wk;
+      this._wk = null;
+      try {
+        if (typeof Worker === 'undefined' || location.protocol === 'file:' || !this._args) return false;
+        const n = Math.max(1, Math.min(3, ((navigator.hardwareConcurrency || 4) - 2) | 0));
+        const url = new URL('src/gfx/terrain_worker.js', location.href).href;
+        const init = { type: 'init', world: this._args.world, map: this._args.map, zones: this.zones, bridges: this.bridges };
+        const pool = [];
+        for (let i = 0; i < n; i++) {
+          const w = new Worker(url);
+          w.onmessage = (e) => this.onWorker(e.data, w);
+          w.onerror = () => { this._wk = null; };
+          w.postMessage(init);
+          w.busy = 0;
+          pool.push(w);
+        }
+        // one realm renders at a time (the attract-mode war or the match): retire the previous pool
+        if (AS.__terrainPool && AS.__terrainPool.owner !== this) { for (const x of AS.__terrainPool.pool) x.terminate(); AS.__terrainPool.owner._wk = null; }
+        AS.__terrainPool = { owner: this, pool };
+        this._wk = pool; this._req = new Map(); this._ready = []; this._fin = null;
+        return true;
+      } catch (e) { this._wk = null; return false; }
+    }
+    onWorker(r, w) {
+      w.busy--;
+      if (!this._req) return;
+      const key = r.cx * 10000 + r.cy;
+      this._req.delete(key);
+      if (r.TD !== this.TD || this.cache.has(key)) return;
+      this._ready.push(r);
+    }
+    *finishGen(r) {
+      const cv = AS.Forge.canvas(r.N, r.N), ctx = cv.getContext('2d');
+      ctx.putImageData(new ImageData(r.D, r.N, r.N), 0, 0);
+      yield null;
+      const st = { TD: r.TD, N: r.N, NW: r.NW, rows: r.rows, ML: r.ML, top: r.top, L: r.L, cx: r.cx, cy: r.cy, x0: r.cx * CH, y0: r.cy * CH };
+      yield* this.stampDecorGen(ctx, r.cx, r.cy, st);
+      return cv;
+    }
+    getChunk(cx, cy) {
+      if (!this._wk) return super.getChunk(cx, cy);
+      this.texel();
+      const key = cx * 10000 + cy, ch = this.cache.get(key);
+      if (ch) { ch.used = this.frame; return ch.cv; }
+      // a needed chunk that is already shaded is only uploaded and stamped (a few ms)
+      if (this._fin && this._fin.key === key) { let r; do { r = this._fin.it.next(); } while (!r.done); this._fin = null; this.store(key, cx, cy, r.value); return r.value; }
+      const i = this._ready.findIndex((q) => q.cx === cx && q.cy === cy);
+      if (i >= 0) { const q = this._ready.splice(i, 1)[0], it = this.finishGen(q); let r; do { r = it.next(); } while (!r.done); this.store(key, cx, cy, r.value); return r.value; }
+      return super.getChunk(cx, cy);
+    }
+    work(budget, queue) {
+      if (!this.asyncInit()) return super.work(budget, queue);
+      this.texel();
+      // the worker pool keeps a few requests in flight, nearest first
+      const pool = this._wk;
+      for (const q of queue) {
+        const key = q[0] * 10000 + q[1];
+        if (this.cache.has(key) || this._req.has(key) || this._ready.some((r) => r.cx === q[0] && r.cy === q[1]) || (this._fin && this._fin.key === key)) continue;
+        let w = null; for (const x of pool) if (x.busy < 2 && (!w || x.busy < w.busy)) w = x;
+        if (!w) break;
+        w.busy++; this._req.set(key, 1);
+        w.postMessage({ type: 'chunk', cx: q[0], cy: q[1], TD: this.TD });
+      }
+      // finish shaded chunks (upload + decor) inside the frame budget
+      const t0 = performance.now();
+      while (performance.now() - t0 < budget) {
+        if (!this._fin) {
+          let r = null; while (this._ready.length) { const q = this._ready.shift(); if (q.TD === this.TD && !this.cache.has(q.cx * 10000 + q.cy)) { r = q; break; } }
+          if (!r) return;
+          this._fin = { key: r.cx * 10000 + r.cy, cx: r.cx, cy: r.cy, it: this.finishGen(r) };
+        }
+        const r = this._fin.it.next();
+        if (r.done) { this.store(this._fin.key, this._fin.cx, this._fin.cy, r.value); this._fin = null; }
+      }
+    }
+    get async() { return !!this._wk; }
+    texel() {
+      const before = this.TD, td = super.texel();
+      if (td !== before) {
+        if (this._ready) { this._ready.length = 0; this._fin = null; }
+        // keep the view, its prefetch ring and a margin cached (about 120 MB of chunk canvases)
+        const px = Math.round(CH * td) * Math.round(CH * td) * 4;
+        this.maxCache = Math.max(56, Math.min(150, Math.round(120e6 / px)));
+      }
+      return td;
+    }
+
     /* ---------- authored geography → lookup grids ---------- */
     buildGrids(map) {
       const gw = this.gw = Math.ceil(this.W / GC) + 2, gh = this.gh = Math.ceil(this.H / GC) + 2, N = gw * gh;

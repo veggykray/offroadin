@@ -27,7 +27,7 @@
   const SZ = 64;
   const cache = new Map();
   function rnd(seed) { let s = (seed * 2654435761) >>> 0 || 1; return () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296; }
-  function cv(n) { const c = document.createElement('canvas'); c.width = c.height = n || SZ; return c; }
+  function cv(n) { const c = typeof document !== 'undefined' ? document.createElement('canvas') : new OffscreenCanvas(1, 1); c.width = c.height = n || SZ; return c; }
   // run f at the 9 wrapped offsets so marks tile seamlessly
   const wrap = (c, f) => { for (let dx = -SZ; dx <= SZ; dx += SZ) for (let dy = -SZ; dy <= SZ; dy += SZ) { c.save(); c.translate(dx, dy); f(c); c.restore(); } };
   const ink = (o, a) => C.str(o.ink || '#000000', a);

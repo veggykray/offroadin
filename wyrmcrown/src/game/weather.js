@@ -160,7 +160,7 @@
         if (this.lastFX === undefined) { this.lastFX = cam.x; this.lastFY = cam.y; }
         const dx = cam.x - this.lastFX, dy = cam.y - this.lastFY; this.lastFX = cam.x; this.lastFY = cam.y;
         const img = AS.Forge.glow(this.fogCol, 64);
-        ctx.save();
+        ctx.save(); ctx.imageSmoothingQuality = 'low'; // banks are magnified soft gradients
         for (const bk of this.banks) {
           bk.x += (wind[0] * 0.35 + Math.sin(t * 0.3 + bk.p) * 4) / 60 - dx * 0.9; bk.y += (wind[1] * 0.3) / 60 - dy * 0.9;
           if (bk.x < -bk.w) bk.x += W + bk.w * 2; if (bk.x > W + bk.w) bk.x -= W + bk.w * 2;

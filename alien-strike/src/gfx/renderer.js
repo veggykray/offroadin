@@ -102,6 +102,7 @@
     /* Main world render. g = game world */
     renderWorld(g, dt) {
       this.time += dt;
+      if (AS.Forge.beginFrame) AS.Forge.beginFrame();
       const ctx = this.bctx, cam = g.camera, T = g.terrain;
       const vw = this.vw, vh = this.vh;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -120,6 +121,14 @@
       // camera zooms they overlap by one device pixel so scaling never opens seams
       const exact = T.TD === this.res && Math.abs(z - 1) < 1e-4;
       const ov = this.pixelated || exact ? 0 : 1 / zr;
+      /* Filtering: the 'high' quality filter re-derives mipmaps / cubic taps on every
+       * draw, which under software rasterisation doubles the cost of the frame. Where
+       * a source is drawn at ≥ 0.55 of its size (chunks: always, they are rasterised at
+       * the render scale; sprite sheets: whenever the screen is large enough) plain
+       * bilinear is visually identical (< 1/255 mean difference), so it is used; on
+       * small screens sprites shrink further and keep the high-quality filter. */
+      const fq = zr / ((AS.Forge && AS.Forge.res) || 2) >= 0.55 ? 'low' : 'high';
+      ctx.imageSmoothingQuality = 'low';
       for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
         const cv = T.getChunk(cx, cy);
         ctx.drawImage(cv, cx * S - ox, cy * S - oy, S + ov, S + ov);
@@ -129,13 +138,17 @@
       const p = g.player;
       const ldx = p ? Math.sign(p.vx) : 0, ldy = p ? Math.sign(p.vy) : 0;
       for (let cy = y0 - 1; cy <= y1 + 1; cy++) for (let cx = x0 - 1; cx <= x1 + 1; cx++) if (!T.hasChunk(cx, cy)) q.push([cx, cy]);
-      for (let cy = y0 - 2; cy <= y1 + 2; cy++) for (let cx = x0 - 2; cx <= x1 + 2; cx++) {
+      // terrains that shade off the main thread can afford to look a ring further ahead
+      const ring = T.async ? 3 : 2;
+      for (let cy = y0 - ring; cy <= y1 + ring; cy++) for (let cx = x0 - ring; cx <= x1 + ring; cx++) {
         if (cx >= x0 - 1 && cx <= x1 + 1 && cy >= y0 - 1 && cy <= y1 + 1) continue;
+        if (ring > 2 && (cx < x0 - 2 || cx > x1 + 2 || cy < y0 - 2 || cy > y1 + 2) && !((ldx && Math.sign(cx - (x0 + x1) / 2) === ldx && Math.abs(p.vx) > Math.abs(p.vy) * 0.5) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy && Math.abs(p.vy) > Math.abs(p.vx) * 0.5))) continue;
         const ahead = (ldx && Math.sign(cx - (x0 + x1) / 2) === ldx) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy);
         if (ahead && !T.hasChunk(cx, cy)) q.push([cx, cy]);
       }
       T.work(AS.Settings && AS.Settings.quality === 'low' ? 2.5 : 3.5, q);
 
+      ctx.imageSmoothingQuality = fq;
       // ---- ground layer (pads, zones, telegraphs)
       g.drawGround(ctx, ox, oy, this);
       AS.Particles.draw(ctx, ox, oy, 0, cam.w, cam.h);
@@ -200,6 +213,7 @@
         lc.fillStyle = 'rgb(' + Math.round(a * 0.92) + ',' + Math.round(a * 0.94) + ',' + a + ')';
         lc.fillRect(0, 0, LW, LH);
         lc.globalCompositeOperation = 'lighter';
+        lc.imageSmoothingQuality = 'low'; // glows are magnified soft gradients
         const z = g.camera.zoom * this.res * this.lightScale;
         for (const l of this.lights) {
           const img = AS.Forge.glow(l.col, 64);
@@ -215,6 +229,7 @@
         ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = (1 - amb) * 0.8; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, this.bufW, this.bufH); ctx.restore();
       }
       // additive bloom from lights
+      const sq = ctx.imageSmoothingQuality; ctx.imageSmoothingQuality = 'low';
       ctx.globalCompositeOperation = 'lighter';
       for (const l of this.lights) {
         const img = AS.Forge.glow(l.col, 64);
@@ -223,6 +238,7 @@
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
+      ctx.imageSmoothingQuality = sq;
       if (L.tint) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = L.tint; ctx.fillRect(0, 0, this.bufW, this.bufH); ctx.restore(); }
       this.lights.length = 0;
     },
@@ -280,7 +296,9 @@
       ctx.globalAlpha = 0.6;
       const key = '__flash';
       let f = sh[key];
-      if (!f) { f = sh[key] = sh.frames[0].map((img) => { const c = AS.Forge.canvas(img.width, img.height); const x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = col || '#ffffff'; x2.fillRect(0, 0, c.width, c.height); return c; }); }
+      if (!f) f = sh[key] = [];
+      // one direction at a time, as it is first needed
+      if (!f[di]) { const img = sh.frames[0][di]; const c = AS.Forge.canvas(img.width, img.height); const x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = col || '#ffffff'; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
       ctx.drawImage(f[di], x - ox - sh.ax, y - z - oy - sh.ay, sh.w, sh.h);
       ctx.restore();
     },

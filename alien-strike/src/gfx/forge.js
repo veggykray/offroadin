@@ -14,7 +14,8 @@
   const U = AS.U, C = U.C;
 
   function canvas(w, h) {
-    const c = document.createElement('canvas');
+    // (inside a worker there is no document: the same drawing goes to an OffscreenCanvas)
+    const c = typeof document !== 'undefined' ? document.createElement('canvas') : new OffscreenCanvas(1, 1);
     c.width = Math.max(1, Math.ceil(w));
     c.height = Math.max(1, Math.ceil(h));
     return c;
@@ -243,58 +244,231 @@
     return { img: cv, ax: ax / F, ay: ay / F, w: w / F, h: h / F };
   }
 
-  /* Build (and cache) a rotation × animation sheet. */
+  /* Build (and cache) a rotation × animation sheet.
+   * Frames are forged lazily: the sheet comes back at once with its layout (every
+   * frame of a model shares one size and anchor), and each frame — and each
+   * direction's shadow silhouette — is rendered the first time anything reads it.
+   * A creature seen for the first time so costs the one frame it is drawn in
+   * rather than its whole rotation × animation set (over a second for a colossus),
+   * and fill() forges the rest in spare time. The pixels are exactly the same. */
   const cache = new Map();
+  const stats = { sync: 0, syncMs: 0, worker: 0, stand: 0 }; // frames forged on the spot / time spent / frames from workers
+  const pending = []; // sheets with frames still to forge, most recently requested last
+  function dims(model, opts) {
+    const F = (opts && opts.res) || Forge.res;
+    const s = (model.scale || 1) * F, pad = 3 * F;
+    const r = Math.ceil(model.r * s), hh = Math.ceil(model.h * s);
+    return { ax: (r + pad) / F, ay: (r + hh + pad) / F, w: (r * 2 + pad * 2) / F, h: (r * 2 + hh + pad * 2) / F };
+  }
+  // an array whose slots build themselves on first read and then become plain values
+  /* On-the-spot forging is capped per frame (beginFrame resets it). Past the cap, a
+   * frame that is not forged yet is stood in for by the nearest finished frame of
+   * the same sheet — the neighbouring direction or animation phase — until the
+   * workers (or a later frame) deliver it; a sheet with nothing finished yet is
+   * always forged at once, so nothing ever pops in. */
+  const SYNC_MS = 6;
+  let frameSync = 0, exact = 0; // exact: forging on purpose (fill, shadows) — no stand-ins
+  function beginFrame() { frameSync = 0; }
+  function standIn(sh, a, d, shadow) {
+    const dirs = sh.dirs;
+    // the same facing in another animation phase reads best, then the nearest facings
+    if (!shadow) for (let j = 1; j < sh.anims; j++) { const aa = (a + j) % sh.anims; if (built(sh.frames[aa], d)) return sh.frames[aa][d]; }
+    for (let k = 1; k <= dirs; k++) {
+      const dd = ((d + (k & 1 ? (k + 1) >> 1 : -(k >> 1))) % dirs + dirs) % dirs;
+      if (shadow) { if (built(sh.shadows, dd)) return sh.shadows[dd]; continue; }
+      for (let j = 0; j < sh.anims; j++) { const aa = (a + j) % sh.anims; if (built(sh.frames[aa], dd)) return sh.frames[aa][dd]; }
+    }
+    return null;
+  }
+  function lazyRow(n, build, sh, a) {
+    const row = new Array(n);
+    for (let i = 0; i < n; i++) {
+      Object.defineProperty(row, i, {
+        configurable: true, enumerable: true,
+        get() {
+          // over the cap — or a frame known to cost more than the cap allows (a giant) — takes a stand-in if there is one
+          if (!exact && sh.dirs > 1 && frameSync + (a < 0 ? (built(sh.frames[0], i) ? 1 : (sh.cost || 0) + 1) : (sh.cost || 0)) > SYNC_MS && (frameSync >= SYNC_MS || sh.cost)) {
+            const sub = standIn(sh, a, i, a < 0); if (sub) { stats.stand++; return sub; }
+          }
+          const t = performance.now(), v = build(i), dt = performance.now() - t;
+          stats.sync++; stats.syncMs += dt; frameSync += dt; if (a >= 0) sh.cost = sh.cost ? sh.cost * 0.7 + dt * 0.3 : dt; if (stats.log && dt > 2) stats.log.push([sh.key, a, i, +dt.toFixed(1), exact]);
+          Object.defineProperty(row, i, { value: v, writable: true, configurable: true, enumerable: true }); sh.left--; return v;
+        },
+        set(v) { Object.defineProperty(row, i, { value: v, writable: true, configurable: true, enumerable: true }); sh.left--; },
+      });
+    }
+    return row;
+  }
+  // the exact first-phase frame of direction d (forged now if need be, never a stand-in)
+  function frame0(sh, d) { const row = sh.frames[0]; if (built(row, d)) return row[d]; exact++; try { return row[d]; } finally { exact--; } }
+  // has slot i of a lazy row been forged yet?
+  const built = (row, i) => !Object.getOwnPropertyDescriptor(row, i).get;
   function sheet(key, modelFn, dirs, anims, opts) {
     let sh = cache.get(key);
     if (sh) return sh;
     const model = typeof modelFn === 'function' ? modelFn() : modelFn;
     dirs = dirs || 1; anims = anims || 1;
-    const frames = [];
-    let ax = 0, ay = 0, w = 0, h = 0;
-    for (let a = 0; a < anims; a++) {
-      const row = [];
-      for (let d = 0; d < dirs; d++) {
-        const f = renderModel(model, (d / dirs) * U.TAU + ((opts && opts.angle) || 0), anims > 1 ? a / anims : 0, opts);
-        row.push(f.img); ax = f.ax; ay = f.ay; w = f.w; h = f.h;
-      }
-      frames.push(row);
-    }
-    sh = { frames, dirs, anims, ax, ay, w, h, model, res: (opts && opts.res) || Forge.res };
-    // Silhouette for shadows (first anim frame per direction), softened at high res
-    sh.shadows = frames[0].map((img) => silhouette(img, sh.res >= 2 ? sh.res * 0.9 : 0));
+    const d0 = dims(model, opts), angle0 = (opts && opts.angle) || 0;
+    sh = { frames: [], dirs, anims, ax: d0.ax, ay: d0.ay, w: d0.w, h: d0.h, model, res: (opts && opts.res) || Forge.res, left: dirs * anims + dirs, key, angle0 };
+    if (modelFn && modelFn.recipe && !opts) sh.recipe = modelFn.recipe; // can be forged in a worker
+    for (let a = 0; a < anims; a++) sh.frames.push(lazyRow(dirs, (d) => renderModel(model, (d / dirs) * U.TAU + angle0, anims > 1 ? a / anims : 0, opts).img, sh, a));
+    // silhouette for shadows (first anim frame per direction), softened at high res
+    sh.shadows = lazyRow(dirs, (d) => silhouette(frame0(sh, d), sh.res >= 2 ? sh.res * 0.9 : 0), sh, -1);
     cache.set(key, sh);
+    pending.push(sh);
     return sh;
+  }
+  // forge the next missing frame of a sheet (anim 0 and its shadows first); false when complete
+  function step(sh) {
+    if (sh.left <= 0) return false;
+    const c = frameSync; exact++;
+    try { return step1(sh); } finally { exact--; frameSync = c; } // background work does not count against the frame's cap
+  }
+  function step1(sh) {
+    const fly = sh.fly; let busy = false; // frames a worker is already drawing are left to it
+    for (let a = 0; a < sh.anims; a++) {
+      const row = sh.frames[a];
+      for (let d = 0; d < sh.dirs; d++) if (!built(row, d) || (a === 0 && !built(sh.shadows, d))) {
+        if (fly && fly.has(a * sh.dirs + d)) { busy = true; continue; }
+        row[d]; if (a === 0) sh.shadows[d]; return true;
+      }
+    }
+    for (let d = 0; d < sh.dirs; d++) if (!built(sh.shadows, d)) { if (fly && fly.has(d)) { busy = true; continue; } sh.shadows[d]; return true; }
+    if (!busy) sh.left = 0;
+    return false;
+  }
+  // forge every remaining frame of a sheet now
+  function complete(sh) { exact++; try { while (sh.left > 0 && step(sh)); } finally { exact--; } return sh; }
+  // run fn with every frame it touches forged exactly (no stand-ins), e.g. while loading
+  function exactly(fn) { exact++; try { return fn(); } finally { exact--; } }
+  // repack a finished sheet's rows as ordinary arrays (fast element access again)
+  function seal(sh) { sh.frames = sh.frames.map((r) => r.slice()); sh.shadows = sh.shadows.slice(); }
+  /* Forge missing frames of recently requested sheets for up to budget ms. A frame
+   * is only started if it is expected to fit (from the sheet's measured cost), but
+   * with `force` one is always started so even very heavy sheets make progress. */
+  function fill(budget, force) {
+    const t0 = performance.now();
+    let did = 0;
+    pump();
+    for (let i = pending.length - 1; i >= 0; i--) {
+      const sh = pending[i];
+      if (sh.left <= 0 || cache.get(sh.key) !== sh) { pending.splice(i, 1); if (sh.left <= 0) seal(sh); continue; }
+      if (offThread(sh)) continue; // the workers have it
+      // most recent first: move it to the end and work on it there
+      if (i !== pending.length - 1) { pending.splice(i, 1); pending.push(sh); }
+      break;
+    }
+    while (pending.length) {
+      const sh = pending[pending.length - 1];
+      if (sh.left <= 0 || cache.get(sh.key) !== sh) { pending.pop(); if (sh.left <= 0) seal(sh); continue; }
+      if (offThread(sh)) break;
+      const used = performance.now() - t0;
+      if ((did || !force) && used + (sh.fcost || sh.cost || 2) > budget) break;
+      const a = performance.now();
+      if (!step(sh)) continue;
+      const c = performance.now() - a;
+      sh.fcost = sh.fcost ? sh.fcost * 0.7 + c * 0.3 : c;
+      did++;
+    }
+    return did;
+  }
+  const ready = (key) => { const sh = cache.get(key); return !!sh && !(sh.left > 0); };
+
+  /* ---- background forging in workers ----
+   * A sheet whose model comes from a recipe (a generator name and its plain-data
+   * arguments, see recipe()) can be forged by a worker that loads the same model
+   * code and draws to an OffscreenCanvas: the frames arrive as bitmaps, identical
+   * to the ones the main thread would draw, without costing the game a frame. A
+   * frame needed before its bitmap arrives is still drawn on the spot, as above. */
+  const pool = { wk: [], seq: 0, jobs: new Map(), dead: false };
+  function recipe(gen, pal, opt) {
+    const fn = () => AS.Models[gen](pal, opt);
+    fn.recipe = { gen, pal, opt };
+    return fn;
+  }
+  function useWorkers(url, n) {
+    if (pool.wk.length || typeof Worker === 'undefined' || typeof OffscreenCanvas === 'undefined') return;
+    for (let i = 0; i < n; i++) {
+      try {
+        const w = new Worker(url); w.busy = 0;
+        w.onmessage = (e) => done(e.data, w);
+        w.onerror = (e) => { e.preventDefault && e.preventDefault(); w.broken = true; };
+        pool.wk.push(w);
+      } catch (e) { break; }
+    }
+  }
+  const offThread = (sh) => sh.recipe && !sh.noWorker && pool.wk.length > 0 && pool.wk.some((w) => !w.broken);
+  /* frames of sh nearest a drawing angle first (creatures in view, or about to be) */
+  function want(sh, angle) {
+    if (!sh || !(sh.left > 0)) return;
+    sh.hint = angle;
+    const i = pending.indexOf(sh);
+    if (i >= 0 && i !== pending.length - 1) { pending.splice(i, 1); pending.push(sh); }
+  }
+  function nextJob(sh) {
+    const dirs = sh.dirs, fly = sh.fly || (sh.fly = new Set());
+    const h = sh.hint !== undefined ? frameIndex(sh, sh.hint) : 0;
+    for (let k = 0; k <= dirs; k++) {
+      const d = ((h + (k & 1 ? (k + 1) >> 1 : -(k >> 1))) % dirs + dirs) % dirs;
+      for (let a = 0; a < sh.anims; a++) {
+        const id = a * dirs + d;
+        if (fly.has(id)) continue;
+        if (!built(sh.frames[a], d) || (a === 0 && !built(sh.shadows, d))) return [d, a, id];
+      }
+    }
+    return null;
+  }
+  function pump() {
+    if (!pool.wk.length) return;
+    for (const w of pool.wk) {
+      if (w.broken) continue;
+      while (w.busy < 2) {
+        let job = null, sh = null;
+        // first one frame (the wanted facing) for every sheet that has none yet, so a
+        // creature coming into view never has to be forged on the spot; then the rest
+        for (let i = pending.length - 1; i >= 0 && !job; i--) {
+          sh = pending[i];
+          if (sh.seeded || !offThread(sh) || !(sh.left > 0) || cache.get(sh.key) !== sh) continue;
+          sh.seeded = true;
+          job = nextJob(sh);
+        }
+        for (let i = pending.length - 1; i >= 0 && !job; i--) {
+          sh = pending[i];
+          if (!offThread(sh) || !(sh.left > 0) || cache.get(sh.key) !== sh) continue;
+          job = nextJob(sh);
+        }
+        if (!job) return;
+        const [d, a, fid] = job, id = ++pool.seq;
+        try {
+          w.postMessage({ type: 'frame', id, key: sh.key, recipe: sh.recipe, res: sh.res, angle: (d / sh.dirs) * U.TAU + sh.angle0, anim: sh.anims > 1 ? a / sh.anims : 0, shadow: a === 0, blur: sh.res >= 2 ? sh.res * 0.9 : 0 });
+        } catch (e) { sh.noWorker = true; continue; } // arguments that cannot be cloned: forged here instead
+        sh.fly.add(fid); w.busy++;
+        pool.jobs.set(id, { sh, d, a, fid });
+      }
+    }
+  }
+  function done(m, w) {
+    if (m.type === 'ready') { if (!m.ok) w.broken = true; return; }
+    const j = pool.jobs.get(m.id); if (!j) return;
+    pool.jobs.delete(m.id); w.busy--;
+    const sh = j.sh; sh.fly.delete(j.fid);
+    if (m.err) { sh.noWorker = true; return; }
+    if (cache.get(sh.key) !== sh) return;
+    if (!built(sh.frames[j.a], j.d)) { sh.frames[j.a][j.d] = m.img; stats.worker++; }
+    if (m.ms && !sh.cost) sh.cost = m.ms;
+    if (m.shadow && !built(sh.shadows, j.d)) sh.shadows[j.d] = m.shadow;
+    pump();
   }
 
   /* The same sheet built a frame at a time (a generator), for warming sheets up
-   * in the background without stalling a frame. The result is cached under key
-   * when it completes; a sheet(key) call in the meantime simply builds the rest
-   * synchronously and wins. */
+   * in the background without stalling a frame. */
   function* sheetGen(key, modelFn, dirs, anims, opts) {
-    if (cache.has(key)) return cache.get(key);
-    const model = typeof modelFn === 'function' ? modelFn() : modelFn;
-    dirs = dirs || 1; anims = anims || 1;
-    const frames = [];
-    let ax = 0, ay = 0, w = 0, h = 0;
-    for (let a = 0; a < anims; a++) {
-      const row = [];
-      for (let d = 0; d < dirs; d++) {
-        if (cache.has(key)) return cache.get(key);
-        const f = renderModel(model, (d / dirs) * U.TAU + ((opts && opts.angle) || 0), anims > 1 ? a / anims : 0, opts);
-        row.push(f.img); ax = f.ax; ay = f.ay; w = f.w; h = f.h;
-        yield null;
-      }
-      frames.push(row);
-    }
-    if (cache.has(key)) return cache.get(key);
-    const sh = { frames, dirs, anims, ax, ay, w, h, model, res: (opts && opts.res) || Forge.res };
-    sh.shadows = frames[0].map((img) => silhouette(img, sh.res >= 2 ? sh.res * 0.9 : 0));
-    cache.set(key, sh);
+    const sh = sheet(key, modelFn, dirs, anims, opts);
+    while (step(sh)) yield null;
     return sh;
   }
 
-  const canFilter = (() => { try { return typeof document.createElement('canvas').getContext('2d').filter === 'string'; } catch (e) { return false; } })();
+  const canFilter = (() => { try { return typeof canvas(1, 1).getContext('2d').filter === 'string'; } catch (e) { return false; } })();
   function silhouette(img, blur) {
     const c = canvas(img.width, img.height);
     const x = c.getContext('2d');
@@ -359,6 +533,6 @@
     if (F !== Forge.res) { Forge.res = F; clearCache(); }
   }
 
-  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, sheetGen, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
+  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, sheetGen, fill, ready, pending, recipe, useWorkers, want, pool, stats, beginFrame, exactly, complete, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
   AS.Forge = Forge;
 })(window.AS);

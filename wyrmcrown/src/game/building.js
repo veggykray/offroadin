@@ -47,7 +47,7 @@
     if (m) { dirs = m.dirs; anims = m.anims; }
     const key = 'bld:' + genFull + (has ? '' : ':fb') + JSON.stringify(opt || {}) + JSON.stringify(pal);
     const base = genFull.replace(/^(human|elf|ice|undead)_/, '');
-    return AS.Forge.sheet(key, () => (has ? AS.Models[genFull](pal, opt || {}) : fallback(base, pal, opt)), dirs || 1, anims || 1);
+    return AS.Forge.sheet(key, has ? AS.Forge.recipe(genFull, pal, opt || {}) : () => fallback(base, pal, opt), dirs || 1, anims || 1);
   }
 
   class Building extends AS.Entity {

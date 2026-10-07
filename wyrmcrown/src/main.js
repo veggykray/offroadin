@@ -20,6 +20,8 @@
       AS.Input.init(canvas);
       AS.Renderer.viewHeights = { near: 520, normal: 600, far: 700 };
       AS.Renderer.init(canvas);
+      // creature sprites are forged in the background (served over http; file:// forges on the page)
+      if (location.protocol !== 'file:') AS.Forge.useWorkers(new URL('src/gfx/forge_worker.js', location.href).href, (navigator.hardwareConcurrency || 4) >= 6 ? 2 : 1);
       AS.Particles.init(3200);
       AS.Particles.density = AS.Settings.quality === 'low' ? 0.5 : AS.Settings.quality === 'medium' ? 0.8 : 1;
       AS.Proj.init();

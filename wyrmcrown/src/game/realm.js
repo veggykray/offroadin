@@ -96,6 +96,13 @@
       const cam = this.camera, S = AS.Terrain.CH;
       for (let cy = Math.floor((cam.y - 128) / S); cy <= Math.floor((cam.y + cam.h + 128) / S); cy++)
         for (let cx = Math.floor((cam.x - 128) / S); cx <= Math.floor((cam.x + cam.w + 128) / S); cx++) this.terrain.getChunk(cx, cy);
+      // sprites are forged as they are first needed (and ahead of time by the forge
+      // workers); the player's own dragon — always on screen, always turning — and
+      // everything in the opening view are forged now, exactly
+      const t0 = performance.now();
+      if (AS.DragonArt && AS.DragonArt.rig && p) { const st = p.drawState || p, rg = AS.DragonArt.rig(st.fk, st.scale); for (const sh of rg.sheets) AS.Forge.complete(sh); AS.Forge.complete(rg.headOpen); if (p.riderSheet) AS.Forge.complete(p.riderSheet); }
+      if (AS.Renderer && AS.Renderer.bctx) AS.Forge.exactly(() => AS.Renderer.renderWorld(this, 0));
+      this.primeMs = performance.now() - t0;
       this.tacMap = this.terrain.buildMap(24);
       this.updateRegion(0, true);
       this.events.emit('loaded');
@@ -327,34 +334,64 @@
     warmQueue() {
       const p = this.player, q = this.warm = [];
       const seen = new Set();
-      for (const t of this.troops) if (t._spec && !t._sheet) { const k = t._spec.key; if (seen.has(k) || AS.Forge.cache.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(t.x - p.x, t.y - p.y) : 0, spec: t._spec }); }
+      for (const t of this.troops) if (t._spec && !t._sheet) { const k = t._spec.key; if (seen.has(k) || AS.Forge.ready(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(t.x - p.x, t.y - p.y) : 0, spec: t._spec }); }
       if (this.life && AS.Life && AS.Life.sheetSpec) {
-        for (const o of this.life.animals.concat(this.life.critters || [], this.life.people || [])) { const sp = AS.Life.sheetSpec(o); if (!sp || seen.has(sp.key) || AS.Forge.cache.has(sp.key)) continue; seen.add(sp.key); q.push({ d: p ? Math.hypot(o.x - p.x, o.y - p.y) : 0, spec: sp }); }
+        for (const o of this.life.animals.concat(this.life.critters || [], this.life.people || [])) { const sp = AS.Life.sheetSpec(o); if (!sp || seen.has(sp.key) || AS.Forge.ready(sp.key)) continue; seen.add(sp.key); q.push({ d: p ? Math.hypot(o.x - p.x, o.y - p.y) : 0, spec: sp }); }
       }
       q.sort((a, b) => a.d - b.d);
       this.warmGen = null; this.warmT = 1.5;
     }
     warmStep(dt) {
+      // sheets are forged lazily (a frame the first time it is drawn); creatures coming
+      // within reach of the view get their sheet opened early, so the spare-time filler
+      // below has their frames ready before they are seen
+      if ((this.aheadT = (this.aheadT || 0) - dt) <= 0) { this.aheadT = 0.4; this.sheetsAhead(); }
       const q = this.warm;
-      if (!q) return;
-      this.warmT -= dt;
+      this.warmT = (this.warmT || 0) - dt;
       if (this.warmT > 0) return;
-      if (!this.warmGen) {
-        if (!q.length) { this.warm = null; return; }
-        const job = q.shift();
-        if (AS.Forge.cache.has(job.spec.key)) return;
-        this.warmGen = AS.Forge.sheetGen(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims);
-      }
-      // a few frames of the sheet per game frame, inside a small time budget;
-      // a machine with no quiet frames still gets one step a frame
+      // a few frames per game frame, inside a small time budget;
+      // a machine with no quiet frames still gets one step every third frame
       const slow = AS.App && AS.App.frameMs > 14;
-      if (slow && (this.warmSkip = ((this.warmSkip || 0) + 1) % 3) !== 0) return; // slow frames: one step every third frame
+      this.warmSkip = ((this.warmSkip || 0) + 1) % (slow ? 3 : 4);
+      if (slow && this.warmSkip !== 0) return;
       const budget = slow ? 1 : 4, t0 = performance.now();
-      try {
-        let r;
-        do { r = this.warmGen.next(); } while (!r.done && performance.now() - t0 < budget);
-        if (r.done) this.warmGen = null;
-      } catch (e) { this.warmGen = null; } // a broken model: its users fall back on first draw
+      if (q && !this.warmGen) {
+        while (q.length && !this.warmGen) { const job = q.shift(); if (!AS.Forge.ready(job.spec.key)) this.warmGen = AS.Forge.sheetGen(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims); }
+        if (!q.length && !this.warmGen) this.warm = null;
+      }
+      if (this.warmGen) {
+        try {
+          let r;
+          do { r = this.warmGen.next(); } while (!r.done && performance.now() - t0 < budget);
+          if (r.done) this.warmGen = null;
+        } catch (e) { this.warmGen = null; } // a broken model: its users fall back on first draw
+        return;
+      }
+      // frames still missing from sheets opened in play; a frame heavier than the
+      // budget (a colossus) is still started, but only every fourth frame
+      try { AS.Forge.fill(budget, this.warmSkip === 0); } catch (e) { /* a broken model: drawn frames report it */ }
+    }
+    sheetsAhead() {
+      const cam = this.camera; if (!cam) return;
+      const cx = cam.x + cam.w / 2, cy = cam.y + cam.h / 2, r = Math.max(cam.w, cam.h) * 1.3, r2 = r * r;
+      const F = AS.Forge;
+      for (const t of this.troops) if (t._sheetFn && !t.removed && !(t._sheet && !(t._sheet.left > 0))) { const dx = t.x - cx, dy = t.y - cy; if (dx * dx + dy * dy < r2) { try { F.want(t.sheet, t.angle); } catch (e) { /* drawn later */ } } }
+      if (this.life && this.life.grid && AS.Life.sheetFor) {
+        const near = this._ahead || (this._ahead = []); near.length = 0;
+        for (const o of this.life.grid.query(cx, cy, r, near)) if (!o.dead && (o.kind || o.critter)) { try { F.want(AS.Life.sheetFor(o), o.a || 0); } catch (e) { /* drawn later */ } }
+      }
+      const near = (o) => { const dx = o.x - cx, dy = o.y - cy; return dx * dx + dy * dy < r2; };
+      for (const b of this.buildings) if (b.sheet && b.sheet.left > 0 && near(b)) F.want(b.sheet, b.angle || b.aim || 0);
+      for (const sc of this.scenery || []) if (sc.sheet && sc.sheet.left > 0 && near(sc)) F.want(sc.sheet, sc.angle || 0);
+      // the dragons above all (they fly fast and turn constantly): rivals, then the player's
+      if (AS.DragonArt && AS.DragonArt.rig) for (let i = this.dragons.length - 1; i >= -1; i--) {
+        const d = i >= 0 ? this.dragons[i] : this.player; if (!d || (i >= 0 && d === this.player)) continue;
+        const st = d.drawState || d, rg = AS.DragonArt.rig(st.fk, st.scale);
+        if (d.riderSheet && d.riderSheet.left > 0) F.want(d.riderSheet, d.angle || 0);
+        if (rg.headOpen.left > 0) F.want(rg.headOpen, d.angle || 0);
+        for (let k = rg.sheets.length - 1; k >= 0; k--) if (rg.sheets[k].left > 0) F.want(rg.sheets[k], d.angle || 0);
+      }
+      F.fill(0); // hand any new work to the forge workers straight away
     }
 
     /* ================= rendering hooks ================= */
@@ -405,7 +442,9 @@
     }
     for (const b of m.bridges || []) clearings.push({ x: b.x, y: b.y, r: 120 });
     // a map may add its own farmland and glades on top of the generated ones
-    const T = new AS.RealmTerrain(world, Object.assign({}, m, { zones, fields: fields.concat(m.fields || []), clearings: clearings.concat(m.clearings || []) }));
+    const targ = Object.assign({}, m, { zones, fields: fields.concat(m.fields || []), clearings: clearings.concat(m.clearings || []) });
+    const T = new AS.RealmTerrain(world, targ);
+    T._args = { world, map: targ }; // the shading workers rebuild the same terrain from these
     for (const b of m.bridges || []) {
       const a = b.a || 0, L = 150;
       T.bridges.push({ x0: b.x - Math.cos(a) * L, y0: b.y - Math.sin(a) * L, x1: b.x + Math.cos(a) * L, y1: b.y + Math.sin(a) * L, w: 24, a, site: b.site });

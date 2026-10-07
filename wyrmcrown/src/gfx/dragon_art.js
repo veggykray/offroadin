@@ -632,6 +632,23 @@
     },
   };
 
+  /* the model of one segment of a rig: o = { fk, scale, i } (i = chain index or 'headopen') */
+  function segModel(o) {
+    const fk = o.fk, scale = o.scale || 1;
+    const lk = LOOKS[fk] || LOOKS.human, K = KINDS[fk] || Wyrm, chain = CHAINS[fk] || CHAIN;
+    const sc = (m) => { m.scale = (m.scale || 1) * scale; return finish(m, lk); };
+    if (o.i === 'headopen') return sc(K.head(lk, true));
+    const n = chain[o.i];
+    if (n.k === 'head') return sc(K.head(lk, false));
+    if (n.k === 'neck') { let ni = 0; for (let j = 0; j <= o.i; j++) if (chain[j].k === 'neck') ni++; return sc(K.neck(lk, n.w, ni)); }
+    if (n.k === 'chest') return sc(K.chest(lk));
+    if (n.k === 'hips') return sc(K.hips(lk));
+    if (n.k === 'tail') return sc(K.tail(lk, n.w, n.L));
+    return sc(K.tip(lk));
+  }
+  AS.Models = AS.Models || {};
+  AS.Models.drg_seg = (pal, o) => segModel(o && o.fk ? o : { fk: 'human', scale: 1, i: 0 });
+
   const rigCache = new Map();
   function rig(fk, scale) {
     scale = scale || 1;
@@ -640,18 +657,9 @@
     if (r) return r;
     const lk = LOOKS[fk] || LOOKS.human, K = KINDS[fk] || Wyrm, chain = CHAINS[fk] || CHAIN;
     const F = AS.Forge, D = 32;
-    const sc = (m) => { m.scale = (m.scale || 1) * scale; return finish(m, lk); };
-    let neckI = 0;
-    const sheets = chain.map((n, i) => {
-      const id = 'drg2:' + key + ':' + i;
-      if (n.k === 'head') return F.sheet(id, () => sc(K.head(lk, false)), D, 1);
-      if (n.k === 'neck') { const ni = ++neckI; return F.sheet(id, () => sc(K.neck(lk, n.w, ni)), D, 1); }
-      if (n.k === 'chest') return F.sheet(id, () => sc(K.chest(lk)), D, 1);
-      if (n.k === 'hips') return F.sheet(id, () => sc(K.hips(lk)), D, 1);
-      if (n.k === 'tail') return F.sheet(id, () => sc(K.tail(lk, n.w, n.L)), D, 1);
-      return F.sheet(id, () => sc(K.tip(lk)), D, 1);
-    });
-    const headOpen = F.sheet('drg2:' + key + ':headopen', () => sc(K.head(lk, true)), D, 1);
+    // each segment's model comes from a recipe (drg_seg below), so the forge workers can draw it
+    const sheets = chain.map((n, i) => F.sheet('drg2:' + key + ':' + i, F.recipe('drg_seg', {}, { fk, scale, i }), D, 1));
+    const headOpen = F.sheet('drg2:' + key + ':headopen', F.recipe('drg_seg', {}, { fk, scale, i: 'headopen' }), D, 1);
     r = { lk, sheets, headOpen, scale, chain: chain.map((n) => n.d * scale) };
     rigCache.set(key, r);
     return r;
@@ -754,7 +762,8 @@
         if (nd.inv > 0.02) {
           // the pale underside, in shadow
           let f = shd.__belly;
-          if (!f) f = shd.__belly = shd.frames[0].map((im) => { const c = AS.Forge.canvas(im.width, im.height), x2 = c.getContext('2d'); x2.drawImage(im, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = belly; x2.fillRect(0, 0, c.width, c.height); return c; });
+          if (!f) f = shd.__belly = [];
+          if (!f[di]) { const c = AS.Forge.canvas(img.width, img.height), x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = belly; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
           ctx.globalAlpha = nd.inv * 0.36; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
           ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = nd.inv * 0.2; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
         }
