@@ -15,6 +15,9 @@ class Server(http.server.ThreadingHTTPServer):
     daemon_threads=True
 
 class Handler(http.server.SimpleHTTPRequestHandler):
+    # Windows can map .js to text/plain in the registry; browsers refuse to start
+    # worker scripts (terrain / sprite forging) that are not served as JavaScript
+    extensions_map={**http.server.SimpleHTTPRequestHandler.extensions_map,'.js':'text/javascript','.mjs':'text/javascript'}
     def log_message(self,*args): pass
     def end_headers(self):
         if getattr(self,'_accept_ranges',False):self.send_header('Accept-Ranges','bytes')

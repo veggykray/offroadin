@@ -365,7 +365,7 @@
       const used = performance.now() - t0;
       if ((did || !force) && used + (sh.fcost || sh.cost || 2) > budget) break;
       const a = performance.now();
-      if (!step(sh)) continue;
+      if (!step(sh)) { if (sh.left > 0) break; continue; } // (what is left is with a worker)
       const c = performance.now() - a;
       sh.fcost = sh.fcost ? sh.fcost * 0.7 + c * 0.3 : c;
       did++;
@@ -392,7 +392,7 @@
       try {
         const w = new Worker(url); w.busy = 0;
         w.onmessage = (e) => done(e.data, w);
-        w.onerror = (e) => { e.preventDefault && e.preventDefault(); w.broken = true; };
+        w.onerror = (e) => { e.preventDefault && e.preventDefault(); drop(w); };
         pool.wk.push(w);
       } catch (e) { break; }
     }
@@ -443,12 +443,18 @@
           w.postMessage({ type: 'frame', id, key: sh.key, recipe: sh.recipe, res: sh.res, angle: (d / sh.dirs) * U.TAU + sh.angle0, anim: sh.anims > 1 ? a / sh.anims : 0, shadow: a === 0, blur: sh.res >= 2 ? sh.res * 0.9 : 0 });
         } catch (e) { sh.noWorker = true; continue; } // arguments that cannot be cloned: forged here instead
         sh.fly.add(fid); w.busy++;
-        pool.jobs.set(id, { sh, d, a, fid });
+        pool.jobs.set(id, { sh, d, a, fid, w });
       }
     }
   }
+  // a worker that failed: its frames go back to the page (forged on first draw / by fill)
+  function drop(w) {
+    w.broken = true;
+    for (const [id, j] of pool.jobs) if (j.w === w) { pool.jobs.delete(id); j.sh.fly.delete(j.fid); }
+    w.busy = 0;
+  }
   function done(m, w) {
-    if (m.type === 'ready') { if (!m.ok) w.broken = true; return; }
+    if (m.type === 'ready') { if (!m.ok) drop(w); return; }
     const j = pool.jobs.get(m.id); if (!j) return;
     pool.jobs.delete(m.id); w.busy--;
     const sh = j.sh; sh.fly.delete(j.fid);
