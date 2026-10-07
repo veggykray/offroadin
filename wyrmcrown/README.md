@@ -17,6 +17,16 @@ Open `wyrmcrown/index.html` in Chrome, Edge or Firefox. Double-clicking works
 Click once anywhere to start the sound (browsers keep audio off until you
 interact with the page).
 
+## The world
+
+Each realm looks like its own country: hedged farmland with hamlets, orchards,
+stone circles and old battlefields; an ancient forest of glades, giant
+mushrooms and moss-grown ruins; a frozen north of rune stones, ice formations
+and ships locked in the ice; a blighted marsh of graveyards, gallows and bog
+pools. Each has its own beasts — great stags and aurochs, glimmerdeer and
+tree shamblers, frosthulks and snow stalkers, bloatlings and gravehounds —
+its own giants and trolls, and somewhere in the far wilds, one colossus.
+
 ## Controls
 
 | Key | Action |

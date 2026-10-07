@@ -79,7 +79,7 @@
     snowstalker: { name: 'Snow Stalker', hp: 95, r: 8, speed: 104, armor: 0, melee: { dmg: 12, rate: 1.2, range: 15 }, hc: 7, gold: 8, gen: 'bst_snowstalker', animal: true },
     icecrawler: { name: 'Ice Crawler', hp: 150, r: 9, speed: 46, armor: 3, melee: { dmg: 11, rate: 0.9, range: 15 }, hc: 5, gold: 8, gen: 'bst_icecrawler', animal: true },
     gravehound: { name: 'Gravehound', hp: 42, r: 6, speed: 92, armor: 0, melee: { dmg: 7, rate: 1.4, range: 13 }, hc: 5, gold: 3, gen: 'bst_gravehound', animal: true, light: { col: '#93ff6a', r: 12, a: 0.3 } },
-    carrioncrawler: { name: 'Carrion Crawler', hp: 140, r: 9, speed: 40, armor: 2, melee: { dmg: 10, rate: 0.9, range: 15 }, hc: 5, gold: 7, gen: 'bst_carrioncrawler', animal: true },
+    carrioncrawler: { name: 'Carrion Crawler', hp: 140, r: 9, speed: 40, armor: 2, melee: { dmg: 10, rate: 0.9, range: 15 }, hc: 5, gold: 7, gen: 'bst_carrioncrawler', animal: true, light: { col: '#b4ff5a', r: 12, a: 0.3 } },
     plagueboar: { name: 'Plague Boar', hp: 64, r: 7, speed: 72, armor: 0, melee: { dmg: 9, rate: 1.1, range: 14 }, hc: 6, gold: 4, gen: 'bst_plagueboar', animal: true },
     // colossi: landmark-sized creatures that wander the far wilds and only fight when they are hurt
     titan: { name: 'Wandering Titan', hp: 3200, r: 28, speed: 20, armor: 6, melee: { dmg: 90, rate: 0.35, range: 44, splash: 44 }, throwRock: { range: 420, rate: 0.2 }, hc: 34, gold: 300, gen: 'col_titan', big: true, passive: true, colossus: true, light: { col: '#ffb060', r: 30, a: 0.3 } },

@@ -94,7 +94,9 @@
       const fk = this.faction ? this.faction.key : null;
       const pal = this.faction ? this.faction.def.pal : (this.palOverride || AS.Data.pal.neutral);
       const opt = { level: this.level, v: this.v };
-      const gen = this.gen || (fk ? fk + '_' + def.gen : def.gen);
+      let gen = this.gen || (fk ? fk + '_' + def.gen : def.gen);
+      // a second family of dwellings (manor, hovel, workshop, inn) when the kingdom has one
+      if (this.kind === 'house' && fk && this.v >= 4) { if (AS.Models[fk + '_house2']) { gen = fk + '_house2'; opt.v = this.v - 4; } else opt.v = this.v % 4; }
       this.sheet = sheetFor(gen, pal, opt, def.dirs || 1, def.anims || (this.kind === 'magetower' || this.kind === 'wardstone' ? 4 : 1));
       this.dirs = this.sheet.dirs;
     }

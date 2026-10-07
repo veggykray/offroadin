@@ -35,7 +35,7 @@
     frosthulk: { gen: 'bst_frosthulk', food: 0, hp: 260, speed: 18, run: 70, r: 15, col: '#8a8070', col2: '#e8e4dc', len: 26, sfx: null, wild: true, v: 3, nosnatch: true },
     woollytusker: { gen: 'bst_woollytusker', food: 0, hp: 240, speed: 20, run: 80, r: 14, col: '#5a3a28', col2: '#e8dcc0', len: 24, sfx: null, wild: true, v: 3, nosnatch: true },
     bloatling: { gen: 'bst_bloatling', food: 0, hp: 180, speed: 14, run: 40, r: 12, col: '#5a4a60', col2: '#c8ff60', len: 18, sfx: null, wild: true, v: 3, nosnatch: true, light: { col: '#c8ff60', r: 14, a: 0.25 } },
-    stiltstrider: { gen: 'bst_stiltstrider', food: 0, hp: 160, speed: 26, run: 110, r: 10, col: '#4a4440', col2: '#8a8470', len: 20, sfx: null, wild: true, v: 3, nosnatch: true },
+    stiltstrider: { gen: 'bst_stiltstrider', food: 0, hp: 160, speed: 26, run: 110, r: 10, col: '#4a4440', col2: '#8a8470', len: 20, sfx: null, wild: true, v: 3, nosnatch: true, light: { col: '#93ff6a', r: 12, a: 0.28 } },
   });
   // tiny wildlife: hares, foxes, rats; not food, just life in the grass
   const CRITTERS = {

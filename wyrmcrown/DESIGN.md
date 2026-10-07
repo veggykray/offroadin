@@ -34,10 +34,14 @@ and ALIEN STRIKE still passes its own test suite.
   - Buildings, court actions, upgrades, troops and difficulty.
   - Neutral site kinds.
 - **`src/gfx/`**: art.
-  - `realm_terrain`: biomes, rivers, lakes, islands, ridges, forests, roads, decor.
+  - `realm_terrain`: biomes, rivers, lakes, islands, ridges, forests, roads, decor, ground detail.
   - `dragon_art`: the segmented dragon and rider rig with live wings; four dragon kinds (see below).
-  - Model sets: nature, the four realms, units, sites.
-  - Realm decals: plazas, fields, pastures, lanes, roads.
+  - Model sets: nature, the four realms, units, sites; the beasts of each
+    land (`models_beasts`, `models_beasts2`), giants, trolls, ogres and the
+    colossi (`models_giants`), landmarks and ruins (`models_landmarks_realm`),
+    extra town buildings (`models_town_extra`).
+  - Realm decals: plazas, streets, fields, pastures, roads, drifts, rubble,
+    battlefields, bone fields, fairy rings, pools.
 - **`src/game/`**: simulation.
   - `realm`: the match. It owns everything and is the renderer's game object.
   - `dragon`: the flight model, vitals, rig layout and drawing.
@@ -49,6 +53,7 @@ and ALIEN STRIKE still passes its own test suite.
   - `sites`: neutral objectives and their capture.
   - `powerups`: runes and spells.
   - `advisor`: "what to do next".
+  - `scenery`: the places of the realm (see "The look of the realm").
   - `ai`: the strategist and the pilot.
   - `campaign`: unlocks and map tiers.
 - **`src/audio/realm_audio.js`**: region-mixed ambience, creature calls, wind and music direction.
@@ -93,10 +98,19 @@ The dragon always flies forward; it never hovers like a helicopter.
 - **Loop the loop:** a double-tap of **Space** flies a vertical circle along
   the heading in 1.25 s: up, over on its back (drifting back along its own
   line, so a chaser overshoots) and out on the same heading. For most of it
-  the dragon can't be targeted or damaged. 3.5 s cooldown, 6 energy. Drawn by
-  tilting the top-down dragon about its chest with one canvas transform; its
-  on-screen area never drops below a third, so the moments when the tilted
-  camera sees the wings edge-on flip past instead of shrinking to a line.
+  the dragon can't be targeted or damaged. 3.5 s cooldown, 6 energy.
+  It is drawn as an arcade loop built for this camera, not a rigid rotation:
+  every spine node sits at its own point on a vertical ellipse along the
+  heading (the neck a little ahead, the tail trailing, so the body curves
+  round the arc); each segment's sprite heading is the screen direction of
+  its travel, so the body swings up the screen on the climb, flips over the
+  top (tinted with the belly colour, wings drawn above it, rider hidden
+  beneath) and points down the screen on the dive; length is never
+  foreshortened below 0.55; the dragon grows about 12% as it rises toward the
+  camera; when the heading runs up or down the screen the loop leans sideways
+  so it never flattens to a line; the ground shadow stays under the body and
+  fades as the dragon climbs away from it. Only 30% of the climb is gameplay
+  height, so the camera does not chase the dragon up and swallow the rise.
   Rival dragons loop now and then when a rival dragon is hitting them
   (Sylvara most often).
 - **Landing:** flaring low and slow over open ground settles the dragon onto
@@ -236,6 +250,75 @@ Herds of livestock and wild animals, villagers and farmers, and flocks of
 birds. They live in their own spatial grid with level-of-detail updates, so
 hundreds of creatures cost little. Animals flee dragons and breath, people
 run for cover, and stolen herds change hands.
+
+Each land has its own ecology, placed by seed in open country away from
+towns, sites and roads:
+
+| Land | Herds (food) | Too big to snatch | Predators (lairs, team wild) | Critters |
+| --- | --- | --- | --- | --- |
+| Aldermere / heartland | great stags, aurochs, deer, boar, horses | — | moorhounds, bears | hares, foxes |
+| Sylvara | glimmerdeer, marsh croakers | elderhorns | spindle lurkers, great beetles, tree shamblers | hares, foxes |
+| Hrimgard | rime elk, goats | frosthulks, woolly tuskers | snow stalkers, ice crawlers | snow hares |
+| Morgrave | — | bloatlings, stilt striders | gravehounds, carrion crawlers, plague boars | rats |
+
+Predators hold a lair (a bone-strewn patch) and chase whatever comes within
+their leash, like the guardians of a site. Giants, trolls and ogres keep
+their stats everywhere but take the look of the land they haunt (hill,
+frost, wood and corpse giants; cave, moss, frost and blight trolls; hill and
+swamp ogres), and every monster rolls one of three visible variants from its
+position. One colossus per land (a wandering titan, the spider queen, the ice
+behemoth, the great worm) roams the far wilds; it is passive until hurt.
+Troop sprite sheets are forged on first sight, so none of this slows loading.
+
+## The look of the realm
+
+Everything is judged from the gameplay camera. The rules, in priority order:
+silhouette, value contrast against the ground, size, shape, visible geometry,
+then material detail.
+
+- **Relief** (`realm_terrain.field`): rolling hills over the farmland and
+  heartland, gentle swells under the forest, craggy broken ground in the
+  north and the blight, on top of the broad landscape and the authored
+  ridges; the valleys still ease down to the water. Navigation ignores
+  terrace steps, so relief is free.
+- **Ground detail** (`colorize`): flower meadows and dry patches, trodden
+  verges along the roads and mud along the banks; moss cushions, dark loam
+  and luminous ferns; snow with rock showing through on the high ground,
+  sheets of ice in the hollows and wind-scoured drifts; dead yellow grass,
+  bone chips, fine cracked earth in patches and bog pools in the low ground;
+  leaf litter under every canopy; lily pads on elven water. Glades are opened
+  in the woods (most in Sylvara), and forest edges are scrubby.
+- **Decor** (`stampDecorGen`): shore boulders, reeds, drifts banked against
+  northern rocks and trees, bushes at forest edges.
+- **Places** (`scenery.js`): composed scenes, two to four of each kind per
+  10k × 10k, placed by seed and kept clear of towns, sites, roads and water.
+  Aldermere: hamlets, orchards, stone circles, ruined towers, battlefields,
+  roadside shrines, deserted camps, burned farms, a colossus statue, a
+  broken statue, a dragon skeleton, old foundations. Sylvara: the great
+  tree, mushroom glades with fairy rings, moss ruins, a forest temple, forest
+  pools, a colossal stump. Hrimgard: rune stones with braziers, a ship
+  frozen into a lake, ice formations, longhouse ruins, frozen travellers, a
+  frozen waterfall, pass markers. Morgrave: graveyards with mausoleums,
+  gallows, dark obelisks, a ruined chapel, colossal dead trees, a giant
+  skull, sinkholes, bogs, plague carts. Props are drawn in the normal
+  depth-sorted pass; the biggest are solid ground for landing.
+- **Towns** (`faction.plan`): a main street from the square to the gate, a
+  crooked ring street, side lanes to the walls and two courtyards, with
+  house slots along them (cramped by the main street, looser by the walls);
+  a `streets` decal with cart ruts and cobbled junctions; banners, braziers
+  and statues round the keep; hedgerows or fences round the fields, orchard
+  rows, hay and a cart at every farm. Two house families per kingdom.
+- **Destruction** (`building.js`): hurt buildings show soot and cracks;
+  burning ones throw flames and embers; a fallen one bursts into masonry
+  and roof tiles and leaves a permanent `rubble` decal (wall stubs in the
+  faction's stone, charred beams, a heap of broken masonry) that smoulders
+  for a few seconds.
+- **Breath** (`combat.js`): a hot core, rolling flame, whirling embers,
+  smoke rising behind the stream, sparks where it meets the ground.
+- **Weather** (`weather.js`): rain and storms with lightning; snow that
+  streaks sideways when the wind blows across Hrimgard; ash and motes; mist
+  banks that drift over the blight's bogs and the forest glades; cloud
+  shadows and distance haze from the engine's atmosphere layer.
 
 ## Maps
 

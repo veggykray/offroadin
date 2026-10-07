@@ -81,6 +81,7 @@
       if (AS.Powerups) AS.Powerups.init(this);
       // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
       if (AS.Scenery) AS.Scenery.init(this);
+      this.warmQueue();
       // weather drifts over the realm (drawn through the renderer's weather hook)
       if (AS.Weather) { this.weather = new AS.Weather(this); this.hazards = { drawWeather: (ctx, ox, oy, vw, vh, R) => this.weather.draw(ctx, ox, oy, vw, vh, R) }; }
       // explored fog for the war map
@@ -232,6 +233,7 @@
       if (AS.Life) AS.Life.update(this, dt);
       if (AS.Powerups) AS.Powerups.update(this, dt);
       if (this.weather) this.weather.update(dt);
+      this.warmStep(dt);
       AS.Proj.update(this, dt);
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }
@@ -316,6 +318,34 @@
       if (this.ended) return;
       this.ended = true;
       if (this.onEnd) this.onEnd(this.result || { won: false });
+    }
+
+    /* ================= sprite warm-up =================
+     * Creature sheets are forged on first sight; to keep that from stalling a
+     * frame in the thick of things, the ones not yet built are forged one at a
+     * time during quiet frames after the match starts, nearest the player first. */
+    warmQueue() {
+      const p = this.player, q = this.warm = [];
+      const seen = new Set();
+      for (const t of this.troops) if (t._sheetFn && !t._sheet) { const k = t.role + ':' + t.team + ':' + (t.v || 0); if (seen.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(t.x - p.x, t.y - p.y) : 0, run: () => { t.sheet; } }); }
+      if (this.life && AS.Life) {
+        for (const o of this.life.animals.concat(this.life.critters || [])) { const k = 'a:' + o.kind + ':' + (o.v || 0); if (seen.has(k)) continue; seen.add(k); q.push({ d: p ? Math.hypot(o.x - p.x, o.y - p.y) : 0, run: () => { AS.Life.sheetFor(o); } }); }
+      }
+      q.sort((a, b) => a.d - b.d);
+      this.warmT = 1.5;
+    }
+    warmStep(dt) {
+      const q = this.warm;
+      if (!q || !q.length) return;
+      this.warmT -= dt;
+      if (this.warmT > 0) return;
+      // only when the frame has room, and never two in a row; a machine that never
+      // has a quiet frame still gets its sheets, just more slowly
+      if (AS.App && AS.App.frameMs > 14 && (this.warmWait = (this.warmWait || 0) + 0.3) < 4) { this.warmT = 0.3; return; }
+      this.warmWait = 0;
+      const job = q.shift();
+      try { job.run(); } catch (e) { /* a missing model falls back on first draw */ }
+      this.warmT = AS.App && AS.App.frameMs > 14 ? 1.5 : 0.45;
     }
 
     /* ================= rendering hooks ================= */

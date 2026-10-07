@@ -160,7 +160,11 @@
       let s = null, best = Infinity;
       for (const f of free) { const v = score(f); if (v < best) { best = v; s = f; } }
       if (s.used && !s.used.alive) this.counts.house--;
-      return this.place('house', s, { instant, buildTime: 6 });
+      // eight kinds of dwelling when the kingdom has its second house family; the
+      // grander ones stand nearer the square, the hovels out by the walls
+      const far = Math.hypot(s.x - c.x, s.y - c.y) > 300, roll = Math.random();
+      const v = AS.Models[this.key + '_house2'] ? (roll < 0.5 ? (Math.random() * 4) | 0 : far ? (roll < 0.75 ? 5 : [4, 6, 7][(Math.random() * 3) | 0]) : (roll < 0.7 ? 4 : [6, 7, 7][(Math.random() * 3) | 0])) : (Math.random() * 4) | 0;
+      return this.place('house', s, { instant, buildTime: 6, v });
     }
     onFarm(B) {
       // fields around the farmstead and a pasture with the first animals
@@ -212,6 +216,9 @@
       if (fk !== 'elf') { Sc.add(g, 'prop_haystack', B.x + Math.cos(ang0 + 2.6) * 52, B.y + Math.sin(ang0 + 2.6) * 46, {}); Sc.add(g, 'prop_haystack', B.x + Math.cos(ang0 + 2.9) * 70, B.y + Math.sin(ang0 + 2.9) * 60, {}); }
       Sc.add(g, 'prop_cart', B.x + Math.cos(ang0 - 2.5) * 50, B.y + Math.sin(ang0 - 2.5) * 44, { angle: ang0 + 0.4, dirs: 16, pal: this.def.pal });
       Sc.add(g, 'prop_logs', B.x + Math.cos(ang0 + Math.PI) * 44, B.y + Math.sin(ang0 + Math.PI) * 38, {});
+      // a shed and a granary beside the farmhouse
+      Sc.add(g, fk + '_shed', B.x + Math.cos(ang0 + 1.9) * 58, B.y + Math.sin(ang0 + 1.9) * 50, { pal: this.def.pal, solid: true });
+      Sc.add(g, fk + '_granary', B.x + Math.cos(ang0 - 1.6) * 60, B.y + Math.sin(ang0 - 1.6) * 52, { pal: this.def.pal, solid: true });
     }
     herdFor(kind) { return this.herds[kind] || (this.pastures && this.pastures[0]) || { x: this.pasture.x, y: this.pasture.y, r: 100, owner: this.key, k: kind }; }
     pastureAt(x, y) {

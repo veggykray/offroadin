@@ -299,12 +299,11 @@
       if (!kinds.length) continue;
       const want = Math.max(1, Math.round(2.2 * area));
       let made = 0, tries = 0;
-      while (made < want && tries < 120) {
+      while (made < want && tries < 260) {
         tries++;
         const x = rng.range(300, g.map.w - 300), y = rng.range(300, g.map.h - 300);
-        if (c.biome(x, y) !== bk || !c.clear(x, y, 420) || c.road(x, y) < 160 || c.water(x, y) < 50 || c.mount(x, y) > 0.45 || !c.T.groundPassable(x, y)) continue;
-        for (const F of g.factionList) if (Math.hypot(F.townPos.x - x, F.townPos.y - y) < 1500) { tries += 100; break; }
-        if (tries >= 220) break;
+        if (c.biome(x, y) !== bk || !c.clear(x, y, 360) || c.road(x, y) < 120 || c.water(x, y) < 50 || c.mount(x, y) > 0.5 || !c.T.groundPassable(x, y)) continue;
+        if (g.factionList.some((F) => Math.hypot(F.townPos.x - x, F.townPos.y - y) < 1350)) continue;
         const [k, n] = kinds[(rng.next() * kinds.length) | 0];
         if (!spawnWild(g, k, x, y, n, 150)) continue;
         c.T.addDecal('bonefield', x, y, 50, null, { static: true, seed: (x + y) | 0 });
