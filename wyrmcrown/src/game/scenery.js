@@ -148,7 +148,7 @@
     { id: 'burnedfarm', biomes: ['human', 'neutral'], n: 1, r: 80,
       ok: (c, x, y) => c.water(x, y) > 90 && c.road(x, y) > 70 && c.road(x, y) < 400 && c.flat(x, y, 60),
       build: (c, x, y, P) => {
-        if (c.has('lm_burned_farm')) P('lm_burned_farm', x, y, { solid: true }); else P('site_ruins', x, y, { solid: true });
+        if (c.has('lm_burned_farm')) P('lm_burned_farm', x, y, { solid: true, light: { col: '#ff7a30', r: 14, a: 0.22, z: 2, pulse: true } }); else P('site_ruins', x, y, { solid: true });
         c.T.addDecal('scorch', x, y + 4, 42, null, { static: true, seed: 3 });
         c.T.addDecal('field', x + 90, y + 40, 50, null, { static: true, fw: 70, fh: 44, rot: 0.3, crop: 'plough', seed: (x + y) | 0 });
         fence(c, P, x - 70, y + 30, 50, 1.2, 'prop_fence');
@@ -180,10 +180,10 @@
       } },
     { id: 'mossruin', biomes: ['elf'], n: 2, r: 100,
       ok: (c, x, y) => c.water(x, y) > 80 && c.road(x, y) > 90 && c.flat(x, y, 60),
-      build: (c, x, y, P) => { if (c.has('lm_moss_ruin')) P('lm_moss_ruin', x, y, { solid: true }); else P('site_ruins', x, y, { solid: true }); if (c.has('lm_statue_forgotten')) P('lm_statue_forgotten', x + 60, y + 30, {}); P('mushrooms_glow', x - 40, y + 30, { opt: { seed: 2 } }); } },
+      build: (c, x, y, P) => { if (c.has('lm_moss_ruin')) P('lm_moss_ruin', x, y, { solid: true }); else P('site_ruins', x, y, { solid: true }); if (c.has('lm_statue_forgotten')) P('lm_statue_forgotten', x + 60, y + 30, { light: { col: '#7affd8', r: 14, a: 0.3, z: 36 } }); P('mushrooms_glow', x - 40, y + 30, { opt: { seed: 2 } }); } },
     { id: 'foresttemple', biomes: ['elf'], n: 1, r: 110,
       ok: (c, x, y) => c.has('lm_forest_temple') && c.water(x, y) > 80 && c.road(x, y) > 90 && c.flat(x, y, 60),
-      build: (c, x, y, P) => { P('lm_forest_temple', x, y, { solid: true, light: { col: '#7affd8', r: 60, a: 0.3, z: 18, pulse: true } }); for (let i = 0; i < 2; i++) if (c.has('lm_statue_forgotten')) P('lm_statue_forgotten', x + (i ? 70 : -70), y + 40, {}); } },
+      build: (c, x, y, P) => { P('lm_forest_temple', x, y, { solid: true, light: { col: '#7affd8', r: 60, a: 0.3, z: 18, pulse: true } }); for (let i = 0; i < 2; i++) if (c.has('lm_statue_forgotten')) P('lm_statue_forgotten', x + (i ? 70 : -70), y + 40, { light: { col: '#7affd8', r: 14, a: 0.3, z: 36 } }); } },
     { id: 'forestpool', biomes: ['elf'], n: 3, r: 70,
       ok: (c, x, y) => c.water(x, y) > 100 && c.road(x, y) > 70 && c.flat(x, y, 45),
       build: (c, x, y, P) => {
@@ -199,7 +199,7 @@
     { id: 'runestone', biomes: ['ice'], n: 3, r: 60,
       ok: (c, x, y) => c.water(x, y) > 60 && c.road(x, y) > 60 && c.flat(x, y, 40),
       build: (c, x, y, P) => {
-        if (c.has('lm_carved_stone')) P('lm_carved_stone', x, y, { solid: true }); else P('rock_snow', x, y, { opt: { seed: 1 }, scale: 2 });
+        if (c.has('lm_carved_stone')) P('lm_carved_stone', x, y, { solid: true, light: { col: '#8ad8ff', r: 16, a: 0.25, z: 20, pulse: true } }); else P('rock_snow', x, y, { opt: { seed: 1 }, scale: 2 });
         const br = c.has('lm_brazier_huge') ? 'lm_brazier_huge' : 'prop_campfire';
         P(br, x - 34, y + 24, { anims: 4, light: { col: '#8ad8ff', r: 44, a: 0.5, z: 12, pulse: true } });
         P(br, x + 34, y + 24, { anims: 4, light: { col: '#8ad8ff', r: 44, a: 0.5, z: 12, pulse: true } });
@@ -236,11 +236,11 @@
         if (c.has('lm_mausoleum')) P('lm_mausoleum', x, y - 30, { solid: true, light: { col: '#93ff6a', r: 40, a: 0.35, z: 10, pulse: true } });
         for (let i = 0; i < 7; i++) { const a = rng.next() * TAU, r = 30 + rng.next() * 60; P('prop_gravestone', x + Math.cos(a) * r, y + 10 + Math.sin(a) * r * 0.7, { opt: { v: i % 4 } }); }
         P('tree_dead', x + 80, y - 20, { opt: { seed: 2 } }); P('tree_dead', x - 84, y + 30, { opt: { seed: 5 } });
-        if (c.has('lm_bone_totem')) P('lm_bone_totem', x + 50, y + 60, {});
+        if (c.has('lm_bone_totem')) P('lm_bone_totem', x + 50, y + 60, { light: { col: '#93ff6a', r: 24, a: 0.3, z: 20, pulse: true } });
       } },
     { id: 'gallows', biomes: ['undead'], n: 2, r: 40,
       ok: (c, x, y) => c.road(x, y) > 36 && c.road(x, y) < 70 && c.water(x, y) > 60,
-      build: (c, x, y, P) => { if (c.has('lm_gallows')) P('lm_gallows', x, y, {}); else P('prop_signpost', x, y, {}); P('bones_pile', x + 16, y + 12, { opt: { seed: 4 } }); } },
+      build: (c, x, y, P) => { if (c.has('lm_gallows')) P('lm_gallows', x, y, { light: { col: '#93ff6a', r: 12, a: 0.25, z: 14, pulse: true } }); else P('prop_signpost', x, y, {}); P('bones_pile', x + 16, y + 12, { opt: { seed: 4 } }); } },
     { id: 'obelisk', biomes: ['undead'], n: 2, r: 60,
       ok: (c, x, y) => c.water(x, y) > 70 && c.road(x, y) > 80 && c.flat(x, y, 40),
       build: (c, x, y, P) => { if (c.has('lm_obelisk_dark')) P('lm_obelisk_dark', x, y, { anims: 4, solid: true, light: { col: '#93ff6a', r: 70, a: 0.4, z: 30, pulse: true } }); else P('site_shrine', x, y, { solid: true }); c.T.addDecal('runecircle', x, y + 4, 36, null, { static: true, seed: (x + y) | 0 }); } },
@@ -249,10 +249,10 @@
       build: (c, x, y, P) => { if (c.has('lm_ruined_chapel')) P('lm_ruined_chapel', x, y, { solid: true }); else P('site_ruins', x, y, { solid: true }); for (let i = 0; i < 4; i++) P('prop_gravestone', x - 60 + i * 20, y + 50, { opt: { v: i } }); } },
     { id: 'deadtree', biomes: ['undead'], n: 2, r: 80,
       ok: (c, x, y) => c.has('lm_dead_colossal_tree') && c.water(x, y) > 60 && c.road(x, y) > 80,
-      build: (c, x, y, P) => { P('lm_dead_colossal_tree', x, y, { solid: true }); P('bones_pile', x + 24, y + 20, { opt: { seed: 1 } }); P('mushrooms_glow', x - 30, y + 16, { opt: { seed: 3 } }); } },
+      build: (c, x, y, P) => { P('lm_dead_colossal_tree', x, y, { solid: true, light: { col: '#93ff6a', r: 30, a: 0.3, z: 4, pulse: true } }); P('bones_pile', x + 24, y + 20, { opt: { seed: 1 } }); P('mushrooms_glow', x - 30, y + 16, { opt: { seed: 3 } }); } },
     { id: 'giantskull', biomes: ['undead', 'neutral'], n: 1, r: 80,
       ok: (c, x, y) => c.has('lm_giant_skull') && c.water(x, y) > 80 && c.road(x, y) > 90 && c.flat(x, y, 50),
-      build: (c, x, y, P) => { P('lm_giant_skull', x, y, { solid: true }); c.T.addDecal('bonefield', x, y, 70, null, { static: true, seed: (x * 5 + y) | 0 }); } },
+      build: (c, x, y, P) => { P('lm_giant_skull', x, y, { solid: true, light: { col: '#93ff6a', r: 40, a: 0.35, z: 12, pulse: true } }); c.T.addDecal('bonefield', x, y, 70, null, { static: true, seed: (x * 5 + y) | 0 }); } },
     { id: 'sinkhole', biomes: ['undead'], n: 2, r: 70,
       ok: (c, x, y) => c.water(x, y) > 80 && c.road(x, y) > 90 && c.flat(x, y, 50),
       build: (c, x, y, P) => { if (c.has('lm_sinkhole')) P('lm_sinkhole', x, y, { decor: true }); else c.T.addDecal('crater', x, y, 30, null, { static: true, seed: 2 }); P('rock_dark', x + 40, y + 10, { opt: { seed: 2 } }); } },
