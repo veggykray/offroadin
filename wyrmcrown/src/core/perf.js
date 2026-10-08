@@ -28,6 +28,16 @@
       });
     },
     reset() { n = 0; i = 0; last = 0; },
+    gpu() {
+      if (this._gpu) return this._gpu;
+      try {
+        const gl = document.createElement('canvas').getContext('webgl');
+        const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+        this._gpu = gl ? String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)).slice(0, 60) : 'no WebGL';
+        const lose = gl && gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+      } catch (e) { this._gpu = 'unknown'; }
+      return this._gpu;
+    },
     browser() {
       const u = navigator.userAgent;
       for (const [k, name] of [['Edg', 'Edge'], ['OPR', 'Opera'], ['Firefox', 'Firefox'], ['Chrome', 'Chrome'], ['Version', 'Safari']]) {
@@ -50,8 +60,23 @@
       const view = sorted.subarray(0, k); view.sort();
       return { avg: k ? s / k : 0, p99: k ? view[Math.min(k - 1, Math.floor(k * 0.99))] : 0, max: mx };
     },
+    /* the panel is composed into its own canvas twice a second and blitted every
+     * frame, so leaving it open costs almost nothing (redrawing ~30 lines of text
+     * each frame cost several ms on a GPU canvas, inflating what it measured) */
     draw(ctx, g) {
       if (!this.on || !n) return;
+      const R = AS.Renderer, now = performance.now();
+      if (!this._pc || now - this._pt > 500 || this._pw !== R.canvas.width) {
+        this._pt = now; this._pw = R.canvas.width;
+        this._pc = this._pc || document.createElement('canvas');
+        this.compose(this._pc, g);
+      }
+      const s = Math.max(1, Math.round((R.dpr || 1) * 10) / 10);
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(this._pc, R.canvas.width - this._pc.width - 10 * s, 10 * s);
+      ctx.restore();
+    },
+    compose(pc, g) {
       const R = AS.Renderer, F = AS.Forge, T = g && g.terrain;
       const fr = this.stat(gap, 240), wk = this.stat(work, 240), up = this.stat(upd, 240), rn = this.stat(ren, 240);
       let slow = 0, vslow = 0; for (let j = 0; j < n; j++) { if (gap[j] > 33.4) slow++; if (gap[j] > 50) vslow++; }
@@ -68,12 +93,13 @@
       L.push(['particles ' + AS.Particles.pool.active.length + '/' + AS.Particles.pool.capacity + '  projectiles ' + AS.Proj.pool.active.length + '/' + AS.Proj.pool.capacity]);
       if (T) {
         const busy = T._wk ? T._wk.reduce((s, w) => s + (w.busy || 0), 0) : 0;
-        L.push(['terrain: chunks ' + T.cache.size + '/' + T.maxCache + '  shading ' + busy + (T._wk ? '/' + T._wk.length + 'wk' : ' (main)') + '  on the spot ' + (T.syncN || 0)]);
+        L.push(['terrain: chunks ' + T.cache.size + '/' + T.maxCache + '  shading ' + busy + (T._wk ? '/' + T._wk.length + 'wk' : ' (main)') + '  built on the spot ' + (T.syncN || 0) + '  stand-ins ' + (T.standN || 0) + (T._old ? ' (rescaling)' : '')]);
       }
       if (F && F.stats) {
         const st = F.stats, wkr = F.pool.wk.length;
         L.push(['sprites: forging ' + F.pending.length + ' sheets  from workers ' + st.worker + (wkr ? ' (' + wkr + ')' : '')]);
-        L.push(['  on the spot ' + st.sync + ' (' + (st.syncMs / 1000).toFixed(1) + ' s)  stand-ins ' + st.stand]);
+        L.push(['  since start: forged on the spot ' + st.sync + ' (' + (st.syncMs / 1000).toFixed(1) + ' s) · stand-in draws ' + st.stand + ' (cumulative)']);
+        if (F.memory) { const mm = F.memory(); L.push(['  sprite images held: ' + mm.n + ' (' + (mm.bytes / 1048576).toFixed(0) + ' MB) in ' + mm.sheets + ' sheets']); }
       }
       // sound: is the mixer running, what music is playing, are effects firing
       const A = AS.Audio, M = AS.Music;
@@ -82,14 +108,32 @@
         L.push(['sound: ' + (A.ctx ? A.ctx.state : 'not started') + ' · music ' + md + ' · effects ' + (this.sfxN || 0) + (M && M.lastError ? ' · ERROR ' + M.lastError.message : ''), A.ctx && A.ctx.state === 'running' ? null : '#fc6']);
       }
       L.push(['view: ' + R.bufW + '×' + R.bufH + ' at ' + R.res.toFixed(2) + (R.resCap ? ' (lowered)' : '') + ' · ' + this.browser()]);
+      L.push(['canvas ' + R.canvas.width + '×' + R.canvas.height + ' (css ' + R.screenW + '×' + R.screenH + ', dpr ' + (window.devicePixelRatio || 1).toFixed(2) + ') · ' + ((R.canvas.width * R.canvas.height + R.bufW * R.bufH * 2) / 1e6).toFixed(1) + ' Mpx/frame']);
+      L.push(['GPU: ' + this.gpu(), /swiftshader|llvmpipe|software|basic render/i.test(this.gpu()) ? '#fc6' : null]);
+      // the render breakdown (AS.Prof): main-thread ms per frame by stage, slowest first
+      const P = AS.Prof && AS.Prof.report;
+      if (P) {
+        const sec = Object.entries(P.sec).filter(([k]) => k[0] !== '_').sort((a, b) => b[1] - a[1]);
+        L.push(['— per frame (ms), over ' + P.frames + ' frames —', '#9cf']);
+        for (let j = 0; j < sec.length; j += 2) L.push([sec.slice(j, j + 2).map(([k, v]) => (k + ' ').padEnd(20, '.') + ' ' + v.toFixed(1).padStart(5)).join('   ')]);
+        const kd = Object.entries(P.kinds).sort((a, b) => b[1] - a[1]);
+        if (kd.length) L.push(['objects: ' + kd.map(([k, v]) => k + ' ' + v.toFixed(1) + ' (' + Math.round(P.kindN[k]) + ')').join(' · ')]);
+        L.push(['sprite forging on the spot: ' + P.sec._forge.toFixed(1) + ' ms, ' + P.sec._forgeN.toFixed(2) + ' frames · stand-ins drawn now: ' + P.sec._stand.toFixed(1), P.sec._forge > 2 ? '#fc6' : null]);
+        L.push(['terrain: built on the spot ' + (P.sec._tsync * P.frames).toFixed(0) + ' · stand-in chunks ' + ((P.sec._tstand || 0) * P.frames).toFixed(0) + ' in the last ' + P.frames + ' frames']);
+        const B = AS.Prof.buckets;
+        L.push(['slow frames since open: >25 ' + B[25] + ' · >50 ' + B[50] + ' · >100 ' + B[100] + ' · >250 ' + B[250] + ' · >500 ' + B[500]]);
+        for (const sp of AS.Prof.spikes.slice(0, 3)) L.push(['  stall ' + sp.ms + ' ms: ' + sp.parts + (sp.forgedN ? ' · forged ' + sp.forgedN + ' (' + sp.forged + ' ms)' : '') + (sp.tsync ? ' · terrain ' + sp.tsync : ''), '#f99']);
+      }
       if (performance.memory) L.push(['heap ' + (performance.memory.usedJSHeapSize / 1048576).toFixed(0) + ' / ' + (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0) + ' MB']);
       L.push(['F3 hides', '#888']);
       // panel
-      const s = Math.max(1, Math.round((R.dpr || 1) * 10) / 10), lh = 14 * s, pad = 8 * s, w = 420 * s, gh = 46 * s;
-      const h = pad * 2 + L.length * lh + gh + 6 * s, x = R.canvas.width - w - 10 * s, y = 10 * s;
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const s = Math.max(1, Math.round((R.dpr || 1) * 10) / 10), lh = 13 * s, pad = 8 * s, w = 560 * s, gh = 46 * s;
+      const h = pad * 2 + L.length * lh + gh + 6 * s, x = 0, y = 0;
+      pc.width = Math.ceil(w); pc.height = Math.ceil(h);
+      const ctx = pc.getContext('2d');
+      ctx.save();
       ctx.globalAlpha = 0.82; ctx.fillStyle = '#0a0c10'; ctx.fillRect(x, y, w, h); ctx.globalAlpha = 1;
-      ctx.font = (11 * s).toFixed(0) + 'px monospace'; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+      ctx.font = (10.5 * s).toFixed(0) + 'px monospace'; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
       for (let j = 0; j < L.length; j++) { ctx.fillStyle = L[j][1] || '#dde'; ctx.fillText(L[j][0], x + pad, y + pad + j * lh); }
       // frame-interval graph, newest on the right; lines at 16.7 and 33.3 ms
       const gx = x + pad, gy = y + pad + L.length * lh + 4 * s, gw = w - pad * 2, K = Math.min(n, 240), sc = gh / 50;

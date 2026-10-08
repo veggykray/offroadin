@@ -13,13 +13,20 @@
 (function (AS) {
   const U = AS.U, C = U.C;
 
-  function canvas(w, h) {
+  function canvas(w, h, cpu) {
     // (inside a worker there is no document: the same drawing goes to an OffscreenCanvas)
     const c = typeof document !== 'undefined' ? document.createElement('canvas') : new OffscreenCanvas(1, 1);
     c.width = Math.max(1, Math.ceil(w));
     c.height = Math.max(1, Math.ceil(h));
+    // cpu: a canvas whose pixels are read back (sprite post-processing, patterns, tints).
+    // Asking for willReadFrequently before anything else keeps it in main memory: on a
+    // GPU-accelerated browser every getImageData from a GPU canvas stalls the whole
+    // graphics pipeline (hundreds of ms per sprite frame on some machines). Later
+    // getContext('2d') calls return this same context.
+    if (cpu) c.getContext('2d', { willReadFrequently: true });
     return c;
   }
+  const scratch = (w, h) => canvas(w, h, true);
 
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
@@ -181,7 +188,7 @@
     const r = Math.ceil(model.r * s), hh = Math.ceil(model.h * s);
     const w = r * 2 + pad * 2, h = r * 2 + hh + pad * 2;
     const ax = r + pad, ay = r + hh + pad;
-    const cv = canvas(w, h);
+    const cv = scratch(w, h);
     const ctx = cv.getContext('2d');
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -286,9 +293,10 @@
       Object.defineProperty(row, i, {
         configurable: true, enumerable: true,
         get() {
+          if (!exact) sh.needT = performance.now(); // drawn (or about to be): its sheet goes first in the workers' queue
           // over the cap — or a frame known to cost more than the cap allows (a giant) — takes a stand-in if there is one
           if (!exact && sh.dirs > 1 && frameSync + (a < 0 ? (built(sh.frames[0], i) ? 1 : (sh.cost || 0) + 1) : (sh.cost || 0)) > SYNC_MS && (frameSync >= SYNC_MS || sh.cost)) {
-            const sub = standIn(sh, a, i, a < 0); if (sub) { stats.stand++; return sub; }
+            const sub = standIn(sh, a, i, a < 0); if (sub) { stats.stand++; if (stats.log) stats.log.push(['stand-in', sh.key, a, i, !!sh.recipe]); return sub; }
           }
           const t = performance.now(), v = build(i), dt = performance.now() - t;
           stats.sync++; stats.syncMs += dt; frameSync += dt; if (a >= 0) sh.cost = sh.cost ? sh.cost * 0.7 + dt * 0.3 : dt; if (stats.log && dt > 2) stats.log.push([sh.key, a, i, +dt.toFixed(1), exact]);
@@ -343,34 +351,48 @@
   function exactly(fn) { exact++; try { return fn(); } finally { exact--; } }
   // repack a finished sheet's rows as ordinary arrays (fast element access again)
   function seal(sh) { sh.frames = sh.frames.map((r) => r.slice()); sh.shadows = sh.shadows.slice(); }
-  /* Forge missing frames of recently requested sheets for up to budget ms. A frame
-   * is only started if it is expected to fit (from the sheet's measured cost), but
-   * with `force` one is always started so even very heavy sheets make progress. */
+  /* Forge missing frames of sheets drawn lately (or coming within reach of the view,
+   * see want) for up to budget ms; sheets nothing has drawn or asked for lately wait,
+   * as in pump. A frame is only started if it is expected to fit (from the sheet's
+   * measured cost), but with `force` one is always started so even very heavy sheets
+   * make progress. */
+  const live = (sh, now) => now - (sh.needT || -1e9) < 2000 || now - (sh.wantT || -1e9) < 3000;
   function fill(budget, force) {
     const t0 = performance.now();
     let did = 0;
     pump();
     for (let i = pending.length - 1; i >= 0; i--) {
       const sh = pending[i];
-      if (sh.left <= 0 || cache.get(sh.key) !== sh) { pending.splice(i, 1); if (sh.left <= 0) seal(sh); continue; }
-      if (offThread(sh)) continue; // the workers have it
-      // most recent first: move it to the end and work on it there
-      if (i !== pending.length - 1) { pending.splice(i, 1); pending.push(sh); }
-      break;
+      if (sh.left <= 0 || cache.get(sh.key) !== sh) { pending.splice(i, 1); if (sh.left <= 0) seal(sh); }
     }
-    while (pending.length) {
-      const sh = pending[pending.length - 1];
-      if (sh.left <= 0 || cache.get(sh.key) !== sh) { pending.pop(); if (sh.left <= 0) seal(sh); continue; }
-      if (offThread(sh)) break;
+    for (;;) {
+      let sh = null;
+      for (let i = pending.length - 1; i >= 0 && !sh; i--) { const q = pending[i]; if (q.left > 0 && !offThread(q) && live(q, t0)) sh = q; }
+      if (!sh) break;
       const used = performance.now() - t0;
       if ((did || !force) && used + (sh.fcost || sh.cost || 2) > budget) break;
       const a = performance.now();
-      if (!step(sh)) { if (sh.left > 0) break; continue; } // (what is left is with a worker)
+      if (!step(sh)) { if (sh.left > 0) break; seal(sh); pending.splice(pending.indexOf(sh), 1); continue; } // (what is left is with a worker)
       const c = performance.now() - a;
       sh.fcost = sh.fcost ? sh.fcost * 0.7 + c * 0.3 : c;
       did++;
     }
     return did;
+  }
+  // how many forged images are held, and their pixel memory (for the developer panel; cached for 2 s)
+  let memT = 0, memV = { n: 0, bytes: 0, sheets: 0 };
+  function memory() {
+    const now = performance.now();
+    if (now - memT < 2000) return memV;
+    memT = now; let n = 0, bytes = 0, sheets = 0;
+    const add = (img) => { if (img && img.width) { n++; bytes += img.width * img.height * 4; } };
+    for (const v of cache.values()) {
+      if (v && v.frames) { sheets++; for (const row of v.frames) for (let d = 0; d < row.length; d++) if (built(row, d)) add(row[d]); if (v.shadows) for (let d = 0; d < v.shadows.length; d++) if (built(v.shadows, d)) add(v.shadows[d]); }
+      else if (v && v.img) add(v.img);
+      else add(v);
+    }
+    memV = { n, bytes, sheets };
+    return memV;
   }
   const ready = (key) => { const sh = cache.get(key); return !!sh && !(sh.left > 0); };
 
@@ -401,7 +423,7 @@
   /* frames of sh nearest a drawing angle first (creatures in view, or about to be) */
   function want(sh, angle) {
     if (!sh || !(sh.left > 0)) return;
-    sh.hint = angle;
+    sh.hint = angle; sh.wantT = performance.now();
     const i = pending.indexOf(sh);
     if (i >= 0 && i !== pending.length - 1) { pending.splice(i, 1); pending.push(sh); }
   }
@@ -432,10 +454,17 @@
           sh.seeded = true;
           job = nextJob(sh);
         }
-        for (let i = pending.length - 1; i >= 0 && !job; i--) {
-          sh = pending[i];
-          if (!offThread(sh) || !(sh.left > 0) || cache.get(sh.key) !== sh) continue;
-          job = nextJob(sh);
+        // then the rest of the sheets being drawn now (on screen), then of those
+        // coming within reach of the view (want); sheets nothing has drawn or asked
+        // for lately wait — forging every frame of everything filled hundreds of MB
+        const now = performance.now();
+        for (let pass = 0; pass < 2 && !job; pass++) {
+          for (let i = pending.length - 1; i >= 0 && !job; i--) {
+            sh = pending[i];
+            if (!offThread(sh) || !(sh.left > 0) || cache.get(sh.key) !== sh) continue;
+            if (pass === 0 ? !(now - (sh.needT || -1e9) < 2000) : !(now - (sh.wantT || -1e9) < 3000)) continue;
+            job = nextJob(sh);
+          }
         }
         if (!job) return;
         const [d, a, fid] = job, id = ++pool.seq;
@@ -476,7 +505,7 @@
 
   const canFilter = (() => { try { return typeof canvas(1, 1).getContext('2d').filter === 'string'; } catch (e) { return false; } })();
   function silhouette(img, blur) {
-    const c = canvas(img.width, img.height);
+    const c = scratch(img.width, img.height);
     const x = c.getContext('2d');
     if (blur && canFilter) x.filter = 'blur(' + blur + 'px)';
     x.drawImage(img, 0, 0);
@@ -498,7 +527,7 @@
     let f = cache.get(key);
     if (f) return f;
     const F = Forge.res;
-    const cv = canvas(w * F, h * F);
+    const cv = scratch(w * F, h * F);
     const ctx = cv.getContext('2d');
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.scale(F, F);
@@ -539,6 +568,6 @@
     if (F !== Forge.res) { Forge.res = F; clearCache(); }
   }
 
-  const Forge = { res: 2, STYLE, canvas, postProcess, postIllustrated, renderModel, sheet, sheetGen, fill, ready, pending, recipe, useWorkers, want, pool, stats, beginFrame, exactly, complete, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
+  const Forge = { res: 2, STYLE, canvas, scratch, postProcess, postIllustrated, renderModel, sheet, sheetGen, fill, ready, offThread, pending, recipe, useWorkers, want, pool, stats, beginFrame, exactly, complete, memory, frameIndex, flat, glow, silhouette, cache, clearCache, setRes };
   AS.Forge = Forge;
 })(window.AS);

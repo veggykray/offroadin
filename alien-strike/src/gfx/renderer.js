@@ -104,6 +104,9 @@
     renderWorld(g, dt) {
       this.time += dt;
       if (AS.Forge.beginFrame) AS.Forge.beginFrame();
+      // developer profiling (AS.Prof, wyrmcrown/src/core/perf.js): section times while the F3 panel is open
+      const PF = AS.Prof && AS.Prof.on ? AS.Prof : null;
+      if (PF) PF.mark('pre-render');
       const ctx = this.bctx, cam = g.camera, T = g.terrain;
       const vw = this.vw, vh = this.vh;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -130,10 +133,12 @@
        * small screens sprites shrink further and keep the high-quality filter. */
       const fq = zr / ((AS.Forge && AS.Forge.res) || 2) >= 0.55 ? 'low' : 'high';
       ctx.imageSmoothingQuality = 'low';
+      if (PF) PF.mark('clear');
       for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
         const cv = T.getChunk(cx, cy);
         ctx.drawImage(cv, cx * S - ox, cy * S - oy, S + ov, S + ov);
       }
+      if (PF) PF.mark('terrain draw');
       // prefetch ring around view biased toward travel direction
       const q = [];
       const p = g.player;
@@ -151,16 +156,19 @@
         if (ahead && !T.hasChunk(cx, cy)) q.push([cx, cy]);
       }
       T.work(AS.Settings && AS.Settings.quality === 'low' ? 2.5 : 3.5, q);
+      if (PF) PF.mark('terrain prepare');
 
       ctx.imageSmoothingQuality = fq;
       // ---- ground layer (pads, zones, telegraphs)
       g.drawGround(ctx, ox, oy, this);
       AS.Particles.draw(ctx, ox, oy, 0, cam.w, cam.h);
+      if (PF) PF.mark('ground');
 
       // ---- collect & sort drawables
       const list = this.drawList; list.length = 0;
       g.collectDrawables(list, cam.x - 120, cam.y - 160, cam.x + cam.w + 120, cam.y + cam.h + 200);
       list.sort((a, b) => a.sortY - b.sortY);
+      if (PF) PF.mark('cull+sort');
       // shadows
       const shadowA = g.world.light.shadow !== undefined ? g.world.light.shadow : 0.3;
       if (shadowA > 0) {
@@ -168,12 +176,17 @@
         for (let i = 0; i < list.length; i++) if (list[i].drawShadow) list[i].drawShadow(ctx, ox, oy);
         ctx.globalAlpha = 1;
       }
-      for (let i = 0; i < list.length; i++) list[i].draw(ctx, ox, oy, this);
+      if (PF) PF.mark('shadows');
+      if (PF) PF.drawItems(list, ctx, ox, oy, this); // the same draws, timed by kind
+      else for (let i = 0; i < list.length; i++) list[i].draw(ctx, ox, oy, this);
+      if (PF) PF.mark('objects');
       AS.Particles.draw(ctx, ox, oy, 1, cam.w, cam.h);
+      if (PF) PF.mark('particles');
       g.drawProjectiles(ctx, ox, oy, this);
       g.drawOverlay(ctx, ox, oy, this);
       // cloud shadows fall on the ground and everything standing on it
       if (AS.Atmosphere) AS.Atmosphere.under(ctx, g, this);
+      if (PF) PF.mark('projectiles+fx');
 
       // ---- lighting
       for (let i = this.flares.length - 1; i >= 0; i--) {
@@ -184,9 +197,11 @@
         this.light(f.x, f.y, f.r * (0.7 + 0.3 * k), f.col, f.a * k * k);
       }
       this.applyLights(g, ctx, ox, oy, vw, vh);
+      if (PF) PF.mark('lighting');
       // ---- weather
       if (g.hazards) g.hazards.drawWeather(ctx, ox, oy, vw, vh, this);
       if (AS.Atmosphere) AS.Atmosphere.over(ctx, g, this);
+      if (PF) PF.mark('weather+fog');
       // floating texts
       ctx.textAlign = 'center';
       ctx.font = this.textFont || 'bold 8px "Share Tech Mono", monospace';
@@ -204,6 +219,7 @@
       if (cam.flashA > 0.01) {
         ctx.globalAlpha = cam.flashA; ctx.fillStyle = cam.flashCol; ctx.fillRect(0, 0, this.bufW, this.bufH); ctx.globalAlpha = 1;
       }
+      if (PF) PF.mark('texts+flash');
     },
 
     applyLights(g, ctx, ox, oy, vw, vh) {
@@ -303,7 +319,7 @@
       let f = sh[key];
       if (!f) f = sh[key] = [];
       // one direction at a time, as it is first needed
-      if (!f[di]) { const img = sh.frames[0][di]; const c = AS.Forge.canvas(img.width, img.height); const x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = col || '#ffffff'; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
+      if (!f[di]) { const img = sh.frames[0][di]; const c = AS.Forge.canvas(img.width, img.height, true); const x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = col || '#ffffff'; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
       ctx.drawImage(f[di], x - ox - sh.ax, y - z - oy - sh.ay, sh.w, sh.h);
       ctx.restore();
     },

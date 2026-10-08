@@ -146,6 +146,9 @@
       const I = AS.Input;
       I.pollPad();
       const t0 = performance.now();
+      const PF = AS.Prof; // developer profiler: on while the F3 panel is shown
+      if (PF) { PF.on = !!(AS.Perf && AS.Perf.on); PF.begin(); }
+      const mark = (n) => { if (PF && PF.on) PF.mark(n); };
       const g = this.game;
       if (g && (this.state === 'play' || this.state === 'paused' || this.state === 'results')) {
         if (this.state === 'play') {
@@ -160,20 +163,25 @@
           }
           AS.HUD && AS.HUD.tabTick && AS.HUD.tabTick(I.down('objectives'), dt);
           // the war map and the court pause the realm
-          if (!this.overlay) { const u0 = performance.now(); g.update(dt); this.updMs = performance.now() - u0; AS.Voices && AS.Voices.update(dt, g); }
+          mark('input');
+          if (!this.overlay) { const u0 = performance.now(); g.update(dt); this.updMs = performance.now() - u0; mark('update'); AS.Voices && AS.Voices.update(dt, g); mark('voices'); }
           else { AS.Particles.update(0); }
         } else if (this.state === 'results') AS.Particles.update(dt * 0.5);
         const r0 = performance.now();
         AS.Renderer.renderWorld(g, this.state === 'play' && !this.overlay ? dt : 0);
         AS.Renderer.present();
+        mark('present (to screen)');
         const ctx = AS.Renderer.ctx;
         if (this.state === 'play') {
           AS.HUD && AS.HUD.draw(ctx, g, dt);
           if (this.overlay === 'map' && AS.WarMap) AS.WarMap.draw(ctx, g, dt);
         }
+        mark('HUD');
         this.renMs = performance.now() - r0;
         AS.Perf && AS.Perf.draw(ctx, g);
+        mark('F3 panel');
         AS.Audio.update && AS.Audio.update(dt, g);
+        mark('audio');
       } else if (this.demo && this.state !== 'loading') {
         // attract mode: an all-AI war plays behind the title and menus
         const d = this.demo;
@@ -190,8 +198,9 @@
         AS.Audio.update && AS.Audio.update(dt, null);
       }
       AS.Music.update && AS.Music.update(dt);
-      if (this.state === 'play' && !this.overlay && g) this.keepSmooth(ts, g);
+      if (this.state === 'play' && !this.overlay && g && this.params.get('fixedres') !== '1') this.keepSmooth(ts, g);
       const work = performance.now() - t0;
+      if (PF && PF.on) { mark('music+other'); PF.end(work); }
       this.frameMs = U.lerp(this.frameMs, work, 0.05);
       if (AS.Perf) { AS.Perf.frame(ts, work, this.updMs, this.renMs); this.updMs = this.renMs = 0; }
       if (this.params.get('fps') === '1') {

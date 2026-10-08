@@ -73,13 +73,15 @@
       this.zones = (map.zones || []).map((z) => Object.assign({ r: 120, h: null, soft: 1.5 }, z));
       for (const z of this.zones) this.zoneLevel(z);
       this.bridges = []; // [{x0,y0,x1,y1,w}] corridors that make water passable
+      this.sseq = 0;     // static decals are numbered (see store / the terrain worker)
     }
 
-    /* ---------- background shading: a pool of workers rasterises chunks ----------
-     * The per-texel passes (grid, terraces, shade) run in terrain_worker.js; the page
-     * only uploads the pixels and stamps decor, a step at a time inside work()'s
-     * budget. Without workers (file://, old browsers) the engine's own incremental
-     * path runs unchanged. */
+    /* ---------- background shading: a pool of workers builds whole chunks ----------
+     * terrain_worker.js runs the per-texel passes, stamps the decor and paints the
+     * static decals, and hands back an ImageBitmap; the page only stores it. A chunk
+     * the camera needs before a worker delivers it gets a stand-in (standIn) — the
+     * page never shades a full chunk during play. Without workers (file://, old
+     * browsers) the engine's own incremental path runs unchanged. */
     asyncInit() {
       if (this._wk !== undefined) return !!this._wk;
       this._wk = null;
@@ -87,7 +89,15 @@
         if (typeof Worker === 'undefined' || location.protocol === 'file:' || !this._args) return false;
         const n = Math.max(1, Math.min(3, ((navigator.hardwareConcurrency || 4) - 2) | 0));
         const url = new URL('src/gfx/terrain_worker.js', location.href).href;
-        const init = { type: 'init', world: this._args.world, map: this._args.map, zones: this.zones, bridges: this.bridges };
+        // static decals known so far go with the start-up message (each numbered, so the
+        // page can tell which ones a delivered chunk already carries); later ones follow
+        const sd = new Set(); for (const list of this.sdecals.values()) for (const d of list) sd.add(d);
+        for (const d of sd) if (!d.seq) d.seq = ++this.sseq;
+        // the lookup grids go along (copied), so the workers do not spend seconds rebuilding
+        // them; so do the footprints kept free of trees (buildings, landmarks, scenery)
+        const grids = { gw: this.gw, gh: this.gh, gWater: this.gWater, gMount: this.gMount, gForest: this.gForest, gBiome: this.gBiome, gRoad: this.gRoad, gField: this.gField, rivers: this.rivers, ridges: this.ridges, roadLines: this.roadLines };
+        this._sentClear = this.clearAreas.length;
+        const init = { type: 'init', world: this._args.world, map: this._args.map, zones: this.zones, bridges: this.bridges, sdecals: [...sd], forgeRes: AS.Forge.res, grids, clearAreas: this.clearAreas, clearSegs: this.clearSegs };
         const pool = [];
         for (let i = 0; i < n; i++) {
           const w = new Worker(url);
@@ -105,32 +115,79 @@
       } catch (e) { this._wk = null; return false; }
     }
     onWorker(r, w) {
+      if (r.type === 'ready') { w.ready = r.ms; return; }
+      if (r.type === 'kinds') { this.wkKinds = new Set(r.kinds); return; }
       w.busy--;
-      if (!this._req) return;
+      if (!this._req) { if (r.bmp) r.bmp.close(); return; }
       const key = r.cx * 10000 + r.cy;
       this._req.delete(key);
-      if (r.TD !== this.TD || this.cache.has(key)) return;
+      if (r.TD !== this.TD || this.cache.has(key)) { if (r.bmp) r.bmp.close(); return; }
       this._ready.push(r);
     }
-    *finishGen(r) {
-      const cv = AS.Forge.canvas(r.N, r.N), ctx = cv.getContext('2d');
-      ctx.putImageData(new ImageData(r.D, r.N, r.N), 0, 0);
-      yield null;
-      const st = { TD: r.TD, N: r.N, NW: r.NW, rows: r.rows, ML: r.ML, top: r.top, L: r.L, cx: r.cx, cy: r.cy, x0: r.cx * CH, y0: r.cy * CH };
-      yield* this.stampDecorGen(ctx, r.cx, r.cy, st);
-      return cv;
+    // a finished chunk from a worker: stored as it is (decals newer than it are painted on)
+    finish(r) {
+      const key = r.cx * 10000 + r.cy;
+      if (this._quick) this._quick.delete(key);
+      if (this._old) { const o = this._old.get(key); if (o) { if (o.cv.close) o.cv.close(); this._old.delete(key); } }
+      this.store(key, r.cx, r.cy, r.bmp, r.sseq);
+      return this.cache.get(key).cv;
+    }
+    addDecal(kind, x, y, r, col, opts) {
+      const d = super.addDecal(kind, x, y, r, col, opts);
+      if (d.static) { d.seq = ++this.sseq; if (this._wk) for (const w of this._wk) w.postMessage({ type: 'sdecal', d }); }
+      return d;
     }
     getChunk(cx, cy) {
-      if (!this._wk) return super.getChunk(cx, cy);
+      if (!this._wk || this.syncOK) return super.getChunk(cx, cy);
       this.texel();
       const key = cx * 10000 + cy, ch = this.cache.get(key);
       if (ch) { ch.used = this.frame; return ch.cv; }
-      // a needed chunk that is already shaded is only uploaded and stamped (a few ms)
-      if (this._fin && this._fin.key === key) { let r; do { r = this._fin.it.next(); } while (!r.done); this._fin = null; this.store(key, cx, cy, r.value); return r.value; }
+      // a needed chunk a worker has already finished is simply stored
       const i = this._ready.findIndex((q) => q.cx === cx && q.cy === cy);
-      if (i >= 0) { const q = this._ready.splice(i, 1)[0], it = this.finishGen(q); let r; do { r = it.next(); } while (!r.done); this.store(key, cx, cy, r.value); return r.value; }
-      this.syncN = (this.syncN || 0) + 1; // shaded here and now (the performance overlay counts these)
-      return super.getChunk(cx, cy);
+      if (i >= 0) return this.finish(this._ready.splice(i, 1)[0]);
+      // Not delivered yet (the camera outran the workers, or the render scale just
+      // changed): never shade it here — a full chunk costs 100–300 ms of main thread.
+      // Draw a stand-in until the worker's chunk arrives (it is first in the queue):
+      // the same chunk at the previous scale if there is one, else the ground alone at
+      // low detail (~5–10 ms, at most about one a frame), else the war map's pixels.
+      const old = this._old && this._old.get(key);
+      if (old) return old.cv;
+      return this.standIn(cx, cy, key);
+    }
+    standIn(cx, cy, key) {
+      const Q = this._quick || (this._quick = new Map());
+      let q = Q.get(key);
+      if (q && q.fine) return q.cv;
+      if (this._qFrame !== this.frame) { this._qFrame = this.frame; this._qMs = 0; }
+      if (this._qMs < 6) {
+        const t0 = performance.now();
+        q = { cv: this.quickChunk(cx, cy), fine: true };
+        this._qMs += performance.now() - t0;
+        this.standN = (this.standN || 0) + 1;
+      } else if (!q) {
+        const M = this.overview, sc = M ? this.W / M.width : 1, cv = AS.Forge.canvas(16, 16), c = cv.getContext('2d');
+        if (M) { c.imageSmoothingEnabled = true; c.drawImage(M, (cx * CH) / sc, (cy * CH) / sc, CH / sc, CH / sc, 0, 0, 16, 16); } else { c.fillStyle = '#5a6a3a'; c.fillRect(0, 0, 16, 16); }
+        q = { cv, fine: false };
+        this.standN = (this.standN || 0) + 1;
+      } else return q.cv;
+      Q.set(key, q);
+      if (Q.size > 96) Q.delete(Q.keys().next().value);
+      return q.cv;
+    }
+    // the ground of a chunk (no decor, no decals) at a low, fixed texel density
+    quickChunk(cx, cy) {
+      const TD0 = this.TD, td = 0.375;
+      if (!this._qst) { const keep = this._bufs; this._bufs = null; this.TD = td; this._qst = this.bufs(0); this._bufs = keep; this.TD = TD0; }
+      const st = this._qst, N = st.N;
+      st.cx = cx; st.cy = cy; st.x0 = cx * CH; st.y0 = cy * CH;
+      this._grid(st, 0, st.gh);
+      this._up(st, 0, st.rows);
+      const cv = AS.Forge.canvas(N, N), ctx = cv.getContext('2d'), img = ctx.createImageData(N, N);
+      st.D = img.data; st.cnt.fill(0); st.dropL.fill(-9); st.faceH.fill(0); st.faceNX.fill(0);
+      this._shade(st, 1, st.rows);
+      st.D = null;
+      ctx.putImageData(img, 0, 0);
+      return cv;
     }
     work(budget, queue) {
       if (!this.asyncInit()) return super.work(budget, queue);
@@ -138,25 +195,23 @@
       // the worker pool keeps a few requests in flight, nearest first; then any
       // places the camera may jump to (warmAt) get shaded in the background
       const pool = this._wk;
+      if (this.clearAreas.length > this._sentClear) { const a = this.clearAreas.slice(this._sentClear); this._sentClear = this.clearAreas.length; for (const w of pool) w.postMessage({ type: 'clear', a }); }
+      if (this._old && ((this.frame || 0) - this._oldF > 900 || !this._old.size)) { for (const e of this._old.values()) if (e.cv.close) e.cv.close(); this._old = null; }
       if (this._pre) { this._pre = this._pre.filter((q) => !this.cache.has(q[0] * 10000 + q[1])); if (this._pre.length) queue = queue.concat(this._pre); else this._pre = null; }
       for (const q of queue) {
         const key = q[0] * 10000 + q[1];
-        if (this.cache.has(key) || this._req.has(key) || this._ready.some((r) => r.cx === q[0] && r.cy === q[1]) || (this._fin && this._fin.key === key)) continue;
+        if (this.cache.has(key) || this._req.has(key) || this._ready.some((r) => r.cx === q[0] && r.cy === q[1])) continue;
         let w = null; for (const x of pool) if (x.busy < 2 && (!w || x.busy < w.busy)) w = x;
         if (!w) break;
         w.busy++; this._req.set(key, 1);
-        w.postMessage({ type: 'chunk', cx: q[0], cy: q[1], TD: this.TD });
+        w.postMessage({ type: 'chunk', cx: q[0], cy: q[1], TD: this.TD, forgeRes: AS.Forge.res });
       }
-      // finish shaded chunks (upload + decor) inside the frame budget
+      // store finished chunks (cheap: decals newer than the worker's copy are the only painting)
       const t0 = performance.now();
-      while (performance.now() - t0 < budget) {
-        if (!this._fin) {
-          let r = null; while (this._ready.length) { const q = this._ready.shift(); if (q.TD === this.TD && !this.cache.has(q.cx * 10000 + q.cy)) { r = q; break; } }
-          if (!r) return;
-          this._fin = { key: r.cx * 10000 + r.cy, cx: r.cx, cy: r.cy, it: this.finishGen(r) };
-        }
-        const r = this._fin.it.next();
-        if (r.done) { this.store(this._fin.key, this._fin.cx, this._fin.cy, r.value); this._fin = null; }
+      while (this._ready.length && performance.now() - t0 < budget) {
+        const r = this._ready.shift();
+        if (r.TD === this.TD && !this.cache.has(r.cx * 10000 + r.cy)) this.finish(r);
+        else if (r.bmp) r.bmp.close();
       }
     }
     /* shade, ahead of time, the chunks a view of w × h around each point would show —
@@ -174,9 +229,17 @@
     }
     get async() { return !!this._wk; }
     texel() {
+      const R = AS.Renderer, want = R && !R.pixelated && R.res ? R.res : 1;
+      if (this._wk && want !== this.TD && this.cache.size) {
+        // the render scale changed: keep the chunks shaded at the old scale and draw
+        // them (stretched) until the workers deliver the new ones — rebuilding the whole
+        // view at once on the main thread used to freeze the game for seconds
+        if (this._old) for (const e of this._old.values()) if (e.cv.close) e.cv.close();
+        this._old = this.cache; this.cache = new Map(); this._oldF = this.frame || 0;
+      }
       const before = this.TD, td = super.texel();
       if (td !== before) {
-        if (this._ready) { this._ready.length = 0; this._fin = null; }
+        if (this._ready) { for (const r of this._ready) if (r.bmp) r.bmp.close(); this._ready.length = 0; }
         // keep the view, its prefetch ring and a margin cached (about 120 MB of chunk canvases)
         const px = Math.round(CH * td) * Math.round(CH * td) * 4;
         this.maxCache = Math.max(56, Math.min(150, Math.round(120e6 / px)));

@@ -763,7 +763,7 @@
           // the pale underside, in shadow
           let f = shd.__belly;
           if (!f) f = shd.__belly = [];
-          if (!f[di]) { const c = AS.Forge.canvas(img.width, img.height), x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = belly; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
+          if (!f[di]) { const c = AS.Forge.canvas(img.width, img.height, true), x2 = c.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-in'; x2.fillStyle = belly; x2.fillRect(0, 0, c.width, c.height); f[di] = c; }
           ctx.globalAlpha = nd.inv * 0.36; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
           ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = nd.inv * 0.2; ctx.drawImage(f[di], -shd.ax, -shd.ay, shd.w, shd.h);
         }

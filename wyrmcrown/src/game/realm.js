@@ -83,6 +83,11 @@
       if (AS.Powerups) AS.Powerups.init(this);
       // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
       if (AS.Scenery) AS.Scenery.init(this);
+      // the ground is final: start the terrain workers now, so they are up (and forging
+      // their trees and rocks) by the time the match begins. Until then the loading
+      // screen shades the opening view here, exactly.
+      this.terrain.syncOK = true;
+      if (this.terrain.asyncInit) this.terrain.asyncInit();
       this.warmQueue();
       // weather drifts over the realm (drawn through the renderer's weather hook)
       if (AS.Weather) { this.weather = new AS.Weather(this); this.hazards = { drawWeather: (ctx, ox, oy, vw, vh, R) => this.weather.draw(ctx, ox, oy, vw, vh, R) }; }
@@ -105,7 +110,9 @@
       if (AS.DragonArt && AS.DragonArt.rig && p) { const st = p.drawState || p, rg = AS.DragonArt.rig(st.fk, st.scale); for (const sh of rg.sheets) AS.Forge.complete(sh); AS.Forge.complete(rg.headOpen); if (p.riderSheet) AS.Forge.complete(p.riderSheet); }
       if (AS.Renderer && AS.Renderer.bctx) AS.Forge.exactly(() => AS.Renderer.renderWorld(this, 0));
       this.primeMs = performance.now() - t0;
+      this.terrain.syncOK = false;
       this.tacMap = this.terrain.buildMap(24);
+      this.terrain.overview = this.tacMap; // the last-resort stand-in for a chunk not yet shaded
       this.updateRegion(0, true);
       this.events.emit('loaded');
       return this;
@@ -362,7 +369,14 @@
       if (slow && this.warmSkip !== 0) return;
       const budget = slow ? 1 : 4, t0 = performance.now();
       if (q && !this.warmGen) {
-        while (q.length && !this.warmGen) { const job = q.shift(); if (!AS.Forge.ready(job.spec.key)) this.warmGen = AS.Forge.sheetGen(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims); }
+        // a sheet the forge workers can draw is only opened here (they draw one frame of
+        // each at once, the rest when it comes near); others are forged a frame at a time
+        let opened = 0;
+        while (q.length && !this.warmGen && opened < 3) {
+          const job = q.shift(); if (AS.Forge.ready(job.spec.key)) continue;
+          const sh = AS.Forge.sheet(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims); opened++;
+          if (!AS.Forge.offThread(sh)) this.warmGen = AS.Forge.sheetGen(job.spec.key, job.spec.fn, job.spec.dirs, job.spec.anims);
+        }
         if (!q.length && !this.warmGen) this.warm = null;
       }
       if (this.warmGen) {
@@ -381,6 +395,9 @@
       const cam = this.camera; if (!cam) return;
       const cx = cam.x + cam.w / 2, cy = cam.y + cam.h / 2, r = Math.max(cam.w, cam.h) * 1.3, r2 = r * r;
       const F = AS.Forge;
+      // every dragon's sheets come first (four rigs; a rival sweeps into view fast and
+      // turns through all its facings), then the creatures near the view
+      if (AS.DragonArt && AS.DragonArt.rig) for (const d of this.dragons) { const st = d.drawState || d; try { const rg = AS.DragonArt.rig(st.fk, st.scale); for (const sh of rg.sheets) F.want(sh, d.angle || 0); if (rg.headOpen) F.want(rg.headOpen, d.angle || 0); if (d.riderSheet) F.want(d.riderSheet, d.angle || 0); } catch (e) { /* drawn later */ } }
       for (const t of this.troops) if (t._sheetFn && !t.removed && !(t._sheet && !(t._sheet.left > 0))) { const dx = t.x - cx, dy = t.y - cy; if (dx * dx + dy * dy < r2) { try { F.want(t.sheet, t.angle); } catch (e) { /* drawn later */ } } }
       if (this.life && this.life.grid && AS.Life.sheetFor) {
         const near = this._ahead || (this._ahead = []); near.length = 0;

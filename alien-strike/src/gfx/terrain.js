@@ -207,13 +207,28 @@
       this.store(key, cx, cy, cv);
       return cv;
     }
-    store(key, cx, cy, cv) {
-      this.cache.set(key, { cv, used: this.frame });
+    /* sseq: a chunk built elsewhere (a worker) already carries the static decals up to
+     * that sequence number (of the kinds it can paint, wkKinds); only the others (and
+     * the dynamic decals) are painted here */
+    store(key, cx, cy, cv, sseq) {
+      const e = { cv, used: this.frame };
+      this.cache.set(key, e);
       const ss = this.sdecals.get(key);
-      if (ss) for (const d of ss) this.paintDecal(cv, cx, cy, d);
+      if (ss) for (const d of ss) if (sseq === undefined || (d.seq || 0) > sseq || (this.wkKinds && !this.wkKinds.has(d.kind))) this.paintDecal(this.paintable(e), cx, cy, d);
       const ds = this.decals.get(key);
-      if (ds) for (const d of ds) this.paintDecal(cv, cx, cy, d);
+      if (ds) for (const d of ds) this.paintDecal(this.paintable(e), cx, cy, d);
       if (this.cache.size > Math.max(this.maxCache, this.needCache || 0)) this.evict();
+    }
+    /* a cached chunk delivered as an ImageBitmap becomes a canvas the first time
+     * something has to be painted onto it (a decal) */
+    paintable(e) {
+      const cv = e.cv;
+      if (cv.getContext) return cv;
+      const c = AS.Forge.canvas(cv.width, cv.height);
+      c.getContext('2d').drawImage(cv, 0, 0);
+      if (cv.close) cv.close();
+      e.cv = c;
+      return c;
     }
     /* Incrementally generate queued chunks within a time budget (ms). */
     work(budget, queue) {
@@ -234,7 +249,7 @@
     evict() {
       let oldest = null, ok = null;
       for (const [k, v] of this.cache) if (!oldest || v.used < oldest.used) { oldest = v; ok = k; }
-      if (ok !== null) this.cache.delete(ok);
+      if (ok !== null) { if (oldest.cv && oldest.cv.close) oldest.cv.close(); this.cache.delete(ok); }
     }
 
     /* Texels per world unit that chunks are rasterised at — matched to the renderer
@@ -244,7 +259,7 @@
       const R = AS.Renderer;
       const td = R && !R.pixelated && R.res ? R.res : 1;
       if (td !== this.TD) {
-        this.TD = td; this.cache.clear(); this.pending = null; this._bufs = null;
+        this.TD = td; for (const e of this.cache.values()) if (e.cv && e.cv.close) e.cv.close(); this.cache.clear(); this.pending = null; this._bufs = null;
         this.maxCache = td > 1.5 ? 56 : td > 1.01 ? 80 : 150;
       }
       return td;
@@ -756,7 +771,7 @@
         list.push(d);
         if (!st && list.length > 60) list.shift();
         const ch = this.cache.get(key);
-        if (ch) this.paintDecal(ch.cv, cx, cy, d);
+        if (ch) this.paintDecal(this.paintable(ch), cx, cy, d);
       }
       return d;
     }
