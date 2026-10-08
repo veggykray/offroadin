@@ -220,7 +220,10 @@
     const army = g.troops.filter(t=>t.alive && g.hostile(p.team,t.team) && t.state==='march' && near(t,800));
     if (army.length>=5) this.event('army_approaching',{priority:60,cooldown:75});
     for (const site of g.sites) {
-      if (!near(site,500) || this.seenEntities.has(site)) continue;
+      if (this.seenEntities.has(site)) continue;
+      // a place already ours, being claimed by us, or already looted is not news (and never will be)
+      if (site.owner === g.playerKey || (site.controller === g.playerKey && site.control > 0) || site.looted) { this.seenEntities.add(site); continue; }
+      if (!near(site,750)) continue;
       const event = site.kind==='village' ? 'village_found' : ['cave','ruins'].includes(site.kind) ? 'treasure_found' : ['shrine','magicwell','grove'].includes(site.kind) ? 'shrine_found' : 'objective_found';
       if (this.event(event,{cooldown:50})) this.seenEntities.add(site);
       break;

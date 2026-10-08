@@ -118,9 +118,10 @@
       try { l.src.stop(this.ctx.currentTime + 0.3); } catch (e) { /* noop */ }
       delete this.loops[key];
     },
-    duck(on) {
+    // lower (or, with level 0, silence) every effect and ambience; music is left alone
+    duck(on, level) {
       if (!this.ctx) return;
-      this.duckGain.gain.setTargetAtTime(on ? 0.25 : 1, this.ctx.currentTime, 0.15);
+      this.duckGain.gain.setTargetAtTime(on ? (level !== undefined ? level : 0.25) : 1, this.ctx.currentTime, on && level === 0 ? 0.05 : 0.15);
     },
     voiceDuck(on) {
       if (!this.ctx) return;

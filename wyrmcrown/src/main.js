@@ -87,7 +87,7 @@
     pause() {
       if (this.state !== 'play') return;
       this.state = 'paused';
-      AS.Audio.duck && AS.Audio.duck(true);
+      AS.Audio.duck && AS.Audio.duck(true, 0); // paused: music only
       AS.Voices && AS.Voices.stop();
       AS.UI && AS.UI.showPause && AS.UI.showPause();
     },
@@ -135,8 +135,8 @@
       }
     },
     // court / town menu and other in-game overlays that pause the action
-    openOverlay(name) { AS.Voices && AS.Voices.stop(); this.overlay = name; if (this.game) this.game.uiBlocking = true; },
-    closeOverlay() { this.overlay = null; if (this.game) this.game.uiBlocking = false; },
+    openOverlay(name) { AS.Voices && AS.Voices.stop(); this.overlay = name; if (this.game) this.game.uiBlocking = true; if (name === 'map' && AS.Audio.duck) AS.Audio.duck(true, 0); }, // the war map: music only
+    closeOverlay() { if (this.overlay === 'map' && AS.Audio.duck) AS.Audio.duck(false); this.overlay = null; if (this.game) this.game.uiBlocking = false; },
 
     loop(ts) {
       requestAnimationFrame((t) => this.loop(t));

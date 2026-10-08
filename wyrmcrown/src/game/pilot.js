@@ -11,6 +11,9 @@
 (function (AS) {
   const U = AS.U;
   const DOUBLE = 0.4; // seconds between the taps of a double-tap; also how long a click on an animal holds the staff
+  // eating by double-click is forgiving: the second click may come a little later than the
+  // system double-click allows, and anywhere near the first (the cursor drifts while flying)
+  const DBL_TIME = 0.75, DBL_PX = 56, PICK_R = 70, PICK_R2 = 100;
   // the browser's own double-click (it honours the system setting, and two
   // clicks that land in one slow frame still count)
   let dblClicked = false, hooked = false;
@@ -59,7 +62,7 @@
       }
       const m = I.mouse;
       if (m.lPressed && !g.uiBlocking && !pad) this.click(d, inp);
-      if (dblClicked) { dblClicked = false; if (!g.uiBlocking && !pad) this.doubleClick(d, inp); }
+      if (dblClicked) { dblClicked = false; if (!g.uiBlocking && !pad && g.time - (this.dblT || -9) > DBL_TIME) this.doubleClick(d, inp); }
       inp.fire = (m.l && !g.uiBlocking && g.time >= this.holdFire) || (pad && !!I.padState.firePrimary);
       inp.breath = (m.r && !g.uiBlocking) || I.down('breath') || (pad && !!I.padState.breath);
       if (g.uiBlocking) { inp.fire = false; inp.breath = false; }
@@ -68,17 +71,25 @@
     /* a click on an animal holds the staff for a moment (so the first click of
      * a double-click doesn't blast dinner); the second click starts the hunt */
     click(d, inp) {
-      const g = d.g, prey = AS.Life.preyAt(g, inp.aimX, inp.aimY, 36);
+      const g = d.g, prey = AS.Life.preyAt(g, inp.aimX, inp.aimY, PICK_R), m = AS.Input.mouse;
+      // our own double-click: a second click soon after the first and near it on screen
+      const now = performance.now() / 1000;
+      if (this.lastClick && now - this.lastClick.t < DBL_TIME && Math.hypot(m.x - this.lastClick.x, m.y - this.lastClick.y) < DBL_PX) {
+        this.lastClick = null; this.dblT = g.time;
+        this.doubleClick(d, inp);
+        return;
+      }
+      this.lastClick = { t: now, x: m.x, y: m.y };
       // remember what the first click landed on: a running deer is gone from under
       // the cursor by the second
       if (prey || g.time - this.clickT > DOUBLE + 0.3) { this.clickPrey = prey; this.clickT = g.time; }
       if (!prey) return;
       // a foe near the cursor means the click is a shot, not the start of a double-click
-      if (!g.nearestFoe(d.team, inp.aimX, inp.aimY + 20, 70)) this.holdFire = g.time + DOUBLE;
+      if (!g.nearestFoe(d.team, inp.aimX, inp.aimY + 20, 70)) this.holdFire = g.time + DBL_TIME;
     }
     doubleClick(d, inp) {
       const g = d.g, c = this.clickPrey;
-      const prey = c && c.alive && !c.carried && g.time - this.clickT < 0.9 ? c : AS.Life.preyAt(g, inp.aimX, inp.aimY, 50);
+      const prey = c && c.alive && !c.carried && g.time - this.clickT < 1.2 ? c : AS.Life.preyAt(g, inp.aimX, inp.aimY, PICK_R2);
       this.clickPrey = null;
       if (prey) { this.startHunt(d, prey); this.holdFire = g.time + 0.3; }
     }

@@ -275,6 +275,15 @@
         ctx.strokeStyle = '#ffe28c'; ctx.lineWidth = 2 * s; ctx.beginPath(); ctx.arc(q[0], q[1], 6 * s, 0, TAU); ctx.stroke();
       }
       for (const t of g.troops) if (t.role === 'cart' && t.alive && (t.team === g.playerKey || g.isExplored(t.x, t.y))) { const q = P(t.x, t.y); ctx.fillStyle = g.factions[t.team].def.color2; ctx.fillRect(q[0] - 1.5 * s, q[1] - 1.5 * s, 3 * s, 3 * s); }
+      // soldiers: all of yours (garrison, patrols, the warband on the march), and rival warbands marching through land you have seen
+      for (const t of g.troops) {
+        if (!t.alive || t.role === 'cart' || !t.faction) continue;
+        const mine = t.team === g.playerKey;
+        if (!mine && !(t.state === 'march' && g.isExplored(t.x, t.y))) continue;
+        const q = P(t.x, t.y); if (q[0] < x - 4 || q[1] < y - 4 || q[0] > x + size + 4 || q[1] > y + size + 4) continue;
+        ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.arc(q[0], q[1], 3.3 * s, 0, TAU); ctx.fill();
+        ctx.fillStyle = t.faction.def.color; ctx.beginPath(); ctx.arc(q[0], q[1], 2.4 * s, 0, TAU); ctx.fill();
+      }
       for (const d of g.dragons) {
         if (!d.targetable || (d !== p && !g.isExplored(d.x, d.y))) continue;
         const q = P(d.x, d.y);
