@@ -145,6 +145,7 @@
         h('div', { class: 'buttons' },
           btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your realm and a map'),
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
+          AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across the archipelago · in development') : null,
           btn('How to Play', () => this.showControls('menu')),
           btn('Options', () => this.showOptions('menu')))));
       s.appendChild(h('div', { class: 'foot' }, 'Built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL)'));

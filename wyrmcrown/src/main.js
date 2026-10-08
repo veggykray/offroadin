@@ -6,6 +6,7 @@
  *   &faction=elf       play another realm (testing; the campaign plays Aldermere)
  *   &god=1             invulnerable dragon      &fps=1  frame-time readout
  *   &perf=1            developer performance overlay open (F3 toggles it)
+ *   ?mode=conquest     open the Conquest campaign screen (in development)
  *   &demo=1            all four dragons flown by the AI (attract mode)
  *   &gold=5000         starting gold for every realm (testing) */
 'use strict';
@@ -41,6 +42,8 @@
         this.startMatch(m, { god: this.params.get('god') === '1', faction: this.params.get('faction') || 'human', demo: this.params.get('demo') === '1', gold: +(this.params.get('gold') || 0) || undefined });
       }
       const boot = document.getElementById('boot'); if (boot) boot.remove();
+      // ?mode=conquest opens the Conquest campaign screen
+      if (!direct && this.params.get('mode') === 'conquest' && AS.Conquest && AS.Conquest.UI) AS.Conquest.UI.open();
       // say so on screen if this copy cannot find its recordings (or sound is turned off)
       if (AS.AudioCheck) setTimeout(() => AS.AudioCheck.run(), 1500);
     },
