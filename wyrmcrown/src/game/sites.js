@@ -189,6 +189,8 @@
       this.contested = false;
       if (!this.guarded()) {
         const P = this.presence();
+        // an ally (or a realm under truce) does not contest the owner's ground
+        if (this.owner && g.pact) for (const k of Object.keys(P)) if (k !== this.owner && g.pact(k, this.owner)) delete P[k];
         const keys = Object.keys(P);
         if (keys.length > 1) this.contested = true;
         else if (keys.length === 1) {

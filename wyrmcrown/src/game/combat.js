@@ -31,7 +31,7 @@
       const bk = BOLT[d.fdef.rider.bolt] || BOLT.arcane;
       const cost = 4 * (d.buffs.rapid ? 0.4 : 1);
       if (I.fire && d.fireCd <= 0 && d.mana >= cost && !(d.eatT > 0)) {
-        d.fireCd = 1 / (d.boltRate * (d.buffs.rapid ? 1.9 : 1));
+        d.fireCd = 1 / (d.boltRate * (d.buffs.rapid ? 1.9 : 1) * (d.isPlayer ? 1 : g.diff.dragonFire || 1));
         d.mana -= cost;
         this.castBolt(d, bk);
       }
@@ -79,10 +79,16 @@
     castBolt(d, bk) {
       const g = d.g, I = d.input;
       const st = d.drawState;
-      const sx = st.staffX !== undefined ? st.staffX : d.x, sy = st.staffY !== undefined ? st.staffY : d.y - d.z - 16;
+      // the staff tip as last drawn — but only if that was just now: a dragon off screen (or
+      // driven off) is not drawn, and its old staff position would launch bolts from where
+      // it was last seen
+      const fresh = st.staffX !== undefined && st.staffAt !== undefined && Math.abs(g.time - st.staffAt) < 0.15;
+      const sx = fresh ? st.staffX : d.x, sy = fresh ? st.staffY : d.y - d.z - 16;
       const a = Math.atan2(I.aimY - sy, I.aimX - sx);
       // gentle aim assist: home on the hostile nearest the aim point
-      let target = null, bd = 70 * 70;
+      // (a rival's assist is weaker on easier settings, so its bolts can be dodged)
+      const aim = d.isPlayer ? 1 : Math.min(1, g.diff.dragonAim || 1);
+      let target = null, bd = 70 * 70 * aim * aim;
       const cands = g.grid.query(I.aimX, I.aimY + 40, 120, this._q || (this._q = []));
       for (const e of cands) {
         if (!e.alive || e.targetable === false || !g.hostile(d.team, e.team)) continue;
@@ -94,7 +100,7 @@
       const n = d.boltMulti + (d.buffs.power ? 1 : 0);
       for (let i = 0; i < n; i++) {
         const spread = n > 1 ? (i - (n - 1) / 2) * 0.12 : 0;
-        AS.Proj.missile({ team: d.team, x: sx, y: sy, a: a + spread, speed0: bk.speed * 0.85, speed: bk.speed, turn: target ? 3.2 : 0, life: 560 / bk.speed + 0.1,
+        AS.Proj.missile({ team: d.team, x: sx, y: sy, a: a + spread, speed0: bk.speed * 0.85, speed: bk.speed, turn: target ? 3.2 * aim : 0, life: 560 / bk.speed + 0.1,
           dmg: bk.dmg * d.boltDmg * (d.buffs.power ? 1.6 : 1), dtype: 'magic', r: bk.r, col: bk.col, size: 2.2, target: i === 0 ? target : null, tx: I.aimX, ty: I.aimY,
           owner: d, style: 'bolt', extra: { bk, splash: d.buffs.power ? 26 : 0 } });
       }
@@ -235,6 +241,8 @@
       else AS.Proj.bolt({ team, x: sx, y: sy, a, speed: W.speed, range: Math.min(W.range, d + 80) * 1.15, dmg: W.dmg * dmgMul, dtype: W.dtype, r: W.r, col, owner: src, style: W.style, extra: { kind } });
       AS.Audio.sfx(W.sfx, { x: src.x, y: src.y, vol: kind === 'ballista' ? 0.9 : 0.4, rate: U.range(0.92, 1.1) });
       if (kind === 'ballista') AS.FX.muzzle(sx, sy + sz, sz, a, '#ffe8c0', 0.6);
+      // a spell visibly leaves its caster (towers cast from out of sight, too)
+      if (kind === 'magic') { P().spawn({ x: sx, y: sy + sz, z: sz, shape: P().GLOW, col, size: 5, size2: 16, life: 0.18, add: true }); AS.Renderer.flare(sx, sy, 40, col, 0.55, 0.14); }
     },
 
     /* ---------------- hit resolution (engine hooks) ---------------- */

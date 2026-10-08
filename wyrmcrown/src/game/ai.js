@@ -20,8 +20,8 @@
   const STYLE = {
     balanced: { harassAt: 300, harassEvery: 125, siegeTime: 720, retreat: 0.3, hunt: 0.33, duel: 0.55, kite: 0, sprint: 0.5, raid: 0.35, home: 1.0, siegeAt: 4, buildOrder: ['tower', 'wall', 'farm', 'recruitSoldiers', 'scales', 'staffPower', 'market', 'recruitArchers', 'ballista', 'wings', 'lungs', 'keepUp', 'tower', 'magetower', 'temple', 'stable', 'recruitKnights', 'workshop', 'catapult', 'wall', 'stomach', 'staffRate'] },
     evasive: { harassAt: 240, harassEvery: 110, siegeTime: 720, retreat: 0.35, hunt: 0.35, duel: 0.5, kite: 340, sprint: 0.7, raid: 0.4, home: 1.15, siegeAt: 5, buildOrder: ['farm', 'magetower', 'tower', 'wings', 'staffPower', 'recruitArchers', 'market', 'staffRate', 'wall', 'scales', 'ballista', 'keepUp', 'temple', 'lungs', 'recruitSoldiers', 'farm', 'stomach', 'tower', 'wall'] },
-    fortress: { harassAt: 420, harassEvery: 170, siegeTime: 900, retreat: 0.28, hunt: 0.3, duel: 0.45, kite: 0, sprint: 0.3, raid: 0.2, home: 1.6, siegeAt: 6, buildOrder: ['wall', 'tower', 'ballista', 'farm', 'scales', 'recruitSoldiers', 'tower', 'wall', 'lungs', 'ballista', 'keepUp', 'magetower', 'market', 'workshop', 'catapult', 'temple', 'recruitArchers', 'wall', 'stomach', 'wings'] },
-    aggressive: { harassAt: 150, harassEvery: 75, siegeTime: 480, retreat: 0.24, hunt: 0.3, duel: 0.75, kite: 0, sprint: 0.6, raid: 0.7, home: 0.8, siegeAt: 3, buildOrder: ['recruitSoldiers', 'lungs', 'tower', 'farm', 'scales', 'workshop', 'recruitSoldiers', 'staffPower', 'recruitSiege', 'wall', 'wings', 'magetower', 'keepUp', 'recruitArchers', 'catapult', 'market', 'stomach', 'tower', 'recruitSiege'] },
+    fortress: { harassAt: 330, harassEvery: 150, siegeTime: 840, retreat: 0.3, hunt: 0.3, duel: 0.5, kite: 0, sprint: 0.35, raid: 0.25, home: 1.35, siegeAt: 6, buildOrder: ['wall', 'tower', 'ballista', 'farm', 'scales', 'recruitSoldiers', 'tower', 'wall', 'lungs', 'ballista', 'keepUp', 'magetower', 'market', 'workshop', 'catapult', 'temple', 'recruitArchers', 'wall', 'stomach', 'wings'] },
+    aggressive: { harassAt: 170, harassEvery: 100, siegeTime: 480, retreat: 0.28, hunt: 0.3, duel: 0.68, kite: 0, sprint: 0.6, raid: 0.45, home: 0.8, siegeAt: 3, buildOrder: ['recruitSoldiers', 'lungs', 'tower', 'farm', 'scales', 'workshop', 'recruitSoldiers', 'staffPower', 'recruitSiege', 'wall', 'wings', 'magetower', 'keepUp', 'recruitArchers', 'catapult', 'market', 'stomach', 'tower', 'recruitSiege'] },
   };
 
   /* ===================================================== the strategist */
@@ -67,6 +67,15 @@
       if (this.threat && g.time - this.threatT < 18 && this.threat.alive !== false && Math.hypot(this.threat.x - F.townPos.x, this.threat.y - F.townPos.y) < 900) {
         return this.setGoal({ type: this.threat.isDragon ? 'duel' : 'attack', ref: this.threat, x: this.threat.x, y: this.threat.y });
       }
+      // an ally comes to the defence of the player's town against a common enemy
+      const pact = g.pact && g.pact(F.key, g.playerKey);
+      if (pact && pact.kind === 'alliance' && hp > 0.5) {
+        const PT = g.playerFaction.townPos;
+        if (Math.hypot(d.x - PT.x, d.y - PT.y) < 2800) for (const e of g.dragons) {
+          if (e === d || !e.targetable || e.isPlayer || !g.hostile(F.key, e.team)) continue;
+          if (Math.hypot(e.x - PT.x, e.y - PT.y) < 900) return this.setGoal({ type: 'duel', ref: e, x: e.x, y: e.y });
+        }
+      }
       // harassing a rival town: keep at it for a while, switching targets there
       if (this.goal.type === 'harass' && hp < S.retreat + 0.22) return this.setGoal({ type: 'retreat', x: home.x, y: home.y });
       if (this.goal.type === 'harass' && (this.goal.engaged || 0) < 45) {
@@ -85,7 +94,9 @@
       if (foe) {
         const inOurLands = Math.hypot(foe.x - F.townPos.x, foe.y - F.townPos.y) < 1600;
         const fhp = foe.hp / foe.maxHp;
-        if (inOurLands || (hp > S.duel && hp >= fhp * 0.9) || (this.goal.type === 'duel' && this.goal.ref === foe && hp > S.retreat + 0.1)) return this.setGoal({ type: 'duel', ref: foe, x: foe.x, y: foe.y });
+        // (on easier settings the player's dragon is picked on less readily: it takes a bigger edge)
+        const dk = foe.isPlayer ? (g.diff.dragonDuel || 1) : 1, edge = dk < 1 ? (1 - dk) * 0.5 : 0;
+        if ((inOurLands && (dk >= 1 || hp >= fhp * 0.9 - 0.1 || Math.hypot(foe.x - F.townPos.x, foe.y - F.townPos.y) < 900)) || (hp > S.duel + edge && hp >= fhp * 0.9 + edge) || (this.goal.type === 'duel' && this.goal.ref === foe && hp > S.retreat + 0.1 + edge * 0.5)) return this.setGoal({ type: 'duel', ref: foe, x: foe.x, y: foe.y });
       }
       // magic nearby
       const orb = g.pickups.find((q) => q.alive && q.def && Math.hypot(q.x - d.x, q.y - d.y) < 1100);
@@ -109,6 +120,16 @@
         const r = this.raidTarget(d);
         if (r) return this.setGoal({ type: 'raid', ref: r, x: r.x, y: r.y });
       }
+      // guardians we make no headway against: leave that site alone for a while
+      const cg = this.goal;
+      if (cg.type === 'capture' && cg.ref && cg.ref.guarded && cg.ref.guarded()) {
+        const st = cg.ref, ghp = st.guards.reduce((a, u) => a + (u.alive ? u.hp : 0), 0);
+        const tr = this.tries || (this.tries = new Map());
+        let r = tr.get(st);
+        if (!r || g.time - r.last > 20) { r = { t: 0, hp0: ghp, last: g.time }; tr.set(st, r); }
+        r.t += g.time - r.last; r.last = g.time;
+        if (r.t > 40 && ghp > r.hp0 * 0.55) { (this.skip || (this.skip = new Map())).set(st, g.time + 150); tr.delete(st); }
+      }
       // otherwise expand: claim the most valuable site within reach
       const site = this.bestSite(d);
       if (site) return this.setGoal({ type: 'capture', ref: site, x: site.x, y: site.y });
@@ -118,7 +139,7 @@
       const g = this.g, F = this.F;
       let best = null, bs = -1e9;
       for (const o of g.life.animals) {
-        if (o.dead || o.carried || o.owner === F.key) continue;
+        if (o.dead || o.carried || o.owner === F.key || (o.owner && g.pact && g.pact(F.key, o.owner))) continue;
         const dist = Math.hypot(o.x - d.x, o.y - d.y);
         if (dist > 3000) continue;
         let sc = -dist / 400 + o.A.food / 12;
@@ -131,7 +152,7 @@
     }
     nearestDragon(d, r) {
       let best = null, bd = r;
-      for (const e of this.g.dragons) { if (e === d || !e.targetable) continue; const dd = Math.hypot(e.x - d.x, e.y - d.y); if (dd < bd) { bd = dd; best = e; } }
+      for (const e of this.g.dragons) { if (e === d || !e.targetable || (this.g.pact && this.g.pact(d.team, e.team))) continue; const dd = Math.hypot(e.x - d.x, e.y - d.y); if (dd < bd) { bd = dd; best = e; } }
       return best;
     }
     // how dangerous a point is for our dragon: enemy defences in range
@@ -148,11 +169,12 @@
       const g = this.g, F = this.F, S = this.style;
       let best = null, bs = -1e9;
       for (const s of g.sites) {
-        if (s.owner === F.key || (s.def.treasure && s.looted)) continue;
+        if (s.owner === F.key || (s.def.treasure && s.looted) || (s.owner && g.pact && g.pact(F.key, s.owner))) continue;
+        if (this.skip && this.skip.get(s) > g.time) continue; // guardians too strong for now
         const dist = Math.hypot(s.x - d.x, s.y - d.y), fromHome = Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y);
         let v = (SITE_VALUE[s.kind] || 2) * (s.rich ? 1.5 : 1);
         v -= dist / 1400 + fromHome / 1800 * S.home;
-        if (s.guarded()) { let gs = 0; for (const u of s.guards) if (u.alive) gs += u.maxHp; v -= gs / 500; }
+        if (s.guarded()) { let gs = 0; for (const u of s.guards) if (u.alive) gs += u.hp; v -= gs / 380; }
         if (s.owner) v -= 1.2 - S.raid; // taking from a rival is harder but sweet
         if (s.controller === F.key && s.control > 0) v += 1.5; // finish what we started
         // the fortress realm keeps to its own half of the map
@@ -166,7 +188,7 @@
       const g = this.g, F = this.F;
       let best = null, bs = -1e9;
       for (const t of g.troops) {
-        if (t.role !== 'cart' || !t.alive || t.team === F.key) continue;
+        if (t.role !== 'cart' || !t.alive || t.team === F.key || (g.pact && g.pact(F.key, t.team))) continue;
         const dist = Math.hypot(t.x - d.x, t.y - d.y);
         if (dist > 3200) continue;
         const sc = t.cargo / 25 - dist / 600 - this.dangerAt(t.x, t.y);
@@ -182,7 +204,7 @@
       const VAL = { wardstone: 5, farm: 3, house: 1.8, barracks: 2, market: 2.2, temple: 2, stable: 1.6, roost: 1.5, watchtower: 1.4, tower: 1.2, ballista: 1.4, magetower: 1 };
       let best = null, bs = -1e9;
       for (const R of g.factionList) {
-        if (R === F || R.eliminated || (only && R !== only)) continue;
+        if (R === F || R.eliminated || (only && R !== only) || (g.pact && g.pact(F.key, R.key))) continue;
         let rs = -Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) / 2500;
         if (R.underdog === 0 && R.power() - F.power() > 4) rs += 1.2; // cut the leader down to size
         if (R.lastAttacker === F) rs += 0.3; else if (F.lastAttacker === R) rs += 1.5;
@@ -203,7 +225,7 @@
       if (strength < this.style.siegeAt && g.time < this.style.siegeTime) return null;
       let best = null, bs = -1e9;
       for (const R of g.factionList) {
-        if (R === F || R.eliminated) continue;
+        if (R === F || R.eliminated || (g.pact && g.pact(F.key, R.key))) continue;
         const ward = R.wardStrength(), dist = Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y);
         let sc = (4 - ward) * 1.5 - dist / 3000 - R.alive('tower') * 0.3 - R.alive('ballista') * 0.6 + (1 - R.keep.hp / R.keep.maxHp) * 3;
         if (R.lastAttacker === F) sc += 0.5;
@@ -306,7 +328,7 @@
       if (d.loopCd <= 0 && !d.carry && g.time - d.lastHurt < 0.4 && d.lastHitBy && d.lastHitBy.isDragon && d.energy > d.maxEnergy * 0.3 &&
         Math.random() < dt * (S.kite ? 2.6 : 1.2) * (g.diff.ai || 1)) inp.loop = true;
       // AI aim gets steadier on harder difficulty
-      const acc = g.diff.ai || 1;
+      const acc = (g.diff.ai || 1) * (g.diff.dragonAim || 1);
       inp.aimX += Math.sin(this.t * 3.1 + this.jitter) * 18 / acc; inp.aimY += Math.cos(this.t * 2.7 + this.jitter) * 14 / acc;
     }
     /* steer toward a point; opts: arrive, hover (brake & hover on arrival), low, sprint */

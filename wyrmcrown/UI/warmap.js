@@ -73,6 +73,14 @@
         ctx.fillStyle = d === g.player ? '#ffffff' : d.fdef.color; ctx.beginPath(); ctx.moveTo(0, -8 * s); ctx.lineTo(6 * s, 6 * s); ctx.lineTo(-6 * s, 6 * s); ctx.closePath(); ctx.fill();
         ctx.restore();
       }
+      // the player's chosen course (right-click)
+      if (g.waypoint) {
+        const q = P(g.waypoint.x, g.waypoint.y), pq = P(g.player.x, g.player.y);
+        ctx.setLineDash([5 * s, 5 * s]); ctx.strokeStyle = 'rgba(255,226,140,0.75)'; ctx.lineWidth = 1.5 * s;
+        ctx.beginPath(); ctx.moveTo(pq[0], pq[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.strokeStyle = '#ffe28c'; ctx.lineWidth = 2.5 * s; ctx.beginPath(); ctx.arc(q[0], q[1], (13 + Math.sin(g.time * 5) * 2) * s, 0, TAU); ctx.stroke();
+        HUD.icon(ctx, 'flag', q[0], q[1] - 1 * s, 12 * s, '#ffe28c');
+      }
       // the current view
       const cam = g.camera, a = P(cam.x, cam.y);
       ctx.strokeStyle = 'rgba(255,240,200,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(a[0], a[1], cam.w * k, cam.h * k);
@@ -115,6 +123,7 @@
       ctx.font = HUD.B(Math.round(13.5 * s), '600');
       leg.forEach(([ic, label], i) => { const lx = px + 18 * s + (i % 2) * (pw / 2 - 10 * s), ly = yy + Math.floor(i / 2) * 22 * s; HUD.icon(ctx, ic, lx + 6 * s, ly, 12 * s, '#f0e2c0'); ctx.fillStyle = HUD.COL.dim; ctx.fillText(label, lx + 18 * s, ly + 1 * s); });
       ctx.fillStyle = HUD.COL.faint || 'rgba(240,226,192,0.4)'; ctx.font = HUD.B(Math.round(13.5 * s), '500');
+      ctx.fillText(g.waypoint ? 'Right-click — new course · on it again to clear' : 'Right-click — set your course', px + 18 * s, y0 + size - 22 * s);
       ctx.fillText('M or Esc — close', px + 18 * s, y0 + size);
       ctx.restore();
       // click to travel
@@ -125,7 +134,9 @@
       if (this.orders && mouse.lPressed && hover) {
         const isF = !!hover.def && !!hover.def.dragon;
         const tx = isF ? hover.townPos.x : hover.x, ty = isF ? hover.townPos.y : hover.y;
+        const pk = isF ? hover.key : hover.owner;
         if ((isF && hover === PF) || (!isF && hover.owner === PF.key)) { /* our own: nothing to take */ }
+        else if (pk && g.pact && g.pact(PF.key, pk)) { g.msg('YOU ARE AT PEACE WITH ' + g.factions[pk].def.short.toUpperCase() + ' — BREAK THE PACT AT COURT FIRST', '#ffe7a8', 2.6); AS.Audio.sfx('denied'); }
         else if (!AS.Nav.reachable(g, PF.townPos.x, PF.townPos.y, tx, ty)) { g.msg('NO ROAD LEADS THERE — ONLY DRAGONS CAN REACH IT', '#ffe7a8', 2.2); AS.Audio.sfx('denied'); }
         else {
           AS.Court.g = g;
@@ -133,6 +144,17 @@
           g.msg(n ? n + ' TROOPS MARCH ON ' + (isF ? hover.def.short : hover.name).toUpperCase() : 'TOO FEW TROOPS AT HOME', n ? '#ffe08a' : '#ffe7a8', 2.4);
           AS.Audio.sfx(n ? 'herald' : 'denied');
           this.orders = false; AS.App.closeOverlay();
+        }
+      }
+      // right-click: set a course (snapping to a site or town), or clear it
+      if (!this.travel && !this.orders && mouse.rPressed && mx > x0 && my > y0 && mx < x0 + sw && my < y0 + size) {
+        const wp = g.waypoint, wq = wp && P(wp.x, wp.y);
+        if (wq && Math.hypot(mx - wq[0], my - wq[1]) < 18 * s) { g.waypoint = null; AS.Audio.sfx('ui_hover'); }
+        else {
+          const isF = hover && !!hover.def && !!hover.def.dragon;
+          g.waypoint = hover ? { x: isF ? hover.townPos.x : hover.x, y: isF ? hover.townPos.y : hover.y, label: (isF ? hover.def.short : hover.name).toUpperCase() }
+            : { x: U.clamp((mx - x0) / k, 0, g.map.w), y: U.clamp((my - y0) / k, 0, g.map.h), label: 'WAYPOINT' };
+          AS.Audio.sfx('ui_click');
         }
       }
       if (AS.App.overlay !== 'map') { this.travel = null; this.orders = false; }

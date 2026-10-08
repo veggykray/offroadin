@@ -41,6 +41,8 @@
         this.startMatch(m, { god: this.params.get('god') === '1', faction: this.params.get('faction') || 'human', demo: this.params.get('demo') === '1', gold: +(this.params.get('gold') || 0) || undefined });
       }
       const boot = document.getElementById('boot'); if (boot) boot.remove();
+      // say so on screen if this copy cannot find its recordings (or sound is turned off)
+      if (AS.AudioCheck) setTimeout(() => AS.AudioCheck.run(), 1500);
     },
 
     startMatch(id, opts) {

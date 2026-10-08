@@ -192,6 +192,13 @@
         ctx.font = B(Math.round(12.5 * s), '700'); ctx.textAlign = 'left'; ctx.fillStyle = COL.parch;
         ctx.fillText(String(Fc.sitesOwned), x + w - 43 * s, yy + rh / 2 + 0.5 * s);
         if (!mine && Fc.attackedT > g.time - 3 && Math.sin(this.t * 10) > 0) icon(ctx, 'flame', x + w - 18 * s, yy + rh / 2, 12 * s, '#ff8a3a');
+        // a truce or alliance with the player
+        const pact = !mine && g.pacts && g.pacts[Fc.key];
+        if (pact) {
+          ctx.font = F(Math.round(12.5 * s), '600'); const nw = ctx.measureText(Fc.def.short).width;
+          ctx.font = B(Math.round(9.5 * s), '800'); ctx.textAlign = 'left'; ctx.fillStyle = pact.kind === 'alliance' ? '#bfe8a0' : '#f0e2a0';
+          ctx.fillText(pact.kind === 'alliance' ? 'ALLY' : 'TRUCE', x + 40 * s + nw, yy + rh / 2 - 5 * s);
+        }
       });
       this.realmsBottom = y + rh * rows.length + 12 * s;
     },
@@ -260,6 +267,13 @@
         icon(ctx, site.def.icon === 'castle' ? 'castle_s' : site.def.icon, q[0], q[1], 8 * s, col);
       }
       for (const Fc of g.factionList) { if (Fc.eliminated) continue; const q = P(Fc.townPos.x, Fc.townPos.y); crest(ctx, q[0], q[1], 7 * s, Fc.def); }
+      if (g.waypoint) {
+        // the course: a dashed guide from the dragon toward it (the minimap shows ~3200 units)
+        const q = P(g.waypoint.x, g.waypoint.y), pq = P(p.x, p.y);
+        ctx.setLineDash([4 * s, 4 * s]); ctx.strokeStyle = 'rgba(255,226,140,0.8)'; ctx.lineWidth = 1.5 * s;
+        ctx.beginPath(); ctx.moveTo(pq[0], pq[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.strokeStyle = '#ffe28c'; ctx.lineWidth = 2 * s; ctx.beginPath(); ctx.arc(q[0], q[1], 6 * s, 0, TAU); ctx.stroke();
+      }
       for (const t of g.troops) if (t.role === 'cart' && t.alive && (t.team === g.playerKey || g.isExplored(t.x, t.y))) { const q = P(t.x, t.y); ctx.fillStyle = g.factions[t.team].def.color2; ctx.fillRect(q[0] - 1.5 * s, q[1] - 1.5 * s, 3 * s, 3 * s); }
       for (const d of g.dragons) {
         if (!d.targetable || (d !== p && !g.isExplored(d.x, d.y))) continue;
@@ -361,21 +375,43 @@
       const home = g.playerFaction.townPos;
       marks.push({ x: home.x, y: home.y, col: COL.gold, label: 'HOME', kind: 'castle' });
       if (this.advTarget) marks.push({ x: this.advTarget.x, y: this.advTarget.y, col: '#fff2c0', label: this.advTarget.label || '', kind: 'flag' });
+      // the course set on the war map: arrived when close, otherwise marked on the ground or at the edge
+      const wp = g.waypoint;
+      if (wp && Math.hypot(wp.x - p.x, wp.y - p.y) < 220) { g.msg('ARRIVED — ' + wp.label, '#ffe28c', 2); g.waypoint = null; }
+      else if (wp) marks.push({ x: wp.x, y: wp.y, col: '#ffe28c', label: wp.label, kind: 'flag', wp: true });
       const m = 46 * s;
       for (const mk of marks) {
         const q = R.worldToScreen(mk.x, mk.y, cam);
         const on = q.x > m && q.y > m && q.x < W - m && q.y < H - m;
         if (on) {
           if (mk.kind === 'wing') this.dragonTag(ctx, mk.d, q.x, q.y - 58 * s, s);
+          if (mk.wp) {
+            // the destination itself: a pulsing ring with its name
+            const r = (18 + Math.sin(this.t * 4) * 3) * s;
+            ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 5 * s; ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, TAU); ctx.stroke();
+            ctx.strokeStyle = mk.col; ctx.lineWidth = 2.5 * s; ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, TAU); ctx.stroke();
+            icon(ctx, 'flag', q.x, q.y - r - 12 * s, 16 * s, mk.col);
+            ctx.font = F(Math.round(12 * s)); ctx.textAlign = 'center';
+            K.keyText(ctx, mk.label, q.x, q.y + r + 14 * s, mk.col, 3 * s);
+          }
           continue;
         }
         const cx = W / 2, cy = H / 2, a = Math.atan2(q.y - cy, q.x - cx);
-        const ex = U.clamp(cx + Math.cos(a) * W, m, W - m), ey = U.clamp(cy + Math.sin(a) * H, m, H - m);
+        // (the course arrow rides a ring round the dragon, clear of the HUD panels in the corners)
+        const ex = mk.wp ? cx + Math.cos(a) * Math.min(W * 0.34, H * 0.42) : U.clamp(cx + Math.cos(a) * W, m, W - m);
+        const ey = mk.wp ? cy + Math.sin(a) * Math.min(W * 0.34, H * 0.42) * 0.82 : U.clamp(cy + Math.sin(a) * H, m, H - m);
         ctx.save(); ctx.translate(ex, ey);
         ctx.fillStyle = 'rgba(16,10,6,0.75)'; ctx.beginPath(); ctx.arc(0, 0, 15 * s, 0, TAU); ctx.fill();
         ctx.strokeStyle = mk.col; ctx.lineWidth = 1.5 * s; ctx.stroke();
         icon(ctx, mk.kind, 0, 0, 16 * s, mk.col);
-        ctx.rotate(a); ctx.fillStyle = mk.col; ctx.beginPath(); ctx.moveTo(22 * s, 0); ctx.lineTo(15 * s, -6 * s); ctx.lineTo(15 * s, 6 * s); ctx.closePath(); ctx.fill();
+        if (mk.wp) {
+          // the course arrow is larger, pulses, and names the destination
+          ctx.lineWidth = 2.5 * s; ctx.strokeStyle = mk.col; ctx.beginPath(); ctx.arc(0, 0, (19 + Math.sin(this.t * 4) * 2) * s, 0, TAU); ctx.stroke();
+          ctx.font = F(Math.round(11.5 * s)); ctx.textAlign = 'center';
+          const ly = ey > H / 2 ? 34 * s : -32 * s, lx = 0;
+          K.keyText(ctx, mk.label, lx, ly, mk.col, 3 * s);
+          ctx.rotate(a); ctx.fillStyle = mk.col; ctx.beginPath(); ctx.moveTo(30 * s, 0); ctx.lineTo(19 * s, -9 * s); ctx.lineTo(19 * s, 9 * s); ctx.closePath(); ctx.fill();
+        } else { ctx.rotate(a); ctx.fillStyle = mk.col; ctx.beginPath(); ctx.moveTo(22 * s, 0); ctx.lineTo(15 * s, -6 * s); ctx.lineTo(15 * s, 6 * s); ctx.closePath(); ctx.fill(); }
         ctx.restore();
       }
     },

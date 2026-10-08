@@ -428,6 +428,7 @@
       const g = this.g;
       if (AS.Voices && AS.Voices.g === g) AS.Voices.onTownAttacked(this, b);
       if (src && src.team && src.team !== this.key) this.lastAttacker = src.faction || g.factions[src.team] || null;
+      if (src && src.team === g.playerKey && this.key !== g.playerKey && AS.Diplomacy) AS.Diplomacy.hurt(g, this.key);
       if (g.time - this.attackedT > 25) {
         if (this.key === g.playerKey) { g.msg('YOUR TOWN IS UNDER ATTACK!', '#ff6a4a', 4); g.news(this.def.short + ' is under attack' + (this.lastAttacker ? ' by ' + this.lastAttacker.def.short : '') + '!', this.key, true); }
         else if (src && src.team === g.playerKey) g.news(this.def.short + ' sounds the alarm!', this.key);

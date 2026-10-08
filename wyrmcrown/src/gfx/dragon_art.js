@@ -831,7 +831,7 @@
       ctx.drawImage(g, sx - ox - pulse, sy - z - 9.5 - oy - pulse, pulse * 2, pulse * 2);
       ctx.restore();
       R.light(sx, sy - z - 9.5, 14 + (st.cast || 0) * 30, st.orb || '#9fd8ff', 0.3 + (st.cast || 0) * 0.4);
-      st.staffX = sx; st.staffY = sy - z - 9.5; st.staffZ = z + 9.5;
+      st.staffX = sx; st.staffY = sy - z - 9.5; st.staffZ = z + 9.5; st.staffAt = AS.game ? AS.game.time : 0; // (fresh only while drawn)
     },
     /* project one wing to screen points. side: -1 left, +1 right */
     wingPoly(st, side, rg, chOver, spanK) {

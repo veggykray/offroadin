@@ -492,12 +492,15 @@
       if (this.evading && dtype !== 'starve') return 0; // mid-loop: everything flies past
       if (this.buffs.shield) { amount *= 0.35; AS.FX.impact(this.x, this.y, this.z + 8, '#bfe8ff'); }
       let dmg = amount;
+      // difficulty: how hard rival dragons (their bolts and breath) hit the player's dragon
+      if (this.isPlayer && src) { const s = src.isDragon ? src : src.owner && src.owner.isDragon ? src.owner : null; if (s && s !== this && g.diff && g.diff.dragonDmg) dmg *= g.diff.dragonDmg; }
       if (dtype !== 'starve' && dtype !== 'pierce' && this.armor) dmg = Math.max(dmg * 0.5, dmg - this.armor);
       if (dtype === 'pierce') dmg *= 1; // ballista bolts ignore scales
       this.hp -= dmg;
       if (!(opts && opts.silent)) {
         this.hurt = 0.18; this.lastHurt = g.time;
         if (src && src !== this) this.lastHitBy = src;
+        if (src && !this.isPlayer && (src.isPlayer || (src.owner && src.owner.isPlayer)) && AS.Diplomacy) AS.Diplomacy.hurt(g, this.fk);
         if (src && src.isDragon && src !== this && AS.Voices && g === AS.Voices.g) AS.Voices.onHit(src, this, dmg);
         if (this.isPlayer) { g.camera.shake(Math.min(0.45, 0.06 + dmg * 0.012)); AS.Audio.sfx('dragon_hurt', { vol: Math.min(1, 0.35 + dmg / 40) }); }
         else if (Math.random() < 0.25) AS.Audio.sfx('dragon_hurt', { x: this.x, y: this.y, vol: 0.5 });

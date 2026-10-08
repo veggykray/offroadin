@@ -8,7 +8,7 @@
 'use strict';
 (function (AS) {
   const { h, btn } = AS.UIKit;
-  const TABS = [['defence', 'Defences'], ['army', 'Army'], ['economy', 'Economy'], ['dragon', 'Dragon'], ['wizard', 'Wizardry']];
+  const TABS = [['defence', 'Defences'], ['army', 'Army'], ['economy', 'Economy'], ['dragon', 'Dragon'], ['wizard', 'Wizardry'], ['diplomacy', 'Diplomacy']];
   const ICONS = { recruitSoldiers: 'shield', recruitArchers: 'flag', recruitKnights: 'shield', recruitSiege: 'castle', buyLivestock: 'meat', keepUp: 'castle',
     scales: 'shield', wings: 'wing', lungs: 'flame', stomach: 'meat', dragonSize: 'wing', staffPower: 'star', staffRate: 'pw_rapid', staffMana: 'pw_mana' };
 
@@ -47,7 +47,8 @@
         h('div', { class: 'gold' }, h('span', { class: 'coin' }), Math.floor(F.gold).toLocaleString()));
       const tabs = h('div', { class: 'court-tabs' }, TABS.map(([k, label]) => h('div', { class: 'tab' + (this.tab === k ? ' on' : ''), onclick: () => { this.tab = k; AS.Audio.sfx('ui_click'); this.render(); } }, label)));
       const items = h('div', { class: 'court-items' });
-      for (const id of AS.Data.court[this.tab]) items.appendChild(this.card(id));
+      if (this.tab === 'diplomacy') for (const R of g.factionList) { if (R !== F) items.appendChild(this.diploCard(R)); }
+      else for (const id of AS.Data.court[this.tab]) items.appendChild(this.card(id));
       if (this.tab === 'army') items.appendChild(this.warbandCard());
       const body = h('div', { class: 'court-body' }, tabs, items, this.side());
       const foot = h('div', { class: 'court-foot' }, h('span', null, 'The realm waits while you hold court.'), btn('Return to the skies', () => this.close(), 'primary', 'T / Esc'));
@@ -129,10 +130,10 @@
       const tip = AS.Advisor && AS.Advisor.current ? AS.Advisor.current(g) : null;
       return h('div', { class: 'court-side' }, town, drag, rivals, tip && tip.text ? h('div', { class: 'box dim' }, tip.text) : null);
     },
-    toast(text) {
+    toast(text, ms) {
       const t = h('div', { class: 'toast' }, text);
       this.root.querySelector('.panel').appendChild(t);
-      setTimeout(() => t.remove(), 1600);
+      setTimeout(() => t.remove(), ms || 1600);
     },
     warbandCard() {
       const g = this.g, F = g.playerFaction;
@@ -140,8 +141,9 @@
       const marching = F.troops.filter((t) => t.alive && t.state === 'march');
       const targets = [];
       const walk = (x, y) => AS.Nav.reachable(g, F.townPos.x, F.townPos.y, x, y);
-      for (const s of g.sites) if (s.owner !== F.key && !(s.def.treasure && s.looted) && g.isExplored(s.x, s.y) && walk(s.x, s.y)) targets.push({ label: s.name + (s.owner ? ' (' + g.factions[s.owner].def.short + ')' : s.guarded() ? ' (guarded)' : ''), x: s.x, y: s.y, d: Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y) });
-      for (const R of g.factionList) if (R !== F && !R.eliminated && walk(R.townPos.x, R.townPos.y)) targets.push({ label: '⚔ ' + R.def.name + ' (siege)', x: R.townPos.x, y: R.townPos.y, siege: true, d: Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) });
+      const peace = (k) => k && g.pact && g.pact(F.key, k);
+      for (const s of g.sites) if (s.owner !== F.key && !peace(s.owner) && !(s.def.treasure && s.looted) && g.isExplored(s.x, s.y) && walk(s.x, s.y)) targets.push({ label: s.name + (s.owner ? ' (' + g.factions[s.owner].def.short + ')' : s.guarded() ? ' (guarded)' : ''), x: s.x, y: s.y, d: Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y) });
+      for (const R of g.factionList) if (R !== F && !R.eliminated && !peace(R.key) && walk(R.townPos.x, R.townPos.y)) targets.push({ label: '⚔ ' + R.def.name + ' (siege)', x: R.townPos.x, y: R.townPos.y, siege: true, d: Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y) });
       targets.sort((a, b) => (a.siege ? 1e5 : 0) + a.d - ((b.siege ? 1e5 : 0) + b.d));
       const sel = h('select', { style: 'width:100%;background:#2a1c12;color:#f0e2c0;border:1px solid rgba(214,170,90,0.3);border-radius:4px;padding:5px;font:500 14px var(--text)' }, targets.map((t, i) => h('option', { value: i }, t.label)));
       const go = btn('March!', () => {
@@ -157,6 +159,28 @@
         h('div', { class: 'top' }, this.thumbIcon('flag'), h('div', null, h('div', { class: 'nm' }, 'Warband'), h('div', { class: 'lv' }, free.length + ' at home · ' + marching.length + ' marching'))),
         h('div', { class: 'ds' }, 'Send your garrison (all but three guards) to seize a site or besiege a rival town. Troops capture sites they stand on.'),
         sel, h('div', { class: 'buy' }, back, go));
+    },
+    /* a rival lord: the state of things between you, and the offers you can make */
+    diploCard(R) {
+      const g = this.g, D = AS.Diplomacy, st = D.status(g, R.key), P = g.pacts[R.key];
+      const dead = R.eliminated;
+      const left = P && P.kind === 'truce' ? Math.max(0, Math.ceil(P.until - g.time)) : 0;
+      const label = dead ? 'Fallen' : st === 'war' ? 'At war' : st === 'truce' ? 'Truce — ' + Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0') + ' left' : 'Allied';
+      const why = dead ? 'They are no more' : D.canAsk(g, R.key);
+      const act = (kind) => { const r = D.propose(g, R.key, kind); this.render(); this.toast(r.text, 3200); };
+      const mk = (text, fn, primary, disabled) => { const b = btn(text, fn, primary ? 'primary' : ''); b.classList.add('small'); b.disabled = !!disabled; return b; };
+      const btns = [];
+      if (!dead && st === 'war') btns.push(mk('Offer a truce', () => act('truce'), true, why));
+      if (!dead && st !== 'alliance') btns.push(mk('Offer an alliance', () => act('alliance'), st === 'truce', why));
+      if (!dead && st !== 'war') btns.push(mk('Break the ' + st, () => { D.end(g, R.key, 'player'); this.render(); this.toast('You break faith with ' + R.def.short + '. They will remember.', 3200); }, false, false));
+      const desc = dead ? 'Their realm has fallen.'
+        : st === 'war' ? 'Mood: ' + D.attitude(g, R.key, 'truce') + '. A truce gives four minutes of peace; an alliance lasts until broken, and their dragon will help defend your town.'
+        : st === 'truce' ? 'Neither side may harm the other until the truce runs out. They may still break it.'
+        : 'Your realms fight side by side. A rival that grows stronger than you may betray you. To win the crown you must still break every realm — allies too.';
+      return h('div', { class: 'item' + (st !== 'war' && !dead ? ' done' : '') },
+        h('div', { class: 'top' }, this.crest(R.def, 48), h('div', null, h('div', { class: 'nm' }, R.def.name), h('div', { class: 'lv' }, R.def.dragon.name + ' & ' + R.def.rider.name + ' · ' + label))),
+        h('div', { class: 'ds' }, desc),
+        h('div', { class: 'buy' }, why && !dead && st === 'war' ? h('span', { class: 'why' }, why) : null, ...btns));
     },
     thumbIcon(k) { const c = h('canvas', { width: 112, height: 112, style: 'width:56px;height:56px' }); const x = c.getContext('2d'); x.scale(2, 2); AS.HUD.icon(x, k, 28, 28, 32, '#f2c14e'); return c; },
     sendWarband(F, t) {

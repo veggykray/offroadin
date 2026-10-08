@@ -30,7 +30,9 @@
       this.grid = new U.Grid(128);
       this.events = new U.Events();
       this.stats = { kills: 0, buildings: 0, goldEarned: 0, goldSpent: 0, eaten: 0, captured: 0, dragonsDowned: 0, raided: 0 };
-      this.hostile = hostile;
+      // hostility between teams, minus any truce or alliance the player has made
+      this.hostile = (a, b) => hostile(a, b) && !(this.pacts && AS.Diplomacy.between(this, a, b));
+      if (AS.Diplomacy) AS.Diplomacy.init(this);
       this.uiBlocking = false;
       this.region = 'neutral'; this.regionW = new Float32Array(5);
     }
@@ -139,7 +141,7 @@
       const list = this.grid.query(x, y, r + 40, this._fq || (this._fq = []));
       list.length = list.length; // reuse
       for (const e of list) {
-        if (!e.alive || e.targetable === false || !hostile(team, e.team)) continue;
+        if (!e.alive || e.targetable === false || !this.hostile(team, e.team)) continue;
         if (opt && opt.noAir && e.isDragon) continue;
         if (opt && opt.airOnly && !e.isDragon) continue;
         const dx = e.x - x, dy = e.y - y, rr = r + (e.r || 0) * 0.5;
@@ -164,7 +166,7 @@
       const list = this.grid.query(x, y, R + 60, []);
       for (const e of list) {
         if (!e.alive || e === opts.exclude || e.targetable === false) continue;
-        if (!opts.hitsAll && !hostile(team, e.team) && e.team !== 'neutral') continue;
+        if (!opts.hitsAll && !this.hostile(team, e.team) && e.team !== 'neutral') continue;
         if (e.team === team) continue;
         const z = e.z || 0;
         if (opts.groundOnly && z > 40) continue;
@@ -237,6 +239,7 @@
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }
       for (const F of this.factionList) F.update && F.update(dt);
+      if (AS.Diplomacy && !this.opts.demo) AS.Diplomacy.update(this, dt);
       if (AS.Life) AS.Life.update(this, dt);
       if (AS.Powerups) AS.Powerups.update(this, dt);
       if (this.weather) this.weather.update(dt);
@@ -249,7 +252,10 @@
       const p = this.demo ? this.focus : this.player;
       const sp = p.down > 0 ? 0 : p.speed;
       const zoomT = U.clamp((sp - 150) / 300, 0, 1);
-      this.camera.baseZoom = U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0);
+      // the mouse wheel zooms the view in and out (kept for the session)
+      const wheel = !this.demo && AS.Input.mouse.wheel;
+      if (wheel) AS.App.userZoom = U.clamp((AS.App.userZoom || 1) * (wheel > 0 ? 1 / 1.1 : 1.1), 0.8, 1.4);
+      this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1);
       const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z;
       this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
       if (this.demo) { this.updateRegion(dt); return; }

@@ -89,8 +89,10 @@
   };
 
   AS.Data.difficulty = {
-    easy: { name: 'Squire', ai: 0.75, aiHp: 0.85, income: 1.15, aiIncome: 0.85 },
-    normal: { name: 'Knight', ai: 1, aiHp: 1, income: 1, aiIncome: 1 },
-    hard: { name: 'Dragonlord', ai: 1.25, aiHp: 1.15, income: 0.95, aiIncome: 1.2 },
+    // dragonDmg: rival dragons' damage to the player's dragon · dragonFire: their casting rate ·
+    // dragonAim: how steady their aim and bolt homing are · dragonDuel: how readily they pick a fight with the player
+    easy: { name: 'Squire', ai: 0.75, aiHp: 0.85, income: 1.15, aiIncome: 0.85, dragonDmg: 0.5, dragonFire: 0.6, dragonAim: 0.45, dragonDuel: 0.45 },
+    normal: { name: 'Knight', ai: 1, aiHp: 1, income: 1, aiIncome: 1, dragonDmg: 0.85, dragonFire: 0.9, dragonAim: 0.8, dragonDuel: 0.8 },
+    hard: { name: 'Dragonlord', ai: 1.25, aiHp: 1.15, income: 0.95, aiIncome: 1.2, dragonDmg: 1.1, dragonFire: 1.05, dragonAim: 1.15, dragonDuel: 1.1 },
   };
 })(window.AS);
