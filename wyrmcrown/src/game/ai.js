@@ -225,7 +225,7 @@
       if (strength < this.style.siegeAt && g.time < this.style.siegeTime) return null;
       let best = null, bs = -1e9;
       for (const R of g.factionList) {
-        if (R === F || R.eliminated || (g.pact && g.pact(F.key, R.key))) continue;
+        if (R === F || R.eliminated || !R.keep || (g.pact && g.pact(F.key, R.key))) continue;
         const ward = R.wardStrength(), dist = Math.hypot(R.townPos.x - F.townPos.x, R.townPos.y - F.townPos.y);
         let sc = (4 - ward) * 1.5 - dist / 3000 - R.alive('tower') * 0.3 - R.alive('ballista') * 0.6 + (1 - R.keep.hp / R.keep.maxHp) * 3;
         if (R.lastAttacker === F) sc += 0.5;

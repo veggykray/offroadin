@@ -75,7 +75,9 @@
       // navigation and wildlife first, then towns (which breed herds) and sites
       if (AS.Nav) AS.Nav.build(this);
       if (AS.Life) AS.Life.init(this);
-      for (const F of this.factionList) if (F.buildTown) F.buildTown();
+      // a Conquest battle (opts.conquest, opt-in) gives the player's army a camp instead of a town
+      const CQ = this.opts.conquest && AS.Conquest && AS.Conquest.Battle;
+      for (const F of this.factionList) if (F.buildTown) { if (CQ && F.key === this.playerKey) CQ.camp(this, F); else F.buildTown(); }
       if (AS.Sites) for (const s of m.sites) { const site = AS.Sites.create(this, s); if (site) { this.sites.push(site); this.byId.set(site.id, site); } }
       // bridges that are not objectives still need their stonework
       if (AS.Sites) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
@@ -83,6 +85,8 @@
       if (AS.Powerups) AS.Powerups.init(this);
       // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
       if (AS.Scenery) AS.Scenery.init(this);
+      // Conquest: the defenders and the player's army take the field
+      if (CQ) CQ.setup(this);
       // the ground is final: start the terrain workers now, so they are up (and forging
       // their trees and rocks) by the time the match begins. Until then the loading
       // screen shades the opening view here, exactly.
@@ -246,7 +250,7 @@
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }
       for (const F of this.factionList) F.update && F.update(dt);
-      if (AS.Diplomacy && !this.opts.demo) AS.Diplomacy.update(this, dt);
+      if (AS.Diplomacy && !this.opts.demo && !this.opts.conquest) AS.Diplomacy.update(this, dt);
       if (AS.Life) AS.Life.update(this, dt);
       if (AS.Powerups) AS.Powerups.update(this, dt);
       if (this.weather) this.weather.update(dt);
@@ -272,7 +276,9 @@
       for (let i = this.feed.length - 1; i >= 0; i--) { this.feed[i].t -= dt; if (this.feed[i].t <= 0) this.feed.splice(i, 1); }
       this.updateRegion(dt);
       this.updateMusic(dt);
-      if (AS.Factions && AS.Factions.checkVictory) AS.Factions.checkVictory(this);
+      // a Conquest battle has its own victory and defeat (the site, the dragon, the camp)
+      if (this.opts.conquest && AS.Conquest && AS.Conquest.Battle) AS.Conquest.Battle.update(this, dt);
+      else if (AS.Factions && AS.Factions.checkVictory) AS.Factions.checkVictory(this);
       if (this.state === 'ending') { this.endT -= dt; if (this.endT <= 0) this.finish(); }
     }
 

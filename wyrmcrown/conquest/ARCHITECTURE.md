@@ -54,10 +54,19 @@ wyrmcrown/conquest/
                        leadership, cost, wage, recruitment sites, look (model gen)
   data/sites.js        recruitment sites, capturable territories, progression
                        template, objective kinds, Dragon Lord count odds
+  data/world.js        (Phase 2) all generator / clock / economy tuning: garrison
+                       budgets per tier, rewards, hours per action, ship cost, lairs
   core/rules.js        pure rules: leadership, wages, income, recruitment, day tick
+  core/worldgen.js     (Phase 2) the seeded archipelago: graph first, then layout;
+                       validate() checks every progression guarantee
+  core/world.js        (Phase 2) the campaign map in play: movement, fog, the clock,
+                       hiring, the ship, captures, battle results, victory
   core/campaign.js     the campaign state record (JSON-safe) and its constructor
-  core/save.js         versioned saves (schema, migrations, validation, slots)
-  ui/screen.js         placeholder mode entry (title menu "Conquest", ?mode=conquest)
+  core/save.js         versioned saves (schema v2, migrations, validation, slots)
+  core/battle.js       (Phase 2) a site fought in the real-time engine: battle
+                       config + local island map, the realm callbacks, the result
+  ui/map.js            (Phase 2) the campaign map canvas (islands, fog, routes, icons)
+  ui/screen.js         slots and the campaign map screen (panels, briefing, results)
 ```
 
 Rules for this folder:
@@ -112,23 +121,63 @@ Rules for this folder:
     zoomed out) multiply draw cost. Commander Mode should keep the zoom range of the
     battle mode or add level-of-detail drawing.
 
-## Not implemented (by design, Phase 1)
+## Phase 2 (implemented): the archipelago and the playable campaign loop
 
-World generation, the campaign map, travel, battles, recruitment UI, Commander Mode,
-selection and orders, autonomous dragon, ships, Dragon Lords' behaviour, hero
-progression, campaign AI.
+**World generation (core/worldgen.js).** Graph first: five home zones in
+progression order (start → early → frontier → castle country → harbour coast),
+joined by gate sites (one or two bridges, then a bridge or a fort, then a road or
+a bridge, then the castle, which is the only way to the harbour). Outer islands
+(2–5) are joined to the harbour and to each other by sea routes; each Dragon Lord
+has an island joined only to the outer islands. Details vary per seed: landmass
+style (mainland / chain / long / isles), site counts and kinds, occupiers
+(bandits, monsters, independents, other realms' remnants, the Lords' vassals),
+garrisons, hiring, free villages, island count, routes and orientation. The
+same seed always gives the same world. `validate()` checks 17 guarantees (start,
+starter hiring and income, two exits, bridge and castle gates, harbour by land,
+ship, sea routes, Lords only by sea, nothing isolated, owners, armies, stock,
+rising threat, models, size, readability); a failing build is rebuilt from a
+derived sub-seed. Tested on 1,000 seeds: 0 unrecoverable.
 
-## Suggested Phase 2
+**What is saved.** The static world is regenerated from the seed. The save holds
+only what play changes: owners (`territories`), garrisons and stock (`sites`),
+discovered ids, the army (stacks, position, ship), gold and the clock (day,
+hour), leadership, Lords' and strongholds' fates, flags, stats and a short log —
+about 8–10 KB. Schema v2; v1 (Phase 1) saves migrate by generating their seed's
+world.
 
-1. **Archipelago generator (data only).** Seeded generator producing the island graph
-   (start island → bridges → frontier → castle → harbour → outer islands → lord
-   strongholds) and, per island, a map record in the existing map format. Node-tested:
-   determinism, guaranteed progression, reachability rules (lord strongholds by sea
-   only).
-2. **Island realm option.** Let `AS.Realm` run a map with zero or one faction town and
-   sea around the land (`realm_terrain` land mask), behind an option that defaults to
-   current behaviour; prove with the existing suite plus a new island smoke test.
-3. **Campaign map screen.** Overview of discovered islands, holdings and the army;
-   enter an island to play it in real time; results written back to the campaign state.
-4. Then (Phase 3) Commander Mode: commander camera, selection, order layer for troops,
-   ordered pilot for the dragon — each a separate module.
+**The clock.** Actions take campaign hours (march 6, sea 24, battle 6, hire 1).
+At each midnight holdings pay, troops are paid and unpaid troops desert
+(Phase 1 rule), stock refills on schedule — all logged. No wall-clock time.
+
+**Battles (core/battle.js).** `opts.conquest` on `AS.Realm` (opt-in): the map is
+a generated record in the normal map format (one island in a sea made of the
+terrain's existing lake + island shapes; a river and bridge for bridge sites);
+the player's faction gets a camp (roost) instead of a town; the defenders are
+spawned as the battle site's guards (or around a Dragon Lord's full realm town
+with its AI lord and dragon); the army lands and marches. Victory is the battle
+mode's own capture/loot/elimination; defeat is the dragon driven down or a
+retreat (pause menu). Every unit carries its campaign troop type, so survivors
+and casualties are exact. Hooks in battle mode: realm.js (camp, setup, update,
+diplomacy/victory skip), main.js (map record, result routing, court disabled),
+screens.js (Retreat in the pause menu), hud.js (no court prompt), ai.js /
+advisor.js (skip a rival without a keep). Without `opts.conquest` nothing changes.
+
+## Known limitations (Phase 2)
+
+* The Dragon Lords never leave their islands, and enemy holdings do not counter-
+  attack yet: the world changes only by the player's actions.
+* No random travel encounters.
+* Per-type stat multipliers apply to hp, melee damage, range and speed; flying
+  (wyvern) is not modelled in battle — wyverns fight on foot with a stand-in model.
+* At most 120 of the army's units take the field at once; the rest wait in reserve
+  (and survive).
+* Missing dedicated art (stand-ins used): farmstead (village site), harbour and
+  landing (trade post site), ship (map icon only), wyvern (fallback model).
+
+## Phase 3 foundations
+
+The battle configuration, per-unit campaign troop types, exact result payloads
+and the camp/army spawning in core/battle.js are where Commander Mode plugs in:
+selection and orders act on `g.cq.army`; a commander camera and an order-
+following pilot for the player's dragon replace HumanPilot only when the battle
+config asks for it.

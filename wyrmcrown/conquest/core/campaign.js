@@ -5,9 +5,10 @@
  * troop entities, the dragon) are built FROM this record and write results back
  * to it; they are never stored in it.
  *
- * World generation is not implemented yet: a new campaign carries its seed
- * and its Dragon Lords; `world.generated` stays false until the generator
- * (Phase 2+) fills `world.islands`, `territories` and `sites`.
+ * The archipelago itself is NOT stored: it is regenerated from the seed
+ * (core/worldgen.js). The record holds only what play changes — owners,
+ * garrisons, recruitment stock, discovery, the army's position and the clock
+ * (core/world.js lists them).
  *
  * @typedef {Object} CampaignState
  * @property {string} schema   'wyrmcrown.conquest'
@@ -21,12 +22,13 @@
  * @property {{allegiance:string, leadership:number, renown:number,
  *             dragon:{level:number, xp:number, perks:string[]},
  *             wizard:{level:number, xp:number, spells:string[]}}} hero
- * @property {{gold:number, day:number}} economy
- * @property {{stacks:{troop:string,count:number}[], ship:{owned:boolean, at:(string|null)}}} army
- * @property {{generated:boolean, w:number, h:number, islands:Object[], explored:(string|null), progress:number}} world
- * @property {Object<string,{kind:string, owner:string, island:(number|null)}>} territories
- * @property {Object<string,{kind:string, stock:Object<string,number>, restockDay:number}>} sites
- * @property {{lords:{id:string, allegiance:string, stronghold:(string|null), defeated:boolean}[], minor:Object<string,{allegiance:string,captured:boolean}>}} objectives
+ * @property {{gold:number, day:number, hour:number}} economy
+ * @property {{stacks:{troop:string,count:number}[], at:string, ship:{owned:boolean, at:(string|null)}}} army
+ * @property {{generated:boolean, gen:number, w:number, h:number, islands:Object[], explored:string[], progress:number, style:string}} world
+ * @property {Object<string,{kind:string, owner:string, island:string}>} territories   every site's owner
+ * @property {Object<string,{kind:(string|null), stock:(Object<string,number>|null), restockDay:number, garrison:Array}>} sites
+ * @property {{lords:{id:string, allegiance:string, stronghold:string, defeated:boolean, primary:boolean}[], minor:Object<string,{allegiance:string,captured:boolean}>}} objectives
+ * @property {{d:number,h:number,t:string,k:(string|null)}[]} log   recent campaign events
  * @property {Object<string,*>} flags
  * @property {{battles:number, won:number, recruited:number, captured:number}} stats
  */
@@ -47,10 +49,10 @@
       const lords = [];
       while (lords.length < lordCount && rivals.length) {
         const k = rivals.splice(Math.floor(rng.next() * rivals.length), 1)[0];
-        lords.push({ id: 'lord_' + k, allegiance: k, stronghold: null, defeated: false });
+        lords.push({ id: 'lord_' + k, allegiance: k, stronghold: null, defeated: false, primary: !lords.length });
       }
       const now = Date.now();
-      return {
+      const state = {
         schema: 'wyrmcrown.conquest',
         version: C.Save ? C.Save.SCHEMA_VERSION : 1,
         id: 'c' + seed.toString(36) + '-' + now.toString(36),
@@ -61,24 +63,33 @@
           dragon: { level: 1, xp: 0, perks: [] },
           wizard: { level: 1, xp: 0, spells: [] },
         },
-        economy: { gold: C.Rules.CFG.startGold, day: 1 },
-        army: { stacks: [], ship: { owned: false, at: null } },
-        world: { generated: false, w: 0, h: 0, islands: [], explored: null, progress: 0 },
+        economy: { gold: C.Rules.CFG.startGold, day: 1, hour: D.world ? D.world.dayStart : 8 },
+        army: { stacks: [], at: null, ship: { owned: false, at: null } },
+        world: { generated: false, w: 0, h: 0, islands: [], explored: [], progress: 0 },
         territories: {},
         sites: {},
         objectives: { lords, minor: {} },
         flags: {},
         stats: { battles: 0, won: 0, recruited: 0, captured: 0 },
+        log: [],
       };
+      // the archipelago for this seed (o.bare: the record alone, e.g. for tests of the record itself)
+      if (C.World && !o.bare) C.World.init(state);
+      return state;
     },
-    /* the campaign is won when every Dragon Lord's stronghold has fallen */
-    isWon(state) { return state.objectives.lords.length > 0 && state.objectives.lords.every((l) => l.defeated); },
+    /* the campaign is won when the PRIMARY Dragon Lord's fortress has fallen
+     * (the other Lords are optional, however dangerous) */
+    isWon(state) {
+      const P = state.objectives.lords.find((l) => l.primary) || state.objectives.lords[0];
+      return !!P && !!P.defeated;
+    },
     summary(state) {
       return {
         allegiance: state.hero.allegiance, day: state.economy.day, gold: state.economy.gold,
         leadership: C.Rules.leadershipUsed(state.army) + ' / ' + state.hero.leadership,
         troops: state.army.stacks.reduce((n, s) => n + s.count, 0),
         lords: state.objectives.lords.map((l) => l.allegiance + (l.defeated ? ' (fallen)' : '')),
+        won: this.isWon(state),
         progress: D.progression[state.world.progress] ? D.progression[state.world.progress].name : '?',
       };
     },

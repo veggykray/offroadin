@@ -145,7 +145,7 @@
         h('div', { class: 'buttons' },
           btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your realm and a map'),
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
-          AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across the archipelago · in development') : null,
+          AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across a new archipelago every time') : null,
           btn('How to Play', () => this.showControls('menu')),
           btn('Options', () => this.showOptions('menu')))));
       s.appendChild(h('div', { class: 'foot' }, 'Built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL)'));
@@ -249,8 +249,11 @@
         btn('Resume', () => AS.App.resume(), 'primary'),
         btn('How to Play', () => this.showControls('pause')),
         btn('Options', () => this.showOptions('pause')),
-        btn('Restart this War', () => this.confirm('Restart this war from the beginning?', () => AS.App.restart())),
-        btn('Abandon to the Title', () => this.confirm('Abandon this war?', () => AS.App.abandon()), 'danger')));
+        // a Conquest battle cannot be restarted or abandoned: the army withdraws instead
+        g && g.opts.conquest && AS.Conquest && AS.Conquest.Battle
+          ? btn('Retreat to the Campaign Map', () => this.confirm('Withdraw the army? The battle is lost and your losses stand.', () => AS.Conquest.Battle.retreat()), 'danger')
+          : btn('Restart this War', () => this.confirm('Restart this war from the beginning?', () => AS.App.restart())),
+        g && g.opts.conquest ? null : btn('Abandon to the Title', () => this.confirm('Abandon this war?', () => AS.App.abandon()), 'danger')));
       this.show('pause');
     },
     back() { if (this.from === 'pause') this.showPause(); else this.showMenu(); },

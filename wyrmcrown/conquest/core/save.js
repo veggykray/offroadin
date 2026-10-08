@@ -13,7 +13,7 @@
 'use strict';
 (function (AS) {
   const C = AS.Conquest;
-  const SCHEMA = 'wyrmcrown.conquest', SCHEMA_VERSION = 1, SLOTS = 3;
+  const SCHEMA = 'wyrmcrown.conquest', SCHEMA_VERSION = 2, SLOTS = 3;
   const keyOf = (slot) => SCHEMA + '.slot' + slot;
   // MIGRATIONS[v](record) returns the record upgraded from version v to v + 1
   const MIGRATIONS = {
@@ -22,6 +22,21 @@
       r.economy = r.economy || { gold: r.gold || 0, day: r.day || 1 };
       delete r.gold; delete r.day;
       r.version = 1;
+      return r;
+    },
+    // v1 (Phase 1: a seed and Dragon Lords, no world yet) → v2: the archipelago is
+    // generated from the campaign's own seed; gold, day, army, hero and stats are kept
+    1(r) {
+      r.economy.hour = r.economy.hour !== undefined ? r.economy.hour : (C.Data.world ? C.Data.world.dayStart : 8);
+      r.army.ship = r.army.ship || { owned: false, at: null };
+      r.objectives.lords.forEach((l, i) => { if (l.primary === undefined) l.primary = i === 0; });
+      r.log = Array.isArray(r.log) ? r.log : [];
+      if (!r.world || !r.world.generated || !Array.isArray(r.world.explored)) {
+        r.world = { generated: false, w: 0, h: 0, islands: [], explored: [], progress: 0 };
+        C.World.init(r);
+        C.World.note(r, 'Your campaign was carried over: the archipelago of seed ' + r.seed + ' awaits.');
+      }
+      r.version = 2;
       return r;
     },
   };
@@ -45,9 +60,19 @@
       if (!isObj(r.economy) || !Number.isFinite(r.economy.gold) || !(r.economy.day >= 1)) p.push('bad economy');
       if (!isObj(r.army) || !Array.isArray(r.army.stacks)) p.push('bad army');
       else for (const s of r.army.stacks) if (!isObj(s) || !C.Data.troops[s.troop] || !(Number.isInteger(s.count) && s.count > 0)) { p.push('bad army stack'); break; }
-      if (!isObj(r.world) || typeof r.world.generated !== 'boolean') p.push('bad world');
+      if (!isObj(r.world) || r.world.generated !== true || !Array.isArray(r.world.explored)) p.push('bad world');
       if (!isObj(r.territories) || !isObj(r.sites)) p.push('bad holdings');
+      else {
+        for (const id in r.territories) { const t = r.territories[id]; if (!isObj(t) || !(t.owner === 'player' || t.owner === 'free' || C.Data.allegiances[t.owner])) { p.push('bad territory'); break; } }
+        for (const id in r.sites) { const s = r.sites[id]; if (!isObj(s) || !Array.isArray(s.garrison) || s.garrison.some((g) => !Array.isArray(g) || !C.Data.troops[g[0]] || !(g[1] > 0))) { p.push('bad site'); break; } }
+        if (!r.army || typeof r.army.at !== 'string' || !r.territories[r.army.at]) p.push('army is nowhere');
+        if (r.world && Array.isArray(r.world.explored) && r.world.explored.some((id) => !r.territories[id])) p.push('unknown explored site');
+      }
+      if (!isObj(r.army && r.army.ship) || typeof r.army.ship.owned !== 'boolean') p.push('bad ship');
+      if (!r.economy || !(r.economy.hour >= 0 && r.economy.hour < 24)) p.push('bad clock');
+      if (!Array.isArray(r.log)) p.push('bad log');
       if (!isObj(r.objectives) || !Array.isArray(r.objectives.lords) || !r.objectives.lords.length) p.push('bad objectives');
+      else if (r.objectives.lords.filter((l) => l.primary).length !== 1 || r.objectives.lords.some((l) => !l.stronghold || !r.territories[l.stronghold])) p.push('bad Dragon Lords');
       if (!isObj(r.stats) || !isObj(r.flags) || !isObj(r.settings)) p.push('bad bookkeeping');
       return p;
     },

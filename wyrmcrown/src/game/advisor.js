@@ -84,7 +84,7 @@
     },
     weakestRival(g, F) {
       let best = null, bs = 1e9;
-      for (const R of g.factionList) { if (R === F || R.eliminated) continue; const sc = R.wardStrength() * 2 + R.keep.hp / R.keep.maxHp * 3 + R.sitesOwned * 0.5; if (sc < bs) { bs = sc; best = R; } }
+      for (const R of g.factionList) { if (R === F || R.eliminated || !R.keep) continue; const sc = R.wardStrength() * 2 + R.keep.hp / R.keep.maxHp * 3 + R.sitesOwned * 0.5; if (sc < bs) { bs = sc; best = R; } }
       return best;
     },
   };

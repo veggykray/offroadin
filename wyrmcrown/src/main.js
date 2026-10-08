@@ -6,7 +6,7 @@
  *   &faction=elf       play another realm (testing; the campaign plays Aldermere)
  *   &god=1             invulnerable dragon      &fps=1  frame-time readout
  *   &perf=1            developer performance overlay open (F3 toggles it)
- *   ?mode=conquest     open the Conquest campaign screen (in development)
+ *   ?mode=conquest     open the Conquest campaign screen (&cqdebug=1: its debug tools)
  *   &demo=1            all four dragons flown by the AI (attract mode)
  *   &gold=5000         starting gold for every realm (testing) */
 'use strict';
@@ -50,7 +50,8 @@
 
     startMatch(id, opts) {
       opts = opts || {};
-      const map = AS.Maps.byId[id];
+      // a map id, or (Conquest) a generated map record
+      const map = id && typeof id === 'object' ? id : AS.Maps.byId[id];
       if (!map) return;
       this.state = 'loading';
       this.demo = null; // the attract-mode realm makes way for the real one
@@ -82,7 +83,7 @@
         }
       }, 60);
     },
-    restart() { if (this.lastMap) this.startMatch(this.lastMap, this.lastOpts); },
+    restart() { if (this.lastMap && !(this.lastOpts && this.lastOpts.conquest)) this.startMatch(this.lastMap, this.lastOpts); },
     pause() {
       if (this.state !== 'play') return;
       this.state = 'paused';
@@ -110,6 +111,8 @@
       this.state = 'results';
       AS.RealmAudio && AS.RealmAudio.stop();
       AS.Voices && AS.Voices.stop();
+      // a Conquest battle reports back to its campaign, not to the battle-mode atlas
+      if (res && res.conquest && AS.Conquest && AS.Conquest.Battle) { AS.Conquest.Battle.onEnd(res); return; }
       if (AS.Campaign) AS.Campaign.applyResult(res);
       AS.UI && AS.UI.showResults && AS.UI.showResults(res);
     },
@@ -155,7 +158,7 @@
           if (I.hit('pause')) {
             if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
           } else if (I.hit('map') && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
-          else if (I.hit('town') && AS.Court) AS.Court.toggle(g);
+          else if (I.hit('town') && AS.Court && !g.opts.conquest) AS.Court.toggle(g);
           else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
           if (I.hit('controlMode')) {
             AS.Settings.controlMode = AS.Settings.controlMode === 'mouse' ? 'keys' : 'mouse'; AS.Save.saveSettings();
@@ -182,7 +185,7 @@
         mark('F3 panel');
         AS.Audio.update && AS.Audio.update(dt, g);
         mark('audio');
-      } else if (this.demo && this.state !== 'loading') {
+      } else if (this.demo && this.state !== 'loading' && !this.demoHold) { // (held while the Conquest map is open)
         // attract mode: an all-AI war plays behind the title and menus
         const d = this.demo;
         AS.game = d;
