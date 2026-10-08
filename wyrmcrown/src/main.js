@@ -65,6 +65,7 @@
           AS.UI && AS.UI.hideAll && AS.UI.hideAll();
           this.state = 'play'; this.overlay = null;
           AS.Perf && AS.Perf.reset(); // (the loading pause is not a frame)
+          if (this.smooth) this.smooth.hold = performance.now() + 8000;
           AS.HUD && AS.HUD.reset && AS.HUD.reset(this.game);
           AS.Audio.startWorld && AS.Audio.startWorld(this.game.world);
           AS.RealmAudio && AS.RealmAudio.start(this.game);
@@ -108,6 +109,24 @@
       AS.Voices && AS.Voices.stop();
       if (AS.Campaign) AS.Campaign.applyResult(res);
       AS.UI && AS.UI.showResults && AS.UI.showResults(res);
+    },
+    /* A machine that cannot keep up (a large high-resolution screen on a modest
+     * graphics chip, or a browser with slow canvas drawing) gets a lower internal
+     * drawing resolution, a step at a time, until play is smooth again. */
+    keepSmooth(ts, g) {
+      const K = this.smooth || (this.smooth = { t0: ts, n: 0, sum: 0, hold: ts + 8000 });
+      if (ts < K.hold) { K.t0 = ts; K.n = 0; K.sum = 0; K.last = ts; return; } // settling after a load or a change
+      if (K.last) { K.sum += ts - K.last; K.n++; }
+      K.last = ts;
+      if (ts - K.t0 < 3000) return;
+      const avg = K.sum / Math.max(1, K.n), R = AS.Renderer;
+      K.t0 = ts; K.n = 0; K.sum = 0;
+      if (avg > 40 && !R.pixelated && R.res > 1.3) {
+        R.resCap = Math.max(1.25, Math.round(R.res * 0.8 * 32) / 32);
+        R.resize();
+        K.hold = ts + 6000;
+        g.msg('DETAIL LOWERED TO KEEP THE GAME SMOOTH', '#ffe7a8', 2.5);
+      }
     },
     // court / town menu and other in-game overlays that pause the action
     openOverlay(name) { AS.Voices && AS.Voices.stop(); this.overlay = name; if (this.game) this.game.uiBlocking = true; },
@@ -168,6 +187,7 @@
         AS.Audio.update && AS.Audio.update(dt, null);
       }
       AS.Music.update && AS.Music.update(dt);
+      if (this.state === 'play' && !this.overlay && g) this.keepSmooth(ts, g);
       const work = performance.now() - t0;
       this.frameMs = U.lerp(this.frameMs, work, 0.05);
       if (AS.Perf) { AS.Perf.frame(ts, work, this.updMs, this.renMs); this.updMs = this.renMs = 0; }

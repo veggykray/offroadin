@@ -52,7 +52,8 @@
       else {
         // texels per world unit, quantised to 1/32 so terrain chunks (256 units) and the
         // camera snap land on whole pixels; the view height flexes by ±1% to absorb it
-        const maxRes = q === 'medium' ? 1.6 : 2.4;
+        // resCap: lowered automatically on a machine that cannot keep up (see AS.App)
+        const maxRes = Math.min(q === 'medium' ? 1.6 : 2.4, this.resCap || 9);
         res = Math.max(1, Math.round(U.clamp(bufH / target, 1, maxRes) * 32) / 32);
         if (res * target < bufH - 2) { bufH = Math.round(target * res); bufW = Math.round(bufH * aspect); }
       }
@@ -140,6 +141,9 @@
       for (let cy = y0 - 1; cy <= y1 + 1; cy++) for (let cx = x0 - 1; cx <= x1 + 1; cx++) if (!T.hasChunk(cx, cy)) q.push([cx, cy]);
       // terrains that shade off the main thread can afford to look a ring further ahead
       const ring = T.async ? 3 : 2;
+      // the chunk cache must hold the view and its prefetch ring, or it throws away chunks
+      // it is about to draw (a big, high-resolution screen sees many chunks at once)
+      T.needCache = (x1 - x0 + 1 + ring * 2) * (y1 - y0 + 1 + ring * 2) + 6;
       for (let cy = y0 - ring; cy <= y1 + ring; cy++) for (let cx = x0 - ring; cx <= x1 + ring; cx++) {
         if (cx >= x0 - 1 && cx <= x1 + 1 && cy >= y0 - 1 && cy <= y1 + 1) continue;
         if (ring > 2 && (cx < x0 - 2 || cx > x1 + 2 || cy < y0 - 2 || cy > y1 + 2) && !((ldx && Math.sign(cx - (x0 + x1) / 2) === ldx && Math.abs(p.vx) > Math.abs(p.vy) * 0.5) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy && Math.abs(p.vy) > Math.abs(p.vx) * 0.5))) continue;

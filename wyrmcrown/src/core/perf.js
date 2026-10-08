@@ -19,6 +19,8 @@
     on: false,
     init() {
       try { this.on = new URLSearchParams(location.search).get('perf') === '1'; } catch (e) { /* no query string */ }
+      // count sound effects played (shown on the panel)
+      if (AS.Audio && AS.Audio.sfx) { const sfx = AS.Audio.sfx; AS.Audio.sfx = function () { Perf.sfxN = (Perf.sfxN || 0) + 1; return sfx.apply(this, arguments); }; }
       window.addEventListener('keydown', (e) => {
         if (e.code !== 'F3') return;
         e.preventDefault(); // (the browser's "find next")
@@ -26,6 +28,14 @@
       });
     },
     reset() { n = 0; i = 0; last = 0; },
+    browser() {
+      const u = navigator.userAgent;
+      for (const [k, name] of [['Edg', 'Edge'], ['OPR', 'Opera'], ['Firefox', 'Firefox'], ['Chrome', 'Chrome'], ['Version', 'Safari']]) {
+        const m = u.match(new RegExp(k + '\\/(\\d+)'));
+        if (m) return name + ' ' + m[1];
+      }
+      return 'browser ?';
+    },
     /* one main-loop frame: wall time now, main-thread work, update and render parts (ms) */
     frame(now, workMs, updMs, renMs) {
       gap[i] = last ? now - last : 16.7; last = now;
@@ -65,10 +75,17 @@
         L.push(['sprites: forging ' + F.pending.length + ' sheets  from workers ' + st.worker + (wkr ? ' (' + wkr + ')' : '')]);
         L.push(['  on the spot ' + st.sync + ' (' + (st.syncMs / 1000).toFixed(1) + ' s)  stand-ins ' + st.stand]);
       }
+      // sound: is the mixer running, what music is playing, are effects firing
+      const A = AS.Audio, M = AS.Music;
+      if (A) {
+        const md = M && M.active ? M.active.key + (M.active.element.paused ? ' (paused)' : ' ' + Math.floor(M.active.element.currentTime) + 's') : M && M.loading ? 'loading ' + M.loading.key : 'none';
+        L.push(['sound: ' + (A.ctx ? A.ctx.state : 'not started') + ' · music ' + md + ' · effects ' + (this.sfxN || 0) + (M && M.lastError ? ' · ERROR ' + M.lastError.message : ''), A.ctx && A.ctx.state === 'running' ? null : '#fc6']);
+      }
+      L.push(['view: ' + R.bufW + '×' + R.bufH + ' at ' + R.res.toFixed(2) + (R.resCap ? ' (lowered)' : '') + ' · ' + this.browser()]);
       if (performance.memory) L.push(['heap ' + (performance.memory.usedJSHeapSize / 1048576).toFixed(0) + ' / ' + (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0) + ' MB']);
       L.push(['F3 hides', '#888']);
       // panel
-      const s = Math.max(1, Math.round((R.dpr || 1) * 10) / 10), lh = 14 * s, pad = 8 * s, w = 380 * s, gh = 46 * s;
+      const s = Math.max(1, Math.round((R.dpr || 1) * 10) / 10), lh = 14 * s, pad = 8 * s, w = 420 * s, gh = 46 * s;
       const h = pad * 2 + L.length * lh + gh + 6 * s, x = R.canvas.width - w - 10 * s, y = 10 * s;
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.globalAlpha = 0.82; ctx.fillStyle = '#0a0c10'; ctx.fillRect(x, y, w, h); ctx.globalAlpha = 1;

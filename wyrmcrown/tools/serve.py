@@ -81,10 +81,26 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(result)));self.end_headers();self.wfile.write(result)
         except (ValueError,TypeError,KeyError) as error:self.send_error(400,str(error))
 
+def open_game(url,default_only=False):
+    # The game is tuned and tested in Chromium browsers (Edge ships with Windows):
+    # their canvas drawing is much faster and the recorded sound plays reliably.
+    if not default_only and os.name=='nt':
+        roots=[os.environ.get(k,'') for k in ('PROGRAMFILES(X86)','PROGRAMFILES','LOCALAPPDATA')]
+        for rel in (r'Google\Chrome\Application\chrome.exe',r'Microsoft\Edge\Application\msedge.exe'):
+            for root in roots:
+                exe=os.path.join(root,rel) if root else ''
+                if exe and os.path.isfile(exe):
+                    try:
+                        import subprocess
+                        subprocess.Popen([exe,url]);return
+                    except OSError:pass
+    webbrowser.open(url)
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port',type=int,default=8766)
-    parser.add_argument('--open',action='store_true',help='Open the game in your default browser')
+    parser.add_argument('--open',action='store_true',help='Open the game in Edge or Chrome (else your default browser)')
+    parser.add_argument('--default-browser',action='store_true',help='Open in your default browser even if Edge or Chrome is installed')
     args=parser.parse_args()
     root=Path(__file__).resolve().parents[2]
     handler=functools.partial(Handler,directory=str(root))
@@ -94,7 +110,7 @@ def main():
     print(f'Dragon Wars: {url}',flush=True)
     print(f'Audio review: http://127.0.0.1:{port}/wyrmcrown/tools/audio-review.html',flush=True)
     if args.open:
-        threading.Timer(.3,lambda:webbrowser.open(url)).start()
+        threading.Timer(.3,lambda:open_game(url,args.default_browser)).start()
     try:server.serve_forever()
     except KeyboardInterrupt:pass
     finally:server.server_close()

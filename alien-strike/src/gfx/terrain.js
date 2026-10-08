@@ -213,7 +213,7 @@
       if (ss) for (const d of ss) this.paintDecal(cv, cx, cy, d);
       const ds = this.decals.get(key);
       if (ds) for (const d of ds) this.paintDecal(cv, cx, cy, d);
-      if (this.cache.size > this.maxCache) this.evict();
+      if (this.cache.size > Math.max(this.maxCache, this.needCache || 0)) this.evict();
     }
     /* Incrementally generate queued chunks within a time budget (ms). */
     work(budget, queue) {
