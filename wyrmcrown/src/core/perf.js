@@ -89,6 +89,12 @@
         const life = g.life ? (g.life.animals.length + g.life.people.length + (g.life.critters ? g.life.critters.length : 0)) : 0;
         L.push(['AI/updates: troops ' + g.troops.length + '  dragons ' + g.dragons.length + '  life ' + life]);
         L.push(['buildings ' + g.buildings.length + '  drawn ' + R.drawList.length + '  lights ' + (R.lastLights || 0)]);
+        if (g.lw) {
+          // the Large World Test: where the dragon is, and how much of the world is awake
+          const C = g.lw.counts, p = g.player;
+          L.push(['world: x ' + Math.round(p.x) + ' y ' + Math.round(p.y) + ' (' + (p.x * 0.00025).toFixed(2) + ', ' + (p.y * 0.00025).toFixed(2) + ' km) · forces spawned ' + C.spawnedGroups + ' of ' + (C.groups || 0)]);
+          L.push(['troops: ' + C.total + ' exist · ' + C.active + ' running AI · ' + C.asleep + ' asleep · ' + C.visible + ' on screen (drawn + animated)']);
+        }
       }
       L.push(['particles ' + AS.Particles.pool.active.length + '/' + AS.Particles.pool.capacity + '  projectiles ' + AS.Proj.pool.active.length + '/' + AS.Proj.pool.capacity]);
       if (T) {

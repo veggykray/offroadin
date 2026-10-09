@@ -87,6 +87,8 @@
       if (AS.Scenery) AS.Scenery.init(this);
       // Conquest: the defenders and the player's army take the field
       if (CQ) CQ.setup(this);
+      // the Large World Test streams its armies in and out (src/game/largeworld.js)
+      if (m.largeWorld && AS.LargeWorld) AS.LargeWorld.setup(this);
       // the ground is final: start the terrain workers now, so they are up (and forging
       // their trees and rocks) by the time the match begins. Until then the loading
       // screen shades the opening view here, exactly.
@@ -115,7 +117,7 @@
       if (AS.Renderer && AS.Renderer.bctx) AS.Forge.exactly(() => AS.Renderer.renderWorld(this, 0));
       this.primeMs = performance.now() - t0;
       this.terrain.syncOK = false;
-      this.tacMap = this.terrain.buildMap(24);
+      this.tacMap = this.terrain.buildMap(m.tacScale || 24); // (a very large map uses a coarser war-map image)
       this.terrain.overview = this.tacMap; // the last-resort stand-in for a chunk not yet shaded
       this.updateRegion(0, true);
       this.events.emit('loaded');
@@ -245,7 +247,15 @@
       this.time += dt;
       this.rebuildGrid();
       for (const d of this.dragons) d.update(dt);
-      for (let i = this.troops.length - 1; i >= 0; i--) { const t = this.troops[i]; if (t.removed) { this.troops.splice(i, 1); continue; } t.update(dt); }
+      // a large map (map.simR) lets troops far from the dragon sleep: no AI, no movement, until it comes near
+      const simR2 = this.map.simR ? this.map.simR * this.map.simR : 0, wakeAt = this.player;
+      for (let i = this.troops.length - 1; i >= 0; i--) {
+        const t = this.troops[i];
+        if (t.removed) { this.troops.splice(i, 1); continue; }
+        if (simR2 && wakeAt && t.team !== this.playerKey) { const dx = t.x - wakeAt.x, dy = t.y - wakeAt.y; if (dx * dx + dy * dy > simR2) { t.dormant = true; continue; } }
+        t.dormant = false;
+        t.update(dt);
+      }
       for (let i = this.buildings.length - 1; i >= 0; i--) { const b = this.buildings[i]; if (b.removed) { this.buildings.splice(i, 1); continue; } b.update(dt); }
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }
@@ -278,6 +288,7 @@
       this.updateMusic(dt);
       // a Conquest battle has its own victory and defeat (the site, the dragon, the camp)
       if (this.opts.conquest && AS.Conquest && AS.Conquest.Battle) AS.Conquest.Battle.update(this, dt);
+      else if (this.map.largeWorld && AS.LargeWorld) AS.LargeWorld.update(this, dt); // a sandbox: no victory, no defeat
       else if (AS.Factions && AS.Factions.checkVictory) AS.Factions.checkVictory(this);
       if (this.state === 'ending') { this.endT -= dt; if (this.endT <= 0) this.finish(); }
     }

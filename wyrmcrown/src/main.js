@@ -34,7 +34,8 @@
       window.addEventListener('keydown', unlockAudio);
       document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === 'play') this.pause(); });
       requestAnimationFrame((t) => this.loop(t));
-      const m = this.params.get('map');
+      // ?world=large starts the Large World Test (&bench=A…H or all, &pop=N for the crowd test)
+      const m = this.params.get('world') === 'large' ? 'largeworld' : this.params.get('map');
       const direct = m && AS.Maps.byId[m];
       if (AS.UI) AS.UI.boot(!direct);
       if (direct) {

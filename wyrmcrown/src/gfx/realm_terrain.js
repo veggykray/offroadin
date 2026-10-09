@@ -284,6 +284,7 @@
           }
         }
         for (const l of lakes) {
+          if (l.after) continue; // (an inland lake on an island: applied after the islands below)
           const ang = Math.atan2(y - l.y, x - l.x);
           const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
           const dx = (x - l.x) / (l.sx || 1), dy = (y - l.y) / (l.sy || 1);
@@ -296,6 +297,13 @@
           const rr = l.r * (1 + 0.2 * U.noise2(Math.cos(ang) * 1.8 + l.x * 0.001, Math.sin(ang) * 1.8 + l.y * 0.001, sd + 19));
           const d = rr - Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1));
           wd = Math.max(wd, d);
+        }
+        for (const l of lakes) {
+          if (!l.after) continue;
+          const ang = Math.atan2(y - l.y, x - l.x);
+          const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
+          const d = Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1)) - rr;
+          if (d < wd) wd = d;
         }
         wd += U.noise2(x / 140, y / 140, sd + 17) * 14;
         this.gWater[k] = wd;
