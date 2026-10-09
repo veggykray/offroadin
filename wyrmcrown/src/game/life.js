@@ -69,6 +69,8 @@
     ANIMALS, CRITTERS,
     init(g) {
       const L = g.life = { animals: [], people: [], critters: [], flocks: [], grid: new U.Grid(96), t: 0, coarse: 0 };
+      // a streamed map fills its wilds area by area as the dragon comes (loadCell, from src/game/stream.js)
+      if (g.map.stream) return;
       // wild herds from the map
       for (const h of g.map.wild || []) if (ANIMALS[h.k]) this.herd(g, h.k, h.x, h.y, h.n || 4, null, h.r || 220);
       // each realm's own wildlife, and the small creatures of the grass
@@ -82,6 +84,24 @@
         this.flock(g, x, y, rng);
       }
     },
+    /* one area of a streamed map: its herds from the map, the realm's own beasts, the
+     * small creatures and a flock or two — all tagged with the area, so they can go again */
+    loadCell(g, C) {
+      const L = g.life, rng = new U.RNG(((g.map.seed || 1) * 613 + C.cx * 7919 + C.cy * 104729) >>> 0);
+      const a0 = L.animals.length, c0 = L.critters.length, f0 = L.flocks.length;
+      for (const h of g.map.wild || []) if (ANIMALS[h.k] && h.x >= C.x0 && h.x < C.x1 && h.y >= C.y0 && h.y < C.y1) this.herd(g, h.k, h.x, h.y, h.n || 4, null, h.r || 220);
+      this.wildByRegion(g, rng, C);
+      const nF = (C.x1 - C.x0) * (C.y1 - C.y0) / 2.4e6;
+      for (let i = Math.floor(nF + rng.next()); i > 0; i--) this.flock(g, rng.range(C.x0, C.x1), rng.range(C.y0, C.y1), rng);
+      C.animals = L.animals.slice(a0); C.critters = L.critters.slice(c0); C.flocks = L.flocks.slice(f0);
+    },
+    unloadCell(g, C) {
+      const L = g.life;
+      for (const o of C.animals || []) if (!o.carried && !o.owner) o.alive = false;
+      for (const o of C.critters || []) if (!o.carried) o.alive = false;
+      if (C.flocks && C.flocks.length) { const gone = new Set(C.flocks); L.flocks = L.flocks.filter((f) => !gone.has(f)); }
+      C.animals = C.critters = C.flocks = null;
+    },
     herd(g, k, x, y, n, owner, r) {
       const L = g.life, A = ANIMALS[k];
       const herd = { x, y, r: r || 140, owner: owner || null, k };
@@ -94,9 +114,11 @@
       return herd;
     },
     /* herds of the realm's own beasts in open country, and critters near woods and fields */
-    wildByRegion(g) {
-      const T = g.terrain, rng = new U.RNG((g.map.seed || 1) * 613 + 7);
-      const area = g.map.w * g.map.h / 1e8;
+    wildByRegion(g, rngIn, C) {
+      const T = g.terrain, rng = rngIn || new U.RNG((g.map.seed || 1) * 613 + 7);
+      // (C: one area of a streamed map; otherwise the whole map)
+      const X0 = C ? C.x0 : 300, Y0 = C ? C.y0 : 300, X1 = C ? C.x1 : g.map.w - 300, Y1 = C ? C.y1 : g.map.h - 300;
+      const area = (C ? (X1 - X0) * (Y1 - Y0) : g.map.w * g.map.h) / 1e8;
       const WILD = {
         human: [['greatstag', 2, 3], ['aurochs', 2, 4]], neutral: [['greatstag', 1, 2], ['aurochs', 1, 3]],
         elf: [['glimmerdeer', 3, 4], ['marshcroaker', 2, 3], ['elderhorn', 2, 1]],
@@ -104,7 +126,7 @@
         undead: [['bloatling', 2, 1], ['stiltstrider', 2, 1]],
       };
       const CR = { human: ['hare', 'fox'], neutral: ['hare', 'fox'], elf: ['hare', 'fox'], ice: ['snowhare'], undead: ['rat'] };
-      const towns = g.factionList.map((F) => F.townPos), sites = g.sites || [];
+      const towns = g.factionList.map((F) => F.townPos), sites = C ? (g.sites || []).filter((q) => q.x > X0 - 600 && q.x < X1 + 600 && q.y > Y0 - 600 && q.y < Y1 + 600) : g.sites || [];
       const open = (x, y, water) => {
         if (x < 300 || y < 300 || x > g.map.w - 300 || y > g.map.h - 300) return false;
         if (!T.groundPassable(x, y) || T.kindFast(x, y) !== 0) return false;
@@ -118,11 +140,11 @@
       for (const bk in WILD) for (const [k, per, n] of WILD[bk]) {
         const A = ANIMALS[k];
         if (!A || !AS.Models[A.gen]) continue;
-        const want = Math.max(1, Math.round(per * area));
+        const want = C ? Math.floor(per * area + rng.next()) : Math.max(1, Math.round(per * area));
         let made = 0, tries = 0;
-        while (made < want && tries < 120) {
+        while (made < want && tries < (C ? 24 : 120)) {
           tries++;
-          const x = rng.range(300, g.map.w - 300), y = rng.range(300, g.map.h - 300);
+          const x = rng.range(X0, X1), y = rng.range(Y0, Y1);
           if (T.biomeKey(x, y) !== bk || !open(x, y, k === 'marshcroaker' || k === 'bloatling')) continue;
           if (T.gs(T.gForest, x, y) > (bk === 'elf' ? 0.75 : 0.45)) continue;
           this.herd(g, k, x, y, n, null, 200);
@@ -130,11 +152,11 @@
         }
       }
       for (const bk in CR) {
-        const want = Math.round(4 * area);
+        const want = C ? Math.floor(4 * area + rng.next()) : Math.round(4 * area);
         let made = 0, tries = 0;
-        while (made < want && tries < 80) {
+        while (made < want && tries < (C ? 20 : 80)) {
           tries++;
-          const x = rng.range(300, g.map.w - 300), y = rng.range(300, g.map.h - 300);
+          const x = rng.range(X0, X1), y = rng.range(Y0, Y1);
           if (T.biomeKey(x, y) !== bk || !T.groundPassable(x, y) || T.kindFast(x, y) !== 0) continue;
           const kinds = CR[bk].filter((c) => AS.Models[CRITTERS[c].gen]);
           if (!kinds.length) break;
@@ -219,11 +241,16 @@
       const threats = this._thr || (this._thr = []);
       threats.length = 0;
       for (const d of g.dragons) if (d.targetable && d.z < 95) threats.push(d);
+      // a large map (map.simR) lets life far from the dragon (and any campaign army) sleep
+      const simR = g.map.simR ? g.map.simR * (g.highFlight ? 1.5 : 1) : 0, sr2 = simR * simR;
+      const asleep = simR ? (o) => { const dx = o.x - p.x, dy = o.y - p.y; return dx * dx + dy * dy > sr2 && !(g.nearWake && g.nearWake(o, 1600)); } : null;
       for (let i = L.animals.length - 1; i >= 0; i--) {
         const o = L.animals[i];
         if (!o.alive) { L.animals.splice(i, 1); continue; }
         if (o.carried) continue;
         if (o.dead) { o.dead += dt; if (o.dead > 30) o.alive = false; L.grid.insert(o); continue; }
+        if (asleep && coarseTick && asleep(o)) { o.sleep = true; continue; }
+        if (o.sleep) { if (coarseTick) o.sleep = false; else continue; }
         const full = near(o);
         if (full) this.updateAnimal(g, o, dt, threats);
         else if (coarseTick) this.updateAnimal(g, o, 0.5, threats, true);
@@ -233,6 +260,8 @@
         const o = L.critters[i];
         if (!o.alive) { L.critters.splice(i, 1); continue; }
         if (o.dead) { o.dead += dt; if (o.dead > 12) o.alive = false; continue; }
+        if (asleep && coarseTick && asleep(o)) { o.sleep = true; continue; }
+        if (o.sleep) { if (coarseTick) o.sleep = false; else continue; }
         if (near(o)) this.updateAnimal(g, o, dt, threats);
         else if (coarseTick) this.updateAnimal(g, o, 0.5, threats, true);
         L.grid.insert(o);
@@ -240,11 +269,13 @@
       for (let i = L.people.length - 1; i >= 0; i--) {
         const o = L.people[i];
         if (!o.alive) { L.people.splice(i, 1); continue; }
+        if (asleep && coarseTick && asleep(o)) { o.sleep = true; continue; }
+        if (o.sleep) { if (coarseTick) o.sleep = false; else continue; }
         if (near(o)) this.updatePerson(g, o, dt, threats);
         else if (coarseTick) this.updatePerson(g, o, 0.5, threats, true);
         if (!o.hidden) L.grid.insert(o);
       }
-      for (const f of L.flocks) this.updateFlock(g, f, dt, near(f));
+      for (const f of L.flocks) { if (asleep && asleep(f)) continue; this.updateFlock(g, f, dt, near(f)); }
     },
     updateAnimal(g, o, dt, threats, coarse) {
       const A = o.A;

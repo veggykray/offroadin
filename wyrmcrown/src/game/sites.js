@@ -16,6 +16,9 @@
   // site models whose banners and flags show the owner's colours
   const COLOURED = { prop_banner: 1, site_goldmine: 1, site_villagehall: 1, site_fort: 1, site_tradepost: 1, site_oldwatch: 1, site_castle: 1 };
 
+  // where the banner of a place not yet built would stand (its real one is placed by build)
+  const x0 = (s) => s.x + (s.def.r || 40) * 0.55 + 10, y0 = (s) => s.y + (s.def.r || 40) * 0.35 + 8;
+
   class Site {
     constructor(g, s) {
       this.g = g; this.spec = s; this.id = s.id; this.kind = s.k; this.def = AS.Data.sites[s.k];
@@ -28,8 +31,44 @@
       this.capR = this.def.capR;
       this.t = Math.random() * 10;
       this.looted = false; this.respawnT = 0;
-      this.build();
-      this.spawnGuards();
+      // a streamed map (map.stream) builds a place only while the dragon is near it
+      // (src/game/stream.js): until then it is data — owner, control, income, and the
+      // guardians still standing (guardLeft)
+      this.guardLeft = (s.guard || []).map((q) => q.slice());
+      this.loaded = false;
+      if (g.map.stream) this.bannerPos = { x: x0(this), y: y0(this) };
+      else this.load();
+    }
+    load() {
+      if (this.loaded) return;
+      const g = this.g, T = g.terrain;
+      // the ground marks (fields, plaza, pasture…) are laid once; a place built again keeps them
+      const add = T.addDecal;
+      if (this.marked) T.addDecal = function () { return {}; };
+      try { this.build(); } finally { T.addDecal = add; }
+      this.marked = true;
+      this.loaded = true;
+      if (!(this.def.treasure && this.looted)) this.spawnGuards();
+      if (this.owner && this.def.garrison) this.musterGarrison();
+      this.recolour = !!this.owner;
+      if (this.chest && this.looted) this.chest.hidden = true;
+    }
+    // pack the place back into data (the dragon flew far away)
+    unload() {
+      if (!this.loaded) return;
+      const g = this.g, left = {};
+      for (const u of this.guards) if (u.alive && !u.removed) { left[u.role] = (left[u.role] || 0) + 1; }
+      if (!(this.def.treasure && this.looted)) this.guardLeft = Object.keys(left).map((k) => [k, left[k]]);
+      for (const u of this.guards.concat(this.garrison)) { u.alive = false; u.removed = true; }
+      for (const B of this.structures) {
+        B.alive = false; B.removed = true;
+        const i = g.solids.indexOf(B); if (i >= 0) g.solids.splice(i, 1);
+      }
+      if (this.herd) for (const o of g.life.animals) if (o.herd === this.herd && !o.carried) o.alive = false;
+      if (this.people) for (const o of g.life.people) if (o.home && o.home.x === this.x && o.home.y === this.y) o.alive = false;
+      this.guards = []; this.garrison = []; this.structures = [];
+      this.banner = null; this.chest = null; this.herd = null; this.people = false; this.fields = null;
+      this.loaded = false;
     }
     get isSite() { return true; }
 
@@ -98,7 +137,8 @@
     }
     spawnGuards() {
       const g = this.g;
-      for (const [kind, n] of this.spec.guard || []) {
+      if (!this.loaded) { this.guardLeft = (this.spec.guard || []).map((q) => q.slice()); return; } // (a place not built: its guards return as data)
+      for (const [kind, n] of g.map.stream ? this.guardLeft : this.spec.guard || []) {
         for (let i = 0; i < n; i++) {
           const a = i / Math.max(1, n) * TAU + Math.random(), r = 30 + Math.random() * 60;
           const u = new AS.Troop(g, kind, 'wild', this.x + Math.cos(a) * r, this.y + Math.sin(a) * r * 0.8, { site: this, state: 'guard' });
@@ -107,7 +147,10 @@
         }
       }
     }
-    guarded() { for (const u of this.guards) if (u.alive) return true; return false; }
+    guarded() {
+      if (!this.loaded) { for (const q of this.guardLeft) if (q[1] > 0) return true; return false; }
+      for (const u of this.guards) if (u.alive) return true; return false;
+    }
     onGuardKilled(u, src) {
       if (!this.guarded() && src && src.team && src.team !== 'wild') {
         const F = this.g.factions[src.team];
@@ -129,7 +172,14 @@
       // garrisons for forts and castles
       for (const u of this.garrison) if (u.alive) u.takeDamage(1e6, 'disband', null);
       this.garrison = [];
-      if (fk && this.def.garrison) {
+      if (fk && this.def.garrison && this.loaded) this.musterGarrison();
+      this.stock = 0;
+      if (silent) return;
+      this.announce(fk, prev);
+    }
+    musterGarrison() {
+      const g = this.g, fk = this.owner;
+      {
         const F = g.factions[fk];
         for (let i = 0; i < this.def.garrison; i++) {
           const a = i / this.def.garrison * TAU, role = i % 2 ? 'archer' : 'soldier';
@@ -138,8 +188,9 @@
           g.troops.push(u); F.troops.push(u); this.garrison.push(u);
         }
       }
-      this.stock = 0;
-      if (silent) return;
+    }
+    announce(fk, prev) {
+      const g = this.g;
       const F = fk && g.factions[fk];
       if (F) {
         const player = fk === g.playerKey, lost = prev === g.playerKey;
@@ -182,7 +233,7 @@
       // treasure sites reset after a while
       if (this.def.treasure && this.looted) {
         this.respawnT -= dt;
-        if (this.respawnT <= 0) { this.looted = false; this.spawnGuards(); if (this.chest) this.chest.hidden = false; }
+        if (this.respawnT <= 0) { this.looted = false; this.guardLeft = (this.spec.guard || []).map((q) => q.slice()); this.spawnGuards(); if (this.chest) this.chest.hidden = false; }
         return;
       }
       // ---- the contest

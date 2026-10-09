@@ -313,12 +313,19 @@
 
     // one texel per fog cell, refreshed twice a second; drawn smoothed
     fogLayer(g) {
-      if (!this.fog || this.fog.width !== g.fogW || this.fog.height !== g.fogH) { this.fog = AS.Forge.canvas(g.fogW, g.fogH); this.fogT = -1; }
-      if (g.time - this.fogT > 0.5 || this.fogG !== g) {
-        this.fogT = g.time; this.fogG = g;
-        const c = this.fog.getContext('2d'), img = c.createImageData(g.fogW, g.fogH), D = img.data;
+      if (!this.fog || this.fog.width !== g.fogW || this.fog.height !== g.fogH) { this.fog = AS.Forge.canvas(g.fogW, g.fogH); this.fogT = -1; this.fogG = null; }
+      if (this.fogG !== g || !this.fogImg) {
+        // the whole layer once per realm (or after a load restored the explored grid)…
+        this.fogT = g.time; this.fogG = g; g.fogDirty = null;
+        const c = this.fog.getContext('2d'), img = this.fogImg = c.createImageData(g.fogW, g.fogH), D = img.data;
         for (let i = 0; i < g.explored.length; i++) { D[i * 4] = 12; D[i * 4 + 1] = 8; D[i * 4 + 2] = 6; D[i * 4 + 3] = g.explored[i] ? 0 : 170; }
         c.putImageData(img, 0, 0);
+      } else if (g.fogDirty && g.time - this.fogT > 0.5) {
+        // …then only the part newly explored
+        this.fogT = g.time;
+        const R = g.fogDirty, D = this.fogImg.data, W = g.fogW; g.fogDirty = null;
+        for (let j = R[1]; j <= R[3]; j++) for (let i = R[0]; i <= R[2]; i++) D[(j * W + i) * 4 + 3] = g.explored[j * W + i] ? 0 : 170;
+        this.fog.getContext('2d').putImageData(this.fogImg, 0, 0, R[0], R[1], R[2] - R[0] + 1, R[3] - R[1] + 1);
       }
       return this.fog;
     },

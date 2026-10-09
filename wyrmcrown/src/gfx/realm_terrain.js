@@ -13,6 +13,12 @@
   const CH = AS.Terrain.CH;
   const BIOMES = ['human', 'elf', 'ice', 'undead', 'neutral'];
   const GC = 32; // lookup grid cell (world units)
+  // a streamed map (map.stream: one far larger than a battle map) keeps its lookup grids
+  // in tiles of TS × TS cells (2048 units), built the first time something looks there
+  // and dropped again when not used (least recently used first)
+  const TS = 64, TN = TS + 1;
+  const IS_WORKER = typeof document === 'undefined';
+  const NONE = [];
 
   // per-biome ground colour by terrace level (0 = lowest) and accents
   const LOOK = {
@@ -66,12 +72,15 @@
     constructor(world, map) {
       // the base constructor flattens zones via field(), which needs the grids:
       // build them first from the map, then run the base constructor body
-      super(world, Object.assign({}, map, { zones: [] }));
+      // (a streamed map skips the base's whole-map kind grid: its kinds live in the tiles)
+      super(world, Object.assign({}, map, { zones: [] }, map.stream ? { w: 64, h: 64 } : null));
+      if (map.stream) { this.W = map.w; this.H = map.h; this.typeGrid = null; }
       this.map = map;
       this.biomeNames = BIOMES;
       this.buildGrids(map);
       this.zones = (map.zones || []).map((z) => Object.assign({ r: 120, h: null, soft: 1.5 }, z));
-      for (const z of this.zones) this.zoneLevel(z);
+      // (a streamed map levels each zone the first time the ground there is shaded: see field)
+      if (!map.stream) for (const z of this.zones) this.zoneLevel(z);
       this.bridges = []; // [{x0,y0,x1,y1,w}] corridors that make water passable
       this.sseq = 0;     // static decals are numbered (see store / the terrain worker)
     }
@@ -95,7 +104,8 @@
         for (const d of sd) if (!d.seq) d.seq = ++this.sseq;
         // the lookup grids go along (copied), so the workers do not spend seconds rebuilding
         // them; so do the footprints kept free of trees (buildings, landmarks, scenery)
-        const grids = { gw: this.gw, gh: this.gh, gWater: this.gWater, gMount: this.gMount, gForest: this.gForest, gBiome: this.gBiome, gRoad: this.gRoad, gField: this.gField, rivers: this.rivers, ridges: this.ridges, roadLines: this.roadLines };
+        // (a streamed map sends none: each worker builds the tiles it needs from the features)
+        const grids = this.gtiles ? null : { gw: this.gw, gh: this.gh, gWater: this.gWater, gMount: this.gMount, gForest: this.gForest, gBiome: this.gBiome, gRoad: this.gRoad, gField: this.gField, rivers: this.rivers, ridges: this.ridges, roadLines: this.roadLines };
         this._sentClear = this.clearAreas.length;
         const init = { type: 'init', world: this._args.world, map: this._args.map, zones: this.zones, bridges: this.bridges, sdecals: [...sd], forgeRes: AS.Forge.res, grids, clearAreas: this.clearAreas, clearSegs: this.clearSegs };
         const pool = [];
@@ -116,6 +126,7 @@
     }
     onWorker(r, w) {
       if (r.type === 'ready') { w.ready = r.ms; return; }
+      if (r.type === 'tile') { this.tileArrived(r, w); return; }
       if (r.type === 'kinds') { this.wkKinds = new Set(r.kinds); return; }
       w.busy--;
       if (r.far) {
@@ -310,142 +321,319 @@
     }
 
     /* ---------- authored geography → lookup grids ---------- */
+    // the authored features, resampled (shared by the whole-map grids and the streamed tiles)
+    features(map) {
+      const rivers = (map.rivers || []).map((r) => ({ w: r.w || 60, pts: smoothLine(r.pts.map((p) => [p[0], p[1], p[2] !== undefined ? p[2] : (r.w || 60)]), 60) }));
+      this.rivers = rivers;
+      const ridges = (map.mountains || []).map((m) => ({ w: m.w || 420, hgt: m.h || 1, pts: smoothLine(m.pts, 90) }));
+      this.ridges = ridges;
+      const roads = (map.roads || []).map((r) => smoothLine(r.pts || r, 70));
+      this.roadLines = roads;
+      return { rivers, ridges, lakes: map.lakes || [], islands: map.islands || [], roads, regions: map.regions || [], forests: map.forests || [], fields: map.fields || [], clear: map.clearings || [] };
+    }
     buildGrids(map) {
+      const Fe = this.features(map);
+      if (map.stream) return this.streamInit(Fe);
       const gw = this.gw = Math.ceil(this.W / GC) + 2, gh = this.gh = Math.ceil(this.H / GC) + 2, N = gw * gh;
-      const sd = this.seed;
       this.gWater = new Float32Array(N);   // signed distance to open water (negative = water)
       this.gMount = new Float32Array(N);   // mountain uplift 0..1
       this.gForest = new Float32Array(N);  // forest density 0..1
       this.gBiome = new Float32Array(N * 5); // soft region weights
       this.gRoad = new Float32Array(N);    // distance to the nearest road centre line
       this.gField = new Uint8Array(N);     // farmland / no-tree mask
-      const rivers = (map.rivers || []).map((r) => ({ w: r.w || 60, pts: smoothLine(r.pts.map((p) => [p[0], p[1], p[2] !== undefined ? p[2] : (r.w || 60)]), 60) }));
-      this.rivers = rivers;
-      const ridges = (map.mountains || []).map((m) => ({ w: m.w || 420, hgt: m.h || 1, pts: smoothLine(m.pts, 90) }));
-      this.ridges = ridges;
-      const lakes = map.lakes || [], islands = map.islands || [];
-      const roads = (map.roads || []).map((r) => smoothLine(r.pts || r, 70));
-      this.roadLines = roads;
-      const regions = map.regions || [];
-      const forests = map.forests || [];
-      const fields = map.fields || [];
-      const clear = map.clearings || [];
       const tmpW = new Float32Array(5);
-      for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
-        const x = (i - 1) * GC + GC / 2, y = (j - 1) * GC + GC / 2, k = j * gw + i;
-        // water: rivers (variable width) and lakes, with a wobbly shoreline
-        let wd = 1e9;
-        for (const r of rivers) {
-          const p = r.pts;
-          for (let s = 0; s < p.length - 1; s++) {
-            const a = p[s], b = p[s + 1];
-            if (Math.abs(x - a[0]) > 900 && Math.abs(x - b[0]) > 900) continue;
-            if (Math.abs(y - a[1]) > 900 && Math.abs(y - b[1]) > 900) continue;
-            const d = Math.sqrt(segDist2(x, y, a[0], a[1], b[0], b[1])) - (a[2] + b[2]) * 0.25;
-            if (d < wd) wd = d;
-          }
-        }
-        for (const l of lakes) {
-          if (l.after) continue; // (an inland lake on an island: applied after the islands below)
-          const ang = Math.atan2(y - l.y, x - l.x);
-          const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
-          const dx = (x - l.x) / (l.sx || 1), dy = (y - l.y) / (l.sy || 1);
-          const d = Math.hypot(dx, dy) - rr;
-          if (d < wd) wd = d;
-        }
-        // islands: land that rises out of a lake or sea (land wins inside them)
-        for (const l of islands) {
-          const ang = Math.atan2(y - l.y, x - l.x);
-          const rr = l.r * (1 + 0.2 * U.noise2(Math.cos(ang) * 1.8 + l.x * 0.001, Math.sin(ang) * 1.8 + l.y * 0.001, sd + 19));
-          const d = rr - Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1));
-          wd = Math.max(wd, d);
-        }
-        for (const l of lakes) {
-          if (!l.after) continue;
-          const ang = Math.atan2(y - l.y, x - l.x);
-          const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
-          const d = Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1)) - rr;
-          if (d < wd) wd = d;
-        }
-        wd += U.noise2(x / 140, y / 140, sd + 17) * 14;
-        this.gWater[k] = wd;
-        // mountains: ridged uplift along authored ridge lines
-        let mt = 0;
-        for (const m of ridges) {
-          const p = m.pts;
-          for (let s = 0; s < p.length - 1; s++) {
-            const a = p[s], b = p[s + 1];
-            const d2 = segDist2(x, y, a[0], a[1], b[0], b[1]);
-            if (d2 > m.w * m.w * 2.2) continue;
-            const t = 1 - Math.sqrt(d2) / (m.w * 1.4);
-            if (t > 0) mt = Math.max(mt, U.smooth(Math.min(1, t)) * m.hgt);
-          }
-        }
-        if (mt > 0) mt *= 0.65 + 0.55 * U.ridged(x / 520, y / 520, 3, sd + 23);
-        this.gMount[k] = Math.min(1.3, mt);
-        // regions: weighted Voronoi with warped distances and a soft-max blend
-        const wx = x + U.noise2(x / 1700, y / 1700, sd + 31) * 520, wy = y + U.noise2(x / 1700 + 7.7, y / 1700, sd + 32) * 520;
-        tmpW.fill(0);
-        let tot = 0;
-        if (regions.length) {
-          let best = 1e9;
-          const sc = [];
-          for (const r of regions) { const d = Math.hypot(wx - r.x, wy - r.y) / (r.r || 2400); sc.push(d); if (d < best) best = d; }
-          for (let q = 0; q < regions.length; q++) {
-            const e = Math.exp(-(sc[q] - best) * 9);
-            tmpW[BIOMES.indexOf(regions[q].biome)] += e; tot += e;
-          }
-        } else { tmpW[4] = 1; tot = 1; }
-        for (let q = 0; q < 5; q++) this.gBiome[k * 5 + q] = tmpW[q] / tot;
-        // forests: authored blobs + biome default cover modulated by noise
-        let fo = 0;
-        for (const f of forests) {
-          const d = Math.hypot((x - f.x) / (f.sx || 1), (y - f.y) / (f.sy || 1)) / f.r;
-          const edge = 0.75 + U.noise2(x / 260, y / 260, sd + 41) * 0.35;
-          if (d < edge) fo = Math.max(fo, (f.d || 1) * U.smoothstep(edge, edge * 0.55, d));
-        }
-        const cover = { human: 0.12, elf: 0.55, ice: 0.32, undead: 0.28, neutral: 0.14 };
-        let base = 0;
-        for (let q = 0; q < 5; q++) base += this.gBiome[k * 5 + q] * cover[BIOMES[q]];
-        const n = U.fbm(x / 900, y / 900, 3, sd + 43);
-        fo = Math.max(fo, U.clamp((n + base - 0.18) * 2.2, 0, 1) * Math.min(1, base * 2.2));
-        // glades: sunlit clearings opened in the woods, most of all in the old forest
-        const gl = U.fbm(x / 430, y / 430, 2, sd + 44);
-        const elfK = this.gBiome[k * 5 + 1];
-        const glade = U.smoothstep(0.32 - elfK * 0.12, 0.62, gl);
-        fo *= 1 - glade * (0.55 + elfK * 0.4);
-        if (mt > 0.55) fo *= U.clamp(1.6 - mt * 1.4, 0, 1); // tree line
-        this.gForest[k] = fo;
-        // farmland and clearings keep trees out
-        let fm = 0;
-        for (const f of fields) if (Math.hypot(x - f.x, y - f.y) < f.r) { fm = 1; break; }
-        for (const c of clear) if (Math.hypot(x - c.x, y - c.y) < c.r) { fm = 2; break; }
-        this.gField[k] = fm;
-        // roads
-        let rd = 1e9;
-        for (const p of roads) for (let s = 0; s < p.length - 1; s++) {
+      for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) this.cellInto(Fe, (i - 1) * GC + GC / 2, (j - 1) * GC + GC / 2, j * gw + i, this, tmpW);
+    }
+    // one lookup cell at (x, y) → index k of the arrays in A
+    cellInto(Fe, x, y, k, A, tmpW) {
+      const sd = this.seed;
+      const { rivers, ridges, lakes, islands, roads, regions, forests, fields, clear } = Fe;
+      // water: rivers (variable width) and lakes, with a wobbly shoreline
+      let wd = 1e9;
+      if (Fe.pre) wd = Fe.pre.riv[k]; // (a streamed tile: river distances stamped beforehand)
+      else for (const r of rivers) {
+        const p = r.pts;
+        for (let s = 0; s < p.length - 1; s++) {
           const a = p[s], b = p[s + 1];
-          if (Math.abs(x - a[0]) > 300 && Math.abs(x - b[0]) > 300 && Math.sign(x - a[0]) === Math.sign(x - b[0])) continue;
-          if (Math.abs(y - a[1]) > 300 && Math.abs(y - b[1]) > 300 && Math.sign(y - a[1]) === Math.sign(y - b[1])) continue;
-          const d = Math.sqrt(segDist2(x, y, a[0], a[1], b[0], b[1]));
-          if (d < rd) rd = d;
+          if (Math.abs(x - a[0]) > 900 && Math.abs(x - b[0]) > 900) continue;
+          if (Math.abs(y - a[1]) > 900 && Math.abs(y - b[1]) > 900) continue;
+          const d = Math.sqrt(segDist2(x, y, a[0], a[1], b[0], b[1])) - (a[2] + b[2]) * 0.25;
+          if (d < wd) wd = d;
         }
-        this.gRoad[k] = rd;
+      }
+      for (const l of lakes) {
+        if (l.after) continue; // (an inland lake on an island: applied after the islands below)
+        { const hx = (x - l.x) / (l.sx || 1), hy = (y - l.y) / (l.sy || 1); if (Math.sqrt(hx * hx + hy * hy) - l.r * 1.17 >= wd) continue; }
+        const ang = Math.atan2(y - l.y, x - l.x);
+        const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
+        const dx = (x - l.x) / (l.sx || 1), dy = (y - l.y) / (l.sy || 1);
+        const d = Math.hypot(dx, dy) - rr;
+        if (d < wd) wd = d;
+      }
+      // islands: land that rises out of a lake or sea (land wins inside them)
+      // (a streamed map reads the sea as no deeper than 800 below the shore: deeper water
+      // looks and behaves the same, and far islands can then be skipped)
+      if (Fe.shallow && wd < -800) wd = -800;
+      for (const l of islands) {
+        // an island whose largest possible reach is below the value so far cannot raise it
+        // (the shoreline noise stays within ±1.05)
+        const sx = l.sx || 1, sy = l.sy || 1, hx = (x - l.x) / sx, hy = (y - l.y) / sy;
+        if (l.r * 1.21 - Math.sqrt(hx * hx + hy * hy) <= wd) continue;
+        const ang = Math.atan2(y - l.y, x - l.x);
+        const rr = l.r * (1 + 0.2 * U.noise2(Math.cos(ang) * 1.8 + l.x * 0.001, Math.sin(ang) * 1.8 + l.y * 0.001, sd + 19));
+        const d = rr - Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1));
+        wd = Math.max(wd, d);
+      }
+      for (const l of lakes) {
+        if (!l.after) continue;
+        { const hx = (x - l.x) / (l.sx || 1), hy = (y - l.y) / (l.sy || 1); if (Math.sqrt(hx * hx + hy * hy) - l.r * 1.17 >= wd) continue; }
+        const ang = Math.atan2(y - l.y, x - l.x);
+        const rr = l.r * (1 + 0.16 * U.noise2(Math.cos(ang) * 1.6 + l.x * 0.001, Math.sin(ang) * 1.6 + l.y * 0.001, sd + 13));
+        const d = Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1)) - rr;
+        if (d < wd) wd = d;
+      }
+      wd += U.noise2(x / 140, y / 140, sd + 17) * 14;
+      A.gWater[k] = wd;
+      // mountains: ridged uplift along authored ridge lines
+      let mt = 0;
+      for (const m of ridges) {
+        const p = m.pts;
+        for (let s = 0; s < p.length - 1; s++) {
+          const a = p[s], b = p[s + 1];
+          const d2 = segDist2(x, y, a[0], a[1], b[0], b[1]);
+          if (d2 > m.w * m.w * 2.2) continue;
+          const t = 1 - Math.sqrt(d2) / (m.w * 1.4);
+          if (t > 0) mt = Math.max(mt, U.smooth(Math.min(1, t)) * m.hgt);
+        }
+      }
+      if (mt > 0) mt *= 0.65 + 0.55 * U.ridged(x / 520, y / 520, 3, sd + 23);
+      A.gMount[k] = Math.min(1.3, mt);
+      // regions: weighted Voronoi with warped distances and a soft-max blend
+      const wx = x + U.noise2(x / 1700, y / 1700, sd + 31) * 520, wy = y + U.noise2(x / 1700 + 7.7, y / 1700, sd + 32) * 520;
+      tmpW.fill(0);
+      let tot = 0;
+      if (regions.length) {
+        let best = 1e9;
+        const sc = [];
+        for (const r of regions) { const d = Math.hypot(wx - r.x, wy - r.y) / (r.r || 2400); sc.push(d); if (d < best) best = d; }
+        for (let q = 0; q < regions.length; q++) {
+          const e = Math.exp(-(sc[q] - best) * 9);
+          tmpW[BIOMES.indexOf(regions[q].biome)] += e; tot += e;
+        }
+      } else { tmpW[4] = 1; tot = 1; }
+      for (let q = 0; q < 5; q++) A.gBiome[k * 5 + q] = tmpW[q] / tot;
+      // forests: authored blobs + biome default cover modulated by noise
+      let fo = 0;
+      for (const f of forests) {
+        const d = Math.hypot((x - f.x) / (f.sx || 1), (y - f.y) / (f.sy || 1)) / f.r;
+        const edge = 0.75 + U.noise2(x / 260, y / 260, sd + 41) * 0.35;
+        if (d < edge) fo = Math.max(fo, (f.d || 1) * U.smoothstep(edge, edge * 0.55, d));
+      }
+      const cover = { human: 0.12, elf: 0.55, ice: 0.32, undead: 0.28, neutral: 0.14 };
+      let base = 0;
+      for (let q = 0; q < 5; q++) base += A.gBiome[k * 5 + q] * cover[BIOMES[q]];
+      const n = U.fbm(x / 900, y / 900, 3, sd + 43);
+      fo = Math.max(fo, U.clamp((n + base - 0.18) * 2.2, 0, 1) * Math.min(1, base * 2.2));
+      // glades: sunlit clearings opened in the woods, most of all in the old forest
+      const gl = U.fbm(x / 430, y / 430, 2, sd + 44);
+      const elfK = A.gBiome[k * 5 + 1];
+      const glade = U.smoothstep(0.32 - elfK * 0.12, 0.62, gl);
+      fo *= 1 - glade * (0.55 + elfK * 0.4);
+      if (mt > 0.55) fo *= U.clamp(1.6 - mt * 1.4, 0, 1); // tree line
+      A.gForest[k] = fo;
+      // farmland and clearings keep trees out
+      let fm = 0;
+      for (const f of fields) if (Math.hypot(x - f.x, y - f.y) < f.r) { fm = 1; break; }
+      for (const c of clear) if (Math.hypot(x - c.x, y - c.y) < c.r) { fm = 2; break; }
+      A.gField[k] = fm;
+      // roads
+      let rd = 1e9;
+      if (Fe.pre) rd = Fe.pre.road[k];
+      else for (const p of roads) for (let s = 0; s < p.length - 1; s++) {
+        const a = p[s], b = p[s + 1];
+        if (Math.abs(x - a[0]) > 300 && Math.abs(x - b[0]) > 300 && Math.sign(x - a[0]) === Math.sign(x - b[0])) continue;
+        if (Math.abs(y - a[1]) > 300 && Math.abs(y - b[1]) > 300 && Math.sign(y - a[1]) === Math.sign(y - b[1])) continue;
+        const d = Math.sqrt(segDist2(x, y, a[0], a[1], b[0], b[1]));
+        if (d < rd) rd = d;
+      }
+      A.gRoad[k] = rd;
+    }
+    /* ---------- streamed lookup grids (map.stream) ----------
+     * The grids are named, not allocated (this.gWater === 'gWater', …): gs / gn /
+     * biomeAt look the name up in the tile that holds the cell. A tile carries one
+     * extra row and column (its neighbours' first) so bilinear sampling never needs
+     * a second tile. Each tile is built from the features near it only; the values
+     * agree with a whole-map grid wherever they matter (deep water and far roads
+     * and forests read as "far" either way). */
+    streamInit(Fe) {
+      this.gw = Math.ceil(this.W / GC) + 2; this.gh = Math.ceil(this.H / GC) + 2;
+      this.gWater = 'gWater'; this.gMount = 'gMount'; this.gForest = 'gForest'; this.gBiome = 'gBiome'; this.gRoad = 'gRoad'; this.gField = 'gField';
+      this.feat = Fe;
+      this.gtiles = new Map(); this.gtMax = IS_WORKER ? 90 : 220; this.gtClock = 0; this.gtBuilt = 0; this.gtMs = 0;
+      this._lt = null; this._ltKey = -1;
+      // bounding boxes, for picking the features near a tile
+      const bbOf = (pts, m) => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const q of pts) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; } return [x0 - m, y0 - m, x1 + m, y1 + m]; };
+      this.featBB = {
+        // rivers and roads are split into short runs, each with its own box
+        rivers: [], roads: [],
+        ridges: Fe.ridges.map((r) => bbOf(r.pts, r.w * 1.5)),
+        lakes: Fe.lakes.map((l) => [l.x - l.r * 1.3 * (l.sx || 1) - 4000, l.y - l.r * 1.3 * (l.sy || 1) - 4000, l.x + l.r * 1.3 * (l.sx || 1) + 4000, l.y + l.r * 1.3 * (l.sy || 1) + 4000]),
+        islands: Fe.islands.map((l) => [l.x - l.r * 1.3 * (l.sx || 1) - 4000, l.y - l.r * 1.3 * (l.sy || 1) - 4000, l.x + l.r * 1.3 * (l.sx || 1) + 4000, l.y + l.r * 1.3 * (l.sy || 1) + 4000]),
+        forests: Fe.forests.map((f) => [f.x - f.r * 1.2 * (f.sx || 1), f.y - f.r * 1.2 * (f.sy || 1), f.x + f.r * 1.2 * (f.sx || 1), f.y + f.r * 1.2 * (f.sy || 1)]),
+        fields: Fe.fields.map((f) => [f.x - f.r, f.y - f.r, f.x + f.r, f.y + f.r]),
+        clear: Fe.clear.map((f) => [f.x - f.r, f.y - f.r, f.x + f.r, f.y + f.r]),
+      };
+      const runs = (list, out, m, isRiver) => list.forEach((r) => {
+        const p = isRiver ? r.pts : r;
+        for (let s = 0; s < p.length - 1; s += 12) { const seg = p.slice(s, Math.min(p.length, s + 13)); out.push({ pts: seg, w: r.w, bb: bbOf(seg, m) }); }
+      });
+      runs(Fe.rivers, this.featBB.rivers, 1000, true);
+      runs(Fe.roads, this.featBB.roads, 400, false);
+    }
+    // the features that can matter for the tile whose world box is [x0, y0, x1, y1]
+    tileFeatures(x0, y0, x1, y1) {
+      const Fe = this.feat, B = this.featBB;
+      const hit = (b) => b[0] <= x1 && b[2] >= x0 && b[1] <= y1 && b[3] >= y0;
+      const pick = (list, bbs) => { const out = []; for (let i = 0; i < list.length; i++) if (hit(bbs[i])) out.push(list[i]); return out; };
+      // regions: soft-max weights fall off as exp(-9 Δd); a region more than 1.3 (in units of
+      // its radius) behind the nearest is weighed below 1e-5 and can be left out
+      const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, half = Math.hypot(x1 - x0, y1 - y0) / 2 + 560;
+      let bestHi = 1e9;
+      const rs = Fe.regions.map((r) => { const d = Math.hypot(cx - r.x, cy - r.y), R = r.r || 2400, lo = Math.max(0, d - half) / R, hi = (d + half) / R; if (hi < bestHi) bestHi = hi; return lo; });
+      return {
+        rivers: B.rivers.filter((q) => hit(q.bb)).map((q) => ({ w: q.w, pts: q.pts })),
+        roads: B.roads.filter((q) => hit(q.bb)).map((q) => q.pts),
+        ridges: pick(Fe.ridges, B.ridges), lakes: pick(Fe.lakes, B.lakes), islands: pick(Fe.islands, B.islands),
+        regions: Fe.regions.filter((r, i) => rs[i] < bestHi + 1.3),
+        forests: pick(Fe.forests, B.forests), fields: pick(Fe.fields, B.fields), clear: pick(Fe.clear, B.clear),
+      };
+    }
+    tileAt(ti, tj) {
+      const key = ti * 65536 + tj;
+      if (key === this._ltKey) return this._lt;
+      let t = this.gtiles.get(key);
+      if (!t) {
+        const t0 = performance.now();
+        t = this.buildTile(ti, tj);
+        this.gtiles.set(key, t);
+        this.gtBuilt++; this.gtMs += performance.now() - t0;
+        if (this.gtiles.size > this.gtMax) this.evictTiles();
+      }
+      t.used = ++this.gtClock;
+      this._lt = t; this._ltKey = key;
+      return t;
+    }
+    hasTile(ti, tj) { return this.gtiles.has(ti * 65536 + tj); }
+    /* ask the terrain workers to build the tiles under a world box (they send the arrays
+     * back); a tile that is needed before it arrives is still built here at once */
+    requestTiles(x0, y0, x1, y1, fx, fy) {
+      if (!this.gtiles || !this._wk) return;
+      const S = TS * GC, P = this._tilePend || (this._tilePend = new Map()), now = performance.now();
+      // nearest the focus (fx, fy: the dragon) first
+      if (fx === undefined) { fx = (x0 + x1) / 2; fy = (y0 + y1) / 2; }
+      const want = [];
+      for (let tj = Math.max(0, Math.floor(y0 / S)); tj <= Math.floor(y1 / S); tj++) for (let ti = Math.max(0, Math.floor(x0 / S)); ti <= Math.floor(x1 / S); ti++) {
+        const key = ti * 65536 + tj;
+        if (this.gtiles.has(key) || (P.has(key) && now - P.get(key) < 8000)) continue;
+        want.push([Math.hypot((ti + 0.5) * S - fx, (tj + 0.5) * S - fy), ti, tj, key]);
+      }
+      want.sort((a, b) => a[0] - b[0]);
+      for (const [, ti, tj, key] of want) {
+        let best = null;
+        for (const w of this._wk) if (!best || (w.tiles || 0) < (best.tiles || 0)) best = w;
+        if ((best.tiles || 0) >= 4) return; // a few in flight per worker at most
+        best.tiles = (best.tiles || 0) + 1;
+        P.set(key, now);
+        best.postMessage({ type: 'tile', ti, tj });
       }
     }
+    tileArrived(r, w) {
+      w.tiles = Math.max(0, (w.tiles || 0) - 1);
+      const key = r.ti * 65536 + r.tj;
+      if (this._tilePend) this._tilePend.delete(key);
+      if (!this.gtiles || this.gtiles.has(key)) return;
+      this.gtiles.set(key, { gWater: r.gWater, gMount: r.gMount, gForest: r.gForest, gBiome: r.gBiome, gRoad: r.gRoad, gField: r.gField, kind: r.kind, used: ++this.gtClock });
+      this.gtFromWorkers = (this.gtFromWorkers || 0) + 1;
+      if (this.gtiles.size > this.gtMax) this.evictTiles();
+    }
+    evictTiles() {
+      const all = [...this.gtiles.entries()].sort((a, b) => a[1].used - b[1].used);
+      for (let i = 0; i < all.length - this.gtMax * 0.8; i++) this.gtiles.delete(all[i][0]);
+      this._ltKey = -1; this._lt = null;
+    }
+    buildTile(ti, tj) {
+      const n = TN * TN;
+      const A = { gWater: new Float32Array(n), gMount: new Float32Array(n), gForest: new Float32Array(n), gBiome: new Float32Array(n * 5), gRoad: new Float32Array(n), gField: new Uint8Array(n), kind: new Uint8Array(n).fill(255), used: 0 };
+      const i0 = ti * TS, j0 = tj * TS;
+      const x0 = (i0 - 1) * GC, y0 = (j0 - 1) * GC, x1 = x0 + TN * GC, y1 = y0 + TN * GC;
+      const Fe = this.tileFeatures(x0, y0, x1, y1), tmpW = new Float32Array(5);
+      Fe.shallow = true;
+      // river and road distances: each segment stamps the cells near it (rather than every cell
+      // measuring every segment)
+      const riv = new Float32Array(n).fill(1e9), road = new Float32Array(n).fill(1e9);
+      const stamp = (out, a, b, m, sub) => {
+        const ia = Math.max(0, Math.floor((Math.min(a[0], b[0]) - m - x0) / GC)), ib = Math.min(TN - 1, Math.ceil((Math.max(a[0], b[0]) + m - x0) / GC));
+        const ja = Math.max(0, Math.floor((Math.min(a[1], b[1]) - m - y0) / GC)), jb = Math.min(TN - 1, Math.ceil((Math.max(a[1], b[1]) + m - y0) / GC));
+        for (let jj = ja; jj <= jb; jj++) for (let ii = ia; ii <= ib; ii++) {
+          const x = (i0 + ii - 1) * GC + GC / 2, y = (j0 + jj - 1) * GC + GC / 2;
+          const d = Math.sqrt(segDist2(x, y, a[0], a[1], b[0], b[1])) - sub, q = jj * TN + ii;
+          if (d < out[q]) out[q] = d;
+        }
+      };
+      for (const r of Fe.rivers) for (let q = 0; q < r.pts.length - 1; q++) { const a = r.pts[q], b = r.pts[q + 1]; stamp(riv, a, b, 900, (a[2] + b[2]) * 0.25); }
+      for (const p of Fe.roads) for (let q = 0; q < p.length - 1; q++) stamp(road, p[q], p[q + 1], 450, 0);
+      Fe.pre = { riv, road };
+      for (let jj = 0; jj < TN; jj++) for (let ii = 0; ii < TN; ii++) this.cellInto(Fe, (i0 + ii - 1) * GC + GC / 2, (j0 + jj - 1) * GC + GC / 2, jj * TN + ii, A, tmpW);
+      return A;
+    }
+    // the tile holding lookup cell (i, j), and the cell's index in it (this._tk)
+    tileCell(i, j) {
+      const ti = (i / TS) | 0, tj = (j / TS) | 0, t = this.tileAt(ti, tj);
+      this._tk = (j - tj * TS) * TN + (i - ti * TS);
+      return t;
+    }
+    // build the tiles under a world box now (loading, or ahead of the dragon)
+    warmTiles(x0, y0, x1, y1, budgetMs) {
+      if (!this.gtiles) return true;
+      // (budget: none = build them all; < 0 = build none; otherwise at least one, then until the time is used)
+      const t0 = performance.now(), S = TS * GC;
+      let built = 0;
+      for (let tj = Math.max(0, Math.floor(y0 / S)); tj <= Math.floor(y1 / S); tj++) for (let ti = Math.max(0, Math.floor(x0 / S)); ti <= Math.floor(x1 / S); ti++) {
+        if (this.hasTile(ti, tj)) continue;
+        if (budgetMs !== undefined && (budgetMs < 0 || (built && performance.now() - t0 > budgetMs))) return false;
+        this.tileAt(ti, tj); built++;
+      }
+      return true;
+    }
+
     // bilinear sample of a scalar grid
     gs(g, x, y) {
       const fx = x / GC + 0.5, fy = y / GC + 0.5;
       let i = Math.floor(fx), j = Math.floor(fy);
       const tx = fx - i, ty = fy - j;
       i = U.clamp(i, 0, this.gw - 2); j = U.clamp(j, 0, this.gh - 2);
+      if (typeof g === 'string') {
+        const a = this.tileCell(i, j)[g], k = this._tk;
+        return (a[k] * (1 - tx) + a[k + 1] * tx) * (1 - ty) + (a[k + TN] * (1 - tx) + a[k + TN + 1] * tx) * ty;
+      }
       const k = j * this.gw + i, gw = this.gw;
       return (g[k] * (1 - tx) + g[k + 1] * tx) * (1 - ty) + (g[k + gw] * (1 - tx) + g[k + gw + 1] * tx) * ty;
     }
     // nearest-cell lookup (cheap; for masks)
     gn(g, x, y) {
       const i = U.clamp(Math.floor(x / GC + 1), 0, this.gw - 1), j = U.clamp(Math.floor(y / GC + 1), 0, this.gh - 1);
+      if (typeof g === 'string') { const a = this.tileCell(i, j)[g]; return a[this._tk]; }
       return g[j * this.gw + i];
+    }
+    // the surface kind, cached per lookup cell (streamed maps keep it in the tiles)
+    kindFast(x, y) {
+      if (!this.gtiles) return super.kindFast(x, y);
+      if (x < 0 || y < 0 || x > this.W || y > this.H) return 5;
+      const gx = Math.floor(x / 32) + 1, gy = Math.floor(y / 32) + 1;
+      const t = this.tileCell(gx, gy), k = this._tk;
+      let v = t.kind[k];
+      if (v === 255) { v = this.kindAt((gx - 1) * 32 + 16, (gy - 1) * 32 + 16); t.kind[k] = v; }
+      return v;
     }
     /* soft biome weights at a point → out[5] (human, elf, ice, undead, neutral) */
     biomeAt(x, y, out) {
@@ -454,8 +642,9 @@
       let i = Math.floor(fx), j = Math.floor(fy);
       const tx = fx - i, ty = fy - j;
       i = U.clamp(i, 0, this.gw - 2); j = U.clamp(j, 0, this.gh - 2);
-      const gw = this.gw, B = this.gBiome;
-      const k00 = (j * gw + i) * 5, k10 = k00 + 5, k01 = k00 + gw * 5, k11 = k01 + 5;
+      let gw = this.gw, B = this.gBiome, k00;
+      if (typeof B === 'string') { B = this.tileCell(i, j).gBiome; gw = TN; k00 = this._tk * 5; } else k00 = (j * gw + i) * 5;
+      const k10 = k00 + 5, k01 = k00 + gw * 5, k11 = k01 + 5;
       const a = (1 - tx) * (1 - ty), b = tx * (1 - ty), c = (1 - tx) * ty, d = tx * ty;
       for (let q = 0; q < 5; q++) out[q] = B[k00 + q] * a + B[k10 + q] * b + B[k01 + q] * c + B[k11 + q] * d;
       return out;
@@ -488,9 +677,10 @@
       if (water < 160) h = Math.min(h, U.lerp(0.1, h, U.smoothstep(-10, 160, water)));
       const m = 0.5 + 0.6 * U.fbm(x / 600, y / 600, 2, sd + 40);
       let s = water;
-      const zs = noZones ? null : this.zones;
+      const zs = noZones ? null : this.zones.length > 48 ? this.binned('zones', x, y) : this.zones;
       if (zs) for (let i = 0; i < zs.length; i++) {
         const z = zs[i];
+        if (z.h === null) this.zoneLevel(z); // (a streamed map levels its zones on first use)
         const dx = x - z.x, dy = y - z.y, R = z.r * z.soft;
         if (dx > R || dx < -R || dy > R || dy < -R) continue;
         const d = Math.sqrt(dx * dx + dy * dy);
@@ -501,6 +691,24 @@
       }
       out[0] = h; out[1] = m; out[2] = s; out[3] = this.gs(this.gForest, x, y);
       return out;
+    }
+    /* the zones (or clear areas) whose reach covers the 512-unit bin holding (x, y): a
+     * spatial index for maps with many of them. Items pushed onto the list later are
+     * filed on the next query; a list replaced wholesale is indexed afresh. */
+    binned(name, x, y) {
+      const list = this[name], B = this._bins || (this._bins = {});
+      let ix = B[name];
+      if (!ix || ix.list !== list || ix.n > list.length) ix = B[name] = { list, n: 0, map: new Map() };
+      if (ix.n < list.length) {
+        for (let q = ix.n; q < list.length; q++) {
+          const z = list[q], R = name === 'zones' ? Math.max(z.r * (z.soft || 1.5), z.r + 24) : (z.r + 24) * 1.25;
+          for (let by = Math.floor((z.y - R) / 512); by <= Math.floor((z.y + R) / 512); by++) for (let bx = Math.floor((z.x - R) / 512); bx <= Math.floor((z.x + R) / 512); bx++) {
+            const k = bx * 65536 + by; let a = ix.map.get(k); if (!a) { a = []; ix.map.set(k, a); } a.push(z);
+          }
+        }
+        ix.n = list.length;
+      }
+      return ix.map.get(Math.floor(x / 512) * 65536 + Math.floor(y / 512)) || NONE;
     }
     levelOf(h) { return U.clamp(Math.floor(h * this.levels), 0, this.levels - 1); }
     levelMid(l) { return (l + 0.5) / this.levels; }
@@ -726,8 +934,8 @@
       if (x < 6 || y < 6 || x > this.W - 6 || y > this.H - 6) return false;
       if (this.gs(this.gWater, x, y) < 14 + r * 0.6) return false;
       if (this.gs(this.gRoad, x, y) < 28 + r) return false;
-      for (const z of this.zones) { const dx = x - z.x, dy = y - z.y, rr = z.r * (z.treeR || 0.95) + r; if (dx * dx + dy * dy < rr * rr) return false; }
-      for (const z of this.clearAreas) { const dx = x - z.x, dy = (y - z.y) / 0.8; if (dx * dx + dy * dy < (z.r + r) * (z.r + r)) return false; }
+      for (const z of this.zones.length > 48 ? this.binned('zones', x, y) : this.zones) { const dx = x - z.x, dy = y - z.y, rr = z.r * (z.treeR || 0.95) + r; if (dx * dx + dy * dy < rr * rr) return false; }
+      for (const z of this.clearAreas.length > 48 ? this.binned('clearAreas', x, y) : this.clearAreas) { const dx = x - z.x, dy = (y - z.y) / 0.8; if (dx * dx + dy * dy < (z.r + r) * (z.r + r)) return false; }
       const TD = st.TD, px = Math.round((x - st.x0) * TD) + st.ML, py = Math.round((y - st.y0) * TD) + st.top;
       const o = Math.max(2, Math.round(r * 0.7 * TD));
       if (px - o < 0 || px + o >= st.NW || py - o * 2 < 0 || py + o >= st.rows) {
@@ -828,6 +1036,8 @@
 
     /* tactical map: also shades forests and roads */
     buildMap(scale) {
+      // a streamed map starts with a blank war map, painted block by block as it is seen (paintMapBlock)
+      if (this.gtiles) { const cv = AS.Forge.canvas(Math.ceil(this.W / scale), Math.ceil(this.H / scale)), c = cv.getContext('2d'); c.fillStyle = '#26323a'; c.fillRect(0, 0, cv.width, cv.height); cv.scale = scale; return cv; }
       const cv = super.buildMap(scale);
       const ctx = cv.getContext('2d'), w = cv.width, h = cv.height;
       const img = ctx.getImageData(0, 0, w, h), D = img.data;
@@ -842,6 +1052,35 @@
     }
   }
 
+  /* one block (MAPB world units square) of a streamed map's war map, painted the same
+   * way as the whole-map build (terraces shaded against the row above, forests, roads) */
+  const MAPB = TS * GC;
+  RealmTerrain.MAPB = MAPB;
+  RealmTerrain.prototype.paintMapBlock = function (cv, bx, by) {
+    const scale = cv.scale, W = cv.width, H = cv.height;
+    const i0 = Math.floor(bx * MAPB / scale), i1 = Math.min(W, Math.floor((bx + 1) * MAPB / scale)), j0 = Math.floor(by * MAPB / scale), j1 = Math.min(H, Math.floor((by + 1) * MAPB / scale));
+    const w = i1 - i0, h = j1 - j0;
+    if (w <= 0 || h <= 0) return;
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(w, h), D = img.data, f = new Float32Array(4), out = [0, 0, 0];
+    const prev = new Float32Array(w);
+    // (the terraces are shaded against the row above: taken from the block above only if its tile is built)
+    const above = j0 > 0 && (!this.gtiles || this.hasTile(bx, by - 1));
+    for (let i = 0; i < w; i++) { const x = (i0 + i) * scale + scale / 2, y = (j0 - 1) * scale + scale / 2; prev[i] = above ? this.levelOf(this.field(x, y, f)[0]) : -1; }
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+      const x = (i0 + i) * scale + scale / 2, y = (j0 + j) * scale + scale / 2;
+      this.field(x, y, f);
+      const l = this.levelOf(f[0]);
+      this.colorize(x, y, f[0], f[1], f[2], f[3], l, out);
+      const lu = prev[i] < 0 ? l : prev[i], k = lu > l ? 0.7 : lu < l ? 1.15 : 1;
+      prev[i] = l;
+      const q = (j * w + i) * 4;
+      D[q] = out[0] * k; D[q + 1] = out[1] * k; D[q + 2] = out[2] * k; D[q + 3] = 255;
+      const fo = this.gs(this.gForest, x, y), wd = this.gs(this.gWater, x, y);
+      if (fo > 0.3 && wd > 20 && !this.gn(this.gField, x, y)) { const kk = 1 - Math.min(0.42, (fo - 0.3) * 0.7); D[q] *= kk * 0.92; D[q + 1] *= kk; D[q + 2] *= kk * 0.9; }
+      if (this.gs(this.gRoad, x, y) < Math.max(18, scale * 1.1) && wd > 0) { D[q] = U.lerp(D[q], 196, 0.55); D[q + 1] = U.lerp(D[q + 1], 176, 0.55); D[q + 2] = U.lerp(D[q + 2], 132, 0.55); }
+    }
+    ctx.putImageData(img, i0, j0);
+  };
   RealmTerrain.BIOMES = BIOMES;
   RealmTerrain.LOOK = LOOK;
   RealmTerrain.smoothLine = smoothLine;

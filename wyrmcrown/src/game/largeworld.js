@@ -32,7 +32,7 @@
         groups: (m.encounters || []).map((e) => ({ def: e, left: e.troops.map((t) => t.slice()), troops: null, wp: 0, seen: false, defeated: false })),
         t: 0, counts: { active: 0, asleep: 0, visible: 0, spawnedGroups: 0, total: 0 }, crowd: [], bench: null,
       };
-      if (!g.opts.campaign) g.msg('THE WIDE REALM — FLY WHERE YOU WILL', '#ffe7a8', 4);
+      if (!g.opts.campaign) g.msg((m.stream ? 'THE GREAT CONTINENT' : 'THE WIDE REALM') + ' — FLY WHERE YOU WILL', '#ffe7a8', 4);
       const P = AS.App && AS.App.params;
       const b = P && P.get('bench');
       if (b) g.later(2.5, () => this.bench(g, b.toUpperCase(), +(P.get('pop') || 0)));
@@ -128,10 +128,13 @@
       F: { name: 'Fast across many chunks', secs: 45, start: [4600, 15200], route: [[20800, 11600]], sprint: true },
       G: { name: 'Reversing direction', secs: 40, start: [9000, 17600], shuttle: [[9000, 17600], [12000, 17600]], flip: 4 },
       I: { name: 'High flight (H) across the island', secs: 40, start: [4600, 16400], route: [[20600, 11200], [13800, 21400]], sprint: true, high: true },
+      // the Huge World Test (map.stream): a sprint from the castle across the continent (start and route from the map)
+      X: { name: 'Continent crossing (2 min sprint)', secs: 120, sprint: true, fromMap: true },
       H: { name: 'Extended flight', secs: 240, start: [6400, 17000], route: [[9300, 16000], [8200, 10200], [13400, 9700], [18800, 8400], [20600, 11400], [16800, 15200], [16300, 19700], [11800, 22400], [7800, 19900], [6400, 17000]], sprint: true },
     },
     bench(g, code, pop) {
-      const list = code === 'ALL' ? 'ABCDEFGI'.split('') : code.split('').filter((c) => this.TESTS[c]);
+      // (the huge world has its own test; the others are laid out for the Wide Realm)
+      const list = g.map.stream ? ['X'] : code === 'ALL' ? 'ABCDEFGI'.split('') : code.split('').filter((c) => this.TESTS[c] && !this.TESTS[c].fromMap);
       if (!list.length) return;
       g.godMode = true; // a benchmark measures, it does not die
       g.lw.benchQueue = list; g.lw.benchPop = pop || 100; g.lw.benchResults = [];
@@ -140,12 +143,14 @@
     nextBench(g) {
       const L = g.lw, code = L.benchQueue.shift();
       if (!code) return this.benchDone(g);
-      const T = this.TESTS[code], p = g.player;
+      let T = this.TESTS[code];
+      const p = g.player;
+      if (T.fromMap) { const c = g.playerFaction.townPos; T = Object.assign({}, T, { start: [c.x + 400, c.y - 400], route: [[g.map.w * 0.94, c.y - 20000]] }); }
       AS.Debug.tp(T.start[0], T.start[1], T.low ? 60 : 120);
       if (T.crowd) this.crowd(g, L.benchPop, T.hover[0], T.hover[1] - 200);
       g.highFlight = !!T.high;
       const prev = p.pilot;
-      L.bench = { code, T, t: 0, warm: 3, slow: [], gaps: [], last: performance.now(), wi: 0, flipT: 0, prev, maxChunks: 0, sync0: g.terrain.syncN || 0, stand0: g.terrain.standN || 0, maxTroops: 0, maxActive: 0, maxVisible: 0 };
+      L.bench = { code, T, t: 0, warm: 3, gt0: g.terrain.gtBuilt || 0, gw0: g.terrain.gtFromWorkers || 0, x0: T.start[0], y0: T.start[1], slow: [], gaps: [], last: performance.now(), wi: 0, flipT: 0, prev, maxChunks: 0, sync0: g.terrain.syncN || 0, stand0: g.terrain.standN || 0, maxTroops: 0, maxActive: 0, maxVisible: 0 };
       const B = L.bench;
       // the slowest frames of the test, with what the main thread spent them on
       AS.Prof.onSlow = (ms, parts, forged, tsync, tstand) => {
@@ -193,6 +198,8 @@
           slowest: B.slow.map((q) => q.ms + ' ms: ' + (q.why || 'not on the main thread (graphics / browser)')),
           heapMB: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null,
           spriteMB: AS.Forge.memory ? Math.round(AS.Forge.memory().bytes / 1048576) : null, gpu: AS.Perf && AS.Perf.gpu ? AS.Perf.gpu() : null };
+        // a streamed map: how far it flew and who built the ground tiles
+        if (g.stream) Object.assign(r, { km: +(Math.hypot(g.player.x - B.x0, g.player.y - B.y0) / 1000).toFixed(1), tilesByPage: (g.terrain.gtBuilt || 0) - B.gt0, tilesByWorkers: (g.terrain.gtFromWorkers || 0) - B.gw0, areasMade: g.stream.stats.cellsMade, placesBuilt: g.stream.stats.sitesBuilt });
         g.lw.benchResults.push(r);
         console.log('LWBENCH ' + JSON.stringify(r));
         AS.Prof.onSlow = null; g.highFlight = false;
@@ -211,6 +218,7 @@
       const row = (r) => (r.test + ' ' + r.name).padEnd(30) + String(r.fps).padStart(6) + String(r.avg).padStart(7) + String(r.p95).padStart(7) + String(r.p99).padStart(7) + String(r.worst).padStart(8) + String(r.over33).padStart(6) + String(r.chunks).padStart(7) + String(r.builtOnSpot).padStart(6) + String(r.activeAI + '/' + r.troops).padStart(10) + String(r.visible).padStart(6) + String(r.heapMB === null ? '—' : r.heapMB).padStart(6);
       el.textContent = 'LARGE WORLD BENCHMARK  (' + (R[0] && R[0].gpu || 'renderer unknown') + ')\n\n' +
         'test'.padEnd(30) + '   fps  avg ms   p95    p99   worst  >33ms chunks spot  AI/troops  view  heap\n' + R.map(row).join('\n') +
+        R.filter((r) => r.km !== undefined).map((r) => '\n\n' + r.test + ' flew ' + r.km + ' km · ground tiles built by the workers ' + r.tilesByWorkers + ', by the game itself ' + r.tilesByPage + ' · areas made ' + r.areasMade + ' · places built ' + r.placesBuilt).join('') +
         '\n\nSlowest frames (what the game was busy with):\n' + R.map((r) => r.slowest.length ? r.test + '  ' + r.slowest.join('\n   ') : r.test + '  none over 33 ms').join('\n') +
         '\n\nPhotograph this table (or copy window.__lwBench from the console) and send it back.\nPress Esc to keep flying.';
       document.body.appendChild(el);

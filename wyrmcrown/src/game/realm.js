@@ -80,11 +80,13 @@
       for (const F of this.factionList) if (F.buildTown) { if (CQ && F.key === this.playerKey) CQ.camp(this, F); else F.buildTown(); }
       if (AS.Sites) for (const s of m.sites) { const site = AS.Sites.create(this, s); if (site) { this.sites.push(site); this.byId.set(site.id, site); } }
       // bridges that are not objectives still need their stonework
-      if (AS.Sites) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
-      if (AS.Roads) AS.Roads.lay(this);
+      // (a streamed map builds its bridges and lays its roads area by area: src/game/stream.js)
+      if (AS.Sites && !m.stream) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
+      if (AS.Roads && !m.stream) AS.Roads.lay(this);
       if (AS.Powerups) AS.Powerups.init(this);
       // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
-      if (AS.Scenery) AS.Scenery.init(this);
+      if (AS.Scenery && !m.stream) AS.Scenery.init(this);
+      if (m.stream && AS.Stream) AS.Stream.setup(this);
       // Conquest: the defenders and the player's army take the field
       if (CQ) CQ.setup(this);
       // the Large World Test streams its armies in and out (src/game/largeworld.js)
@@ -98,13 +100,15 @@
       // weather drifts over the realm (drawn through the renderer's weather hook)
       if (AS.Weather) { this.weather = new AS.Weather(this); this.hazards = { drawWeather: (ctx, ox, oy, vw, vh, R) => this.weather.draw(ctx, ox, oy, vw, vh, R) }; }
       // explored fog for the war map
-      this.fogCell = 96;
+      this.fogCell = m.stream ? 192 : 96;
       this.fogW = Math.ceil(m.w / this.fogCell); this.fogH = Math.ceil(m.h / this.fogCell);
       this.explored = new Uint8Array(this.fogW * this.fogH);
       const pt = this.playerFaction.townPos || this.roostOf(this.playerFaction);
       this.revealArea(pt.x, pt.y, 1500);
       // the campaign in the Wide Realm (opt-in): its saved progress, its army, its clock
       if (this.opts.campaign && AS.BigCampaign) AS.BigCampaign.setup(this);
+      // a streamed map: build the world round the start now (later, round the dragon as it flies)
+      if (this.stream) AS.Stream.update(this, 0, true);
       const p = this.player;
       this.camera.snap(p.x, p.y - p.z);
       // pre-generate the chunks around the start
@@ -121,6 +125,7 @@
       this.terrain.syncOK = false;
       this.tacMap = this.terrain.buildMap(m.tacScale || 24); // (a very large map uses a coarser war-map image)
       this.terrain.overview = this.tacMap; // the last-resort stand-in for a chunk not yet shaded
+      if (this.stream) AS.Stream.paintTac(this, 600);
       this.updateRegion(0, true);
       this.events.emit('loaded');
       return this;
@@ -222,7 +227,12 @@
       for (let cy = Math.floor((y - r) / c); cy <= Math.floor((y + r) / c); cy++) for (let cx = Math.floor((x - r) / c); cx <= Math.floor((x + r) / c); cx++) {
         if (cx < 0 || cy < 0 || cx >= this.fogW || cy >= this.fogH) continue;
         const dx = cx * c + c / 2 - x, dy = cy * c + c / 2 - y;
-        if (dx * dx + dy * dy < r * r) this.explored[cy * this.fogW + cx] = 1;
+        if (dx * dx + dy * dy < r * r && !this.explored[cy * this.fogW + cx]) {
+          this.explored[cy * this.fogW + cx] = 1;
+          // (the HUD redraws only the changed part of its fog layer)
+          const D = this.fogDirty || (this.fogDirty = [cx, cy, cx, cy]);
+          if (cx < D[0]) D[0] = cx; if (cy < D[1]) D[1] = cy; if (cx > D[2]) D[2] = cx; if (cy > D[3]) D[3] = cy;
+        }
       }
     }
     isExplored(x, y) {
@@ -256,6 +266,7 @@
       this.time += dt;
       this.rebuildGrid();
       for (const d of this.dragons) d.update(dt);
+      if (this.stream) AS.Stream.update(this, dt);
       // a large map (map.simR) lets troops far from the dragon sleep: no AI, no movement, until it comes near
       const simR = this.map.simR ? this.map.simR * (this.highFlight ? 1.5 : 1) : 0, simR2 = simR * simR, wakeAt = this.player;
       for (let i = this.troops.length - 1; i >= 0; i--) {

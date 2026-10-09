@@ -49,7 +49,7 @@ self.onmessage = (e) => {
     // decal kinds painted here (some painters live in game code the worker does not load)
     self.postMessage({ type: 'kinds', kinds: Object.keys(AS.Decals.painters) });
     T.zones = m.zones; T.bridges = m.bridges;
-    T.typeGrid.fill(255);
+    if (T.typeGrid) T.typeGrid.fill(255);
     T.texel = () => T.TD;
     for (const d of m.sdecals || []) addStatic(d);
     // forge the decor sheets (trees, rocks, undergrowth) one at a time while idle:
@@ -70,6 +70,12 @@ self.onmessage = (e) => {
   if (!T) return;
   if (m.type === 'sdecal') { addStatic(m.d); return; }
   if (m.type === 'clear') { for (const a of m.a) T.clearAreas.push(a); return; }
+  // a streamed map's lookup tile, for the page (copies: the worker keeps its own)
+  if (m.type === 'tile') {
+    const t = T.tileAt(m.ti, m.tj);
+    self.postMessage({ type: 'tile', ti: m.ti, tj: m.tj, gWater: t.gWater, gMount: t.gMount, gForest: t.gForest, gBiome: t.gBiome, gRoad: t.gRoad, gField: t.gField, kind: t.kind });
+    return;
+  }
   if (m.type === 'chunk') {
     const t0 = performance.now();
     // buffers are kept per texel density: near (full detail) and far (high flight) requests alternate

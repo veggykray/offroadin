@@ -111,7 +111,7 @@
         sv.fresh = false;
       } else this.restore(g, sv);
       for (const s of g.sites) if (s.owner === g.playerKey) S.owned.add(s.id);
-      this.landOf(g, F.townPos.x, F.townPos.y); // (the land map is built during loading, not in play)
+      if (!g.map.stream) this.landOf(g, F.townPos.x, F.townPos.y); // (the land map is built during loading, not in play)
       // purchases are remembered from now on (replayed on load)
       F.onBought = (id) => { sv.bought.push(id); };
       if (L) L.onBought = (id) => { sv.lordBought.push(id); };
@@ -272,7 +272,7 @@
       const N = AS.Nav, end = N.nearestOpen(g, N.cellOf(g, x, y));
       const ex = end.i * 64 + 32, ey = end.j * 64 + 32;
       const tx = g.terrain.groundPassable(x, y) ? x : ex, ty = g.terrain.groundPassable(x, y) ? y : ey;
-      if (this.landOf(g, c.x, c.y) !== this.landOf(g, tx, ty)) return false;
+      if (g.nav && g.nav.stream ? !N.reachable(g, c.x, c.y, tx, ty) : this.landOf(g, c.x, c.y) !== this.landOf(g, tx, ty)) return false;
       const path = N.path(g, c.x, c.y, tx, ty);
       live.forEach((u, i) => {
         const a = i * 2.399, r = 24 + Math.sqrt(i) * 17;

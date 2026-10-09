@@ -145,6 +145,7 @@
         h('div', { class: 'buttons' },
           btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your realm and a map'),
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
+          AS.Maps.generateHuge ? btn('Huge World Test', () => AS.App.startMatch('hugeworld', { faction: 'human' }), '', 'A generated continent ~35 km across, built as you fly · technical test') : null,
           AS.Maps.byId.largeworld ? btn('Large World Test', () => AS.App.startMatch('largeworld', { faction: 'human' }), '', 'A continuous island several kilometres across · technical test') : null,
           AS.BigCampaign && AS.CampaignMenu && AS.Maps.byId.largeworld ? btn('Campaign', () => AS.CampaignMenu.show(), '', 'Win the Wide Realm place by place · real time, saved as you go') : null,
           AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across a new archipelago every time') : null,

@@ -53,11 +53,13 @@
   }
 
   /* ---------------- placement helpers ---------------- */
-  const ctxOf = (g, rng) => {
+  const ctxOf = (g, rng, bb) => {
     const T = g.terrain;
-    const sites = g.sites.map((s) => ({ x: s.x, y: s.y, r: (s.def.r || 40) + 230 }));
-    const towns = g.factionList.map((F) => ({ x: F.townPos.x, y: F.townPos.y, r: 1250 }));
-    const runes = (g.runes || []).map((q) => ({ x: q.x, y: q.y, r: 90 }));
+    // (bb: one area of a streamed map — only what is near it is checked)
+    const near = (q) => !bb || (q.x > bb[0] - 1600 && q.x < bb[2] + 1600 && q.y > bb[1] - 1600 && q.y < bb[3] + 1600);
+    const sites = g.sites.filter(near).map((s) => ({ x: s.x, y: s.y, r: (s.def.r || 40) + 230 }));
+    const towns = g.factionList.map((F) => ({ x: F.townPos.x, y: F.townPos.y, r: 1250 })).filter(near);
+    const runes = (g.runes || []).filter(near).map((q) => ({ x: q.x, y: q.y, r: 90 }));
     const placed = [];
     const far = (list, x, y, extra) => { for (const o of list) { const dx = o.x - x, dy = o.y - y, rr = o.r + (extra || 0); if (dx * dx + dy * dy < rr * rr) return false; } return true; };
     return {
@@ -402,6 +404,101 @@
       // a coarse grid for the view query
       this.grid = new Map();
       for (const pr of list) this.gridAdd(pr);
+    },
+    /* ---------- streamed maps: scenery comes and goes with the areas (src/game/stream.js) ----------
+     * Each area places its own share of the places, lairs and (rarely) a colossus from a
+     * random sequence of its own, inside a margin that keeps them clear of the next area,
+     * so an area built again is the same as before. The ground marks are laid once;
+     * lair survivors are remembered. */
+    initStream(g) {
+      g.scenery = g.scenery || []; g.sceneryPlaces = []; g.lairs = []; g.colossi = [];
+      this.grid = new Map();
+    },
+    loadCell(g, C) {
+      if (!AS.Building || !AS.Building.sheetFor) return;
+      const rng = new U.RNG(((g.map.seed || 1) * 7919 + 101 + C.cx * 92821 + C.cy * 68917) >>> 0);
+      const c = ctxOf(g, rng, [C.x0, C.y0, C.x1, C.y1]);
+      const T = g.terrain, add = T.addDecal;
+      if (C.marked) T.addDecal = function () { return {}; };
+      const list = g.scenery, props = C.props = [], p0 = g.life.people.length, t0 = g.troops.length;
+      const P = (gen, x, y, o) => {
+        if (!AS.Models[gen]) return null;
+        if (!c.onMap(x, y, 40)) return null;
+        o = o || {};
+        const pr = new Prop(g, gen, x, y, o);
+        list.push(pr); props.push(pr); this.gridAdd(pr);
+        if (pr.solid) { g.solids.push(pr); if (!C.marked) T.clearAreas.push({ x, y, r: pr.r * 1.2 + 4 }); }
+        else if (!o.decor && !C.marked) T.clearAreas.push({ x, y, r: pr.r * 0.9 + 2 });
+        return pr;
+      };
+      const area = (C.x1 - C.x0) * (C.y1 - C.y0) / 1e8;
+      try {
+        for (const pl of PLACES) {
+          const want = Math.floor(pl.n * area + rng.next()), m = pl.r + 270;
+          if (C.x1 - C.x0 < m * 2) continue;
+          let made = 0, tries = 0;
+          while (made < want && tries < 30) {
+            tries++;
+            const x = rng.range(C.x0 + m, C.x1 - m), y = rng.range(C.y0 + m, C.y1 - m);
+            if (!pl.biomes.includes(c.biome(x, y))) continue;
+            if (!c.clear(x, y, pl.r + 260)) continue;
+            if (!pl.ok(c, x, y)) continue;
+            pl.build(c, x, y, P);
+            c.placed.push({ x, y, r: pl.r, id: pl.id });
+            made++;
+          }
+        }
+        // the lairs of the wild beasts, and now and then a colossus
+        C.lairs = C.lairs || []; C.lairUnits = [];
+        let li = 0;
+        for (const bk in LAIRS) {
+          const kinds = LAIRS[bk].filter(([k]) => AS.Data.troops[k] && AS.Models[AS.Data.troops[k].gen]);
+          if (!kinds.length) continue;
+          const want = Math.floor(2.2 * area + rng.next());
+          for (let made = 0, tries = 0; made < want && tries < 30; tries++) {
+            const x = rng.range(C.x0 + 420, C.x1 - 420), y = rng.range(C.y0 + 420, C.y1 - 420);
+            if (c.biome(x, y) !== bk || !c.clear(x, y, 360) || c.road(x, y) < 120 || c.water(x, y) < 50 || c.mount(x, y) > 0.5 || !c.T.groundPassable(x, y)) continue;
+            if (g.factionList.some((F) => Math.hypot(F.townPos.x - x, F.townPos.y - y) < 1350)) continue;
+            const [k, n] = kinds[(rng.next() * kinds.length) | 0];
+            const left = C.lairs[li] !== undefined ? C.lairs[li] : n, u0 = g.troops.length;
+            if (left > 0) spawnWild(g, k, x, y, left, 150);
+            C.lairUnits[li] = g.troops.slice(u0);
+            T.addDecal('bonefield', x, y, 50, null, { static: true, seed: (x + y) | 0 });
+            T.addDecal('trample', x, y, 70, null, { static: true, seed: (x * 3 + y) | 0, fk: 'neutral' });
+            c.placed.push({ x, y, r: 160, id: 'lair' });
+            li++; made++;
+          }
+        }
+        if (rng.next() < 0.05) {
+          for (let tries = 0; tries < 20; tries++) {
+            const x = rng.range(C.x0 + 700, C.x1 - 700), y = rng.range(C.y0 + 700, C.y1 - 700), bk = c.biome(x, y), k = COLOSSI[bk], def = AS.Data.troops[k];
+            if (!def || !AS.Models[def.gen] || !c.clear(x, y, 600) || c.road(x, y) < 240 || c.water(x, y) < 80 || c.mount(x, y) > 0.4 || !c.T.groundPassable(x, y)) continue;
+            if (g.factionList.some((F) => Math.hypot(F.townPos.x - x, F.townPos.y - y) < 2000)) continue;
+            const u0 = g.troops.length;
+            if (C.colossus !== 0) spawnWild(g, k, x, y, 1, 520);
+            C.colossusUnits = g.troops.slice(u0);
+            break;
+          }
+        }
+      } finally { T.addDecal = add; }
+      C.marked = true;
+      C.people = g.life.people.slice(p0);
+      C.troops = g.troops.slice(t0).filter((u) => u.team === 'wild');
+    },
+    unloadCell(g, C) {
+      if (C.props && C.props.length) {
+        const gone = new Set(C.props);
+        g.scenery = g.scenery.filter((q) => !gone.has(q));
+        g.solids = g.solids.filter((q) => !gone.has(q));
+        for (const [k, a] of this.grid) { const b = a.filter((q) => !gone.has(q)); if (b.length) this.grid.set(k, b); else this.grid.delete(k); }
+      }
+      for (const o of C.people || []) o.alive = false;
+      // lair beasts: the survivors are remembered lair by lair (in the order the lairs are placed)
+      const live = (list) => { let n = 0; for (const u of list || []) if (u.alive && !u.removed) n++; return n; };
+      if (C.lairUnits) C.lairUnits.forEach((list, i) => { C.lairs[i] = live(list); });
+      if (C.colossusUnits) C.colossus = live(C.colossusUnits);
+      for (const u of C.troops || []) if (u.alive) { u.alive = false; u.removed = true; }
+      C.props = C.people = C.troops = C.lairUnits = C.colossusUnits = null;
     },
     collect(g, list, x0, y0, x1, y1) {
       if (!this.grid) return;
