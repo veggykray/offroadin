@@ -181,12 +181,7 @@
         AS.Renderer.light(this.x, this.y - this.hc, this.r * 2.6, '#ff8a3a', 0.38 + Math.sin(this.anim * 3) * 0.06);
       } else if (this.hp < this.maxHp * 0.4 && Math.random() < 0.06) AS.FX.smoke(this.x, this.y, this.hc * 1.4, this.r * 0.35, this.hp < this.maxHp * 0.2);
       // necrotic rot eats at timber and stone; frost leaves it brittle
-      if (this.wither > 0) {
-        this.wither -= dt;
-        super.takeDamage(this.maxHp * 0.01 * dt + 2.5 * dt, 'necrotic', this.witherSrc);
-        if (Math.random() < 0.3 * AS.Particles.density) AS.Particles.spawn({ x: this.x + U.range(-this.r * 0.6, this.r * 0.6), y: this.y + U.range(-4, 4), z: this.hc * Math.random(), vz: 14, shape: AS.Particles.SMOKE, col: '#6a3a8a', col2: '#2a1a3a', size: 3, size2: 9, life: 0.9, alpha: 0.5 });
-        if (!this.alive) return;
-      }
+      if (this.wither > 0) this.wither -= dt; // (the rot's damage and smoke: AS.Poison, src/game/combat.js)
       if (this.brittle > 0) {
         this.brittle -= dt;
         if (Math.random() < 0.15 * AS.Particles.density) AS.Particles.spawn({ x: this.x + U.range(-this.r * 0.6, this.r * 0.6), y: this.y + U.range(-4, 4), z: this.hc * Math.random() * 1.5, vz: 6, shape: AS.Particles.GLOW, col: '#dff6ff', col2: '#8ac8ff', size: 2, size2: 4, life: 0.6, add: true });

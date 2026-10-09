@@ -96,8 +96,8 @@
         if (this.shield <= 0) AS.FX.sparks(this.x, this.y, this.z + this.hc, 8, '#a0c8ff');
         if (dmg <= 0.01) { this.flash = 0.06; return amount; }
       }
-      if (this.armor > 0 && dtype !== 'ap') {
-        const a = dtype === 'explosive' ? this.armor * 0.5 : dtype === 'energy' ? this.armor * 0.6 : this.armor;
+      if (this.armor > 0 && dtype !== 'ap' && dtype !== 'poison') {
+        const a = (dtype === 'explosive' ? this.armor * 0.5 : dtype === 'energy' ? this.armor * 0.6 : this.armor) * (opts.armorMul !== undefined ? opts.armorMul : 1);
         dmg = Math.max(dmg * 0.4, dmg - a);
       }
       this.hp -= dmg;

@@ -100,7 +100,7 @@
       this.fireDmg = (D.breathDmg || 1) * (1 + L('lungs') * 0.2);
       this.maxMana = 100 * (1 + L('staffMana') * 0.25);
       this.boltDmg = (D.boltDmg || 1) * (1 + L('staffPower') * 0.2);
-      this.boltRate = 5.5 * (1 + L('staffRate') * 0.18);
+      this.boltRate = 1 + L('staffRate') * 0.18; // (a multiplier on the rider's own spell rate: combat.js BOLT)
       this.boltMulti = 1 + (L('staffPower') >= 3 ? 1 : 0);
       this.r = 22 * this.scale;
     }
@@ -497,7 +497,8 @@
       let dmg = amount;
       // difficulty: how hard rival dragons (their bolts and breath) hit the player's dragon
       if (this.isPlayer && src) { const s = src.isDragon ? src : src.owner && src.owner.isDragon ? src.owner : null; if (s && s !== this && g.diff && g.diff.dragonDmg) dmg *= g.diff.dragonDmg; }
-      if (dtype !== 'starve' && dtype !== 'pierce' && this.armor) dmg = Math.max(dmg * 0.5, dmg - this.armor);
+      // (poison seeps past scales; an attack may weigh armour in proportion to the size of its blows)
+      if (dtype !== 'starve' && dtype !== 'pierce' && dtype !== 'poison' && this.armor) { const arm = this.armor * (opts && opts.armorMul !== undefined ? opts.armorMul : 1); dmg = Math.max(dmg * 0.5, dmg - arm); }
       if (dtype === 'pierce') dmg *= 1; // ballista bolts ignore scales
       this.hp -= dmg;
       if (!(opts && opts.silent)) {

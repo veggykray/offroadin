@@ -223,7 +223,7 @@
       const B = AS.Data.breaths[D.breath] || {};
       const stats = [
         ['Speed', (d) => d.speed], ['Agility', (d) => d.turn], ['Toughness', (d) => d.hp * (1 + d.armor * 0.12)],
-        ['Breath', (d) => d.breathDmg], ['Recovery', (d) => 1 / d.recover],
+        ['Breath', (d) => (AS.Data.breaths[d.breath] || {}).dps || 1], ['Reach', (d) => (AS.Data.breaths[d.breath] || {}).range || 1], ['Recovery', (d) => 1 / d.recover],
       ];
       const rows = stats.map(([label, f]) => {
         const vs = all.map(f), lo = Math.min(...vs), hi = Math.max(...vs), v = f(D);

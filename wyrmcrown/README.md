@@ -32,6 +32,25 @@ pools. Each has its own beasts — great stags and aurochs, glimmerdeer and
 tree shamblers, frosthulks and snow stalkers, bloatlings and gravehounds —
 its own giants and trolls, and somewhere in the far wilds, one colossus.
 
+### The four partnerships in combat
+
+Each rider casts its own spell and each dragon breathes its own breath (see
+`src/game/combat.js` and `AS.Data.breaths` in `data/factions.js`):
+
+| Pair | Spell | Breath |
+|------|-------|--------|
+| Aldric & Pyrrhax | golden spheres: 620 speed, 4/s, 11 dmg | fire: baseline reach and damage, burns |
+| Ilythiel & Verdanthe | white arrows: 960 speed, 8/s, 5.5 dmg | emerald flame: 1.45× reach, 0.78× damage, roots troops |
+| Ymra & Skaldfrost | ice shards: 430 speed, 1.6/s, 27.5 dmg, slows | freezing breath: 0.78× reach, 1.4× damage, drains fastest |
+| Malkhar & Vorthrax | poison orbs: 340 speed, 2.5/s, 8 dmg + 9.6 poison | plague breath: 0.72× damage + 16/s poison for 3 s |
+
+Spells cost 0.4 mana per point of damage, so every rider deals the same damage
+per second at full rate and when mana runs short. Breaths are balanced on
+damage per full charge. Armour weighs on each attack in proportion to the size
+of its blows. Poison is a timed effect (`AS.Poison`): orb stacks are capped at
+12, breath poison refreshes without stacking, and kills are credited to the
+poisoner.
+
 ### The Huge World Test
 
 `index.html?world=huge` (also on the title menu) is a generated continent
@@ -198,6 +217,8 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
   loop through real keyboard and mouse input. It covers the menus, flight,
   bolts, breath, eating, capturing, the court, victory, defeat, and a short
   all-AI war.
+- `node wyrmcrown/tools/test_combat.mjs` measures each pair's spell and breath
+  (rate, speed, damage, reach, balance) and checks poison.
 - `node wyrmcrown/tools/test_hugeworld.mjs` checks the Huge World Test:
   streaming, where places stand, composed settlements, discovery, relics,
   road routes.

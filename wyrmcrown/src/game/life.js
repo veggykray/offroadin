@@ -536,7 +536,7 @@
         if (o.owner === p.team) continue;
         if (U.segDist(o.x, o.y - 5, p.px, p.py, p.x, p.y) < 6 + p.r) {
           o.hp -= p.dmg;
-          AS.FX.impact(p.x, p.y, 0, p.col);
+          if (p.style === 'bolt' && AS.Combat.boltImpact) AS.Combat.boltImpact(p, 0.8); else AS.FX.impact(p.x, p.y, 0, p.col);
           if (o.hp <= 0) this.kill(g, o, false);
           else { o.state = 'flee'; o.scare = 3; o.fa = Math.atan2(p.vy, p.vx); }
           return true;

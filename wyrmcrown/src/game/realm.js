@@ -290,6 +290,7 @@
       if (this.weather) this.weather.update(dt);
       this.warmStep(dt);
       AS.Proj.update(this, dt);
+      if (AS.Combat && AS.Combat.update) AS.Combat.update(this, dt); // (timed poison)
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }
       // camera: follows the dragon's body, leads its travel, pulls back with speed

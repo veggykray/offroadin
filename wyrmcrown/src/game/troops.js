@@ -146,7 +146,8 @@
       if (this.provoked > 0) this.provoked -= dt;
       // conditions
       if (this.burn > 0) { this.burn -= dt; super.takeDamage(7 * dt, 'fire', this.burnSrc); if (Math.random() < 0.5) AS.FX.fire(this.x, this.y, this.hc, this.r); if (!this.alive) return; }
-      if (this.wither > 0) { this.wither -= dt; super.takeDamage(4 * dt, 'necrotic', this.witherSrc); if (Math.random() < 0.2) AS.Particles.spawn({ x: this.x, y: this.y, z: this.hc, vz: 12, shape: AS.Particles.SMOKE, col: '#6a3a8a', size: 2, size2: 6, life: 0.7, alpha: 0.5 }); if (!this.alive) return; }
+      // (necrotic touch: the poison itself — damage and wisps — is AS.Poison's, src/game/combat.js; this mark only lets the slain rise)
+      if (this.wither > 0) this.wither -= dt;
       if (this.slow > 0) this.slow -= dt;
       if (this.root > 0) this.root -= dt;
       if (this.tdef.regen && this.hp < this.maxHp && g.time - (this.lastHurtT || 0) > 3) this.hp = Math.min(this.maxHp, this.hp + this.tdef.regen * dt);
