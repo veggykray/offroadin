@@ -132,31 +132,137 @@
       if (p.energy <= 0) { ctx.fillStyle = 'rgba(40,20,0,' + (0.18 + Math.sin(this.t * 3) * 0.06) + ')'; ctx.fillRect(0, 0, W, H); }
     },
 
-    /* ---------- top-left: the dragon and rider ---------- */
+    /* ---------- top-left: the dragon and rider — four potion flasks on a strapped plank ---------- *
+     * health (heart flask), energy (round, swirl), breath (round, flame), magic (crystal, star).
+     * The liquid stands at each value, with a gentle swell; a draining health flask leaves a
+     * pale trace of what was lost. */
     dragonPanel(ctx, g, s, dt) {
-      const p = g.player, fdef = p.fdef;
-      const x = 14 * s, y = 12 * s, w = 300 * s, h = 112 * s;
-      plate(ctx, x, y, w, h, 10 * s);
-      crest(ctx, x + 30 * s, y + 34 * s, 22 * s, fdef);
-      ctx.textAlign = 'left';
-      ctx.font = F(Math.round(15 * s)); ctx.fillStyle = COL.parch;
-      ctx.fillText(p.name, x + 58 * s, y + 20 * s);
-      ctx.font = B(Math.round(12.5 * s), '500'); ctx.fillStyle = COL.dim;
-      ctx.fillText(fdef.dragon.title + ' · ' + fdef.rider.name, x + 58 * s, y + 37 * s);
-      const bx = x + 58 * s, bw = w - 72 * s, bh = 9 * s;
-      const hp = p.hp / p.maxHp;
+      const p = g.player, fdef = p.fdef, x0 = 14 * s, y0 = 8 * s, R = 23 * s, gap = 60 * s, cy = y0 + 52 * s;
+      const hp = p.hp / p.maxHp, en = p.energy / p.maxEnergy, fr = p.fireCharge / p.maxFire, mn = p.mana / p.maxMana;
       this.ghost = U.damp(this.ghost, hp, hp < this.ghost ? 1.6 : 8, dt);
-      const row = (yy, ic, col, frac, ghost, label, warn) => {
-        icon(ctx, ic, x + 34 * s, yy + bh / 2, 13 * s, warn && Math.sin(this.t * 8) > 0 ? '#ffffff' : col);
-        K.bar(ctx, bx, yy, bw, bh, frac, col, ghost);
-        if (label) { ctx.font = B(Math.round(11 * s), '700'); ctx.textAlign = 'right'; K.keyText(ctx, label, bx + bw - 4 * s, yy + bh / 2 + 0.5 * s, '#fff8e8', 2.5 * s); ctx.textAlign = 'left'; }
+      const pw = gap * 4 + 8 * s;
+      this.plank(ctx, x0, cy - R * 0.62, pw, R * 1.3, s);
+      const cooling = p.fireDelay > 0, warnT = Math.sin(this.t * 8) > 0;
+      const fl = [
+        { shape: 'heart', v: hp, ghost: this.ghost, liq: ['#ff5a4a', '#c8141e', '#5a0610'], ban: '#7a1a18', ic: 'heart', icol: '#ff6a5a', cap: Math.ceil(p.hp) + ' / ' + p.maxHp, warn: hp < 0.25 },
+        { shape: 'round', v: en, liq: ['#fff08a', '#f0c020', '#8a5a08'], ban: '#5a5214', ic: 'swirl', icol: '#f6d24a', cap: en < 0.2 ? (p.energy <= 0 ? 'STARVING' : 'HUNGRY') : '', warn: en < 0.2 },
+        { shape: 'round', v: fr, liq: cooling ? ['#c89a7a', '#8a5a3a', '#3a2214'] : ['#ffc060', '#ff6a14', '#8a2406'], ban: '#6a2410', ic: 'flame', icol: '#ff8a3a',
+          cap: p.breathing ? ((AS.Data.breaths[fdef.dragon.breath] || {}).name || '').toUpperCase() : cooling ? 'COOLING' : fr >= 0.999 ? 'READY' : '' },
+        { shape: 'gem', v: mn, liq: ['#a8e4ff', '#2a8aff', '#0a2a7a'], ban: '#1a2a5a', ic: 'star', icol: '#8ac8ff', cap: '' },
+      ];
+      fl.forEach((f, i) => this.flask(ctx, x0 + 4 * s + gap * (i + 0.5), cy, R, s, f, i, f.warn && warnT));
+      // who flies: the dragon and the rider, beside the flasks
+      const tx = x0 + pw + 12 * s;
+      crest(ctx, tx + 12 * s, cy - 16 * s, 13 * s, fdef);
+      ctx.textAlign = 'left';
+      ctx.font = F(Math.round(15 * s)); K.keyText(ctx, p.name, tx + 30 * s, cy - 16 * s, COL.parch, 3 * s);
+      ctx.font = B(Math.round(12.5 * s), '600'); K.keyText(ctx, fdef.dragon.title + ' · ' + fdef.rider.name, tx + 2 * s, cy + 6 * s, COL.dim, 3 * s);
+    },
+    plank(ctx, x, y, w, h, s) {
+      const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 8 * s; ctx.shadowOffsetY = 3 * s;
+      const gr = ctx.createLinearGradient(0, y, 0, y + h);
+      gr.addColorStop(0, '#45321f'); gr.addColorStop(0.5, '#2c1f14'); gr.addColorStop(1, '#1a120b');
+      K.rrect(ctx, x, y, w, h, 6 * s); ctx.fillStyle = gr; ctx.fill();
+      ctx.restore();
+      // grain, iron rim, straps and rivets
+      ctx.save(); K.rrect(ctx, x, y, w, h, 6 * s); ctx.clip();
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 1 * s;
+      for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(x, y + h * k / 4 + Math.sin(k * 3.1) * 2 * s); ctx.bezierCurveTo(x + w * 0.3, y + h * k / 4 - 2 * s, x + w * 0.7, y + h * k / 4 + 2 * s, x + w, y + h * k / 4); ctx.stroke(); }
+      ctx.restore();
+      K.rrect(ctx, x, y, w, h, 6 * s); ctx.strokeStyle = '#0e0a07'; ctx.lineWidth = 2.4 * s; ctx.stroke();
+      K.rrect(ctx, x + 2 * s, y + 2 * s, w - 4 * s, h - 4 * s, 5 * s); ctx.strokeStyle = 'rgba(150,130,110,0.45)'; ctx.lineWidth = 1 * s; ctx.stroke();
+      const strap = (sx) => {
+        const sg = ctx.createLinearGradient(sx, 0, sx + 9 * s, 0); sg.addColorStop(0, '#2a2622'); sg.addColorStop(0.5, '#5a544c'); sg.addColorStop(1, '#2a2622');
+        ctx.fillStyle = sg; ctx.fillRect(sx, y - 1 * s, 9 * s, h + 2 * s);
+        ctx.fillStyle = '#9a8e7e'; for (const ry of [y + 4 * s, y + h - 4 * s]) { ctx.beginPath(); ctx.arc(sx + 4.5 * s, ry, 1.8 * s, 0, TAU); ctx.fill(); }
       };
-      row(y + 50 * s, 'heart', COL.hp, hp, this.ghost, Math.ceil(p.hp) + ' / ' + p.maxHp, hp < 0.25);
-      const en = p.energy / p.maxEnergy;
-      row(y + 65 * s, 'meat', COL.energy, en, undefined, en < 0.2 ? (p.energy <= 0 ? 'STARVING — EAT!' : 'HUNGRY') : 'ENERGY', en < 0.2);
-      const fr = p.fireCharge / p.maxFire;
-      row(y + 80 * s, 'flame', p.fireDelay > 0 ? '#9a5a3a' : COL.fire, fr, undefined, p.breathing ? (AS.Data.breaths[fdef.dragon.breath] || {}).name.toUpperCase() : p.fireDelay > 0 ? 'COOLING' : fr >= 0.999 ? 'BREATH READY' : 'BREATH');
-      row(y + 95 * s, 'star', COL.mana, p.mana / p.maxMana, undefined, 'MAGIC');
+      for (let k = 0; k <= 4; k++) strap(x + 4 * s + k * 60 * s - (k === 0 ? 0 : k === 4 ? 9 * s : 4.5 * s));
+      ctx.shadowBlur = sb;
+    },
+    flaskPath(ctx, shape, cx, cy, R) {
+      ctx.beginPath();
+      if (shape === 'heart') {
+        ctx.moveTo(cx, cy + R);
+        ctx.bezierCurveTo(cx - R * 0.55, cy + R * 0.55, cx - R * 1.12, cy + R * 0.05, cx - R * 1.06, cy - R * 0.42);
+        ctx.bezierCurveTo(cx - R * 1.0, cy - R * 0.98, cx - R * 0.28, cy - R * 1.12, cx, cy - R * 0.55);
+        ctx.bezierCurveTo(cx + R * 0.28, cy - R * 1.12, cx + R * 1.0, cy - R * 0.98, cx + R * 1.06, cy - R * 0.42);
+        ctx.bezierCurveTo(cx + R * 1.12, cy + R * 0.05, cx + R * 0.55, cy + R * 0.55, cx, cy + R);
+      } else if (shape === 'gem') {
+        const P = [[0, -1.05], [0.92, -0.38], [0.74, 0.42], [0, 1.06], [-0.74, 0.42], [-0.92, -0.38]];
+        P.forEach(([a, b], k) => (k ? ctx.lineTo(cx + a * R, cy + b * R) : ctx.moveTo(cx + a * R, cy + b * R)));
+      } else ctx.arc(cx, cy, R, 0, TAU);
+      ctx.closePath();
+    },
+    flask(ctx, cx, cy, R, s, f, i, flash) {
+      const top = cy - R * (f.shape === 'heart' ? 0.95 : 1.05), bot = cy + R * (f.shape === 'round' ? 1 : 1.04);
+      const neckTop = cy - R - 14 * s;
+      // chain, neck, collar, cork
+      ctx.strokeStyle = 'rgba(150,120,70,0.8)'; ctx.lineWidth = 1.3 * s;
+      for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.ellipse(cx - 11 * s - k * 3.2 * s, neckTop + 4 * s + k * 4 * s, 1.8 * s, 2.4 * s, 0.6, 0, TAU); ctx.stroke(); }
+      const ng = ctx.createLinearGradient(cx - 6 * s, 0, cx + 6 * s, 0); ng.addColorStop(0, 'rgba(160,190,200,0.55)'); ng.addColorStop(0.5, 'rgba(230,245,255,0.35)'); ng.addColorStop(1, 'rgba(120,140,150,0.6)');
+      ctx.fillStyle = ng; ctx.fillRect(cx - 6 * s, neckTop, 12 * s, top - neckTop + 4 * s);
+      ctx.strokeStyle = '#140e0a'; ctx.lineWidth = 1.4 * s; ctx.strokeRect(cx - 6 * s, neckTop, 12 * s, top - neckTop + 4 * s);
+      const brass = (y, w, h) => { const bg = ctx.createLinearGradient(0, y, 0, y + h); bg.addColorStop(0, '#f0d080'); bg.addColorStop(0.5, '#a8762a'); bg.addColorStop(1, '#5a3a12'); K.rrect(ctx, cx - w / 2, y, w, h, 1.5 * s); ctx.fillStyle = bg; ctx.fill(); ctx.strokeStyle = '#1a1006'; ctx.lineWidth = 1 * s; ctx.stroke(); };
+      brass(neckTop + 2 * s, 17 * s, 4.5 * s); brass(top - 2 * s, 15 * s, 4 * s);
+      const cg = ctx.createLinearGradient(0, neckTop - 9 * s, 0, neckTop + 2 * s); cg.addColorStop(0, '#d8b080'); cg.addColorStop(1, '#8a6038');
+      K.rrect(ctx, cx - 6.5 * s, neckTop - 8 * s, 13 * s, 10 * s, 2.5 * s); ctx.fillStyle = cg; ctx.fill(); ctx.strokeStyle = '#2a1a0c'; ctx.lineWidth = 1 * s; ctx.stroke();
+      // the glass: dark inside, then the liquid, then rim and shine
+      ctx.save();
+      this.flaskPath(ctx, f.shape, cx, cy, R); ctx.fillStyle = 'rgba(14,16,22,0.72)'; ctx.fill();
+      ctx.clip();
+      const span = bot - top, wave = (x, lv) => lv + Math.sin(this.t * 2.2 + i * 1.7 + x / (6 * s)) * 1.2 * s;
+      const fill = (v, col, alpha) => {
+        if (v <= 0.002) return;
+        const lv = bot - U.clamp(v, 0, 1) * span;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath(); ctx.moveTo(cx - R * 1.3, bot + 2 * s);
+        for (let x = -R * 1.3; x <= R * 1.3; x += 3 * s) ctx.lineTo(cx + x, v >= 0.995 ? top - 4 * s : wave(x, lv));
+        ctx.lineTo(cx + R * 1.3, bot + 2 * s); ctx.closePath();
+        ctx.fillStyle = col; ctx.fill();
+        ctx.globalAlpha = 1;
+        return lv;
+      };
+      if (f.ghost !== undefined && f.ghost > f.v) fill(f.ghost, 'rgba(255,190,170,0.5)', 1);
+      const lg = ctx.createLinearGradient(0, top, 0, bot); lg.addColorStop(0, f.liq[0]); lg.addColorStop(0.45, f.liq[1]); lg.addColorStop(1, f.liq[2]);
+      const lv = fill(f.v, lg, 1);
+      if (lv !== undefined && f.v < 0.995) { // the surface catches the light
+        ctx.strokeStyle = 'rgba(255,255,240,0.55)'; ctx.lineWidth = 1.2 * s; ctx.beginPath();
+        for (let x = -R * 1.3; x <= R * 1.3; x += 3 * s) (x === -R * 1.3 ? ctx.moveTo(cx + x, wave(x, lv)) : ctx.lineTo(cx + x, wave(x, lv)));
+        ctx.stroke();
+      }
+      // inner glow at the core of the liquid
+      const rg = ctx.createRadialGradient(cx - R * 0.2, cy + R * 0.25, 1, cx, cy + R * 0.2, R * 1.1); rg.addColorStop(0, 'rgba(255,255,255,0.18)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = rg; ctx.fillRect(cx - R * 1.3, top - 4 * s, R * 2.6, span + 8 * s);
+      // measuring marks
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1 * s;
+      for (let k = 1; k <= 4; k++) { const yy = bot - span * k / 5, w = k % 2 ? 4 * s : 7 * s; ctx.beginPath(); ctx.moveTo(cx + R * 0.72 - w, yy); ctx.lineTo(cx + R * 0.72, yy); ctx.stroke(); }
+      if (f.shape === 'gem') { ctx.strokeStyle = 'rgba(220,240,255,0.25)'; ctx.beginPath(); ctx.moveTo(cx - R * 0.92, cy - R * 0.38); ctx.lineTo(cx, cy - R * 0.1); ctx.lineTo(cx + R * 0.92, cy - R * 0.38); ctx.moveTo(cx, cy - R * 0.1); ctx.lineTo(cx, cy + R * 1.06); ctx.stroke(); }
+      ctx.restore();
+      // rim: dark iron edge, a thin bright line, and a highlight on the glass
+      this.flaskPath(ctx, f.shape, cx, cy, R);
+      if (flash) { ctx.save(); ctx.shadowColor = f.liq[0]; ctx.shadowBlur = 14 * s; ctx.strokeStyle = f.liq[0]; ctx.lineWidth = 3 * s; ctx.stroke(); ctx.restore(); }
+      ctx.strokeStyle = '#120c08'; ctx.lineWidth = 3 * s; ctx.stroke();
+      ctx.strokeStyle = 'rgba(210,220,230,0.55)'; ctx.lineWidth = 1 * s; ctx.stroke();
+      ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.ellipse(cx - R * 0.45, cy - R * 0.38, R * 0.11, R * 0.28, 0.5, 0, TAU); ctx.fill();
+      ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.ellipse(cx - R * 0.2, cy - R * 0.62, R * 0.07, R * 0.07, 0, 0, TAU); ctx.fill();
+      ctx.restore();
+      // the banner hanging below
+      const by = bot + 3 * s, bw = 26 * s, bh = 27 * s;
+      ctx.beginPath(); ctx.moveTo(cx - bw / 2, by); ctx.lineTo(cx + bw / 2, by); ctx.lineTo(cx + bw / 2, by + bh); ctx.lineTo(cx + bw / 4, by + bh - 5 * s); ctx.lineTo(cx, by + bh); ctx.lineTo(cx - bw / 4, by + bh - 5 * s); ctx.lineTo(cx - bw / 2, by + bh); ctx.closePath();
+      const bg = ctx.createLinearGradient(cx - bw / 2, 0, cx + bw / 2, 0); bg.addColorStop(0, 'rgba(0,0,0,0.35)'); bg.addColorStop(0.3, 'rgba(0,0,0,0)'); bg.addColorStop(0.7, 'rgba(0,0,0,0)'); bg.addColorStop(1, 'rgba(0,0,0,0.35)');
+      ctx.fillStyle = f.ban; ctx.fill(); ctx.fillStyle = bg; ctx.fill();
+      ctx.strokeStyle = '#c8963a'; ctx.lineWidth = 1.2 * s; ctx.stroke();
+      ctx.fillStyle = '#c8963a'; ctx.fillRect(cx - bw / 2 - 2 * s, by - 1.5 * s, bw + 4 * s, 3 * s);
+      if (f.ic === 'swirl') {
+        ctx.strokeStyle = f.icol; ctx.lineWidth = 2.2 * s; ctx.lineCap = 'round'; ctx.beginPath();
+        for (let t = 0; t <= TAU * 1.9; t += 0.2) { const r = 1 * s + t * 1.05 * s, x = cx + Math.cos(t + Math.PI) * r, y = by + bh * 0.42 + Math.sin(t + Math.PI) * r; t ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+        ctx.stroke(); ctx.lineCap = 'butt';
+      } else icon(ctx, f.ic, cx, by + bh * 0.42, 15 * s, f.icol);
+      // a word or a number under it when it matters
+      if (f.cap) { ctx.font = B(Math.round(10.5 * s), '800'); ctx.textAlign = 'center'; K.keyText(ctx, f.cap, cx, by + bh + 7 * s, f.warn && flash ? '#ffffff' : '#fff2d8', 2.6 * s); }
     },
 
     /* ---------- top-centre: gold ---------- */

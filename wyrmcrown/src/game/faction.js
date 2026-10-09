@@ -483,7 +483,7 @@
     checkVictory(g) {
       if (g.state !== 'play') return;
       const rivals = g.factionList.filter((f) => f.key !== g.playerKey && !f.eliminated);
-      if (!rivals.length) Factions.endMatch(g, true, 'Every rival realm has fallen. The Wyrmcrown is yours.');
+      if (!rivals.length) Factions.endMatch(g, true, 'Every rival realm has fallen. The crown is yours — and it is not hollow.');
     },
     endMatch(g, won, text) {
       if (g.state !== 'play') return;

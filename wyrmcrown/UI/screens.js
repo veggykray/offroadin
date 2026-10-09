@@ -19,6 +19,38 @@
     'Sylvara\'s dragon is the fastest flier; Hrimgard\'s is slow but terribly tough.',
   ];
 
+  const QUOTES = [
+    'Even in ice, ambition burns.', 'Kings are titles. Dragons are power.', 'Every crown is hollow until a dragon fills it.',
+    'The sky remembers who ruled it.', 'Small kings, great dragons, a messy world.', 'Gold buys walls. Fire buys kingdoms.',
+  ];
+  // the crown that hollows the O of the logo
+  function crownSvg() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 64 48');
+    svg.innerHTML = '<defs><linearGradient id="hcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2c4"/><stop offset=".45" stop-color="#f2c14e"/><stop offset=".75" stop-color="#9a5e1e"/><stop offset="1" stop-color="#e8b04a"/></linearGradient></defs>' +
+      '<path d="M6 40 L4 12 L18 24 L32 4 L46 24 L60 12 L58 40 Z" fill="url(#hcg)" stroke="#3a2008" stroke-width="2" stroke-linejoin="round"/>' +
+      '<rect x="6" y="38" width="52" height="7" rx="2" fill="url(#hcg)" stroke="#3a2008" stroke-width="2"/>' +
+      '<circle cx="4" cy="11" r="3" fill="#f2c14e" stroke="#3a2008"/><circle cx="32" cy="4" r="3.4" fill="#f2c14e" stroke="#3a2008"/><circle cx="60" cy="11" r="3" fill="#f2c14e" stroke="#3a2008"/>' +
+      '<path d="M32 18 L36 28 L32 34 L28 28 Z" fill="#b8262a" stroke="#3a2008" stroke-width="1.5"/>';
+    return svg;
+  }
+  function logo() {
+    return h('h1', { class: 'logo' }, h('span', { class: 'l1' }, 'Hollow'), h('span', { class: 'l2' }, 'Cr', h('span', { class: 'o' }, 'O', crownSvg()), 'wns'));
+  }
+  // "Magister Aldric" → "Aldric & Pyrrhax"
+  const pairName = (F) => F.rider.name.split(' ').pop() + ' & ' + F.dragon.name;
+  // a round seal for the card: the dragon's breath and the wizard's bolt
+  function seal(fk, kind) {
+    const F = AS.Data.factions[fk], cv = h('canvas', { width: 64, height: 64, class: 'seal' }), c = cv.getContext('2d');
+    const col = kind === 'breath' ? ((AS.Data.breaths[F.dragon.breath] || {}).cols || ['#fff', '#fc6', '#f60'])[1] : F.rider.orb;
+    const g = c.createRadialGradient(32, 28, 4, 32, 32, 30); g.addColorStop(0, 'rgba(60,40,24,0.95)'); g.addColorStop(1, 'rgba(14,9,6,0.95)');
+    c.fillStyle = g; c.beginPath(); c.arc(32, 32, 29, 0, TAU); c.fill();
+    c.strokeStyle = '#c8963a'; c.lineWidth = 3; c.stroke(); c.strokeStyle = 'rgba(255,230,170,0.35)'; c.lineWidth = 1; c.beginPath(); c.arc(32, 32, 24, 0, TAU); c.stroke();
+    c.shadowColor = col; c.shadowBlur = 10;
+    if (AS.HUD && AS.HUD.icon) AS.HUD.icon(c, kind === 'breath' ? 'flame' : 'star', 32, 33, 30, col);
+    return cv;
+  }
+
   /* parchment-style atlas thumbnail of a map: regions, water, ridges, forests, towns */
   const Atlas = {
     cache: new Map(),
@@ -139,19 +171,23 @@
     showMenu() {
       const s = this.screens.menu; s.innerHTML = '';
       const P = AS.Save.profile;
-      s.appendChild(h('div', null,
-        h('h1', { class: 'title' }, 'WYRMCROWN'),
-        h('div', { class: 'subtitle' }, 'WAR OF THE FOUR DRAGON REALMS'),
+      s.appendChild(h('div', { class: 'art' }));
+      s.appendChild(h('div', { class: 'hc-banner' }, h('div', { class: 'crown' }, crownSvg()), h('div', null, 'Small kings'), h('div', null, 'Great dragons'), h('div', { class: 'sp' }), h('div', null, 'A messy world')));
+      s.appendChild(h('div', { class: 'col-main' },
+        logo(),
+        h('div', { class: 'subtitle' }, 'Kings are titles. Dragons are power.'),
         h('div', { class: 'buttons' },
-          btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your realm and a map'),
-          btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
-          AS.Maps.generateHuge ? btn('Huge World Test', () => AS.App.startMatch('hugeworld', { faction: 'human' }), '', 'A generated continent ~35 km across, built as you fly · technical test') : null,
-          AS.Maps.byId.largeworld ? btn('Large World Test', () => AS.App.startMatch('largeworld', { faction: 'human' }), '', 'A continuous island several kilometres across · technical test') : null,
+          btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your dragon, wizard and realm'),
           AS.BigCampaign && AS.CampaignMenu && AS.Maps.byId.largeworld ? btn('Campaign', () => AS.CampaignMenu.show(), '', 'Win the Wide Realm place by place · real time, saved as you go') : null,
+          btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
+          AS.Maps.generateHuge ? btn('Huge World Test', () => AS.App.startMatch('hugeworld', { faction: 'human' }), '', 'A generated continent ~160 km across, built as you fly · explore it') : null,
+          AS.Maps.byId.largeworld ? btn('Large World Test', () => AS.App.startMatch('largeworld', { faction: 'human' }), '', 'A continuous island several kilometres across · technical test') : null,
           AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across a new archipelago every time') : null,
           btn('How to Play', () => this.showControls('menu')),
           btn('Options', () => this.showOptions('menu')))));
-      s.appendChild(h('div', { class: 'foot' }, 'Built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL)'));
+      // (the buttons stay one line, as on a title; what each does shows on hover)
+      for (const b of s.querySelectorAll('.btn')) { const sub = b.querySelector('.sub'); if (sub) b.title = sub.textContent; }
+      s.appendChild(h('div', { class: 'foot' }, 'Hollow Crowns · built on the ALIEN STRIKE engine · fonts: Cinzel & Alegreya Sans (OFL)'));
       if (P && P.stats.played) s.appendChild(h('div', { class: 'stat' }, 'Wars won: ' + P.stats.wins + ' of ' + P.stats.played, h('br'), 'Dragons driven off: ' + P.stats.dragonsDowned));
       this.show('menu');
     },
@@ -160,14 +196,15 @@
     showSelect() {
       const s = this.screens.select; s.innerHTML = '';
       const testAll = AS.Settings.testMode || AS.App.params.get('allRealms') === '1';
-      s.appendChild(h('h2', { class: 'heading' }, 'Choose Your Realm'));
-      s.appendChild(h('div', { class: 'dim', style: 'font:500 16px var(--text);max-width:900px' }, 'You ride as a wizard upon your realm\'s dragon. The other three realms are ruled by rival dragonlords — they will expand, raid and make war on you and on each other.'));
+      s.appendChild(h('div', { class: 'hc-head' }, h('h2', { class: 'heading' }, 'Choose Your Dragon ', h('small', null, 'and'), ' Wizard'), h('div', { class: 'sub' }, 'Four bonds. Four fates.')));
       const grid = h('div', { class: 'realms' });
       for (const fk of AS.Data.factionOrder) {
         const F = AS.Data.factions[fk], locked = fk !== 'human' && !testAll;
-        const card = h('div', { class: 'realm-card' + (this.sel.faction === fk ? ' sel' : '') + (locked ? ' locked' : ''), onclick: () => { if (locked) { AS.Audio.sfx('denied'); return; } this.sel.faction = fk; AS.Audio.sfx('ui_click'); this.showSelect(); } },
-          h('div', { class: 'banner', style: 'background:linear-gradient(90deg,' + F.color + ',' + F.color2 + ')' }),
-          portrait(fk, 220, 150),
+        const card = h('div', { class: 'realm-card hc-' + fk + (this.sel.faction === fk ? ' sel' : '') + (locked ? ' locked' : ''), onclick: () => { if (locked) { AS.Audio.sfx('denied'); return; } this.sel.faction = fk; AS.Audio.sfx('ui_click'); this.showSelect(); } },
+          h('div', { class: 'pic', style: 'background-image:url(assets/ui/portrait_' + fk + '.jpg)' },
+            h('div', { class: 'pair' }, pairName(F)),
+            h('div', { class: 'motto' }, F.motto || ''),
+            h('div', { class: 'seals' }, seal(fk, 'breath'), seal(fk, 'bolt'))),
           h('div', { class: 'nm', style: 'color:' + F.color }, F.name),
           h('div', { class: 'who' }, F.dragon.name + ', ' + F.dragon.title + ' · ridden by ' + F.rider.name),
           h('div', { class: 'bl' }, F.blurb),
@@ -176,7 +213,7 @@
         grid.appendChild(card);
       }
       s.appendChild(grid);
-      s.appendChild(h('div', { class: 'row' }, btn('Back', () => this.showMenu()), btn('Choose a Map', () => this.showMaps(), 'primary')));
+      s.appendChild(h('div', { class: 'row hc-foot' }, btn('Back', () => this.showMenu()), h('div', { class: 'quote' }, '\u201cFour paths. Countless kingdoms. The sky remembers.\u201d'), btn('Choose a Map', () => this.showMaps(), 'primary')));
       this.show('select');
     },
 
@@ -226,7 +263,7 @@
         h('div', { class: 'col grow' },
           h('h2', null, m.name),
           h('p', null, m.blurb),
-          h('p', { class: 'dim' }, 'You rule ' + F.name + ', riding ' + F.dragon.name + '. ' + m.sites.length + ' sites to contest. Destroy or capture every rival stronghold to win the Wyrmcrown.'),
+          h('p', { class: 'dim' }, 'You rule ' + F.name + ', riding ' + F.dragon.name + '. ' + m.sites.length + ' sites to contest. Destroy or capture every rival stronghold to win the crown.'),
           h('div', { class: 'legend' }, AS.Data.factionOrder.filter((k) => m.factions[k]).map((k) => h('span', null, h('i', { style: 'background:' + AS.Data.factions[k].color }), AS.Data.factions[k].short + (k === this.sel.faction ? ' (you)' : '')))),
           h('div', { class: 'opt-row', style: 'max-width:420px;margin-top:16px' }, h('span', null, 'Difficulty'), diff),
           h('div', { class: 'row', style: 'margin-top:auto' }, btn('Back', () => this.showSelect()), btn('Begin the War', () => this.begin(), 'primary', m.name)))));
@@ -238,7 +275,16 @@
     },
     showLoading(m) {
       const s = this.screens.loading; s.innerHTML = '';
-      s.appendChild(h('div', { class: 'panel' }, h('h2', null, m.name), h('div', { class: 'dim' }, 'The realms stir…'), h('div', { class: 'tip' }, TIPS[(Math.random() * TIPS.length) | 0])));
+      const F = AS.Data.factions[this.sel.faction] || AS.Data.factions.human;
+      // (the bar is a compositor animation: it keeps moving while the realm is built on the main thread)
+      s.appendChild(h('div', { class: 'blur', style: 'background-image:url(assets/ui/loading_art.jpg)' }));
+      s.appendChild(h('div', { class: 'scene', style: 'background-image:url(assets/ui/loading_art.jpg)' }));
+      s.appendChild(h('div', { class: 'lower' },
+        h('div', { class: 'who' }, h('div', { class: 'face', style: 'background-image:url(assets/ui/portrait_' + F.key + '.jpg)' }),
+          h('div', null, h('h2', null, m.name), h('div', { class: 'quote' }, '\u201c' + QUOTES[(Math.random() * QUOTES.length) | 0] + '\u201d'))),
+        h('div', { class: 'bar' }, h('i')),
+        h('div', { class: 'what' }, 'Preparing the realm\u2026'),
+        h('div', { class: 'tip' }, 'Tip: ' + TIPS[(Math.random() * TIPS.length) | 0])));
       this.show('loading');
     },
 

@@ -8,7 +8,7 @@
   const P = AS.Data.pal;
   AS.Data.factions = {
     human: {
-      key: 'human', name: 'Kingdom of Aldermere', short: 'Aldermere', people: 'Aldermen', adj: 'Aldermere',
+      key: 'human', motto: 'Fire and Freedom', name: 'Kingdom of Aldermere', short: 'Aldermere', people: 'Aldermen', adj: 'Aldermere',
       color: '#e0483a', color2: '#f0c050', pal: P.human, biome: 'human',
       blurb: 'Fertile farmland, stone towns and knightly orders. Balanced, organised and hard to break behind its walls.',
       dragon: { name: 'Pyrrhax', title: 'the Ember Wyrm', hp: 440, armor: 2, speed: 1, turn: 1, scale: 1, breath: 'fire', breathDmg: 1, boltDmg: 1, recover: 24,
@@ -21,7 +21,7 @@
       hint: 'Your realm — the fields and stone towns of the south-west.',
     },
     elf: {
-      key: 'elf', name: 'Sylvaran Realm', short: 'Sylvara', people: 'Sylvari', adj: 'Sylvaran',
+      key: 'elf', motto: 'Beauty and Superiority', name: 'Sylvaran Realm', short: 'Sylvara', people: 'Sylvari', adj: 'Sylvaran',
       color: '#3fcf7a', color2: '#e8f0b0', pal: P.elf, biome: 'elf',
       blurb: 'Ancient forests, elegant spires and the oldest magic. Fast, evasive and fond of ambush.',
       dragon: { name: 'Verdanthe', title: 'the Glade Serpent', hp: 390, armor: 1.5, speed: 1.12, turn: 1.18, scale: 0.92, breath: 'verdant', breathDmg: 0.85, boltDmg: 1.1, recover: 22,
@@ -34,7 +34,7 @@
       hint: 'The deep forests of the north-west.',
     },
     ice: {
-      key: 'ice', name: 'Hrimgard', short: 'Hrimgard', people: 'Hrimfolk', adj: 'Hrimgard',
+      key: 'ice', motto: 'Cold Endures', name: 'Hrimgard', short: 'Hrimgard', people: 'Hrimfolk', adj: 'Hrimgard',
       color: '#6ab8ff', color2: '#e8f6ff', pal: P.ice, biome: 'ice',
       blurb: 'Frozen mountains, glacier fortresses and frost-hardened warbands. Slow to anger, terrible in defence.',
       dragon: { name: 'Skaldfrost', title: 'the Winter Tyrant', hp: 480, armor: 2.5, speed: 0.9, turn: 0.86, scale: 1.12, breath: 'frost', breathDmg: 0.9, boltDmg: 1, recover: 26,
@@ -47,7 +47,7 @@
       hint: 'The glaciers and peaks of the north-east.',
     },
     undead: {
-      key: 'undead', name: 'Dominion of Morgrave', short: 'Morgrave', people: 'the Risen', adj: 'Morgrave',
+      key: 'undead', motto: 'Death Finds a Way', name: 'Dominion of Morgrave', short: 'Morgrave', people: 'the Risen', adj: 'Morgrave',
       color: '#9a5adf', color2: '#a8ff8a', pal: P.undead, biome: 'undead',
       blurb: 'Dead forests, black fortresses and endless skeleton legions. Relentless, aggressive and hard to keep down.',
       dragon: { name: 'Vorthrax', title: 'the Unburied', hp: 430, armor: 1.5, speed: 1.02, turn: 0.98, scale: 1.05, breath: 'necrotic', breathDmg: 1.05, boltDmg: 1, recover: 15,
