@@ -45,6 +45,7 @@
       }
     },
     end(frameMs) {
+      this.lastWork = frameMs; // (read by the Large World benchmark)
       if (!this.on) return;
       const now = performance.now();
       const F = AS.Forge && AS.Forge.stats, T = AS.game && AS.game.terrain;

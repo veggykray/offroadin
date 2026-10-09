@@ -168,6 +168,13 @@
       if (B.T.shuttle) { B.flipT += dt; if (B.flipT > B.T.flip) { B.flipT = 0; B.wi++; } }
       if (B.t < B.warm) return;
       B.gaps.push(gap);
+      // a long gap between frames while the game itself did little: the time went outside the game
+      // (the browser's memory clean-up, the graphics driver, another program)
+      const work = AS.Prof.lastWork || 0;
+      if (gap > 50 && work < 33.4 && (B.slow.length < 3 || gap > B.slow[B.slow.length - 1].ms)) {
+        B.slow.push({ ms: Math.round(gap), why: 'outside the game: it worked ' + work.toFixed(0) + ' ms of that frame (browser memory clean-up or graphics driver)' });
+        B.slow.sort((a, b) => b.ms - a.ms); B.slow.length = Math.min(B.slow.length, 3);
+      }
       const C = g.lw.counts;
       B.maxChunks = Math.max(B.maxChunks, g.terrain.cache.size); B.maxTroops = Math.max(B.maxTroops, C.total); B.maxActive = Math.max(B.maxActive, C.active); B.maxVisible = Math.max(B.maxVisible, C.visible);
       if (B.t >= B.warm + B.T.secs) {
