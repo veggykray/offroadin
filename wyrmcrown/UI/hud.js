@@ -342,6 +342,7 @@
       const lines = [];
       const Fp = g.playerFaction;
       if (!g.opts.conquest && Math.hypot(p.x - Fp.townPos.x, p.y - Fp.townPos.y) < 520) lines.push(['T', 'HOLD COURT — SPEND YOUR GOLD']);
+      if (g.map.highFlight && !g.highFlight && g.time < 90) lines.push(['H', 'HIGH FLIGHT — SEE FAR']);
       if (p.pilot && p.pilot.quarry) lines.push(['W A S D', 'HUNTING — ANY FLIGHT KEY BREAKS OFF']);
       else if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);
       else if (AS.Life.preyInReach(g, p)) lines.push(['E', 'SNATCH AND EAT — HOLD E TO CARRY IT HOME']);

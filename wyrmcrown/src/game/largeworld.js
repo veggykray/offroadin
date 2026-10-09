@@ -17,7 +17,7 @@
  * with its survivors, so the world remembers losses. Nothing is teleported and
  * nothing loads: the dragon simply flies on.
  *
- * Benchmarks: ?world=large&bench=A … H (or bench=all for A–G), &pop=25|50|100|200
+ * Benchmarks: ?world=large&bench=A … I (or bench=all for A–G and I), &pop=25|50|100|200
  * for the crowd test (E). The results appear on screen and in window.__lwBench. */
 'use strict';
 (function (AS) {
@@ -121,10 +121,11 @@
       E: { name: 'Engaging enemies', secs: 30, start: [11300, 15600], hover: [11300, 14700], crowd: true },
       F: { name: 'Fast across many chunks', secs: 45, start: [4600, 15200], route: [[20800, 11600]], sprint: true },
       G: { name: 'Reversing direction', secs: 40, start: [9000, 17600], shuttle: [[9000, 17600], [12000, 17600]], flip: 4 },
+      I: { name: 'High flight (H) across the island', secs: 40, start: [4600, 16400], route: [[20600, 11200], [13800, 21400]], sprint: true, high: true },
       H: { name: 'Extended flight', secs: 240, start: [6400, 17000], route: [[9300, 16000], [8200, 10200], [13400, 9700], [18800, 8400], [20600, 11400], [16800, 15200], [16300, 19700], [11800, 22400], [7800, 19900], [6400, 17000]], sprint: true },
     },
     bench(g, code, pop) {
-      const list = code === 'ALL' ? 'ABCDEFG'.split('') : code.split('').filter((c) => this.TESTS[c]);
+      const list = code === 'ALL' ? 'ABCDEFGI'.split('') : code.split('').filter((c) => this.TESTS[c]);
       if (!list.length) return;
       g.godMode = true; // a benchmark measures, it does not die
       g.lw.benchQueue = list; g.lw.benchPop = pop || 100; g.lw.benchResults = [];
@@ -136,9 +137,16 @@
       const T = this.TESTS[code], p = g.player;
       AS.Debug.tp(T.start[0], T.start[1], T.low ? 60 : 120);
       if (T.crowd) this.crowd(g, L.benchPop, T.hover[0], T.hover[1] - 200);
+      g.highFlight = !!T.high;
       const prev = p.pilot;
-      L.bench = { code, T, t: 0, warm: 3, gaps: [], last: performance.now(), wi: 0, flipT: 0, prev, maxChunks: 0, sync0: g.terrain.syncN || 0, stand0: g.terrain.standN || 0, maxTroops: 0, maxActive: 0, maxVisible: 0 };
+      L.bench = { code, T, t: 0, warm: 3, slow: [], gaps: [], last: performance.now(), wi: 0, flipT: 0, prev, maxChunks: 0, sync0: g.terrain.syncN || 0, stand0: g.terrain.standN || 0, maxTroops: 0, maxActive: 0, maxVisible: 0 };
       const B = L.bench;
+      // the slowest frames of the test, with what the main thread spent them on
+      AS.Prof.onSlow = (ms, parts, forged, tsync, tstand) => {
+        if (B.t < B.warm) return;
+        B.slow.push({ ms: Math.round(ms), why: parts.map(([k, v]) => k + ' ' + v.toFixed(0)).join(', ') + (forged ? ' · sprites forged ' + forged : '') + (tstand ? ' · ground stand-ins ' + tstand : '') });
+        B.slow.sort((a, b) => b.ms - a.ms); B.slow.length = Math.min(B.slow.length, 3);
+      };
       p.pilot = {
         read: (d, inp) => {
           let tx, ty;
@@ -169,10 +177,12 @@
           over33: s.filter((v) => v > 33.4).length, over50: s.filter((v) => v > 50).length,
           chunks: B.maxChunks, builtOnSpot: (g.terrain.syncN || 0) - B.sync0, terrainStandIns: (g.terrain.standN || 0) - B.stand0,
           troops: B.maxTroops, activeAI: B.maxActive, visible: B.maxVisible, pop: B.T.crowd ? g.lw.benchPop : null,
+          slowest: B.slow.map((q) => q.ms + ' ms: ' + (q.why || 'not on the main thread (graphics / browser)')),
           heapMB: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null,
           spriteMB: AS.Forge.memory ? Math.round(AS.Forge.memory().bytes / 1048576) : null, gpu: AS.Perf && AS.Perf.gpu ? AS.Perf.gpu() : null };
         g.lw.benchResults.push(r);
         console.log('LWBENCH ' + JSON.stringify(r));
+        AS.Prof.onSlow = null; g.highFlight = false;
         if (B.T.crowd) this.crowd(g, 0, 0, 0);
         g.player.pilot = B.prev;
         g.lw.bench = null;
@@ -188,6 +198,7 @@
       const row = (r) => (r.test + ' ' + r.name).padEnd(30) + String(r.fps).padStart(6) + String(r.avg).padStart(7) + String(r.p95).padStart(7) + String(r.p99).padStart(7) + String(r.worst).padStart(8) + String(r.over33).padStart(6) + String(r.chunks).padStart(7) + String(r.builtOnSpot).padStart(6) + String(r.activeAI + '/' + r.troops).padStart(10) + String(r.visible).padStart(6) + String(r.heapMB === null ? '—' : r.heapMB).padStart(6);
       el.textContent = 'LARGE WORLD BENCHMARK  (' + (R[0] && R[0].gpu || 'renderer unknown') + ')\n\n' +
         'test'.padEnd(30) + '   fps  avg ms   p95    p99   worst  >33ms chunks spot  AI/troops  view  heap\n' + R.map(row).join('\n') +
+        '\n\nSlowest frames (what the game was busy with):\n' + R.map((r) => r.slowest.length ? r.test + '  ' + r.slowest.join('\n   ') : r.test + '  none over 33 ms').join('\n') +
         '\n\nPhotograph this table (or copy window.__lwBench from the console) and send it back.\nPress Esc to keep flying.';
       document.body.appendChild(el);
       const off = (e) => { if (e.key === 'Escape') { el.remove(); window.removeEventListener('keydown', off); } };

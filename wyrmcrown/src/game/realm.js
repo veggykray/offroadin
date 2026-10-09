@@ -248,7 +248,7 @@
       this.rebuildGrid();
       for (const d of this.dragons) d.update(dt);
       // a large map (map.simR) lets troops far from the dragon sleep: no AI, no movement, until it comes near
-      const simR2 = this.map.simR ? this.map.simR * this.map.simR : 0, wakeAt = this.player;
+      const simR = this.map.simR ? this.map.simR * (this.highFlight ? 1.5 : 1) : 0, simR2 = simR * simR, wakeAt = this.player;
       for (let i = this.troops.length - 1; i >= 0; i--) {
         const t = this.troops[i];
         if (t.removed) { this.troops.splice(i, 1); continue; }
@@ -276,7 +276,8 @@
       // the mouse wheel zooms the view in and out (kept for the session)
       const wheel = !this.demo && AS.Input.mouse.wheel;
       if (wheel) AS.App.userZoom = U.clamp((AS.App.userZoom || 1) * (wheel > 0 ? 1 / 1.1 : 1.1), 0.8, 1.4);
-      this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1);
+      // high flight (large maps, H): the view widens to twice the distance (the terrain switches to its far layer)
+      this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1) * (this.highFlight ? 0.5 : 1);
       const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z;
       this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
       if (this.demo) { this.updateRegion(dt); return; }

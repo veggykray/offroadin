@@ -130,7 +130,9 @@
       inp.skim = dist < 560;
       const run = Math.hypot(h.vx, h.vy);
       // stay under snatch speed on the run-in, then lunge at a fleeing horse or deer
-      let want = dist > 520 ? 270 : U.clamp(run + 85, 115, dist < 170 ? 300 : 230);
+      // (flight speed covers FLIGHT.pace of its value in ground: closing on the animal needs that much more)
+      const pace = (AS.Dragon && AS.Dragon.FLIGHT && AS.Dragon.FLIGHT.pace) || 1;
+      let want = dist > 520 ? 270 : U.clamp((run + 85) / pace, 115, dist < 170 ? 300 : 230 / pace);
       if (Math.abs(off) > 1.2) want = Math.min(want, 150); // slow for a tight turn back onto it
       inp.throttle = d.speed < want - 12 ? 1 : d.speed > want + 18 ? -0.6 : 0;
       if (AS.Life.preyInReach(g, d) === o) inp.eatHit = true;

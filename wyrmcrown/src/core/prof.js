@@ -56,6 +56,8 @@
       this.acc._stand = (this.acc._stand || 0) + stand; this.acc._tsync = (this.acc._tsync || 0) + tsync; this.acc._tstand = (this.acc._tstand || 0) + tstand;
       this.frames++;
       for (const b of [25, 50, 100, 250, 500]) if (frameMs > b) this.buckets[b]++;
+      // a listener (the Large World benchmark) may want every slow frame's breakdown
+      if (this.onSlow && frameMs > 33.4) this.onSlow(frameMs, Object.entries(this.cur).concat(Object.entries(this.kinds).map(([k, v]) => ['· ' + k, v])).filter(([, v]) => v > 1.5).sort((a, b) => b[1] - a[1]).slice(0, 4), forgedN, tsync, (T ? (T.standN || 0) - this.tq0 : 0));
       if (frameMs > 100) {
         const parts = Object.entries(this.cur).concat(Object.entries(this.kinds).map(([k, v]) => ['· ' + k, v])).filter(([, v]) => v > 2).sort((a, b) => b[1] - a[1]).slice(0, 4);
         this.spikes.unshift({ ms: Math.round(frameMs), parts: parts.map(([k, v]) => k + ' ' + Math.round(v)).join(', '), forged: Math.round(forged), forgedN, tsync });

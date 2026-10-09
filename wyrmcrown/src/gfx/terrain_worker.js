@@ -72,7 +72,8 @@ self.onmessage = (e) => {
   if (m.type === 'clear') { for (const a of m.a) T.clearAreas.push(a); return; }
   if (m.type === 'chunk') {
     const t0 = performance.now();
-    if (T.TD !== m.TD) { T.TD = m.TD; T._bufs = null; }
+    // buffers are kept per texel density: near (full detail) and far (high flight) requests alternate
+    if (T.TD !== m.TD) { const B = T._byTD || (T._byTD = {}); B[T.TD] = T._bufs; T.TD = m.TD; T._bufs = B[m.TD] || null; }
     if (AS.Forge && m.forgeRes && AS.Forge.res !== m.forgeRes) AS.Forge.setRes(m.forgeRes);
     const st = T.bufs(0), cx = m.cx, cy = m.cy, key = cx * 10000 + cy;
     st.cx = cx; st.cy = cy; st.x0 = cx * CH; st.y0 = cy * CH; st.TD = T.TD;
@@ -90,6 +91,6 @@ self.onmessage = (e) => {
     const list = T.sdecals.get(key);
     if (list) for (const d of list) { try { T.paintDecal(cv, cx, cy, d); } catch (err) { /* skip a decal that cannot paint */ } }
     const bmp = cv.transferToImageBitmap();
-    self.postMessage({ type: 'chunk', cx, cy, TD: m.TD, bmp, sseq, ms: performance.now() - t0, parts: [t1 - t0, t2 - t1, performance.now() - t2] }, [bmp]);
+    self.postMessage({ type: 'chunk', cx, cy, TD: m.TD, far: !!m.far, bmp, sseq, ms: performance.now() - t0, parts: [t1 - t0, t2 - t1, performance.now() - t2] }, [bmp]);
   }
 };

@@ -151,7 +151,7 @@
       I.pollPad();
       const t0 = performance.now();
       const PF = AS.Prof; // developer profiler: on while the F3 panel is shown
-      if (PF) { PF.on = !!(AS.Perf && AS.Perf.on); PF.begin(); }
+      if (PF) { PF.on = !!(AS.Perf && AS.Perf.on) || !!(AS.game && AS.game.lw && AS.game.lw.bench); PF.begin(); } // (also during a Large World benchmark)
       const mark = (n) => { if (PF && PF.on) PF.mark(n); };
       const g = this.game;
       if (g && (this.state === 'play' || this.state === 'paused' || this.state === 'results')) {
@@ -160,6 +160,7 @@
             if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
           } else if (I.hit('map') && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
           else if (I.hit('town') && AS.Court && !g.opts.conquest) AS.Court.toggle(g);
+          else if (I.hit('highFlight') && g.map.highFlight) { g.highFlight = !g.highFlight; g.msg(g.highFlight ? 'HIGH FLIGHT — H TO DESCEND' : 'BACK DOWN TO THE FIGHT', '#cfe8ff', 2); }
           else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
           if (I.hit('controlMode')) {
             AS.Settings.controlMode = AS.Settings.controlMode === 'mouse' ? 'keys' : 'mouse'; AS.Save.saveSettings();

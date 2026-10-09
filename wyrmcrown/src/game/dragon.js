@@ -35,6 +35,9 @@
     zCruise: 62, zHigh: 82, zLow: 13, zHover: 40,
     turn: [[0, 3.6], [60, 3.4], [185, 2.05], [300, 1.38], [415, 0.95], [480, 0.8]], // speed → max turn rate (rad/s)
     turnAcc: 7.5,
+    // how much ground a unit of flight speed covers: every speed above (cruise, beats, sprint,
+    // dive, hover) and every rule built on them stays the same, the dragon just travels 20% less far
+    pace: 0.8,
   };
   function turnRate(v) {
     const T = FLIGHT.turn;
@@ -239,7 +242,7 @@
       // body pitch: nose down when diving, up when climbing hard
       this.pitch = U.damp(this.pitch, U.clamp(-this.vz / 140, -0.7, 0.7) + (braking ? -0.18 : 0), 4, dt);
       // ---- integrate
-      this.vx = Math.cos(this.velA) * this.speed; this.vy = Math.sin(this.velA) * this.speed;
+      this.vx = Math.cos(this.velA) * this.speed * F.pace; this.vy = Math.sin(this.velA) * this.speed * F.pace;
       this.x += this.vx * dt; this.y += this.vy * dt;
       this.bounds(dt);
       if (this.z < 34) this.collideLow(dt);
@@ -372,7 +375,7 @@
       this.speed = U.damp(this.speed, 0, 3, dt);
       this.vz = -38; this.z = Math.max(0, this.z + this.vz * dt);
       this.angle = U.wrapAngle(this.angle + turn * 1.2 * dt); this.velA = this.angle;
-      this.vx = Math.cos(this.angle) * this.speed; this.vy = Math.sin(this.angle) * this.speed;
+      this.vx = Math.cos(this.angle) * this.speed * FLIGHT.pace; this.vy = Math.sin(this.angle) * this.speed * FLIGHT.pace;
       this.x += this.vx * dt; this.y += this.vy * dt;
       this.freq = U.damp(this.freq, 2.2, 8, dt); this.amp = 0.8;
       const prev = Math.sin(this.phase * TAU);
@@ -531,7 +534,7 @@
         this.fall -= dt;
         this.angle += this.fallSpin * dt;
         this.speed *= Math.exp(-0.8 * dt);
-        this.x += Math.cos(this.angle) * this.speed * dt * 0.5; this.y += Math.sin(this.angle) * this.speed * dt * 0.5;
+        this.x += Math.cos(this.angle) * this.speed * dt * 0.5 * FLIGHT.pace; this.y += Math.sin(this.angle) * this.speed * dt * 0.5 * FLIGHT.pace;
         this.z = Math.max(0, this.z - (30 + (1.6 - this.fall) * 60) * dt);
         this.wing.elev = 0.6 + Math.sin(this.t * 14) * 0.4; this.wing.fold = 0.3;
         this.bank = Math.sin(this.t * 5) * 0.8;

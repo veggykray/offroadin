@@ -134,6 +134,8 @@
       const fq = zr / ((AS.Forge && AS.Forge.res) || 2) >= 0.55 ? 'low' : 'high';
       ctx.imageSmoothingQuality = 'low';
       if (PF) PF.mark('clear');
+      // zoomed far out (high flight), a terrain that has a low-detail far layer draws that instead
+      if (T.setFar) T.setFar(z < 0.78);
       for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
         const cv = T.getChunk(cx, cy);
         ctx.drawImage(cv, cx * S - ox, cy * S - oy, S + ov, S + ov);
@@ -146,14 +148,18 @@
       for (let cy = y0 - 1; cy <= y1 + 1; cy++) for (let cx = x0 - 1; cx <= x1 + 1; cx++) if (!T.hasChunk(cx, cy)) q.push([cx, cy]);
       // terrains that shade off the main thread can afford to look a ring further ahead
       const ring = T.async ? 3 : 2;
+      // a large map (map.prefetchAll) prepares the outer ring in every direction, not only ahead:
+      // circling and turning back then find the ground ready
+      const all = !!(g.map && g.map.prefetchAll);
       // the chunk cache must hold the view and its prefetch ring, or it throws away chunks
       // it is about to draw (a big, high-resolution screen sees many chunks at once)
-      T.needCache = (x1 - x0 + 1 + ring * 2) * (y1 - y0 + 1 + ring * 2) + 6;
+      const need = (x1 - x0 + 1 + ring * 2) * (y1 - y0 + 1 + ring * 2) + 6;
+      if (T.farMode) T.far.need = need; else T.needCache = need;
       for (let cy = y0 - ring; cy <= y1 + ring; cy++) for (let cx = x0 - ring; cx <= x1 + ring; cx++) {
         if (cx >= x0 - 1 && cx <= x1 + 1 && cy >= y0 - 1 && cy <= y1 + 1) continue;
-        if (ring > 2 && (cx < x0 - 2 || cx > x1 + 2 || cy < y0 - 2 || cy > y1 + 2) && !((ldx && Math.sign(cx - (x0 + x1) / 2) === ldx && Math.abs(p.vx) > Math.abs(p.vy) * 0.5) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy && Math.abs(p.vy) > Math.abs(p.vx) * 0.5))) continue;
+        if (ring > 2 && !all && (cx < x0 - 2 || cx > x1 + 2 || cy < y0 - 2 || cy > y1 + 2) && !((ldx && Math.sign(cx - (x0 + x1) / 2) === ldx && Math.abs(p.vx) > Math.abs(p.vy) * 0.5) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy && Math.abs(p.vy) > Math.abs(p.vx) * 0.5))) continue;
         const ahead = (ldx && Math.sign(cx - (x0 + x1) / 2) === ldx) || (ldy && Math.sign(cy - (y0 + y1) / 2) === ldy);
-        if (ahead && !T.hasChunk(cx, cy)) q.push([cx, cy]);
+        if ((ahead || all) && !T.hasChunk(cx, cy)) q.push([cx, cy]);
       }
       T.work(AS.Settings && AS.Settings.quality === 'low' ? 2.5 : 3.5, q);
       if (PF) PF.mark('terrain prepare');

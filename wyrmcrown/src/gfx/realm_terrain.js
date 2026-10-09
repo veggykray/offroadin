@@ -118,6 +118,15 @@
       if (r.type === 'ready') { w.ready = r.ms; return; }
       if (r.type === 'kinds') { this.wkKinds = new Set(r.kinds); return; }
       w.busy--;
+      if (r.far) {
+        const F = this.far, key = r.cx * 10000 + r.cy;
+        if (!F) { if (r.bmp) r.bmp.close(); return; }
+        F.req.delete(key);
+        if (r.TD !== F.TD || F.cache.has(key)) { if (r.bmp) r.bmp.close(); return; }
+        F.cache.set(key, { cv: r.bmp, used: this.frame || 0 }); F.stub.delete(key);
+        if (F.cache.size > Math.max(F.max, F.need || 0)) this.farEvict();
+        return;
+      }
       if (!this._req) { if (r.bmp) r.bmp.close(); return; }
       const key = r.cx * 10000 + r.cy;
       this._req.delete(key);
@@ -139,6 +148,7 @@
     }
     getChunk(cx, cy) {
       if (!this._wk || this.syncOK) return super.getChunk(cx, cy);
+      if (this.farMode) return this.farChunk(cx, cy);
       this.texel();
       const key = cx * 10000 + cy, ch = this.cache.get(key);
       if (ch) { ch.used = this.frame; return ch.cv; }
@@ -155,6 +165,8 @@
       return this.standIn(cx, cy, key);
     }
     standIn(cx, cy, key) {
+      // after high flight the far layer usually has this chunk already: far better than a quick build
+      if (this.far) { const f = this.far.cache.get(key); if (f) { f.used = this.frame; return f.cv; } }
       const Q = this._quick || (this._quick = new Map());
       let q = Q.get(key);
       if (q && q.fine) return q.cv;
@@ -192,6 +204,7 @@
     work(budget, queue) {
       if (!this.asyncInit()) return super.work(budget, queue);
       this.texel();
+      if (this.farMode) { this.farWork(queue); return; } // high flight: the far layer is what is drawn
       // the worker pool keeps a few requests in flight, nearest first; then any
       // places the camera may jump to (warmAt) get shaded in the background
       const pool = this._wk;
@@ -228,6 +241,55 @@
       this._pre = out.length ? out : null;
     }
     get async() { return !!this._wk; }
+
+    /* ---------- the far layer: terrain for high flight ----------
+     * Zoomed far out, full-detail chunks would cost several times the memory and
+     * the workers' time for detail nobody can see. The far layer is the same
+     * terrain shaded by the same workers at a low texel density (FAR_TD, about a
+     * seventh of the texels at full resolution) in a cache of its own; while a far
+     * chunk is on its way, a full-detail one (if cached) or the war map stands in.
+     * The near layer is untouched, so dropping back down costs nothing. */
+    setFar(on) {
+      on = !!(on && this._wk);
+      if (on && !this.far) this.far = { TD: 0.9, cache: new Map(), req: new Map(), stub: new Map(), max: 260, need: 0 };
+      this.farMode = on;
+    }
+    hasChunk(cx, cy) { return this.farMode ? this.far.cache.has(cx * 10000 + cy) : this.cache.has(cx * 10000 + cy); }
+    farChunk(cx, cy) {
+      const F = this.far, key = cx * 10000 + cy, e = F.cache.get(key);
+      if (e) { e.used = this.frame; return e.cv; }
+      const near = this.cache.get(key);
+      if (near) { near.used = this.frame; return near.cv; }
+      let s = F.stub.get(key);
+      if (!s) {
+        const M = this.overview, sc = M ? this.W / M.width : 1;
+        s = AS.Forge.canvas(16, 16); const c = s.getContext('2d');
+        if (M) { c.imageSmoothingEnabled = true; c.drawImage(M, (cx * CH) / sc, (cy * CH) / sc, CH / sc, CH / sc, 0, 0, 16, 16); } else { c.fillStyle = '#5a6a3a'; c.fillRect(0, 0, 16, 16); }
+        F.stub.set(key, s);
+        if (F.stub.size > 600) F.stub.delete(F.stub.keys().next().value);
+      }
+      return s;
+    }
+    farEvict() {
+      const F = this.far;
+      while (F.cache.size > Math.max(F.max, F.need || 0)) {
+        let ok = null, oldest = Infinity;
+        for (const [k, v] of F.cache) if (v.used < oldest) { oldest = v.used; ok = k; }
+        if (ok === null) break;
+        const v = F.cache.get(ok); if (v.cv && v.cv.close) v.cv.close(); F.cache.delete(ok);
+      }
+    }
+    farWork(queue) {
+      const F = this.far, pool = this._wk;
+      for (const q of queue) {
+        const key = q[0] * 10000 + q[1];
+        if (F.cache.has(key) || F.req.has(key)) continue;
+        let w = null; for (const x of pool) if (x.busy < 3 && (!w || x.busy < w.busy)) w = x;
+        if (!w) break;
+        w.busy++; F.req.set(key, 1);
+        w.postMessage({ type: 'chunk', cx: q[0], cy: q[1], TD: F.TD, far: true, forgeRes: AS.Forge.res });
+      }
+    }
     texel() {
       const R = AS.Renderer, want = R && !R.pixelated && R.res ? R.res : 1;
       if (this._wk && want !== this.TD && this.cache.size) {
