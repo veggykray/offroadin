@@ -87,7 +87,9 @@
     build() {
       const g = this.g, x = this.x, y = this.y, k = this.kind, rng = new U.RNG((x * 7 + y * 13) | 0);
       const anim4 = { wizardtower: 1, magicwell: 1, crystal: 1, relic: 1, waygate: 1 };
-      if (k === 'village') {
+      if (this.def.compose && AS.Settlements) {
+        AS.Settlements.build(this, rng);
+      } else if (k === 'village') {
         const n = 6 + (rng.next() * 3 | 0), spots = [];
         for (let i = 0; i < n; i++) {
           const a = i / n * TAU + rng.range(-0.2, 0.2), r = 70 + rng.range(0, 55);
@@ -126,10 +128,10 @@
         this.struct('site_goldmine', x, y, {});
         this.struct('prop_crates', x + 52, y + 26, { solid: false }); this.struct('prop_logs', x - 54, y + 30, { solid: false });
       } else {
-        this.struct(this.def.gen, x, y, anim4[k] ? { anims: 4 } : {});
+        this.struct(this.spec.gen || this.def.gen, x, y, anim4[k] ? { anims: 4 } : (AS.Building.meta(this.spec.gen || this.def.gen) || {}));
       }
       // a banner pole shows who holds the site (cream and grey while unclaimed)
-      this.bannerPos = k === 'bridge' ? { x: x + 20, y: y + 26 } : { x: x + (this.def.r || 40) * 0.55 + 10, y: y + (this.def.r || 40) * 0.35 + 8 };
+      this.bannerPos = k === 'bridge' ? { x: x + 20, y: y + 26 } : this.def.compose ? { x: x + 46, y: y + 58 } : { x: x + (this.def.r || 40) * 0.55 + 10, y: y + (this.def.r || 40) * 0.35 + 8 };
       if (k === 'bridge' && this.structures[0]) { const B = this.structures[0], a = B.angle; this.bannerPos = { x: x + Math.cos(a) * (B.len + 16) + 14, y: y + Math.sin(a) * (B.len + 16) + 14 }; }
       if (AS.Models.prop_banner && !this.def.treasure) this.banner = this.struct('prop_banner', this.bannerPos.x, this.bannerPos.y, { solid: false, anims: 4 });
       // a hoard waits in front of caves and ruins until it is looted
@@ -236,6 +238,8 @@
         if (this.respawnT <= 0) { this.looted = false; this.guardLeft = (this.spec.guard || []).map((q) => q.slice()); this.spawnGuards(); if (this.chest) this.chest.hidden = false; }
         return;
       }
+      // a landmark is discovered, not held
+      if (this.def.landmark) return;
       // ---- the contest
       this.contested = false;
       if (!this.guarded()) {
@@ -330,14 +334,27 @@
       AS.Audio.sfx('gold_big', { x: this.x, y: this.y });
       g.news(F.def.short + ' plundered the hoard of ' + this.name, fk, fk === g.playerKey);
       if (fk === g.playerKey) g.msg('TREASURE! SCOOP UP THE GOLD', '#ffd24a', 2.5);
+      // the deepest hoards (dungeons, outlaw camps) may hold a relic: a free upgrade for the finder's dragon or rider
+      if (this.def.relic && Math.random() < this.def.relic) this.relic(F);
       // ruins sometimes hide a power-up
-      if (this.kind === 'ruins' && Math.random() < 0.6) { const kinds = ['power', 'inferno', 'storm', 'shield']; g.pickups.push(new AS.Pickup(g, kinds[(Math.random() * kinds.length) | 0], this.x + 30, this.y - 10)); }
+      if ((this.kind === 'ruins' || this.kind === 'dungeon' || this.kind === 'banditcamp') && Math.random() < 0.6) { const kinds = ['power', 'inferno', 'storm', 'shield']; g.pickups.push(new AS.Pickup(g, kinds[(Math.random() * kinds.length) | 0], this.x + 30, this.y - 10)); }
+    }
+
+    relic(F) {
+      const g = this.g, RELICS = { scales: 'the Scale of the First Wyrm', wings: 'a Feather of the Storm Roc', lungs: 'an Ember of the Deep Forge', stomach: 'the Horn of Plenty', staffPower: 'a Rune of Command', staffRate: 'the Quicksilver Ring', staffMana: 'a Wellspring Pearl' };
+      const open = Object.keys(RELICS).filter((id) => F.price && F.price(id) !== null);
+      if (!open.length) return;
+      const id = open[(Math.random() * open.length) | 0];
+      F.buy(id, { free: true, silent: true });
+      AS.Particles.spawn({ x: this.x, y: this.y, z: 10, shape: AS.Particles.RING, col: '#ffe8a0', size: 10, size2: 140, life: 1.1, add: true, layer: 0, keep: true });
+      if (F.key === g.playerKey) { g.msg('A RELIC! ' + RELICS[id].toUpperCase(), '#ffe8a0', 4); g.news('You found ' + RELICS[id] + ' in ' + this.name + ': ' + AS.Data.upgrades[id].name + ' rises a level.', F.key, true); AS.Audio.sfx('capture'); }
     }
 
     /* ---------------- drawing ---------------- */
     drawGround(ctx, ox, oy, R) {
       const g = this.g, x = this.x - ox, y = this.y - oy;
       if (x < -300 || y < -300 || x > g.camera.w + 300 || y > g.camera.h + 300) return;
+      if (this.def.landmark) return;
       const showRing = this.control > 0 && this.control < 1 || this.contested || (!this.owner && !this.guarded() && !this.looted);
       if (!showRing && !this.owner) return;
       const col = this.controller && g.factions[this.controller] ? g.factions[this.controller].def.color : '#f0e0b0';

@@ -7,6 +7,11 @@
 //   beaten after it is packed away and built again → an area built again is the
 //   same → long routes go by road, quickly, never through water, and soldiers
 //   walk them → far wildlife sleeps.
+//   Stage 3 (a world worth exploring): many kinds of place, each where it
+//   belongs (dwarf holds under mountains, elf villages in the old forest,
+//   harbours on the water) → towns, castles and holds are composed of many
+//   buildings → flying low over a landmark discovers it and pays the finder →
+//   a relic from a hoard raises an upgrade for free.
 // Needs the repo served (GAME_BASE_URL, default http://127.0.0.1:8766).
 // usage: node wyrmcrown/tools/test_hugeworld.mjs
 import { createRequire } from 'node:module';
@@ -34,6 +39,54 @@ try {
   const info = await ev(() => ({ w: AS.game.map.w, sites: AS.game.sites.length, loaded: AS.game.sites.filter((s) => s.loaded).length, roads: AS.game.nav.roads.nodes.length }));
   ok(info.w >= 150000 && info.sites > 150 && info.loaded < 10 && s0.tiles < 150, 'start ' + JSON.stringify(info) + ' ' + JSON.stringify(s0));
   step('the continent (' + info.w + ' units, ' + info.sites + ' places) loads in ' + (loadMs / 1000).toFixed(1) + ' s with only the start built (' + info.loaded + ' places, ' + s0.tiles + ' ground tiles, ' + s0.heap + ' MB)');
+
+  // Stage 3: many kinds of place, each where it belongs
+  const kinds = await ev(() => { const c = {}; for (const s of AS.game.sites) c[s.kind] = (c[s.kind] || 0) + 1; return c; });
+  const need = { town: 6, walledtown: 1, stronghold: 4, abbey: 3, elfvillage: 6, dwarfhold: 4, shire: 3, harbour: 3, landmark: 40, cave: 10, dungeon: 5, banditcamp: 5, ruins: 5 };
+  for (const k in need) ok((kinds[k] || 0) >= need[k], 'kinds ' + k + ' ' + JSON.stringify(kinds));
+  step('the land holds ' + Object.keys(kinds).length + ' kinds of place (' + Object.keys(need).map((k) => kinds[k] + ' ' + k).join(', ') + ')');
+  const where = await ev(() => { const g = AS.game, T = g.terrain, out = { dwarf: [], elf: [], harbour: [] }, bw = new Float32Array(5);
+    const near = (s, R, f) => { T.warmTiles(s.x - R, s.y - R, s.x + R, s.y + R); let best = -1e9; for (let a = 0; a < 16; a++) for (const r of [0, R * 0.5, R]) { const v = f(s.x + Math.cos(a / 16 * 6.283) * r, s.y + Math.sin(a / 16 * 6.283) * r); if (v > best) best = v; } return best; };
+    for (const s of g.sites) {
+      if (s.kind === 'dwarfhold') out.dwarf.push(+near(s, 900, (x, y) => T.gs(T.gMount, x, y)).toFixed(2));
+      else if (s.kind === 'elfvillage') { T.warmTiles(s.x - 50, s.y - 50, s.x + 50, s.y + 50); T.biomeAt(s.x, s.y, bw); out.elf.push(+bw[1].toFixed(2)); }
+      else if (s.kind === 'harbour') out.harbour.push(Math.round(-near(s, 600, (x, y) => -T.gs(T.gWater, x, y))));
+    }
+    return out; });
+  ok(where.dwarf.every((m) => m > 0.4), 'dwarf holds without mountains ' + where.dwarf);
+  ok(where.elf.filter((w) => w > 0.5).length >= where.elf.length * 0.8, 'elf villages outside the forest ' + where.elf);
+  ok(where.harbour.every((d) => d < 0), 'harbours away from water ' + where.harbour);
+  step('places stand where they belong: every dwarf hold under a mountain (uplift ' + Math.min(...where.dwarf) + '+), elf villages in the old forest (' + where.elf.filter((w) => w > 0.5).length + ' of ' + where.elf.length + '), every harbour on the water');
+
+  // towns, castles and holds are composed of many buildings
+  const built = [];
+  for (const k of ['town', 'walledtown', 'stronghold', 'abbey', 'dwarfhold', 'elfvillage', 'shire', 'harbour']) {
+    const s = await ev((k) => { const g = AS.game, c = g.playerFaction.townPos; const s = g.sites.filter((q) => q.kind === k).sort((a, b) => Math.hypot(a.x - c.x, a.y - c.y) - Math.hypot(b.x - c.x, b.y - c.y))[0]; return { id: s.id, name: s.name, x: s.x, y: s.y }; }, k);
+    await tp(s.x, s.y + 200, 140);
+    await page.waitForFunction((id) => AS.game.byId.get(id).loaded, s.id, { timeout: 30000 });
+    const nb = await ev((id) => { const s = AS.game.byId.get(id); return { b: s.structures.length, gens: new Set(s.structures.map((b) => b.gen)).size }; }, s.id);
+    built.push({ k, ...nb });
+    ok(nb.b >= 6 && nb.gens >= 3, k + ' ' + s.name + ' ' + JSON.stringify(nb));
+  }
+  step('settlements are composed of many buildings: ' + built.map((q) => q.k + ' ' + q.b + ' (' + q.gens + ' kinds)').join(', '));
+
+  // flying low over a landmark discovers it and pays the finder
+  const lm = await ev(() => { const g = AS.game, c = g.playerFaction.townPos; const s = g.sites.filter((q) => q.def.landmark && !q.found).sort((a, b) => Math.hypot(a.x - c.x, a.y - c.y) - Math.hypot(b.x - c.x, b.y - c.y))[0]; return { id: s.id, name: s.name, x: s.x, y: s.y, gold: g.playerFaction.gold }; });
+  await tp(lm.x, lm.y + 600, 300);
+  await page.waitForTimeout(1500);
+  const high = await ev((id) => AS.game.byId.get(id).found, lm.id);
+  await tp(lm.x, lm.y + 100, 60);
+  await page.waitForFunction((id) => AS.game.byId.get(id).found, lm.id, { timeout: 15000 });
+  const paid = await ev(() => AS.game.playerFaction.gold);
+  ok(!high && paid > lm.gold, 'landmark ' + high + ' ' + lm.gold + ' → ' + paid);
+  step(lm.name + ' is found by flying low over it (not from high above), and pays a finder\'s reward of ' + (paid - lm.gold) + ' gold');
+
+  // a relic from a hoard raises an upgrade for free
+  const relic = await ev(() => { const g = AS.game, F = g.playerFaction, s = g.sites.find((q) => q.kind === 'dungeon'), before = JSON.stringify(F.upgrades), gold = F.gold; s.relic(F); return { before, after: JSON.stringify(F.upgrades), spent: gold - F.gold, chance: s.def.relic }; });
+  ok(relic.before !== relic.after && relic.spent === 0 && relic.chance > 0, 'relic ' + JSON.stringify(relic));
+  step('a relic found in a dungeon hoard (chance ' + Math.round(relic.chance * 100) + '%) raises an upgrade for free (' + relic.after + ')');
+  await tp(s0.x, s0.y, 120);
+  await ev(() => AS.Debug.hold(false));
 
   // a long sprint across the land
   await page.waitForTimeout(2000);

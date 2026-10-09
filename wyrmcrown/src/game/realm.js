@@ -11,7 +11,11 @@
 (function (AS) {
   const U = AS.U, TAU = U.TAU;
 
-  const SITE_ZONE = { castle: 230, fort: 170, goldmine: 120, village: 220, tradepost: 120, wizardtower: 80, magicwell: 90, grove: 90, crystal: 80, relic: 90, bridge: 0, shrine: 80, cave: 100, nest: 90, watchtower: 60, waygate: 70, ruins: 130 };
+  // the wider world's places: how far their ground is levelled and cleared, what that ground keeps
+  // (trees among elf houses, water at a harbour), and how much farmland rings them
+  const ZONE_OPT = { elfvillage: { treeR: 0.22, soft: 1.2 }, harbour: { keepWater: true, soft: 1.2 }, shire: { treeR: 0.7 }, dwarfhold: { soft: 1.25 }, dungeon: { soft: 1.3 } };
+  const FIELD_R = { town: 470, walledtown: 520, stronghold: 470, shire: 460, farmstead: 260, abbey: 260 };
+  const SITE_ZONE = { town: 330, walledtown: 400, stronghold: 320, abbey: 230, elfvillage: 260, dwarfhold: 230, shire: 320, harbour: 230, banditcamp: 120, farmstead: 140, inn: 100, dungeon: 70, castle: 230, fort: 170, goldmine: 120, village: 220, tradepost: 120, wizardtower: 80, magicwell: 90, grove: 90, crystal: 80, relic: 90, bridge: 0, shrine: 80, cave: 100, nest: 90, watchtower: 60, waygate: 70, ruins: 130 };
 
   function hostile(a, b) { return a !== b && a !== 'neutral' && b !== 'neutral'; }
 
@@ -512,9 +516,10 @@
     }
     for (const s of m.sites) {
       const r = SITE_ZONE[s.k];
-      if (r) zones.push({ x: s.x, y: s.y, r, soft: 1.5 });
+      if (r) zones.push(Object.assign({ x: s.x, y: s.y, r, soft: 1.5 }, ZONE_OPT[s.k]));
       if (s.k === 'village') fields.push({ x: s.x, y: s.y, r: 360 });
-      else clearings.push({ x: s.x, y: s.y, r: (r || 60) * 1.15 });
+      else if (FIELD_R[s.k]) fields.push({ x: s.x, y: s.y, r: FIELD_R[s.k] });
+      else if (s.k !== 'elfvillage') clearings.push({ x: s.x, y: s.y, r: (r || 60) * 1.15 });
     }
     for (const b of m.bridges || []) clearings.push({ x: b.x, y: b.y, r: 120 });
     // a map may add its own farmland and glades on top of the generated ones

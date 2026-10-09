@@ -325,19 +325,27 @@
       const d = Math.hypot(x1 - x0, y1 - y0);
       if (d < LOCAL) { const r = this.localRoute(g, x0, y0, x1, y1, 24); if (r) return keep(r); }
       // by road: onto the network near the start, along it, and off near the goal
-      const S = this.nearRoad(N, x0, y0, 3500, []).slice(0, 6), G = this.nearRoad(N, x1, y1, 3500, []).slice(0, 6);
+      // (a place far off the roads — a cave, a landmark in the wilds — is reached from the
+      // nearest road further away)
+      const near = (x, y) => { let r = this.nearRoad(N, x, y, 3500, []); if (!r.length) r = this.nearRoad(N, x, y, 8000, []); return r.slice(0, 24); };
+      const S = near(x0, y0), G = near(x1, y1);
       const comps = new Set(S.map(([n]) => n.c)), Gc = G.filter(([n]) => comps.has(n.c));
-      if (S.length && Gc.length) {
-        const route = this.roadRoute(N, S, Gc, x1, y1);
-        if (route) {
-          const a = route[0], z = route[route.length - 1];
-          const head = Math.hypot(a.x - x0, a.y - y0) < 90 ? [[x0, y0]] : this.localRoute(g, x0, y0, a.x, a.y, 20);
-          const tail = Math.hypot(z.x - x1, z.y - y1) < 90 ? [[z.x, z.y], [x1, y1]] : this.localRoute(g, z.x, z.y, x1, y1, 20);
-          if (head && tail) {
-            const mid = route.map((n) => [n.x, n.y]);
-            return keep(head.concat(mid.slice(1, -1), tail));
-          }
+      // (the walk onto or off the road is searched in a window, widened if need be; a road end
+      // that cannot be walked to — across a river with no bridge — is dropped and another tried)
+      const walk = (ax, ay, bx, by) => { const L = Math.hypot(bx - ax, by - ay); return this.localRoute(g, ax, ay, bx, by, L > 3500 ? 40 : 20) || this.localRoute(g, ax, ay, bx, by, 48); };
+      let Ss = S, Gs = Gc;
+      for (let tries = 0; tries < 3 && Ss.length && Gs.length; tries++) {
+        const route = this.roadRoute(N, Ss, Gs, x1, y1);
+        if (!route) break;
+        const a = route[0], z = route[route.length - 1];
+        const head = Math.hypot(a.x - x0, a.y - y0) < 90 ? [[x0, y0]] : walk(x0, y0, a.x, a.y);
+        const tail = Math.hypot(z.x - x1, z.y - y1) < 90 ? [[z.x, z.y], [x1, y1]] : head && walk(z.x, z.y, x1, y1);
+        if (head && tail) {
+          const mid = route.map((n) => [n.x, n.y]);
+          return keep(head.concat(mid.slice(1, -1), tail));
         }
+        if (!head) Ss = Ss.filter(([n]) => Math.hypot(n.x - a.x, n.y - a.y) > 600);
+        else Gs = Gs.filter(([n]) => Math.hypot(n.x - z.x, n.y - z.y) > 600);
       }
       // no road between them: a wider search for routes not far beyond the local range
       if (d < LOCAL * 2.2) { const r = this.localRoute(g, x0, y0, x1, y1, 40); if (r) return keep(r); }

@@ -76,7 +76,7 @@
     bestSite(g, p, F) {
       let best = null, bs = -1e9;
       for (const s of g.sites) {
-        if (s.owner === F.key || (s.def.treasure && s.looted)) continue;
+        if (s.owner === F.key || (s.def.treasure && s.looted) || s.def.landmark) continue;
         const d = Math.hypot(s.x - p.x, s.y - p.y), dt = Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y);
         let v = (s.def.income ? 3 : 1.5) + (s.rich ? 2 : 0) + (s.kind === 'castle' ? 2 : 0) - (s.guarded() ? 1.2 : 0) - (s.owner ? 1 : 0);
         v -= d / 1500 + dt / 2500;

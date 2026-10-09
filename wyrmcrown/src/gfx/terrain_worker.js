@@ -73,7 +73,7 @@ self.onmessage = (e) => {
   // a streamed map's lookup tile, for the page (copies: the worker keeps its own)
   if (m.type === 'tile') {
     const t = T.tileAt(m.ti, m.tj);
-    self.postMessage({ type: 'tile', ti: m.ti, tj: m.tj, gWater: t.gWater, gMount: t.gMount, gForest: t.gForest, gBiome: t.gBiome, gRoad: t.gRoad, gField: t.gField, kind: t.kind });
+    self.postMessage({ type: 'tile', ti: m.ti, tj: m.tj, gWater: t.gWater, gMount: t.gMount, gForest: t.gForest, gBiome: t.gBiome, gRoad: t.gRoad, gField: t.gField, kind: t.kind, gTintR: t.gTintR, gTintG: t.gTintG, gTintB: t.gTintB, gFlora: t.gFlora });
     return;
   }
   if (m.type === 'chunk') {

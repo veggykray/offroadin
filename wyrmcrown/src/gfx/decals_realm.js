@@ -101,7 +101,7 @@
       ctx.strokeStyle = C.str(S[1], 0.5 * al); ctx.lineWidth = 0.6;
       for (let k = 0; k < 7; k++) { ctx.beginPath(); ctx.ellipse(q[0] + rng.range(-10, 10), q[1] + rng.range(-7, 7), 2.2, 1.6, rng.next() * 3, 0, TAU); ctx.stroke(); }
     }
-    const ga = d.gateA || 0, gx = Math.cos(ga) * 372, gy = Math.sin(ga) * 320;
+    const ga = d.gateA || 0, gr = d.gateR || 372, gx = Math.cos(ga) * gr, gy = Math.sin(ga) * gr * 0.86;
     ctx.fillStyle = C.str(S[0], 0.5 * al); ctx.beginPath(); ctx.ellipse(gx, gy, 24, 15, 0, 0, TAU); ctx.fill();
     // pebbles and tufts
     for (let i = 0; i < 220; i++) {

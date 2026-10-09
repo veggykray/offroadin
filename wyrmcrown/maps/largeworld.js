@@ -23,7 +23,7 @@
   const ELM = [8200, 10200], B3 = [8300, 12900], KINGS = [12200, 17800], B2 = [15340, 19000], GLOOM = [16300, 19700], MILL = [4800, 15600], SALT = [11800, 22400], F1 = [7800, 19900], F2 = [10500, 19300];
   const m = {
     id: 'largeworld', name: 'The Wide Realm (Large World Test)', w: 28000, h: 28000, seed: 77, index: 1,
-    largeWorld: true, sandbox: true,
+    largeWorld: true, sandbox: true, riversCut: true,
     highFlight: true,  // H zooms far out (terrain far layer)
     prefetchAll: true, // terrain prepared all round the view, not only ahead
     simR: 3400,        // troops beyond this distance from the dragon sleep (no combat AI)

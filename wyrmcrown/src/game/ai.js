@@ -172,7 +172,7 @@
       const g = this.g, F = this.F, S = this.style;
       let best = null, bs = -1e9;
       for (const s of g.sites) {
-        if (s.owner === F.key || (s.def.treasure && s.looted) || (s.owner && g.pact && g.pact(F.key, s.owner))) continue;
+        if (s.owner === F.key || (s.def.treasure && s.looted) || s.def.landmark || (s.owner && g.pact && g.pact(F.key, s.owner))) continue;
         if (this.skip && this.skip.get(s) > g.time) continue; // guardians too strong for now
         const dist = Math.hypot(s.x - d.x, s.y - d.y), fromHome = Math.hypot(s.x - F.townPos.x, s.y - F.townPos.y);
         let v = (SITE_VALUE[s.kind] || 2) * (s.rich ? 1.5 : 1);

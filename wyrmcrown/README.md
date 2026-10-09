@@ -32,6 +32,29 @@ pools. Each has its own beasts — great stags and aurochs, glimmerdeer and
 tree shamblers, frosthulks and snow stalkers, bloatlings and gravehounds —
 its own giants and trolls, and somewhere in the far wilds, one colossus.
 
+### The Huge World Test
+
+`index.html?world=huge` (also on the title menu) is a generated continent
+160 km across, built around the dragon as it flies (`maps/hugeworld.js`). It
+has about 44 provinces of ten kinds: Heartland, Shire, Old Forest, Pinewood,
+Highlands, Frostmarch, Moorland, Marsh, Badlands and Blight. Each kind has its
+own ground colour, tree species, mountains and beasts. Danger rises with
+distance from home, from safe ground through frontier to wild.
+
+Places follow the land:
+- dwarf holds are cut into the foot of the high ranges;
+- elf villages sit round great trees in the old forest;
+- hill-folk shires lie in gentle green country;
+- harbours stand at river mouths, and castles guard river crossings;
+- abbeys, market towns and walled towns stand in the settled lands;
+- outlaw camps, dungeons, caves and ruins lie out in the wilds.
+
+Landmarks (standing stones, giant bones, statues, crypts and more) are
+discovered by flying low over them and pay a finder's reward. Dungeon and
+outlaw hoards can hold a relic, which gives a free upgrade level.
+The settlement layouts are in `src/game/settlements.js`, and the new
+buildings in `src/gfx/models_world.js`.
+
 ## Controls
 
 | Key | Action |
@@ -175,6 +198,9 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
   loop through real keyboard and mouse input. It covers the menus, flight,
   bolts, breath, eating, capturing, the court, victory, defeat, and a short
   all-AI war.
+- `node wyrmcrown/tools/test_hugeworld.mjs` checks the Huge World Test:
+  streaming, where places stand, composed settlements, discovery, relics,
+  road routes.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.

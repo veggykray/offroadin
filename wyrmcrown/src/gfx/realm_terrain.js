@@ -329,7 +329,7 @@
       this.ridges = ridges;
       const roads = (map.roads || []).map((r) => smoothLine(r.pts || r, 70));
       this.roadLines = roads;
-      return { rivers, ridges, lakes: map.lakes || [], islands: map.islands || [], roads, regions: map.regions || [], forests: map.forests || [], fields: map.fields || [], clear: map.clearings || [] };
+      return { rivers, ridges, lakes: map.lakes || [], islands: map.islands || [], roads, regions: map.regions || [], forests: map.forests || [], fields: map.fields || [], clear: map.clearings || [], tints: map.tints || [], flora: map.flora || [], riversCut: !!map.riversCut };
     }
     buildGrids(map) {
       const Fe = this.features(map);
@@ -361,6 +361,7 @@
           if (d < wd) wd = d;
         }
       }
+      const riverD = wd;
       for (const l of lakes) {
         if (l.after) continue; // (an inland lake on an island: applied after the islands below)
         { const hx = (x - l.x) / (l.sx || 1), hy = (y - l.y) / (l.sy || 1); if (Math.sqrt(hx * hx + hy * hy) - l.r * 1.17 >= wd) continue; }
@@ -392,6 +393,8 @@
         const d = Math.hypot((x - l.x) / (l.sx || 1), (y - l.y) / (l.sy || 1)) - rr;
         if (d < wd) wd = d;
       }
+      // (map.riversCut: rivers run on through the islands' land, as a map built of islands means them to)
+      if (Fe.riversCut && riverD < wd) wd = riverD;
       wd += U.noise2(x / 140, y / 140, sd + 17) * 14;
       A.gWater[k] = wd;
       // mountains: ridged uplift along authored ridge lines
@@ -458,6 +461,41 @@
       }
       A.gRoad[k] = rd;
     }
+    // a province's own ground colour (a multiplier, faded at its edge) and tree species, for the
+    // lookup cells of a gw × gh block whose first cell centre is (x0, y0) — worked out on a coarse
+    // lattice (every 8th cell) and blended between, as both change only over kilometres
+    tintsInto(Fe, x0, y0, gw, gh, A) {
+      if (!A.gTintR) return;
+      const sd = this.seed, tints = Fe.tints || [], flora = Fe.flora || [], C = 8;
+      const cw = Math.ceil((gw - 1) / C) + 1, ch = Math.ceil((gh - 1) / C) + 1;
+      const LR = new Float32Array(cw * ch), LG = new Float32Array(cw * ch), LB = new Float32Array(cw * ch), LF = new Uint8Array(cw * ch);
+      for (let cj = 0; cj < ch; cj++) for (let ci = 0; ci < cw; ci++) {
+        const x = x0 + ci * C * GC, y = y0 + cj * C * GC, q = cj * cw + ci;
+        let mr = 1, mg = 1, mb = 1, fl = 0, fw = 0.45;
+        if (tints.length) {
+          const wx2 = x + U.noise2(x / 1300, y / 1300, sd + 91) * 700, wy2 = y + U.noise2(x / 1300 + 3.3, y / 1300, sd + 92) * 700;
+          for (let i = 0; i < tints.length; i++) {
+            const t = tints[i], d = Math.hypot(wx2 - t.x, wy2 - t.y) / t.r;
+            if (d >= 1) continue;
+            const w = U.smoothstep(1, 0.55, d) * (t.k === undefined ? 1 : t.k);
+            mr += (t.col[0] - 1) * w; mg += (t.col[1] - 1) * w; mb += (t.col[2] - 1) * w;
+          }
+        }
+        for (let i = 0; i < flora.length; i++) { const f = flora[i], d = Math.hypot(x - f.x, y - f.y) / f.r; if (d < 1 && 1 - d > fw) { fw = 1 - d; fl = f.kind; } }
+        LR[q] = mr; LG[q] = mg; LB[q] = mb; LF[q] = fl;
+      }
+      for (let j = 0; j < gh; j++) {
+        const cj = Math.min(ch - 2, (j / C) | 0), ty = j / C - cj;
+        for (let i = 0; i < gw; i++) {
+          const ci = Math.min(cw - 2, (i / C) | 0), tx = i / C - ci, q = cj * cw + ci, k = j * gw + i;
+          const w00 = (1 - tx) * (1 - ty), w10 = tx * (1 - ty), w01 = (1 - tx) * ty, w11 = tx * ty;
+          A.gTintR[k] = LR[q] * w00 + LR[q + 1] * w10 + LR[q + cw] * w01 + LR[q + cw + 1] * w11;
+          A.gTintG[k] = LG[q] * w00 + LG[q + 1] * w10 + LG[q + cw] * w01 + LG[q + cw + 1] * w11;
+          A.gTintB[k] = LB[q] * w00 + LB[q + 1] * w10 + LB[q + cw] * w01 + LB[q + cw + 1] * w11;
+          A.gFlora[k] = LF[q + (tx >= 0.5 ? 1 : 0) + (ty >= 0.5 ? cw : 0)];
+        }
+      }
+    }
     /* ---------- streamed lookup grids (map.stream) ----------
      * The grids are named, not allocated (this.gWater === 'gWater', …): gs / gn /
      * biomeAt look the name up in the tile that holds the cell. A tile carries one
@@ -468,6 +506,9 @@
     streamInit(Fe) {
       this.gw = Math.ceil(this.W / GC) + 2; this.gh = Math.ceil(this.H / GC) + 2;
       this.gWater = 'gWater'; this.gMount = 'gMount'; this.gForest = 'gForest'; this.gBiome = 'gBiome'; this.gRoad = 'gRoad'; this.gField = 'gField';
+      // provinces with their own ground colour and trees (map.tints, map.flora)
+      this.hasTint = !!(Fe.tints.length || Fe.flora.length);
+      if (this.hasTint) { this.gTintR = 'gTintR'; this.gTintG = 'gTintG'; this.gTintB = 'gTintB'; this.gFlora = 'gFlora'; }
       this.feat = Fe;
       this.gtiles = new Map(); this.gtMax = IS_WORKER ? 90 : 220; this.gtClock = 0; this.gtBuilt = 0; this.gtMs = 0;
       this._lt = null; this._ltKey = -1;
@@ -482,6 +523,8 @@
         forests: Fe.forests.map((f) => [f.x - f.r * 1.2 * (f.sx || 1), f.y - f.r * 1.2 * (f.sy || 1), f.x + f.r * 1.2 * (f.sx || 1), f.y + f.r * 1.2 * (f.sy || 1)]),
         fields: Fe.fields.map((f) => [f.x - f.r, f.y - f.r, f.x + f.r, f.y + f.r]),
         clear: Fe.clear.map((f) => [f.x - f.r, f.y - f.r, f.x + f.r, f.y + f.r]),
+        tints: Fe.tints.map((f) => [f.x - f.r - 720, f.y - f.r - 720, f.x + f.r + 720, f.y + f.r + 720]),
+        flora: Fe.flora.map((f) => [f.x - f.r, f.y - f.r, f.x + f.r, f.y + f.r]),
       };
       const runs = (list, out, m, isRiver) => list.forEach((r) => {
         const p = isRiver ? r.pts : r;
@@ -506,6 +549,7 @@
         ridges: pick(Fe.ridges, B.ridges), lakes: pick(Fe.lakes, B.lakes), islands: pick(Fe.islands, B.islands),
         regions: Fe.regions.filter((r, i) => rs[i] < bestHi + 1.3),
         forests: pick(Fe.forests, B.forests), fields: pick(Fe.fields, B.fields), clear: pick(Fe.clear, B.clear),
+        tints: pick(Fe.tints, B.tints), flora: pick(Fe.flora, B.flora), riversCut: Fe.riversCut,
       };
     }
     tileAt(ti, tj) {
@@ -552,7 +596,7 @@
       const key = r.ti * 65536 + r.tj;
       if (this._tilePend) this._tilePend.delete(key);
       if (!this.gtiles || this.gtiles.has(key)) return;
-      this.gtiles.set(key, { gWater: r.gWater, gMount: r.gMount, gForest: r.gForest, gBiome: r.gBiome, gRoad: r.gRoad, gField: r.gField, kind: r.kind, used: ++this.gtClock });
+      this.gtiles.set(key, { gWater: r.gWater, gMount: r.gMount, gForest: r.gForest, gBiome: r.gBiome, gRoad: r.gRoad, gField: r.gField, kind: r.kind, gTintR: r.gTintR, gTintG: r.gTintG, gTintB: r.gTintB, gFlora: r.gFlora, used: ++this.gtClock });
       this.gtFromWorkers = (this.gtFromWorkers || 0) + 1;
       if (this.gtiles.size > this.gtMax) this.evictTiles();
     }
@@ -564,6 +608,7 @@
     buildTile(ti, tj) {
       const n = TN * TN;
       const A = { gWater: new Float32Array(n), gMount: new Float32Array(n), gForest: new Float32Array(n), gBiome: new Float32Array(n * 5), gRoad: new Float32Array(n), gField: new Uint8Array(n), kind: new Uint8Array(n).fill(255), used: 0 };
+      if (this.hasTint) { A.gTintR = new Float32Array(n); A.gTintG = new Float32Array(n); A.gTintB = new Float32Array(n); A.gFlora = new Uint8Array(n); }
       const i0 = ti * TS, j0 = tj * TS;
       const x0 = (i0 - 1) * GC, y0 = (j0 - 1) * GC, x1 = x0 + TN * GC, y1 = y0 + TN * GC;
       const Fe = this.tileFeatures(x0, y0, x1, y1), tmpW = new Float32Array(5);
@@ -584,6 +629,7 @@
       for (const p of Fe.roads) for (let q = 0; q < p.length - 1; q++) stamp(road, p[q], p[q + 1], 450, 0);
       Fe.pre = { riv, road };
       for (let jj = 0; jj < TN; jj++) for (let ii = 0; ii < TN; ii++) this.cellInto(Fe, (i0 + ii - 1) * GC + GC / 2, (j0 + jj - 1) * GC + GC / 2, jj * TN + ii, A, tmpW);
+      this.tintsInto(Fe, (i0 - 1) * GC + GC / 2, (j0 - 1) * GC + GC / 2, TN, TN, A);
       return A;
     }
     // the tile holding lookup cell (i, j), and the cell's index in it (this._tk)
@@ -877,6 +923,11 @@
           r = U.lerp(r, sp[0], t); g = U.lerp(g, sp[1], t); b = U.lerp(b, sp[2], t);
         }
       }
+      // a province's own ground colour (heather moor, olive marsh, ochre badlands…), on dry land
+      if (this.hasTint && s > 0) {
+        const k = U.clamp(s / 40, 0, 1);
+        r *= 1 + (this.gs(this.gTintR, x, y) - 1) * k; g *= 1 + (this.gs(this.gTintG, x, y) - 1) * k; b *= 1 + (this.gs(this.gTintB, x, y) - 1) * k;
+      }
       out[0] = r; out[1] = g; out[2] = b;
     }
 
@@ -914,6 +965,21 @@
         undead: [['dead', 4], ['darkpine', 2.2]],
         neutral: [['oak', 3], ['oakAutumn', 0.6], ['pine', 2.5], ['birch', 1.5]],
       };
+      // a province's trees and undergrowth (map.flora kind 1-5), instead of the realm's
+      sets.floraTrees = [null,
+        [['pine', 5], ['darkpine', 2], ['birch', 0.6]],               // 1 dark pine forest
+        [['dead', 3], ['willow', 2.2], ['darkpine', 0.6]],            // 2 bog and marsh
+        [['birch', 2], ['pine', 1.2], ['dead', 0.3]],                 // 3 heath and moor
+        [['dead', 2], ['darkpine', 0.4]],                             // 4 badlands
+        [['oak', 3], ['fruit', 1.6], ['birch', 1], ['oakAutumn', 1]], // 5 lush shire country
+      ];
+      sets.floraUnder = [null,
+        [['rock', 1.2], ['stump', 1], ['bush', 0.8]],
+        [['reeds', 2.5], ['stump', 1], ['shroom', 0.4], ['bush', 0.6]],
+        [['rock', 2.2], ['bush', 1], ['flowers', 0.5], ['stump', 0.3]],
+        [['rock', 2.5], ['rockdark', 1.2], ['bones', 0.5]],
+        [['flowers', 3], ['bush', 1.5], ['berry', 0.8]],
+      ];
       sets.under = {
         human: [['bush', 2], ['flowers', 2.5], ['berry', 0.6], ['rock', 0.6], ['stump', 0.3]],
         elf: [['bush', 2], ['flowers', 1.6], ['berry', 1], ['rock', 0.8]],
@@ -975,8 +1041,8 @@
           const lone = 0.012; // lone trees dot the open country
           const hv = U.hash2(gx, gy, sd + 403);
           if (hv > dens * 0.82 * q + lone) continue;
-          const bk = biomeOf(x, y);
-          let kind = this.pickW(ds.trees[bk], U.hash2(gx, gy, sd + 404));
+          const bk = biomeOf(x, y), fl = this.gFlora ? this.gn(this.gFlora, x, y) : 0;
+          let kind = this.pickW(fl ? ds.floraTrees[fl] : ds.trees[bk], U.hash2(gx, gy, sd + 404));
           if (kind === 'elder' && (gx % 3 || gy % 3)) kind = 'elfoak';
           // willows lean over the water's edge
           if (bk !== 'ice' && bk !== 'undead' && this.gs(this.gWater, x, y) < 90 && U.hash2(gx, gy, sd + 405) < 0.5) kind = 'willow';
@@ -1001,8 +1067,8 @@
           const edge = fo2 > 0.08 && fo2 < 0.5 ? 1 - Math.abs(fo2 - 0.29) / 0.21 : 0; // the scrubby fringe of a wood
           const p = 0.16 + mt * 0.5 + fo2 * 0.2 + edge * 0.3;
           if (hv > p * q) continue;
-          const bk = biomeOf(x, y);
-          let k = this.pickW(ds.under[bk], U.hash2(gx, gy, sd + 414));
+          const bk = biomeOf(x, y), fl = this.gFlora ? this.gn(this.gFlora, x, y) : 0;
+          let k = this.pickW(fl ? ds.floraUnder[fl] : ds.under[bk], U.hash2(gx, gy, sd + 414));
           if (edge > 0.3 && bk !== 'ice' && bk !== 'undead' && U.hash2(gx, gy, sd + 417) < 0.6) k = U.hash2(gx, gy, sd + 418) < 0.3 ? 'berry' : 'bush';
           if (mt > 0.35 && U.hash2(gx, gy, sd + 415) < 0.6) k = bk === 'ice' ? 'rocksnow' : bk === 'undead' ? 'rockdark' : 'rock';
           items.push({ k, x, y, v: (U.hash2(gx, gy, sd + 416) * 97) | 0, r: 4 });

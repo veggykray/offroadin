@@ -133,6 +133,7 @@
       for (const s of [...S.sitesLoaded]) {
         if (this.nearest(cs, s.x, s.y, (q, x, y) => Math.hypot(q.x - x, q.y - y)) > SITE_UNLOAD && !s.guards.some((u) => u.alive && u.target)) { s.unload(); S.sitesLoaded.delete(s); S.stats.sitesPacked++; }
       }
+      this.discover(g);
       // bridges
       for (const r of S.bridges) {
         const d = this.nearest(cs, r.b.x, r.b.y, (q, x, y) => Math.hypot(q.x - x, q.y - y));
@@ -140,6 +141,26 @@
         else if (r.B && d > SITE_UNLOAD) { r.B.alive = false; r.B.removed = true; r.B = null; }
       }
       this.note(S, t0);
+    },
+    /* the first time the dragon comes near a place it is DISCOVERED (a landmark: fly low over it,
+     * and the finder is rewarded). The HUD points to places nearby not yet found. */
+    discover(g) {
+      const p = g.player, S = g.stream;
+      if (p.down > 0) return;
+      for (const s of S.sitesLoaded) {
+        if (s.found) continue;
+        const d = Math.hypot(s.x - p.x, s.y - p.y);
+        if (s.def.landmark ? d > 260 || p.z > 110 : d > Math.max(420, s.capR * 1.6)) continue;
+        s.found = true; S.found = (S.found || 0) + 1;
+        const kind = s.def.landmark ? 'a landmark' : s.def.name.toLowerCase();
+        if (s.def.landmark) {
+          const gold = 60 + 30 * Math.min(4, (s.spec.guard ? 2 : 0) + Math.round(Math.hypot(s.x - g.playerFaction.townPos.x, s.y - g.playerFaction.townPos.y) / 25000));
+          g.playerFaction.addGold(gold, s.x, s.y, 'loot');
+          g.msg('DISCOVERED: ' + s.name.toUpperCase() + ' · FINDER\'S REWARD ' + gold + ' GOLD', '#ffe8a0', 4);
+          AS.Audio.sfx('gold_big', { x: s.x, y: s.y });
+        } else g.msg('DISCOVERED: ' + s.name.toUpperCase() + ' — ' + kind.toUpperCase(), '#e8dcc0', 3);
+        g.news('Discovered ' + s.name + (s.def.landmark ? '' : ' (' + kind + ')') + '.', g.playerKey, false);
+      }
     },
     note(S, t0) { const ms = performance.now() - t0; S.lastMs = ms; if (ms > S.stats.slowest) S.stats.slowest = ms; },
     makeCell(g, C) {

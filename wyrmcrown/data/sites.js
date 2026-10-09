@@ -29,5 +29,19 @@
     watchtower: { name: 'Watchtower', gen: 'site_oldwatch', r: 18, capR: 110, reveal: 1700, icon: 'eye', desc: 'Watches a wide stretch of the realm for its owner.' },
     waygate: { name: 'Waygate', gen: 'site_waygate', r: 36, capR: 110, travel: true, reveal: 500, icon: 'gate', desc: 'Ancient portal: from any waygate you own, travel to another you own (E).' },
     ruins: { name: 'Ruins', gen: 'site_ruins', r: 80, capR: 150, treasure: 150, respawn: 260, icon: 'ruins', desc: 'Forgotten treasure guarded by squatters. Clear them and land to claim it.' },
+    // ---- the wider world (places built from many buildings: src/game/settlements.js)
+    town: { name: 'Market Town', compose: 'town', r: 300, capR: 240, income: 2.2, cart: true, troopCap: 4, reveal: 1400, icon: 'village', grand: 2, desc: 'A market town round its square: rich taxes by cart and room for more troops.' },
+    walledtown: { name: 'Walled Town', compose: 'walledtown', r: 360, capR: 260, income: 3.2, cart: true, troopCap: 6, garrison: 4, shoots: { kind: 'arrow', range: 400, rate: 1, volley: 2 }, reveal: 1600, icon: 'fort', grand: 3, desc: 'A great town behind stone walls: the richest taxes, a garrison and archers on the walls.' },
+    stronghold: { name: 'Castle', compose: 'stronghold', r: 280, capR: 230, income: 1.6, cart: true, garrison: 6, troopCap: 6, crown: 0.1, shoots: { kind: 'arrow', range: 440, rate: 1.4, volley: 3, ballista: true }, reveal: 1800, icon: 'castle_s', grand: 3, desc: 'A true castle: keep, curtain walls, towers. Gold, troops, defences and +10% to all income.' },
+    abbey: { name: 'Abbey', compose: 'abbey', r: 200, capR: 200, income: 0.6, cart: true, blessing: true, reveal: 1300, icon: 'church', grand: 2, desc: 'Monks who heal its owner\'s dragon nearby, and a little tithe by cart.' },
+    elfvillage: { name: 'Elf Village', compose: 'elfvillage', r: 240, capR: 220, income: 0.9, cart: true, grove: true, reveal: 1200, icon: 'grove', grand: 2, desc: 'The woodland folk: their friendship restores your dragon\'s strength nearby, and they send tribute.' },
+    dwarfhold: { name: 'Dwarf Hold', compose: 'dwarfhold', r: 260, capR: 230, income: 2.8, cart: true, troopCap: 3, shoots: { kind: 'arrow', range: 420, rate: 0.8, ballista: true }, reveal: 1500, icon: 'hammer', grand: 3, desc: 'A hall under the mountain: gold from the deep mines, and ballistae on the gate.' },
+    shire: { name: 'Hill-folk Shire', compose: 'shire', r: 280, capR: 230, income: 1.3, cart: true, troopCap: 2, reveal: 1100, icon: 'burrow', grand: 2, desc: 'Burrows in the green hills: well-fed folk, full larders, fat sheep.' },
+    harbour: { name: 'Harbour', compose: 'harbour', r: 240, capR: 220, income: 2.4, cart: true, reveal: 1500, icon: 'anchor', grand: 2, desc: 'Ships and quays: trade by sea pays well. (Ships for armies come later.)' },
+    banditcamp: { name: 'Outlaw Camp', compose: 'banditcamp', r: 90, capR: 150, treasure: 320, relic: 0.15, respawn: 420, icon: 'tent', desc: 'Outlaws and their loot behind a stockade. Clear them, land, and take it.' },
+    farmstead: { name: 'Farmstead', compose: 'farmstead', r: 120, capR: 160, income: 0.45, cart: true, reveal: 600, icon: 'village', desc: 'A lonely farm: a little rent, and cattle.' },
+    inn: { name: 'Roadside Inn', compose: 'inn', r: 80, capR: 130, income: 0.5, cart: true, reveal: 900, icon: 'trade', desc: 'Travellers\' coin, and news of the road.' },
+    landmark: { name: 'Landmark', r: 60, capR: 160, landmark: true, icon: 'star', desc: 'Something old and strange. Fly low over it to discover it — finders are rewarded.' },
+    dungeon: { name: 'Dungeon', compose: 'dungeon', r: 50, capR: 140, treasure: 520, relic: 0.5, respawn: 900, icon: 'skull', desc: 'A way down into the dark. Its guardians keep a hoard — and sometimes a relic.' },
   };
 })(window.AS);

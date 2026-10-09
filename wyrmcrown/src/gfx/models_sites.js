@@ -2405,6 +2405,10 @@
   };
 
   /* ================================================================ gallery */
+  // the helpers, for the model files that build on these (models_world.js)
+  AS.ModelKit = { P, mats, sh, mx, al, rng, pulse, ngon, jag, xf, stain, box, cyl, beams, xzPart, rockPart, rockFacets, paintMoss, clump, layer, archRect, win, door, stones, roof,
+    paintThatch, paintShingles, paintGable, flagPole, paintFlag, embed, wallRun, wallPart, paintWallFaces, ruinTower, paintBones, rune, polyOK, frame4 };
+
   (AS.Gallery = AS.Gallery || []).push({ group: 'Neutral sites', bg: 'neutral', items: [
     { name: 'gold mine', gen: 'site_goldmine', pal: 'neutral' },
     { name: 'cottage v0', gen: 'site_cottage', pal: 'neutral', opt: { v: 0 } },

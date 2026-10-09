@@ -56,6 +56,11 @@
     nest(c, x, y, s) { c.beginPath(); c.ellipse(x, y + s * 0.1, s * 0.5, s * 0.25, 0, 0, TAU); c.fill(); c.fillStyle = '#fff6e0'; c.beginPath(); c.ellipse(x - s * 0.15, y - s * 0.05, s * 0.12, s * 0.16, 0, 0, TAU); c.ellipse(x + s * 0.12, y - s * 0.08, s * 0.12, s * 0.16, 0, 0, TAU); c.fill(); },
     eye(c, x, y, s) { c.beginPath(); c.ellipse(x, y, s * 0.5, s * 0.28, 0, 0, TAU); c.fill(); c.fillStyle = 'rgba(0,0,0,0.75)'; c.beginPath(); c.arc(x, y, s * 0.14, 0, TAU); c.fill(); },
     gate(c, x, y, s) { c.beginPath(); c.arc(x, y, s * 0.42, 0, TAU); c.lineWidth = s * 0.18; c.strokeStyle = c.fillStyle; c.stroke(); },
+    church(c, x, y, s) { c.fillRect(x - s * 0.3, y - s * 0.05, s * 0.6, s * 0.48); c.beginPath(); c.moveTo(x - s * 0.36, y - s * 0.05); c.lineTo(x, y - s * 0.3); c.lineTo(x + s * 0.36, y - s * 0.05); c.closePath(); c.fill(); c.fillRect(x - s * 0.05, y - s * 0.6, s * 0.1, s * 0.32); c.fillRect(x - s * 0.15, y - s * 0.5, s * 0.3, s * 0.08); },
+    hammer(c, x, y, s) { c.fillRect(x - s * 0.06, y - s * 0.2, s * 0.12, s * 0.7); c.fillRect(x - s * 0.38, y - s * 0.46, s * 0.76, s * 0.28); },
+    burrow(c, x, y, s) { const f = c.fillStyle; c.beginPath(); c.arc(x, y + s * 0.3, s * 0.5, Math.PI, 0); c.fill(); c.fillStyle = 'rgba(0,0,0,0.65)'; c.beginPath(); c.arc(x, y + s * 0.3, s * 0.2, Math.PI, 0); c.fill(); c.fillStyle = f; },
+    anchor(c, x, y, s) { c.fillRect(x - s * 0.06, y - s * 0.42, s * 0.12, s * 0.8); c.fillRect(x - s * 0.26, y - s * 0.3, s * 0.52, s * 0.1); c.beginPath(); c.arc(x, y + s * 0.1, s * 0.36, 0.2, Math.PI - 0.2); c.lineWidth = s * 0.12; c.strokeStyle = c.fillStyle; c.stroke(); },
+    tent(c, x, y, s) { c.beginPath(); c.moveTo(x - s * 0.5, y + s * 0.4); c.lineTo(x, y - s * 0.45); c.lineTo(x + s * 0.5, y + s * 0.4); c.closePath(); c.fill(); },
     ruins(c, x, y, s) { c.fillRect(x - s * 0.4, y - s * 0.1, s * 0.16, s * 0.5); c.fillRect(x - s * 0.08, y - s * 0.4, s * 0.16, s * 0.8); c.fillRect(x + s * 0.24, y + s * 0.05, s * 0.16, s * 0.35); },
   };
   function icon(ctx, kind, x, y, s, col) { const f = ICON[kind] || ICON.star; ctx.save(); ctx.fillStyle = col; ctx.strokeStyle = col; f(ctx, x, y, s); ctx.restore(); }
@@ -381,6 +386,7 @@
       // capture progress of the site we are over
       for (const site of g.sites) {
         if (Math.hypot(p.x - site.x, p.y - site.y) > site.capR) continue;
+        if (site.def.landmark) { lines.push(['', site.found ? site.name.toUpperCase() : 'FLY LOW TO DISCOVER ' + site.name.toUpperCase()]); break; }
         if (site.guarded()) lines.push(['', site.name.toUpperCase() + ' IS GUARDED — DEFEAT ITS GUARDIANS']);
         else if (site.def.treasure && !site.looted) lines.push(['', 'DESCEND TO CLAIM THE HOARD']);
         else if (site.owner !== p.team && !site.looted) {
@@ -411,6 +417,20 @@
       for (const d of g.dragons) if (d !== p && d.alive && d.down <= 0 && Math.hypot(d.x - p.x, d.y - p.y) < 1800) marks.push({ x: d.x, y: d.y - d.z, col: d.fdef.color, label: d.name, kind: 'wing', d });
       const home = g.playerFaction.townPos;
       marks.push({ x: home.x, y: home.y, col: COL.gold, label: 'HOME', kind: 'castle' });
+      // a streamed world points to the notable places nearby not yet discovered
+      if (g.stream) {
+        const cand = this._poi || (this._poi = []);
+        if (!this._poiT || g.time - this._poiT > 1) {
+          this._poiT = g.time; cand.length = 0;
+          for (const st of g.sites) {
+            if (st.found || !(st.def.grand || st.def.landmark || st.def.treasure)) continue;
+            const d = Math.hypot(st.x - p.x, st.y - p.y);
+            if (d < 4200 && d > 500) cand.push([d, st]);
+          }
+          cand.sort((a, b) => a[0] - b[0]); cand.length = Math.min(cand.length, 3);
+        }
+        for (const [, st] of cand) marks.push({ x: st.x, y: st.y, col: st.def.landmark ? '#ffe8a0' : st.def.treasure ? '#ffb070' : '#e8dcc0', label: '?', kind: st.def.icon === 'castle' ? 'castle_s' : st.def.icon, poi: true });
+      }
       if (this.advTarget) marks.push({ x: this.advTarget.x, y: this.advTarget.y, col: '#fff2c0', label: this.advTarget.label || '', kind: 'flag' });
       // the course set on the war map: arrived when close, otherwise marked on the ground or at the edge
       const wp = g.waypoint;
@@ -441,6 +461,7 @@
         ctx.fillStyle = 'rgba(16,10,6,0.75)'; ctx.beginPath(); ctx.arc(0, 0, 15 * s, 0, TAU); ctx.fill();
         ctx.strokeStyle = mk.col; ctx.lineWidth = 1.5 * s; ctx.stroke();
         icon(ctx, mk.kind, 0, 0, 16 * s, mk.col);
+        if (mk.poi) { ctx.font = F(Math.round(11 * s)); ctx.textAlign = 'center'; K.keyText(ctx, '?', 12 * s, -12 * s, mk.col, 2.5 * s); }
         if (mk.wp) {
           // the course arrow is larger, pulses, and names the destination
           ctx.lineWidth = 2.5 * s; ctx.strokeStyle = mk.col; ctx.beginPath(); ctx.arc(0, 0, (19 + Math.sin(this.t * 4) * 2) * s, 0, TAU); ctx.stroke();
