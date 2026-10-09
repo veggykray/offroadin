@@ -13,6 +13,12 @@ from pathlib import Path
 class Server(http.server.ThreadingHTTPServer):
     request_queue_size=128
     daemon_threads=True
+    # the browser often hangs up mid-file (reload, leaving the page, an audio
+    # stream that stops): harmless, so say nothing instead of printing a traceback
+    def handle_error(self,request,client_address):
+        import sys
+        if isinstance(sys.exc_info()[1],(ConnectionResetError,ConnectionAbortedError,BrokenPipeError)):return
+        super().handle_error(request,client_address)
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     # Windows can map .js to text/plain in the registry; browsers refuse to start
