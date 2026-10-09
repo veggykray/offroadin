@@ -1129,26 +1129,42 @@
       this.knuckle(ctx, X(P[2]), Y(P[2]), 1.25 * s, lk.bone, k);
     },
 
-    /* ground shadow of the whole dragon (body silhouettes + wing polygons) */
+    /* ground shadow of the whole dragon (body silhouettes + wing polygons), cast as ONE
+     * shape: every piece is drawn solid into a small buffer, which then goes onto the
+     * ground once at the shadow's strength (the caller's globalAlpha). Overlapping
+     * pieces no longer darken each other, and the buffer's lower resolution, smoothed
+     * when it is laid down, gives the shadow a slightly soft edge. */
     drawShadow(ctx, st, ox, oy) {
       const rg = rig(st.fk, st.scale), n = st.nodes;
+      const pieces = [], wings = [];
+      let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
       for (let i = 0; i < n.length; i++) {
         const nd = n[i], shd = rg.sheets[i];
-        const di = AS.Forge.frameIndex(shd, nd.a);
-        const off = 2 + nd.z * 0.12;
-        ctx.drawImage(shd.shadows[di], nd.x - ox - shd.ax + off + nd.z * 0.15, nd.y - oy - shd.ay + off * 0.5, shd.w, shd.h);
+        const off = 2 + nd.z * 0.12, x = nd.x - shd.ax + off + nd.z * 0.15, y = nd.y - shd.ay + off * 0.5;
+        pieces.push([shd.shadows[AS.Forge.frameIndex(shd, nd.a)], x, y, shd.w, shd.h]);
+        x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x + shd.w); y1 = Math.max(y1, y + shd.h);
       }
-      ctx.fillStyle = '#000';
       for (const side of [-1, 1]) {
-        const wp = this.wingPoly(st, side, rg), P = wp.pts;
-        ctx.beginPath();
-        for (let i = 0; i < P.length; i++) {
-          const p = P[i], off = 2 + p.z * 0.12;
-          const x = p.x - ox + off + p.z * 0.15, y = p.y - oy + off * 0.5;
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.closePath(); ctx.fill();
+        const P = this.wingPoly(st, side, rg).pts, pts = [];
+        for (const p of P) { const off = 2 + p.z * 0.12, x = p.x + off + p.z * 0.15, y = p.y + off * 0.5; pts.push(x, y); x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+        wings.push(pts);
       }
+      const pad = 4; x0 -= pad; y0 -= pad; x1 += pad; y1 += pad;
+      const k = Math.max(0.5, ((AS.Renderer && AS.Renderer.res) || 1) * 0.32); // buffer texels per world unit
+      const W = Math.ceil((x1 - x0) * k), H = Math.ceil((y1 - y0) * k);
+      let cv = this._shadowCv;
+      if (!cv || cv.width < W || cv.height < H) cv = this._shadowCv = AS.Forge.canvas(Math.max(W, cv ? cv.width : 0), Math.max(H, cv ? cv.height : 0));
+      const c = cv.getContext('2d');
+      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W + 2, H + 2);
+      c.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
+      c.imageSmoothingEnabled = true;
+      for (const [img, x, y, w, h] of pieces) c.drawImage(img, x, y, w, h);
+      c.fillStyle = '#000';
+      for (const pts of wings) { c.beginPath(); for (let i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); } c.closePath(); c.fill(); }
+      const q = ctx.imageSmoothingQuality;
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(cv, 0, 0, W, H, x0 - ox, y0 - oy, W / k, H / k);
+      ctx.imageSmoothingQuality = q;
     },
   };
   AS.DragonArt = Art;
