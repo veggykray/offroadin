@@ -46,6 +46,9 @@
       if (src && src.alive !== false && src.team && src.team !== this.F.key) { this.threat = src; this.threatT = this.g.time; }
     }
     setGoal(gl) {
+      // a lord bound to his lands (the campaign's Dragon Lord) turns back at their edge
+      const F = this.F;
+      if (F.homeR && gl.x !== undefined && Math.hypot(gl.x - F.townPos.x, gl.y - F.townPos.y) > F.homeR) gl = { type: 'patrol', x: F.townPos.x + U.range(-600, 600), y: F.townPos.y + U.range(-600, 600) };
       const cur = this.goal;
       if (cur && cur.type === gl.type && cur.ref === gl.ref) { Object.assign(cur, gl); return; }
       this.goal = gl; this.goalT = 0;

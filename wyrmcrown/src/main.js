@@ -84,7 +84,7 @@
         }
       }, 60);
     },
-    restart() { if (this.lastMap && !(this.lastOpts && this.lastOpts.conquest)) this.startMatch(this.lastMap, this.lastOpts); },
+    restart() { if (this.lastMap && !(this.lastOpts && (this.lastOpts.conquest || this.lastOpts.campaign))) this.startMatch(this.lastMap, this.lastOpts); },
     pause() {
       if (this.state !== 'play') return;
       this.state = 'paused';
@@ -114,7 +114,7 @@
       AS.Voices && AS.Voices.stop();
       // a Conquest battle reports back to its campaign, not to the battle-mode atlas
       if (res && res.conquest && AS.Conquest && AS.Conquest.Battle) { AS.Conquest.Battle.onEnd(res); return; }
-      if (AS.Campaign) AS.Campaign.applyResult(res);
+      if (AS.Campaign && !(res && res.bigCampaign)) AS.Campaign.applyResult(res);
       AS.UI && AS.UI.showResults && AS.UI.showResults(res);
     },
     /* A machine that cannot keep up (a large high-resolution screen on a modest
@@ -157,11 +157,13 @@
       if (g && (this.state === 'play' || this.state === 'paused' || this.state === 'results')) {
         if (this.state === 'play') {
           if (I.hit('pause')) {
-            if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
+            if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay === 'hire') AS.HirePanel.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
           } else if (I.hit('map') && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
           else if (I.hit('town') && AS.Court && !g.opts.conquest) AS.Court.toggle(g);
           else if (I.hit('highFlight') && g.map.highFlight) { g.highFlight = !g.highFlight; g.msg(g.highFlight ? 'HIGH FLIGHT — H TO DESCEND' : 'BACK DOWN TO THE FIGHT', '#cfe8ff', 2); }
-          else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
+          else if (g.bc && I.hit('hire') && AS.HirePanel && this.overlay !== 'court' && this.overlay !== 'map') AS.HirePanel.toggle(g);
+          else if (g.bc && (I.hit('army') || I.hit('warband')) && !this.overlay) AS.BigCampaign.toggleMode(g); // (the campaign's army follows the dragon: G holds or follows too)
+          else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court' && !g.bc) { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
           if (I.hit('controlMode')) {
             AS.Settings.controlMode = AS.Settings.controlMode === 'mouse' ? 'keys' : 'mouse'; AS.Save.saveSettings();
             g.msg(AS.Settings.controlMode === 'mouse' ? 'FLIGHT: FOLLOW THE CURSOR' : 'FLIGHT: KEYS STEER, MOUSE AIMS', '#ffe7a8', 2.2);

@@ -57,6 +57,7 @@
       }
       // towns
       for (const F of g.factionList) {
+        if (g.bc && F.key !== g.playerKey && !g.isExplored(F.townPos.x, F.townPos.y)) continue; // (the campaign's Dragon Lord must be found)
         const q = P(F.townPos.x, F.townPos.y);
         if (F.eliminated) { HUD.icon(ctx, 'skull', q[0], q[1], 22 * s, '#a89880'); continue; }
         HUD.crest(ctx, q[0], q[1], 15 * s, F.def);

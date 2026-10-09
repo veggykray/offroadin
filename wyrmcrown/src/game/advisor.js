@@ -34,6 +34,7 @@
       // a rival laid bare
       for (const R of g.factionList) {
         if (R === F || R.eliminated || !R.keep || !R.keep.alive) continue;
+        if (g.bc && !g.isExplored(R.townPos.x, R.townPos.y)) continue; // (the campaign's Dragon Lord has to be found first)
         if (R.wardStrength() <= 1 && (!R.dragon || R.dragon.down > 0 || R.wardStrength() === 0)) return { title: 'STRIKE NOW', text: R.def.short + '\'s ward is broken! Storm its stronghold before it recovers.', icon: 'castle', col: '#ffd24a', target: { x: R.keep.x, y: R.keep.y, label: R.def.short.toUpperCase() } };
       }
       const cheapest = this.cheapestBuy(F);
@@ -45,12 +46,13 @@
       const orb = g.pickups.find((q) => q.alive && q.def && Math.hypot(q.x - p.x, q.y - p.y) < 1300);
       if (orb) return { title: 'MAGIC STIRS', text: orb.def.name + ' glows at a rune circle nearby — fly low through it.', icon: 'pw_' + orb.kind, col: orb.def.col, target: { x: orb.x, y: orb.y, label: orb.def.name.toUpperCase() } };
       const site = this.bestSite(g, p, F);
-      if (site && (F.sitesOwned < 4 || g.time < 600)) {
+      if (site && (F.sitesOwned < 4 || g.time < 600 || g.bc)) {
         const verb = site.owner ? 'Seize ' + site.name + ' from ' + g.factions[site.owner].def.short : site.guarded() ? 'Clear the guardians of ' + site.name + ', then circle low to claim it' : 'Circle low over ' + site.name + ' to claim it';
         return { title: 'SEIZE THE LAND', text: verb + ' — ' + site.def.desc, icon: 'flag', col: '#ffe6a0', target: { x: site.x, y: site.y, label: site.name.toUpperCase() } };
       }
       // late game: pick the weakest rival and take it apart
       const R = this.weakestRival(g, F);
+      if (R && g.bc && !g.isExplored(R.townPos.x, R.townPos.y)) return { title: 'THE DRAGON LORD', text: 'A Dragon Lord rules the Isle of Ravens beyond the eastern sea and never leaves it. Fly out and find his stronghold.', icon: 'skull', col: R.def.color };
       if (R) {
         const ward = R.buildings.find((b) => b.kind === 'wardstone' && b.alive);
         if (ward) return { title: 'BREAK ' + R.def.short.toUpperCase(), text: 'Topple ' + R.def.short + '\'s wardstones and drive off ' + (R.dragon ? R.dragon.name : 'its dragon') + ' to break the ward on its stronghold.', icon: 'ward', col: R.def.color, target: { x: ward.x, y: ward.y, label: 'WARDSTONE' } };

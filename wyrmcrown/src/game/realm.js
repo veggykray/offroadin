@@ -103,6 +103,8 @@
       this.explored = new Uint8Array(this.fogW * this.fogH);
       const pt = this.playerFaction.townPos || this.roostOf(this.playerFaction);
       this.revealArea(pt.x, pt.y, 1500);
+      // the campaign in the Wide Realm (opt-in): its saved progress, its army, its clock
+      if (this.opts.campaign && AS.BigCampaign) AS.BigCampaign.setup(this);
       const p = this.player;
       this.camera.snap(p.x, p.y - p.z);
       // pre-generate the chunks around the start
@@ -241,6 +243,13 @@
     }
     onDragonRespawn(d) { if (d === this.player) { this.msg(d.name.toUpperCase() + ' TAKES WING AGAIN', '#ffe08a', 3); if (AS.Voices && AS.Voices.g === this) AS.Voices.event('roost_recovery', { cooldown: 45 }); } }
 
+    // is a troop near one of the extra points that keep the world awake (a campaign army)?
+    nearWake(t, r) {
+      const W = this.wakePts; if (!W) return false;
+      for (const q of W) { const dx = t.x - q.x, dy = t.y - q.y; if (dx * dx + dy * dy < r * r) return true; }
+      return false;
+    }
+
     /* ================= update ================= */
     update(dt) {
       if (this.ended) return;
@@ -252,7 +261,7 @@
       for (let i = this.troops.length - 1; i >= 0; i--) {
         const t = this.troops[i];
         if (t.removed) { this.troops.splice(i, 1); continue; }
-        if (simR2 && wakeAt && t.team !== this.playerKey) { const dx = t.x - wakeAt.x, dy = t.y - wakeAt.y; if (dx * dx + dy * dy > simR2) { t.dormant = true; continue; } }
+        if (simR2 && wakeAt && t.team !== this.playerKey) { const dx = t.x - wakeAt.x, dy = t.y - wakeAt.y; if (dx * dx + dy * dy > simR2 && !this.nearWake(t, 1600)) { t.dormant = true; continue; } }
         t.dormant = false;
         t.update(dt);
       }
@@ -260,7 +269,7 @@
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }
       for (const F of this.factionList) F.update && F.update(dt);
-      if (AS.Diplomacy && !this.opts.demo && !this.opts.conquest) AS.Diplomacy.update(this, dt);
+      if (AS.Diplomacy && !this.opts.demo && !this.opts.conquest && !this.opts.campaign) AS.Diplomacy.update(this, dt);
       if (AS.Life) AS.Life.update(this, dt);
       if (AS.Powerups) AS.Powerups.update(this, dt);
       if (this.weather) this.weather.update(dt);
@@ -289,7 +298,10 @@
       this.updateMusic(dt);
       // a Conquest battle has its own victory and defeat (the site, the dragon, the camp)
       if (this.opts.conquest && AS.Conquest && AS.Conquest.Battle) AS.Conquest.Battle.update(this, dt);
-      else if (this.map.largeWorld && AS.LargeWorld) AS.LargeWorld.update(this, dt); // a sandbox: no victory, no defeat
+      else if (this.map.largeWorld && AS.LargeWorld) {
+        AS.LargeWorld.update(this, dt); // the test is a sandbox: no victory, no defeat
+        if (this.bc && AS.BigCampaign) AS.BigCampaign.update(this, dt); // the campaign has its own end
+      }
       else if (AS.Factions && AS.Factions.checkVictory) AS.Factions.checkVictory(this);
       if (this.state === 'ending') { this.endT -= dt; if (this.endT <= 0) this.finish(); }
     }

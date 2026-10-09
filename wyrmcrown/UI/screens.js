@@ -146,6 +146,7 @@
           btn('Begin a War', () => this.showSelect(), 'primary', 'Choose your realm and a map'),
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
           AS.Maps.byId.largeworld ? btn('Large World Test', () => AS.App.startMatch('largeworld', { faction: 'human' }), '', 'A continuous island several kilometres across · technical test') : null,
+          AS.BigCampaign && AS.CampaignMenu && AS.Maps.byId.largeworld ? btn('Campaign', () => AS.CampaignMenu.show(), '', 'Win the Wide Realm place by place · real time, saved as you go') : null,
           AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across a new archipelago every time') : null,
           btn('How to Play', () => this.showControls('menu')),
           btn('Options', () => this.showOptions('menu')))));
@@ -250,11 +251,14 @@
         btn('Resume', () => AS.App.resume(), 'primary'),
         btn('How to Play', () => this.showControls('pause')),
         btn('Options', () => this.showOptions('pause')),
+        // the campaign saves and returns to the title (it is continued from the Campaign menu)
+        g && g.bc ? btn('Save and Return to the Title', () => { AS.BigCampaign.save(g); AS.App.abandon(); }, 'danger') : null,
+        g && g.bc ? null :
         // a Conquest battle cannot be restarted or abandoned: the army withdraws instead
         g && g.opts.conquest && AS.Conquest && AS.Conquest.Battle
           ? btn('Retreat to the Campaign Map', () => this.confirm('Withdraw the army? The battle is lost and your losses stand.', () => AS.Conquest.Battle.retreat()), 'danger')
           : btn('Restart this War', () => this.confirm('Restart this war from the beginning?', () => AS.App.restart())),
-        g && g.opts.conquest ? null : btn('Abandon to the Title', () => this.confirm('Abandon this war?', () => AS.App.abandon()), 'danger')));
+        g && (g.opts.conquest || g.bc) ? null : btn('Abandon to the Title', () => this.confirm('Abandon this war?', () => AS.App.abandon()), 'danger')));
       this.show('pause');
     },
     back() { if (this.from === 'pause') this.showPause(); else this.showMenu(); },
@@ -309,6 +313,7 @@
         stand,
         h('p', { class: 'dim' }, 'Gold earned ' + Math.round(st.goldEarned || 0) + ' · sites captured ' + (st.captured || 0) + ' · foes slain ' + (st.kills || 0) + ' · dragons driven off ' + (st.dragonsDowned || 0) + ' · prey eaten ' + (st.eaten || 0)),
         res.unlocked ? h('p', { style: 'text-align:center;font:700 16px var(--title);color:var(--gold)' }, '✦ A new realm opens in the atlas: ' + res.unlocked.name + ' ✦') : null,
+        res.bigCampaign ? h('div', { class: 'row', style: 'justify-content:center;margin-top:12px' }, btn('Title', () => { AS.App.endGame(); this.showMenu(); setTimeout(() => this.startDemo(), 100); }, 'primary')) :
         h('div', { class: 'row', style: 'justify-content:center;margin-top:12px' }, res.unlocked ? btn('Onward to ' + res.unlocked.name, () => { this.sel.map = res.unlocked.id; AS.App.endGame(); this.showMaps(); }, 'primary') : null, btn('Fight Again', () => AS.App.restart(), res.unlocked ? '' : 'primary'), btn('Atlas', () => { AS.App.endGame(); this.showMaps(); }), btn('Title', () => { AS.App.endGame(); this.showMenu(); setTimeout(() => this.startDemo(), 100); }))));
       this.show('results');
     },

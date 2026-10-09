@@ -190,6 +190,7 @@
         sp *= 0.62;
         this.unstick(dt);
       } else if (this.state === 'march') {
+        if (this.hurry) sp *= this.hurry; // (a campaign army out of sight marches faster)
         if (this.path && this.pi < this.path.length) this.unstick(dt);
         const wp = this.path && this.path[this.pi];
         if (wp) {

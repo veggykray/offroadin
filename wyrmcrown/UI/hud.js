@@ -99,6 +99,7 @@
       this.worldMarks(ctx, g, W, H, s);
       this.dragonPanel(ctx, g, s, dt);
       this.goldPanel(ctx, g, W, s);
+      if (g.bc && AS.BigCampaign) this.campaignPanel(ctx, g, W, s);
       this.realms(ctx, g, W, s);
       this.advisor(ctx, g, W, s, dt);
       this.feed(ctx, g, s, H);
@@ -164,6 +165,19 @@
       ctx.fillText(Math.floor(this.goldShown + 0.5).toLocaleString(), x + 44 * s, y + h / 2 + 1 * s);
       ctx.font = B(Math.round(12 * s), '600'); ctx.textAlign = 'right'; ctx.fillStyle = COL.dim;
       ctx.fillText('+' + Math.round(Fp.income) + ' / min', x + w - 14 * s, y + h / 2 + 1 * s);
+    },
+
+    /* ---------- under the gold: the campaign's day, army and wages ---------- */
+    campaignPanel(ctx, g, W, s) {
+      const S = AS.BigCampaign.status(g);
+      const w = 340 * s, h = 26 * s, x = W / 2 - w / 2, y = 54 * s;
+      plate(ctx, x, y, w, h, 13 * s, 0.66);
+      ctx.font = B(Math.round(12.5 * s), '700'); ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left'; ctx.fillStyle = '#ffe6a0';
+      ctx.fillText('DAY ' + S.day + ' · ' + S.time, x + 12 * s, y + h / 2 + 0.5 * s);
+      ctx.textAlign = 'right'; ctx.fillStyle = S.used > S.lead ? '#ff9a6a' : COL.parch;
+      const mode = S.army ? (S.mode === 'follow' ? ' · FOLLOWING' : ' · HOLDING') : '';
+      ctx.fillText('ARMY ' + S.army + ' (' + S.used + '/' + S.lead + ')' + mode + (S.wages ? ' · WAGES ' + S.wages : ''), x + w - 12 * s, y + h / 2 + 0.5 * s);
     },
 
     /* ---------- top-right: the four realms ---------- */
@@ -266,7 +280,7 @@
         ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.arc(q[0], q[1], 5 * s, 0, TAU); ctx.fill();
         icon(ctx, site.def.icon === 'castle' ? 'castle_s' : site.def.icon, q[0], q[1], 8 * s, col);
       }
-      for (const Fc of g.factionList) { if (Fc.eliminated) continue; const q = P(Fc.townPos.x, Fc.townPos.y); crest(ctx, q[0], q[1], 7 * s, Fc.def); }
+      for (const Fc of g.factionList) { if (Fc.eliminated || (g.bc && Fc.key !== g.playerKey && !g.isExplored(Fc.townPos.x, Fc.townPos.y))) continue; const q = P(Fc.townPos.x, Fc.townPos.y); crest(ctx, q[0], q[1], 7 * s, Fc.def); }
       if (g.waypoint) {
         // the course: a dashed guide from the dragon toward it (the minimap shows ~3200 units)
         const q = P(g.waypoint.x, g.waypoint.y), pq = P(p.x, p.y);
@@ -342,6 +356,12 @@
       const lines = [];
       const Fp = g.playerFaction;
       if (!g.opts.conquest && Math.hypot(p.x - Fp.townPos.x, p.y - Fp.townPos.y) < 520) lines.push(['T', 'HOLD COURT — SPEND YOUR GOLD']);
+      if (g.bc && AS.BigCampaign) {
+        const q = AS.BigCampaign.hirePlace(g);
+        if (q) lines.push(['R', 'HIRE TROOPS AT ' + q.name.toUpperCase()]);
+        else if (g.time < 100 && !AS.BigCampaign.armyCount(g)) lines.push(['R', 'HIRE TROOPS AT YOUR CASTLE OR A PLACE YOU HOLD']);
+        if (AS.BigCampaign.armyCount(g) && g.time - (g.bc.vHintT || 0) < 25) lines.push(['V', g.bc.mode === 'follow' ? 'YOUR ARMY FOLLOWS — V TO HOLD' : 'YOUR ARMY HOLDS — V TO FOLLOW']);
+      }
       if (g.map.highFlight && !g.highFlight && g.time < 90) lines.push(['H', 'HIGH FLIGHT — SEE FAR']);
       if (p.pilot && p.pilot.quarry) lines.push(['W A S D', 'HUNTING — ANY FLIGHT KEY BREAKS OFF']);
       else if (p.carry) lines.push(['E', p.carry.owner && p.carry.owner !== p.team ? 'EAT — OR CARRY IT HOME TO YOUR PASTURES' : 'EAT YOUR PREY']);

@@ -138,3 +138,16 @@ table.keys td:first-child { color: var(--gold); font-family: var(--title); font-
 .flash-buy { animation: flashbuy .5s; }
 @keyframes flashbuy { 0% { box-shadow: 0 0 0 2px var(--gold), 0 0 30px rgba(242, 193, 78, 0.6); } 100% { box-shadow: none; } }
 .toast { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); padding: 8px 16px; border-radius: 6px; background: rgba(20, 12, 8, 0.92); border: 1px solid var(--gold); font: 700 14px var(--title); color: var(--gold); pointer-events: none; }
+
+/* ---------- the campaign (Wide Realm): menu slots and the hiring panel ---------- */
+#bigcampaign { flex-direction: column; padding: 30px 4vw; gap: 18px; background: rgba(8, 5, 3, 0.66); }
+.bc-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; max-width: 1100px; }
+.bc-slot { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; border-radius: 10px; border: 1px solid var(--rim2); background: linear-gradient(180deg, rgba(56, 38, 24, 0.9), rgba(30, 20, 13, 0.92)); font: 500 15px var(--text); }
+.bc-slot .nm { font: 800 20px var(--title); color: var(--gold); letter-spacing: 1px; }
+.bc-slot .who { font: 700 16px var(--title); }
+.bc-slot .btn { min-width: 0; flex: 1; }
+.bc-slot .row { display: flex; gap: 10px; }
+#hire { align-items: center; justify-content: center; background: rgba(8, 5, 3, 0.55); }
+#hire .panel { width: min(1000px, 96vw); height: min(640px, 90vh); display: flex; flex-direction: column; padding: 18px 22px; }
+#hire .item .btn { min-width: 0; flex: 1; padding: 8px 10px; }
+#hire .btn.off { opacity: 0.45; }

@@ -45,11 +45,15 @@
         this.crest(F.def, 40),
         h('div', null, h('div', { class: 'name' }, 'The Court of ' + F.def.short), h('div', { class: 'dim' }, F.def.name + ' — stronghold level ' + F.keepLevel)),
         h('div', { class: 'gold' }, h('span', { class: 'coin' }), Math.floor(F.gold).toLocaleString()));
-      const tabs = h('div', { class: 'court-tabs' }, TABS.map(([k, label]) => h('div', { class: 'tab' + (this.tab === k ? ' on' : ''), onclick: () => { this.tab = k; AS.Audio.sfx('ui_click'); this.render(); } }, label)));
+      // the campaign hires its field army at the places it holds (R), and has no rivals to treat with
+      const camp = !!g.bc;
+      if (camp && this.tab === 'diplomacy') this.tab = 'defence';
+      const tabs = h('div', { class: 'court-tabs' }, TABS.filter(([k]) => !(camp && k === 'diplomacy')).map(([k, label]) => h('div', { class: 'tab' + (this.tab === k ? ' on' : ''), onclick: () => { this.tab = k; AS.Audio.sfx('ui_click'); this.render(); } }, label)));
       const items = h('div', { class: 'court-items' });
       if (this.tab === 'diplomacy') for (const R of g.factionList) { if (R !== F) items.appendChild(this.diploCard(R)); }
-      else for (const id of AS.Data.court[this.tab]) items.appendChild(this.card(id));
-      if (this.tab === 'army') items.appendChild(this.warbandCard());
+      else for (const id of AS.Data.court[this.tab]) { if (!(camp && id.startsWith('recruit'))) items.appendChild(this.card(id)); }
+      if (this.tab === 'army' && !camp) items.appendChild(this.warbandCard());
+      if (this.tab === 'army' && camp) items.appendChild(h('div', { class: 'item' }, h('div', { class: 'nm' }, 'Your field army'), h('div', { class: 'ds' }, 'Hire troops with R at your castle or at a place you hold: each place offers its own. Leadership limits your army; wages are paid each dawn. A stables lets your castle train knights, a workshop siege engines.')));
       const body = h('div', { class: 'court-body' }, tabs, items, this.side());
       const foot = h('div', { class: 'court-foot' }, h('span', null, 'The realm waits while you hold court.'), btn('Return to the skies', () => this.close(), 'primary', 'T / Esc'));
       root.appendChild(h('div', { class: 'panel' }, head, body, foot));

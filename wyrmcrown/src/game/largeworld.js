@@ -32,12 +32,18 @@
         groups: (m.encounters || []).map((e) => ({ def: e, left: e.troops.map((t) => t.slice()), troops: null, wp: 0, seen: false, defeated: false })),
         t: 0, counts: { active: 0, asleep: 0, visible: 0, spawnedGroups: 0, total: 0 }, crowd: [], bench: null,
       };
-      g.msg('THE WIDE REALM — FLY WHERE YOU WILL', '#ffe7a8', 4);
+      if (!g.opts.campaign) g.msg('THE WIDE REALM — FLY WHERE YOU WILL', '#ffe7a8', 4);
       const P = AS.App && AS.App.params;
       const b = P && P.get('bench');
       if (b) g.later(2.5, () => this.bench(g, b.toUpperCase(), +(P.get('pop') || 0)));
     },
     dist(g, x, y) { const p = g.player; return Math.hypot(x - p.x, y - p.y); },
+    // the nearer of the dragon and anything else that wakes the world (a campaign army, slightly nearer in)
+    reach(g, x, y) {
+      let d = this.dist(g, x, y);
+      if (g.wakePts) for (const q of g.wakePts) d = Math.min(d, Math.hypot(x - q.x, y - q.y) + 2000);
+      return d;
+    },
     spawn(g, G) {
       G.troops = [];
       const d = G.def; let n = 0;
@@ -70,7 +76,7 @@
       let spawned = 0;
       for (const G of L.groups) {
         if (G.defeated) continue;
-        const d = this.dist(g, G.def.x, G.def.y);
+        const d = this.reach(g, G.def.x, G.def.y);
         if (!G.troops && d < SPAWN_R) this.spawn(g, G);
         if (G.troops) {
           const alive = G.troops.filter((u) => u.alive);
@@ -84,7 +90,7 @@
             if (Math.hypot(cx - wp[0], cy - wp[1]) < 260 && !alive.some((u) => u.target)) { G.wp++; this.march(G); }
           }
           const fighting = alive.some((u) => u.target);
-          if (this.dist(g, cx, cy) > DESPAWN_R && !fighting) { G.def.x = cx; G.def.y = cy; this.despawn(g, G); spawned--; }
+          if (this.reach(g, cx, cy) > DESPAWN_R && !fighting) { G.def.x = cx; G.def.y = cy; this.despawn(g, G); spawned--; }
         }
       }
       // activity counts (for the F3 panel)
