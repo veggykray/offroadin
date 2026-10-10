@@ -10,7 +10,7 @@
     nested: ['stats', 'maps'],
     settings: {
       master: 0.8, music: 0.55, sfx: 0.8, voice: 0.9,
-      quality: 'high', shake: true, flash: true, subtitles: true,
+      quality: 'high', shake: true, flash: true, subtitles: false, // (what wizards and dragons say: off unless asked for)
       controlMode: 'keys', // keys: A/D steer, mouse aims the staff · mouse: the dragon flies toward the cursor
       view: 'normal', difficulty: 'normal', testMode: false, bindings: null,
       taunts: true, // wizards and dragons trading insults (voices + subtitles)
@@ -37,6 +37,7 @@
       sprint: ['ShiftLeft', 'ShiftRight'],
       eat: ['KeyE'],
       spell: ['KeyQ'],
+      spell1: ['Digit1'], spell2: ['Digit2'], spell3: ['Digit3'],
       town: ['KeyT'],
       warband: ['KeyG'],
       map: ['KeyM'],
@@ -51,7 +52,7 @@
     labels: {
       forward: 'Beat wings (accelerate)', back: 'Flare wings (brake / hover)', left: 'Bank left', right: 'Bank right',
       dive: 'Dive (hold) — release to pull up', sprint: 'Sprint (costs energy)', eat: 'Snatch / eat / drop prey',
-      spell: 'Cast stored spell', town: 'Hold court in your town', warband: 'Order your warband', map: 'War map',
+      spell: 'Cast the first stored spell', spell1: 'Cast spell slot 1', spell2: 'Cast spell slot 2', spell3: 'Cast spell slot 3', town: 'Hold court in your town', warband: 'Order your warband', map: 'War map',
       objectives: 'Realm overview', pause: 'Pause', controlMode: 'Toggle flight control mode', breath: 'Breathe fire (also right mouse)', highFlight: 'High flight: see far (large world)', hire: 'Hire troops (campaign)', army: 'Army: follow / hold (campaign)',
     },
     preventKeys: ['KeyQ'],

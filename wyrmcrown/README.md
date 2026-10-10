@@ -32,6 +32,16 @@ pools. Each has its own beasts — great stags and aurochs, glimmerdeer and
 tree shamblers, frosthulks and snow stalkers, bloatlings and gravehounds —
 its own giants and trolls, and somewhere in the far wilds, one colossus.
 
+### What you are fighting (creature portraits)
+
+Strike a foe, get struck, or rest your aim on one, and a card appears at the lower right:
+a close-up portrait, its name and kind, its health (and poison), how it hurts you and a line
+about it (`UI/foecard.js`). The portraits are `assets/portraits/<key>.png`, 256 × 256:
+`dragon_<realm>`, `<realm>_soldier|archer|elite|siege` for each realm (human, elf, ice,
+undead), and one per beast or monster (`troll`, `wolf`, `spindlelurker`, …). The files there
+now are labelled placeholders; replace them with painted art of the same name. A portrait
+missing from the folder is drawn as a placeholder in the game.
+
 ### The four partnerships in combat
 
 Each rider casts its own spell and each dragon breathes its own breath (see

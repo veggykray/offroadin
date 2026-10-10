@@ -83,6 +83,14 @@
     get py() { return this.y - this.z - this.hc; }
     get sortY() { return this.y + 4; }
     get targetable() { return this.alive && this.down <= 0 && !this.evading; }
+    // the rider's three spell slots ([{ kind, n } | null] × 3); spell / spellCharges read the
+    // first filled slot (as the single slot of old did), and setting spell stores one
+    get spells() { return this._spells || (this._spells = [null, null, null]); }
+    set spells(v) { this._spells = v; }
+    get spell() { const q = this.spells.find((x) => x); return q ? q.kind : null; }
+    set spell(v) { if (!v) this._spells = [null, null, null]; else if (AS.Powerups) AS.Powerups.store(this, v); }
+    get spellCharges() { const q = this.spells.find((x) => x); return q ? q.n : 0; }
+    set spellCharges(v) { /* (charges live in the slots) */ }
     // mid-loop the dragon is out of the line of fire
     get evading() { const L = this.loop; return !!L && L.t > L.dur * LOOP.evade[0] && L.t < L.dur * LOOP.evade[1]; }
 
@@ -122,7 +130,7 @@
           else if (this.ai && this.ai.travelTo) { AS.Sites.travel(this.g, this, this.ai.travelTo); this.ai.travelTo = null; this.input.eatHit = false; }
         }
       }
-      if (this.input.spellHit && AS.Powerups) { AS.Powerups.cast(this); this.input.spellHit = false; }
+      if (this.input.spellHit && AS.Powerups) { AS.Powerups.cast(this, this.input.spellSlot); this.input.spellHit = false; this.input.spellSlot = -1; }
       this.flight(dt);
       this.vitals(dt);
       if (AS.Combat) AS.Combat.dragonWeapons(this, dt);
@@ -509,6 +517,7 @@
         if (this.isPlayer) { g.camera.shake(Math.min(0.45, 0.06 + dmg * 0.012)); AS.Audio.sfx('dragon_hurt', { vol: Math.min(1, 0.35 + dmg / 40) }); }
         else if (Math.random() < 0.25) AS.Audio.sfx('dragon_hurt', { x: this.x, y: this.y, vol: 0.5 });
       }
+      if (this.isPlayer && src && AS.FoeCard) AS.FoeCard.note(g, src.isDragon || src.role ? src : src.owner);
       if (this.onHurt) this.onHurt(dmg, dtype, src);
       if (this.hp <= 0) { this.hp = 0; this.knockDown(src); }
       return dmg;

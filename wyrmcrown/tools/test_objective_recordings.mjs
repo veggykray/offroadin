@@ -14,7 +14,7 @@ try{
   await page.waitForFunction(()=>AS.Audio.ready,null,{timeout:30000,polling:100});
   const kinds=faction==='human'?['goldmine','village','cave','ruins']:['goldmine','village'];
   for(const kind of kinds){
-   const result=await page.evaluate(async kind=>{
+   const result=await page.evaluate(async kind=>{AS.Settings.subtitles=true;
     const V=AS.Voices,g=AS.game,s=g.sites.find(s=>s.kind===kind);
     if(!s)throw Error('Missing map objective: '+kind);
     V.start(g);V.scanAt=Infinity;V.quietUntil=Infinity;V.homeLastThreat=-Infinity;

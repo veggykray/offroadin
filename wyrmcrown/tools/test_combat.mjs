@@ -102,8 +102,8 @@ try {
 
     // ---- the breath: reach and damage per full charge
     Object.assign(r, await ev(() => { const d = AS.game.player, B = AS.Data.breaths[d.fdef.dragon.breath]; d.breathTarget = null; const bi = AS.Combat.breathInfo(d); return { breath: B.name, L: Math.round(bi.L), drain: B.drain }; }));
-    // a target just beyond Pyrrhax's reach (1.2× the baseline) is burnt only by a longer breath
-    const far = await ev(() => { const d = AS.game.player, hd = d.nodes[0]; const L0 = 150 * d.scale * (1 + 0) ; return Math.round(hd.x - d.x + 14 * d.scale + 150 * d.scale * 1.2); });
+    // a target beyond Pyrrhax's reach (1.4× the baseline) is burnt only by a longer breath
+    const far = await ev(() => { const d = AS.game.player, hd = d.nodes[0]; const L0 = 150 * d.scale * (1 + 0) ; return Math.round(hd.x - d.x + 14 * d.scale + 150 * d.scale * 1.4); }); // (clear of the ground fire Pyrrhax leaves near the end of its reach)
     const idf = await dummy({ dx: far });
     const idn = await dummy({ dx: 90, dy: 4 });
     await ev(([a, b]) => { const g = AS.game, d = g.player, T = window.__T; T.ax = window.__D[a].x; T.ay = window.__D[a].y; d.fireCharge = d.maxFire; d.breathT = 0; window.__f0 = window.__D[a].hp; window.__n0 = window.__D[b].hp; T.breath = true; window.__t0 = g.time; }, [idf, idn]);
@@ -148,7 +148,7 @@ try {
 
   // ---- breath
   ok(E.L > H.L * 1.3 && I.L < H.L && E.farHit > 0 && H.farHit === 0 && I.farHit === 0, 'reach ' + JSON.stringify([H.L, E.L, I.L, X.L, H.farHit, E.farHit, I.farHit]));
-  step('Verdanthe\'s emerald flame truly reaches further (' + E.L + ' vs Pyrrhax ' + H.L + ', Skaldfrost ' + I.L + '): only it burns a target ' + Math.round(H.L * 1.2) + ' away');
+  step('Verdanthe\'s emerald flame truly reaches further (' + E.L + ' vs Pyrrhax ' + H.L + ', Skaldfrost ' + I.L + '): only it burns a target ' + Math.round(H.L * 1.4) + ' away');
   ok(I.nearCharge / I.breathSecs > H.nearCharge / H.breathSecs && E.nearCharge / E.breathSecs < H.nearCharge / H.breathSecs, 'breath dps');
   step('direct breath damage per second: Skaldfrost ' + Math.round(I.nearCharge / I.breathSecs) + ' > Pyrrhax ' + Math.round(H.nearCharge / H.breathSecs) + ' > Verdanthe ' + Math.round(E.nearCharge / E.breathSecs));
   const charge = [H, E, I, X].map((q) => q.nearCharge);

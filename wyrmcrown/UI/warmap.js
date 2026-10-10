@@ -3,7 +3,9 @@
  * with their strongholds and wards, dragons, gold carts and warbands. Hover a
  * site for its details. Opened from an owned waygate it becomes the travel map:
  * click another owned waygate (or your stronghold) to pass through. The realm
- * pauses while the map is open. */
+ * pauses while the map is open. The mouse wheel zooms (about the cursor), dragging pans,
+ * + / − zoom and 0 shows the whole realm again; zoomed into a streamed realm the land you have
+ * explored is painted in sharper as you look (AS.HUD.Detail). */
 'use strict';
 (function (AS) {
   const U = AS.U, TAU = U.TAU, K = AS.UIKit;
@@ -21,31 +23,61 @@
       const boxH = H - 90 * s, boxW = W - 380 * s;
       const k = Math.min(boxW / g.map.w, boxH / g.map.h), sw = g.map.w * k, size = g.map.h * k;
       const x0 = (W - sw) / 2 - 120 * s, y0 = 50 * s;
-      this.lay = { x0, y0, k, dpr }; // for tests and tools: world → canvas pixels
+      const mouse = AS.Input.mouse, mx = mouse.x * dpr, my = mouse.y * dpr, inside = mx > x0 && my > y0 && mx < x0 + sw && my < y0 + size;
+      // the view: zoom (1 = the whole realm) about a centre, kept inside the realm
+      if (this.vg !== g) { this.vg = g; this.zoom = 1; this.vcx = g.map.w / 2; this.vcy = g.map.h / 2; this.drag = null; }
+      const zMax = Math.max(4, g.map.w / 4000), keys = AS.Input.pressed;
+      let z = this.zoom;
+      const zoomAt = (nz, ax, ay) => {
+        nz = U.clamp(nz, 1, zMax);
+        const kz0 = k * z, wx = this.vcx - g.map.w / z / 2 + (ax - x0) / kz0, wy = this.vcy - g.map.h / z / 2 + (ay - y0) / kz0;
+        z = nz; const kz1 = k * z;
+        this.vcx = wx - (ax - x0) / kz1 + g.map.w / z / 2; this.vcy = wy - (ay - y0) / kz1 + g.map.h / z / 2;
+      };
+      if (inside && mouse.wheel) zoomAt(z * (mouse.wheel < 0 ? 1.3 : 1 / 1.3), mx, my);
+      if (keys && (keys.has('Equal') || keys.has('NumpadAdd'))) zoomAt(z * 1.3, x0 + sw / 2, y0 + size / 2);
+      if (keys && (keys.has('Minus') || keys.has('NumpadSubtract'))) zoomAt(z / 1.3, x0 + sw / 2, y0 + size / 2);
+      if (keys && (keys.has('Digit0') || keys.has('Numpad0'))) { z = 1; this.vcx = g.map.w / 2; this.vcy = g.map.h / 2; }
+      if (mouse.lPressed && inside) this.drag = { mx, my, cx: this.vcx, cy: this.vcy, moved: false };
+      if (this.drag && mouse.l) { const dx = mx - this.drag.mx, dy = my - this.drag.my; if (Math.abs(dx) + Math.abs(dy) > 5 * s) this.drag.moved = true; if (this.drag.moved) { this.vcx = this.drag.cx - dx / (k * z); this.vcy = this.drag.cy - dy / (k * z); } }
+      else this.drag = null;
+      this.zoom = z;
+      const vw = g.map.w / z, vh = g.map.h / z;
+      this.vcx = U.clamp(this.vcx, vw / 2, g.map.w - vw / 2); this.vcy = U.clamp(this.vcy, vh / 2, g.map.h - vh / 2);
+      const vx0 = this.vcx - vw / 2, vy0 = this.vcy - vh / 2, kz = k * z;
+      this.lay = { x0: x0 - vx0 * kz, y0: y0 - vy0 * kz, k: kz, dpr, zoom: z }; // for tests and tools: world → canvas pixels
       HUD.plate(ctx, x0 - 10 * s, y0 - 10 * s, sw + 20 * s, size + 20 * s, 12 * s, 0.95);
       ctx.save(); K.rrect(ctx, x0, y0, sw, size, 8 * s); ctx.clip();
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(g.tacMap, x0, y0, sw, size);
-      ctx.drawImage(HUD.fogLayer(g), x0, y0, sw, size);
-      const P = (wx, wy) => [x0 + wx * k, y0 + wy * k];
-      // sight of what we own
-      const mouse = AS.Input.mouse, mx = mouse.x * dpr, my = mouse.y * dpr;
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      const ts = g.map.w / g.tacMap.width;
+      ctx.drawImage(g.tacMap, vx0 / ts, vy0 / ts, vw / ts, vh / ts, x0, y0, sw, size);
+      // zoomed into a coarse (streamed) war map: the explored land painted sharper as you look
+      if (HUD.Detail && HUD.Detail.wanted(g) && kz * ts > 2.5) {
+        const sc = 1 / kz < 20 ? 16 : 32;
+        HUD.Detail.work(g, sc, this.vcx, this.vcy, Math.max(vw, vh), 10, true, sc === 16 ? 160 : 500, true);
+        HUD.Detail.draw(ctx, g, sc, vx0, vy0, vw, vh, x0, y0, kz);
+      }
+      const fc = g.fogCell;
+      ctx.drawImage(HUD.fogLayer(g), vx0 / fc, vy0 / fc, vw / fc, vh / fc, x0, y0, sw, size);
+      const P = (wx, wy) => [x0 + (wx - vx0) * kz, y0 + (wy - vy0) * kz];
       let hover = null, hd = 22 * s;
       // territory rings
       for (const site of g.sites) {
         if (!g.isExplored(site.x, site.y)) continue;
         const q = P(site.x, site.y);
-        if (site.owner) { ctx.globalAlpha = 0.25; ctx.fillStyle = g.factions[site.owner].def.color; ctx.beginPath(); ctx.arc(q[0], q[1], site.capR * k * 1.4 + 4 * s, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; }
+        if (site.owner) { ctx.globalAlpha = 0.25; ctx.fillStyle = g.factions[site.owner].def.color; ctx.beginPath(); ctx.arc(q[0], q[1], site.capR * kz * 1.4 + 4 * s, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; }
         const d = Math.hypot(mx - q[0], my - q[1]); if (d < hd) { hd = d; hover = site; }
       }
       for (const site of g.sites) {
-        if (!g.isExplored(site.x, site.y)) continue;
+        if (!g.isExplored(site.x, site.y) || (site.def.landmark && !site.found)) continue;
         const q = P(site.x, site.y);
-        const col = site.owner ? g.factions[site.owner].def.color : site.guarded() ? '#e07050' : (site.def.treasure && site.looted) ? '#8a7a6a' : '#f0e2c0';
+        if (q[0] < x0 - 20 || q[1] < y0 - 20 || q[0] > x0 + sw + 20 || q[1] > y0 + size + 20) continue;
+        const col = site.def.landmark && !site.owner ? '#f6d24a' : site.owner ? g.factions[site.owner].def.color : site.guarded() ? '#e07050' : (site.def.treasure && site.looted) ? '#8a7a6a' : '#f0e2c0';
         const travel = this.travel && site.def.travel && site.owner === g.playerKey && site !== this.travel;
         ctx.fillStyle = 'rgba(10,6,4,0.8)'; ctx.beginPath(); ctx.arc(q[0], q[1], (travel ? 11 : 8) * s, 0, TAU); ctx.fill();
         if (travel) { ctx.strokeStyle = '#8affff'; ctx.lineWidth = 2 * s; ctx.beginPath(); ctx.arc(q[0], q[1], (12 + Math.sin(g.time * 6 + site.x) * 2) * s, 0, TAU); ctx.stroke(); }
         HUD.icon(ctx, site.def.icon === 'castle' ? 'castle_s' : site.def.icon, q[0], q[1], 11 * s, col);
+        if (z >= 3 && (site.def.grand || z >= 6)) { ctx.font = HUD.B(Math.round(12 * s), '700'); ctx.textAlign = 'center'; K.keyText(ctx, site.name, q[0], q[1] + 16 * s, col, 3 * s); } // (names, once zoomed in)
         if (site.control > 0 && site.control < 1 && site.controller) { ctx.strokeStyle = g.factions[site.controller] ? g.factions[site.controller].def.color : '#fff'; ctx.lineWidth = 2 * s; ctx.beginPath(); ctx.arc(q[0], q[1], 10 * s, -Math.PI / 2, -Math.PI / 2 + TAU * site.control); ctx.stroke(); }
       }
       // carts and warbands
@@ -84,7 +116,7 @@
       }
       // the current view
       const cam = g.camera, a = P(cam.x, cam.y);
-      ctx.strokeStyle = 'rgba(255,240,200,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(a[0], a[1], cam.w * k, cam.h * k);
+      ctx.strokeStyle = 'rgba(255,240,200,0.6)'; ctx.lineWidth = 1; ctx.strokeRect(a[0], a[1], cam.w * kz, cam.h * kz);
       ctx.restore();
       // side panel: legend + hover details
       const px = x0 + sw + 26 * s, pw = W - px - 20 * s;
@@ -125,6 +157,7 @@
       leg.forEach(([ic, label], i) => { const lx = px + 18 * s + (i % 2) * (pw / 2 - 10 * s), ly = yy + Math.floor(i / 2) * 22 * s; HUD.icon(ctx, ic, lx + 6 * s, ly, 12 * s, '#f0e2c0'); ctx.fillStyle = HUD.COL.dim; ctx.fillText(label, lx + 18 * s, ly + 1 * s); });
       ctx.fillStyle = HUD.COL.faint || 'rgba(240,226,192,0.4)'; ctx.font = HUD.B(Math.round(13.5 * s), '500');
       ctx.fillText(g.waypoint ? 'Right-click — new course · on it again to clear' : 'Right-click — set your course', px + 18 * s, y0 + size - 22 * s);
+      ctx.fillText('Wheel — zoom (×' + (Math.round(z * 10) / 10) + ') · drag — move · 0 — whole realm', px + 18 * s, y0 + size - 44 * s);
       ctx.fillText('M or Esc — close', px + 18 * s, y0 + size);
       ctx.restore();
       // click to travel
@@ -154,7 +187,7 @@
         else {
           const isF = hover && !!hover.def && !!hover.def.dragon;
           g.waypoint = hover ? { x: isF ? hover.townPos.x : hover.x, y: isF ? hover.townPos.y : hover.y, label: (isF ? hover.def.short : hover.name).toUpperCase() }
-            : { x: U.clamp((mx - x0) / k, 0, g.map.w), y: U.clamp((my - y0) / k, 0, g.map.h), label: 'WAYPOINT' };
+            : { x: U.clamp(vx0 + (mx - x0) / kz, 0, g.map.w), y: U.clamp(vy0 + (my - y0) / kz, 0, g.map.h), label: 'WAYPOINT' };
           AS.Audio.sfx('ui_click');
         }
       }

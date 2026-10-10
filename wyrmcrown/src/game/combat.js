@@ -590,6 +590,7 @@
         e.takeDamage(dmg, dtype, d, { armorMul: B.armorK || 1 });
         this.applyEffect(e, B.effect, d, B.poison ? B.poison * d.fireDmg * boost * (e.isBuilding ? 1.5 : 1) : 0);
         if (sparks < 4 && Math.random() < 0.6) { sparks++; fx.touch(e, B, P(), d); }
+        if (d.isPlayer && AS.FoeCard) AS.FoeCard.note(g, e);
       }
       list.length = 0;
       if (AS.Life) AS.Life.breathHit(g, d, bi, base, B);
@@ -723,6 +724,7 @@
         AS.Audio.sfx('arrow_hit', { x: p.x, y: p.y, vol: 0.4 });
         if (e.isDragon) AS.FX.sparks(p.x, p.y + 40, 40, 2, '#ffd27a');
       }
+      if (AS.FoeCard && p.owner === g.player) AS.FoeCard.note(g, e); // (what you are fighting)
       if (p.owner && p.owner.isDragon && e.onHitBy) e.onHitBy(p.owner);
       if (p.owner && p.owner.isDragon && p.owner.isPlayer && e.isBuilding && e.hpBarT !== undefined) e.hpBarT = 3;
     },

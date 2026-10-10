@@ -8,7 +8,8 @@
  *   right        the advisor's current aim
  *   left         the herald's news
  *   bottom-left  the realm map (minimap)
- *   bottom-right blessings (power-ups) and the stored spell (Q)
+ *   under the flasks: the three spell slots (1, 2, 3; Q casts the first)
+ *   bottom-right blessings (power-ups) and, in a fight, what you are fighting (foecard.js)
  * Contextual prompts (snatch, court, waygate, capture progress) appear next to
  * what they refer to; arrows at the screen edge point to rival dragons and home. */
 'use strict';
@@ -85,9 +86,47 @@
     ctx.restore();
   }
 
+  /* sharper map pictures where the war map's own picture is coarse (streamed maps: 128 units a
+   * pixel): blocks painted from the terrain at `scale` units a pixel, a few rows a frame, kept
+   * in a small cache per scale (oldest/farthest dropped). */
+  const Detail = {
+    g: null, caches: {},
+    wanted(g) { return !!g.tacMap && g.map.w / g.tacMap.width > 24 && !!g.terrain.paintDetail; },
+    cache(g, scale) { if (this.g !== g) { this.caches = {}; this.g = g; } return this.caches[scale] || (this.caches[scale] = new Map()); },
+    // paint what the view needs, nearest first (build: allowed to build missing lookup tiles;
+    // explored: only land that has been seen — the war map; the minimap's fog covers the rest)
+    work(g, scale, cx, cy, span, budgetMs, build, cap, explored) {
+      const B = AS.RealmTerrain.MAPB, T = g.terrain, C = this.cache(g, scale), t0 = performance.now();
+      const b0 = Math.max(0, Math.floor((cx - span / 2) / B)), b1 = Math.min(Math.ceil(g.map.w / B) - 1, Math.floor((cx + span / 2) / B));
+      const c0 = Math.max(0, Math.floor((cy - span / 2) / B)), c1 = Math.min(Math.ceil(g.map.h / B) - 1, Math.floor((cy + span / 2) / B));
+      const list = [];
+      for (let j = c0; j <= c1; j++) for (let i = b0; i <= b1; i++) list.push([Math.hypot((i + 0.5) * B - cx, (j + 0.5) * B - cy), i, j]);
+      list.sort((a, b) => a[0] - b[0]);
+      for (const [, i, j] of list) {
+        const key = i * 4096 + j; let e = C.get(key);
+        if (e && e.row >= Math.round(B / scale)) { e.used = g.time; continue; }
+        if (explored && !g.isExplored((i + 0.5) * B, (j + 0.5) * B) && !g.isExplored(i * B, j * B) && !g.isExplored((i + 1) * B, (j + 1) * B)) continue;
+        if (T.gtiles && !T.hasTile(i, j)) { if (!build) continue; T.tileAt(i, j); } // (a whole-map realm has all its ground already)
+        if (!e) { e = { bx: i, by: j }; C.set(key, e); }
+        e.used = g.time;
+        T.paintDetail(e, scale, Math.max(0.5, budgetMs - (performance.now() - t0)));
+        if (performance.now() - t0 > budgetMs) break;
+      }
+      if (C.size > cap) { const all = [...C.entries()].sort((a, b) => a[1].used - b[1].used); for (let k = 0; k < C.size - cap; k++) C.delete(all[k][0]); }
+    },
+    // draw the painted blocks of the box [vx0, vy0, w, h] (world) into the screen box [x, y, k px a unit]
+    draw(ctx, g, scale, vx0, vy0, vw, vh, x, y, k) {
+      const B = AS.RealmTerrain.MAPB, C = this.cache(g, scale), N = Math.round(B / scale);
+      for (let j = Math.max(0, Math.floor(vy0 / B)); j * B < vy0 + vh; j++) for (let i = Math.max(0, Math.floor(vx0 / B)); i * B < vx0 + vw; i++) {
+        const e = C.get(i * 4096 + j); if (!e || !e.row) continue;
+        ctx.drawImage(e.cv, 0, 0, N, e.row, x + (i * B - vx0) * k, y + (j * B - vy0) * k, B * k + 0.5, e.row * scale * k + 0.5);
+      }
+    },
+  };
+
   const HUD = {
     t: 0, ghost: 1, hurtA: 0, tabHeld: 0, expanded: false, buffFlash: {}, lastHp: null,
-    COL, F, B, SERIF, BODY, icon, plate, crest, ICON,
+    COL, F, B, SERIF, BODY, icon, plate, crest, ICON, Detail,
     reset(g) { this.ghost = 1; this.lastHp = null; this.hurtA = 0; this.advice = null; },
     tabTick(down, dt) { this.expanded = down; },
     flashBuff(k) { this.buffFlash[k] = 1; },
@@ -110,6 +149,7 @@
       this.feed(ctx, g, s, H);
       this.minimap(ctx, g, s, H);
       this.buffs(ctx, g, W, H, s, dt);
+      if (AS.FoeCard) AS.FoeCard.draw(ctx, g, W, H, s, dt);
       this.prompts(ctx, g, W, H, s);
       if (AS.Voices) AS.Voices.draw(ctx, g, W, H, s);
       this.messages(ctx, g, W, H, s);
@@ -157,6 +197,29 @@
       ctx.textAlign = 'left';
       ctx.font = F(Math.round(15 * s)); K.keyText(ctx, p.name, tx + 30 * s, cy - 16 * s, COL.parch, 3 * s);
       ctx.font = B(Math.round(12.5 * s), '600'); K.keyText(ctx, fdef.dragon.title + ' · ' + fdef.rider.name, tx + 2 * s, cy + 6 * s, COL.dim, 3 * s);
+      this.spellSlots(ctx, g, s, x0, y0 + 124 * s, pw);
+    },
+    /* the rider's three spell slots, in a row under the flasks: icon, key and charges */
+    spellSlots(ctx, g, s, x, y, w) {
+      const p = g.player, P = AS.Powerups ? AS.Powerups.POWER : {}, S = p.spells, sz = 40 * s, gap = 8 * s;
+      const fl = this.castFlash; if (fl) { fl.t -= 1 / 60; if (fl.t <= 0) this.castFlash = null; }
+      for (let i = 0; i < 3; i++) {
+        const sx = x + i * (sz + gap), q = S[i], D = q && P[q.kind];
+        plate(ctx, sx, y, sz, sz, 8 * s, 0.82);
+        if (fl && fl.slot === i) { ctx.save(); ctx.globalAlpha = fl.t * 1.6; ctx.strokeStyle = '#fff6d0'; ctx.lineWidth = 3 * s; K.rrect(ctx, sx - 1 * s, y - 1 * s, sz + 2 * s, sz + 2 * s, 9 * s); ctx.stroke(); ctx.restore(); }
+        if (D) {
+          ctx.save(); ctx.shadowColor = D.col; ctx.shadowBlur = 8 * s;
+          icon(ctx, 'pw_' + q.kind, sx + sz / 2, y + sz / 2 - 2 * s, 22 * s, D.col);
+          ctx.restore();
+          ctx.font = B(Math.round(11 * s), '800'); ctx.textAlign = 'right';
+          K.keyText(ctx, '×' + q.n, sx + sz - 4 * s, y + sz - 7 * s, '#fff2d8', 2.5 * s);
+        } else { ctx.fillStyle = 'rgba(240,226,192,0.18)'; ctx.beginPath(); ctx.arc(sx + sz / 2, y + sz / 2, 6 * s, 0, TAU); ctx.fill(); }
+        // the key
+        ctx.fillStyle = 'rgba(10,6,4,0.85)'; K.rrect(ctx, sx - 3 * s, y - 3 * s, 14 * s, 14 * s, 3 * s); ctx.fill();
+        ctx.strokeStyle = COL.rim; ctx.lineWidth = 1 * s; ctx.stroke();
+        ctx.font = F(Math.round(10 * s)); ctx.textAlign = 'center'; ctx.fillStyle = '#ffe6a0'; ctx.fillText(String(i + 1), sx + 4 * s, y + 4.5 * s);
+      }
+      if (!S.some((q) => q)) { ctx.font = B(Math.round(11 * s), '600'); ctx.textAlign = 'left'; K.keyText(ctx, 'SPELLS — claim orbs at rune circles', x + 3 * (sz + gap) + 2 * s, y + sz / 2, 'rgba(240,226,192,0.55)', 2.5 * s); }
     },
     plank(ctx, x, y, w, h, s) {
       const sb = ctx.shadowBlur; ctx.shadowBlur = 0;
@@ -354,7 +417,7 @@
 
     /* ---------- left: the herald's feed ---------- */
     feed(ctx, g, s, H) {
-      let y = 140 * s;
+      let y = 190 * s; // (below the flasks and the spell slots)
       ctx.textAlign = 'left';
       for (const n of g.feed) {
         const a = Math.min(1, n.t / 1.2) * Math.min(1, (n.max - n.t) * 4 + 0.2);
@@ -375,23 +438,27 @@
       plate(ctx, x - 4 * s, y - 4 * s, size + 8 * s, size + 8 * s, 10 * s, 0.85);
       ctx.save();
       K.rrect(ctx, x, y, size, size, 8 * s); ctx.clip();
-      // show ~3000 units around the player
+      // show ~3200 units around the player
       const span = 3200, k = size / span, cx = U.clamp(p.x, span / 2, g.map.w - span / 2), cy = U.clamp(p.y, span / 2, g.map.h - span / 2);
       const tm = g.tacMap, ts = g.map.w / tm.width;
-      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(tm, (cx - span / 2) / ts, (cy - span / 2) / ts, span / ts, span / ts, x, y, size, size);
+      // (a streamed map's war map is coarse: sharp blocks are painted over it as they are ready)
+      if (Detail.wanted(g)) { Detail.work(g, 16, cx, cy, span, 1.5, false, 40); Detail.draw(ctx, g, 16, cx - span / 2, cy - span / 2, span, span, x, y, k); }
       const P = (wx, wy) => [x + (wx - cx + span / 2) * k, y + (wy - cy + span / 2) * k];
       // unexplored land darkens (a soft, upscaled fog layer)
       const fog = this.fogLayer(g);
       ctx.drawImage(fog, (cx - span / 2) / g.fogCell, (cy - span / 2) / g.fogCell, span / g.fogCell, span / g.fogCell, x, y, size, size);
+      // places: one clear icon each — yours in your colour, a rival's in theirs, guarded ones red, free ones pale
       for (const site of g.sites) {
-        if (!g.isExplored(site.x, site.y)) continue;
+        if (!g.isExplored(site.x, site.y) || (site.def.landmark && !site.found)) continue;
+        if (Math.abs(site.x - cx) > span / 2 + 60 || Math.abs(site.y - cy) > span / 2 + 60) continue;
         const q = P(site.x, site.y);
-        const col = site.owner ? g.factions[site.owner].def.color : site.guarded() ? '#d86a4a' : '#e8dcc0';
-        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.arc(q[0], q[1], 5 * s, 0, TAU); ctx.fill();
-        icon(ctx, site.def.icon === 'castle' ? 'castle_s' : site.def.icon, q[0], q[1], 8 * s, col);
+        const col = site.owner ? g.factions[site.owner].def.color : site.def.landmark ? '#f6d24a' : site.guarded() ? '#ff6a4a' : '#f0e2c0';
+        ctx.fillStyle = 'rgba(10,6,4,0.78)'; ctx.beginPath(); ctx.arc(q[0], q[1], 6.5 * s, 0, TAU); ctx.fill();
+        icon(ctx, site.def.icon === 'castle' ? 'castle_s' : site.def.icon, q[0], q[1], 10 * s, col);
       }
-      for (const Fc of g.factionList) { if (Fc.eliminated || (g.bc && Fc.key !== g.playerKey && !g.isExplored(Fc.townPos.x, Fc.townPos.y))) continue; const q = P(Fc.townPos.x, Fc.townPos.y); crest(ctx, q[0], q[1], 7 * s, Fc.def); }
+      for (const Fc of g.factionList) { if (Fc.eliminated || (g.bc && Fc.key !== g.playerKey && !g.isExplored(Fc.townPos.x, Fc.townPos.y))) continue; const q = P(Fc.townPos.x, Fc.townPos.y); crest(ctx, q[0], q[1], 8 * s, Fc.def); }
       if (g.waypoint) {
         // the course: a dashed guide from the dragon toward it (the minimap shows ~3200 units)
         const q = P(g.waypoint.x, g.waypoint.y), pq = P(p.x, p.y);
@@ -399,15 +466,23 @@
         ctx.beginPath(); ctx.moveTo(pq[0], pq[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]);
         ctx.strokeStyle = '#ffe28c'; ctx.lineWidth = 2 * s; ctx.beginPath(); ctx.arc(q[0], q[1], 6 * s, 0, TAU); ctx.stroke();
       }
-      for (const t of g.troops) if (t.role === 'cart' && t.alive && (t.team === g.playerKey || g.isExplored(t.x, t.y))) { const q = P(t.x, t.y); ctx.fillStyle = g.factions[t.team].def.color2; ctx.fillRect(q[0] - 1.5 * s, q[1] - 1.5 * s, 3 * s, 3 * s); }
-      // soldiers: all of yours (garrison, patrols, the warband on the march), and rival warbands marching through land you have seen
+      // armies, not single soldiers: one banner for your troops out in the field, one for each
+      // rival warband marching through land you have seen; your gold carts as coins
+      const bands = new Map();
       for (const t of g.troops) {
-        if (!t.alive || t.role === 'cart' || !t.faction) continue;
+        if (!t.alive || !t.faction) continue;
         const mine = t.team === g.playerKey;
-        if (!mine && !(t.state === 'march' && g.isExplored(t.x, t.y))) continue;
-        const q = P(t.x, t.y); if (q[0] < x - 4 || q[1] < y - 4 || q[0] > x + size + 4 || q[1] > y + size + 4) continue;
-        ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.beginPath(); ctx.arc(q[0], q[1], 3.3 * s, 0, TAU); ctx.fill();
-        ctx.fillStyle = t.faction.def.color; ctx.beginPath(); ctx.arc(q[0], q[1], 2.4 * s, 0, TAU); ctx.fill();
+        if (t.role === 'cart') { if (mine) { const q = P(t.x, t.y); icon(ctx, 'coin', q[0], q[1], 7 * s, '#ffd24a'); } continue; }
+        const away = t.state === 'march' || t.bcArmy || t.follow;
+        if (!away || (!mine && !g.isExplored(t.x, t.y))) continue;
+        const key = t.team + ':' + Math.floor(t.x / 600) + ',' + Math.floor(t.y / 600);
+        let bnd = bands.get(key); if (!bnd) bands.set(key, bnd = { x: 0, y: 0, n: 0, F: t.faction });
+        bnd.x += t.x; bnd.y += t.y; bnd.n++;
+      }
+      for (const bnd of bands.values()) {
+        const q = P(bnd.x / bnd.n, bnd.y / bnd.n);
+        ctx.fillStyle = 'rgba(10,6,4,0.8)'; ctx.beginPath(); ctx.arc(q[0], q[1], 6 * s, 0, TAU); ctx.fill();
+        icon(ctx, 'flag', q[0] + 1 * s, q[1], 10 * s, bnd.F.def.color);
       }
       for (const d of g.dragons) {
         if (!d.targetable || (d !== p && !g.isExplored(d.x, d.y))) continue;
@@ -441,20 +516,10 @@
       return this.fog;
     },
 
-    /* ---------- bottom-right: blessings and the spell slot ---------- */
+    /* ---------- bottom-right: blessings (the spells moved under the flasks) ---------- */
     buffs(ctx, g, W, H, s, dt) {
       const p = g.player, P = AS.Powerups ? AS.Powerups.POWER : {};
       let x = W - 16 * s, y = H - 16 * s;
-      // spell slot
-      const sw = 62 * s;
-      plate(ctx, x - sw, y - sw, sw, sw, 10 * s, 0.8);
-      if (p.spell) {
-        const D = P[p.spell];
-        icon(ctx, 'pw_' + p.spell, x - sw / 2, y - sw / 2 - 4 * s, 26 * s, D.col);
-        ctx.font = F(Math.round(11.5 * s)); ctx.textAlign = 'center'; ctx.fillStyle = COL.parch;
-        ctx.fillText('Q ×' + p.spellCharges, x - sw / 2, y - 10 * s);
-      } else { ctx.font = F(Math.round(11 * s)); ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(240,226,192,0.35)'; ctx.fillText('NO SPELL', x - sw / 2, y - sw / 2); }
-      x -= sw + 10 * s;
       for (const k in p.buffs) {
         const D = P[k]; if (!D) continue;
         const r = 20 * s, frac = p.buffs[k] / (D.dur || 1);

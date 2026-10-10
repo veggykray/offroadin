@@ -3,7 +3,7 @@
  *  - Power-ups: glowing orbs that rise from the realm's rune circles every so
  *    often. Fly through one (low) to claim it — a burst of light, a chime, and
  *    its effect: a timed blessing on the dragon, an instant restore, or a spell
- *    stored in the rider's spell slot (cast with Q).
+ *    stored in one of the rider's three spell slots (cast with 1, 2, 3; Q casts the first).
  * They are the main comeback tool: anyone can grab them, wherever they rise. */
 'use strict';
 (function (AS) {
@@ -65,7 +65,7 @@
         if (this.kind === 'feast') d.energy = d.maxEnergy;
         if (this.kind === 'mana') d.mana = d.maxMana;
       } else if (P.kind === 'instant') d.heal(d.maxHp * 0.45);
-      else if (P.kind === 'spell') { d.spell = this.kind; d.spellCharges = Math.min(3, (d.spell === this.kind ? (d.spellCharges || 0) : 0) + 1); }
+      else if (P.kind === 'spell') AS.Powerups.store(d, this.kind);
       // a satisfying claim: light pillar, ring, sparks, chime
       const Pp = AS.Particles;
       Pp.spawn({ x: this.x, y: this.y, z: this.z, shape: Pp.GLOW, col: '#ffffff', size: 10, size2: 60, life: 0.35, add: true, keep: true });
@@ -147,12 +147,24 @@
         ctx.restore();
       }
     },
-    /* cast the stored spell */
-    cast(d) {
-      const g = d.g;
-      if (!d.spell || !(d.spellCharges > 0)) { if (d.isPlayer) { g.msg('NO SPELL STORED — CLAIM SPELL ORBS AT RUNE CIRCLES', '#ffe7a8', 2); AS.Audio.sfx('denied'); if (AS.Voices && AS.Voices.g === g) AS.Voices.event('spell_failure', { cooldown: 30 }); } return false; }
-      const kind = d.spell;
-      d.spellCharges--; if (d.spellCharges <= 0) d.spell = null;
+    /* three spell slots: a spell joins the slot already holding its kind (up to 3 charges), else
+     * the first empty slot, else replaces the slot with the fewest charges */
+    store(d, kind) {
+      const S = d.spells;
+      const same = S.find((q) => q && q.kind === kind);
+      if (same) { same.n = Math.min(3, same.n + 1); return; }
+      let i = S.findIndex((q) => !q);
+      if (i < 0) { i = 0; for (let k = 1; k < S.length; k++) if (S[k].n < S[i].n) i = k; }
+      S[i] = { kind, n: 1 };
+    },
+    /* cast the spell in a slot (0-2), or the first filled slot */
+    cast(d, slot) {
+      const g = d.g, S = d.spells;
+      const i = slot >= 0 && slot < S.length ? slot : S.findIndex((q) => q && q.n > 0);
+      if (i < 0 || !S[i] || !(S[i].n > 0)) { if (d.isPlayer) { g.msg(slot >= 0 ? 'SPELL SLOT ' + (slot + 1) + ' IS EMPTY — CLAIM SPELL ORBS AT RUNE CIRCLES' : 'NO SPELL STORED — CLAIM SPELL ORBS AT RUNE CIRCLES', '#ffe7a8', 2); AS.Audio.sfx('denied'); if (AS.Voices && AS.Voices.g === g) AS.Voices.event('spell_failure', { cooldown: 30 }); } return false; }
+      const kind = S[i].kind;
+      S[i].n--; if (S[i].n <= 0) S[i] = null;
+      if (AS.HUD && d.isPlayer) AS.HUD.castFlash = { slot: i, t: 0.5 };
       if (kind === 'storm') {
         AS.Audio.sfx('spell_lightning', { x: d.x, y: d.y });
         g.camera.flash(0.25, '#e0f0ff');

@@ -1147,6 +1147,33 @@
     }
     ctx.putImageData(img, i0, j0);
   };
+  /* a sharper picture of one block for the minimap and a zoomed war map: the same colours as
+   * the war map, at `scale` world units a pixel, painted a few rows at a time (e: the block's
+   * entry { bx, by }, kept between calls) within budgetMs. Returns true once the block is done. */
+  RealmTerrain.prototype.paintDetail = function (e, scale, budgetMs) {
+    const N = Math.round(MAPB / scale);
+    if (!e.cv) { e.cv = AS.Forge.canvas(N, N); e.row = 0; e.prev = new Float32Array(N).fill(-1); }
+    const ctx = e.cv.getContext('2d'), f = this._pdF || (this._pdF = new Float32Array(4)), out = [0, 0, 0], t0 = performance.now();
+    const X0 = e.bx * MAPB, Y0 = e.by * MAPB, roadW = Math.max(14, scale * 1.1);
+    while (e.row < N && performance.now() - t0 < budgetMs) {
+      const rows = Math.min(8, N - e.row), img = ctx.createImageData(N, rows), D = img.data;
+      for (let j = 0; j < rows; j++) for (let i = 0; i < N; i++) {
+        const x = X0 + i * scale + scale / 2, y = Y0 + (e.row + j) * scale + scale / 2;
+        this.field(x, y, f);
+        const l = this.levelOf(f[0]);
+        this.colorize(x, y, f[0], f[1], f[2], f[3], l, out);
+        const lu = e.prev[i] < 0 ? l : e.prev[i], k = lu > l ? 0.7 : lu < l ? 1.15 : 1;
+        e.prev[i] = l;
+        const q = (j * N + i) * 4;
+        D[q] = out[0] * k; D[q + 1] = out[1] * k; D[q + 2] = out[2] * k; D[q + 3] = 255;
+        const fo = this.gs(this.gForest, x, y), wd = this.gs(this.gWater, x, y);
+        if (fo > 0.3 && wd > 20 && !this.gn(this.gField, x, y)) { const kk = 1 - Math.min(0.42, (fo - 0.3) * 0.7); D[q] *= kk * 0.92; D[q + 1] *= kk; D[q + 2] *= kk * 0.9; }
+        if (this.gs(this.gRoad, x, y) < roadW && wd > 0) { D[q] = U.lerp(D[q], 196, 0.6); D[q + 1] = U.lerp(D[q + 1], 176, 0.6); D[q + 2] = U.lerp(D[q + 2], 132, 0.6); }
+      }
+      ctx.putImageData(img, 0, e.row); e.row += rows;
+    }
+    return e.row >= N;
+  };
   RealmTerrain.BIOMES = BIOMES;
   RealmTerrain.LOOK = LOOK;
   RealmTerrain.smoothLine = smoothLine;

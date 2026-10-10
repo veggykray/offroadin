@@ -11,7 +11,7 @@ try{
  await page.keyboard.press('KeyM');await page.keyboard.press('KeyM');
  await page.waitForFunction(()=>AS.Audio.ready&&AS.RecordedAudio.has('eat_sheep'),null,{timeout:30000,polling:100});
  const result=await page.evaluate(async()=>{
-  const A=AS.Audio,V=AS.Voices,g=AS.game;
+  const A=AS.Audio,V=AS.Voices,g=AS.game;AS.Settings.subtitles=true; // (subtitles are off by default)
   await Promise.all(A.recordedLoads);
   const keys=[];for(let i=0;i<8;i++)keys.push(A.recordedPick('eat_sheep'));
   const src=A.sfx('eat_cattle',{vol:0});

@@ -48,7 +48,9 @@
       inp.sprint = I.down('sprint');
       inp.eatHit = I.hit('eat');
       inp.eat = I.down('eat');
-      inp.spellHit = I.hit('spell');
+      // Q casts the first filled spell slot; 1, 2, 3 cast that slot
+      inp.spellSlot = I.hit('spell1') ? 0 : I.hit('spell2') ? 1 : I.hit('spell3') ? 2 : -1;
+      inp.spellHit = I.hit('spell') || inp.spellSlot >= 0;
       // aim: mouse in world (projected) space, or the right stick, or straight ahead
       if (pad && I.padAim.active && Math.abs(I.padState.aimX) + Math.abs(I.padState.aimY) > 0.2) {
         const a = Math.atan2(I.padAim.y, I.padAim.x);

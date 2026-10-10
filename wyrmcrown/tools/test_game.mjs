@@ -274,6 +274,7 @@ await test('taunts: one voice at a time, rivals fade with distance', async (keep
     const watch = setInterval(() => { if (V.recordedSource && V.speaking && V.speaking.q !== last) { last = V.speaking.q; spoken.push((last.own ? 'own ' : 'foe ') + last.role + ': ' + last.text); } }, 30);
     // Explicit queue entries exercise serialization without waiting for the
     // deliberately rare, shared banter interval.
+    AS.Settings.subtitles = true; // (off by default; this test checks the words shown match the voice)
     const own = V.enqueueLine(V.eventLine('enemy_dragon', 'dragon', p.fk), p, { priority: 10 });
     const reply = V.enqueueLine(V.eventLine('enemy_dragon', 'wizard', e.fk), e, { priority: 1 });
     own.until = reply.until = g.time + 60;

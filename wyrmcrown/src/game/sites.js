@@ -288,7 +288,7 @@
         if (this.spellT <= 0) {
           this.spellT = this.def.spellT;
           const d = F.dragon;
-          if (d && (!d.spell || d.spell === this.def.spell)) { d.spell = this.def.spell; d.spellCharges = Math.min(3, (d.spellCharges || 0) + 1); if (d.isPlayer) g.msg(this.name.toUpperCase() + ' GRANTS ' + AS.Powerups.POWER[this.def.spell].name.toUpperCase() + ' (Q)', AS.Powerups.POWER[this.def.spell].col, 3); }
+          if (d) { AS.Powerups.store(d, this.def.spell); if (d.isPlayer) g.msg(this.name.toUpperCase() + ' GRANTS ' + AS.Powerups.POWER[this.def.spell].name.toUpperCase(), AS.Powerups.POWER[this.def.spell].col, 3); }
         }
       }
       // ---- auras for the owner's dragon
