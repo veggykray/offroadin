@@ -43,7 +43,7 @@
     RETURN_T: 120,    // loose soldiers stand where they were sent this long, then go home
     SAME_R: 560,      // a double-click selects soldiers of the type this close
     DRAG_PX: 8,       // a press that moves less than this is a click, not a box
-    DBL_T: 0.38,      // seconds between the clicks of a double-click
+    DBL_T: 0.5,       // seconds between the clicks of a double-click
     PAN: 900,         // how fast W A S D move the view while commanding (units a second)
   };
 
@@ -172,6 +172,7 @@
     /* ---------------- the mouse, each frame in Command Mode ---------------- */
     input(g, dt) {
       const C = this.state(g), I = AS.Input, m = I.mouse;
+      this.hook();
       this.live(g);
       if (!C.on || g.uiBlocking) { C.drag = null; return; }
       const shift = I.keys.has('ShiftLeft') || I.keys.has('ShiftRight');
@@ -189,6 +190,14 @@
         else this.click(g, D.x0, D.y0, D.shift);
       }
       if (m.rPressed) this.openMenu(g, m.x, m.y);
+      // the browser's own double-click (it honours the system setting, and survives a slow frame)
+      if (this.dbl) { const q = this.dbl; this.dbl = null; const H = this.under(g, q.x, q.y); if (H.own && !shift) { C.last = null; this.selectSame(g, H.own); } }
+    },
+    hook() {
+      if (this.hooked) return;
+      const cv = document.getElementById('game'); if (!cv) return;
+      this.hooked = true;
+      cv.addEventListener('dblclick', (e) => { if (e.button === 0 && AS.game && this.on(AS.game)) this.dbl = { x: e.clientX, y: e.clientY }; });
     },
     click(g, sx, sy, shift) {
       const C = this.state(g), now = performance.now() / 1000;
@@ -202,6 +211,8 @@
         return;
       }
       if (!sel.length) { if (H.foe || H.site) this.hint(g, 'SELECT YOUR SOLDIERS FIRST: DRAG A BOX AROUND THEM'); return; }
+      // a guard of a hostile place: the place itself is the target (that guard first)
+      if (H.foe && H.foe.site && H.foe.site.guards && this.hostilePlace(g, H.foe.site)) return this.issue(g, 'assault', { site: H.foe.site, x: H.foe.site.x, y: H.foe.site.y, e: H.foe });
       if (H.foe) return this.issue(g, 'attack', { e: H.foe });
       if (H.site) return this.issue(g, 'assault', { site: H.site, x: H.site.x, y: H.site.y });
       this.issue(g, 'move', { x: H.w.x, y: H.w.y });
@@ -225,7 +236,7 @@
       }
       if (done) {
         if (kind === 'attack') this.mark(g, 'attack', o.e.x, o.e.y, o.e);
-        else if (kind === 'assault') this.mark(g, 'attack', o.site.x, o.site.y, null);
+        else if (kind === 'assault') this.mark(g, 'attack', o.e ? o.e.x : o.site.x, o.e ? o.e.y : o.site.y, o.e || null);
         else if (goal) this.mark(g, kind === 'defend' ? 'defend' : 'move', goal.x, goal.y);
         AS.Audio.sfx('ui_click', { vol: 0.5 });
       }
@@ -255,7 +266,7 @@
       if (whole && kind === 'move') { const r = M.order(g, a.id, { type: 'march', x: goal.x, y: goal.y }); return r.ok ? { ok: true, n: field.length } : r; }
       if (whole && kind === 'assault') {
         const r = M.order(g, a.id, { type: 'attack', siteId: o.site.id });
-        if (r.ok) this.focusGuards(g, field, o.site);
+        if (r.ok) this.focusGuards(g, field, o.site, o.e);
         return r.ok ? { ok: true, n: field.length } : r;
       }
       // part of an army, or one enemy: the army is under local orders, soldier by soldier
@@ -314,11 +325,11 @@
         u.leash = { x: goal.x, y: goal.y, r: kind === 'assault' ? CFG.PURSUIT_R + 300 : CFG.PURSUIT_R };
         this.stand(u);
       });
-      if (kind === 'assault') this.focusGuards(g, units, o.site);
+      if (kind === 'assault') this.focusGuards(g, units, o.site, o.e);
     },
     stand(u) { if (u.tac) { u.tac.idle = 0; u.tac.returning = false; } },
-    focusGuards(g, units, site) {
-      for (const u of units) { const e = this.nearestGuard(site, u); if (e) { u.focus = e; u.disengage = false; } u.assault = site; }
+    focusGuards(g, units, site, first) {
+      for (const u of units) { const e = first && first.alive ? first : this.nearestGuard(site, u); if (e) { u.focus = e; u.disengage = false; } u.assault = site; }
     },
     nearestGuard(site, u) {
       let best = null, bd = 1e9;

@@ -27,8 +27,9 @@
  * independent orders changes the order on the same record.
  *
  * COMMANDERS (data/commanders.js) lead armies. One commander, one army; an army with
- * no commander may hold, defend where it stands, follow the dragon or fall back, but
- * not set out on an expedition. Commanders meet their army on the ground (they must
+ * no commander may hold, defend, follow the dragon, fall back, and march or attack
+ * NEAR HOME (within LOCAL_R, over ground), but not set out on an expedition or go
+ * underground. Command Mode (src/game/command.js) gives its orders through here. Commanders meet their army on the ground (they must
  * be near it) and can be wounded out of the fight (incapacitated, recovers at home)
  * or captured. `fate` records the outcome in a shape a later ransom / rescue system
  * can use: { kind: 'captured'|'incapacitated'|'killed', by, where, at, recoverAt,
