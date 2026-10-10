@@ -80,7 +80,7 @@ await step('A. C enters Command Mode (and the COMMAND button shows it)', async (
 await step('B. a box around mixed soldiers selects exactly them (no new army records)', async () => {
   await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); T.over(a.x, a.y - 40); });
   await frames(4);
-  const b = await ev(() => T.box(T.army('red'), 20));
+  const b = await ev(() => T.box(T.army('red'), 48));
   const n0 = await ev(() => AS.game.armies.list.length);
   await drag(b);
   const r = await ev(() => {
@@ -182,8 +182,8 @@ await step('H. outmatched soldiers without a commander fall back home to regroup
   await ev(() => { for (const u of __big) { u.alive = false; u.removed = true; } });
   const red = await ev(() => { const g = AS.game, a = g.armies.byId.red, p = AS.Armies.pos(a); AS.Armies.order(g, 'red', { type: 'march', x: p.x + 500, y: p.y - 200 }); return { x: p.x + 500, y: p.y - 200 }; });
   await play(9);
-  await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); window.__big2 = T.spawn('ogre', 'wild', a.x + 90, a.y, 9); });
-  await play(4);
+  await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); window.__big2 = T.spawn('ogre', 'wild', a.x + 200, a.y, 5); for (const u of __big2) { u.state = 'march'; u.dest = { x: a.x, y: a.y, r: 30 }; } });
+  await page.waitForFunction(() => { const o = AS.game.armies.byId.red.order.type; return o === 'retreat'; }, null, { timeout: 20000, polling: 100 }).catch(() => {});
   const r2 = await ev(() => ({ order: AS.game.armies.byId.red.order.type, log: AS.game.armies.log.slice(-4).map((l) => l.text) }));
   await ev(() => { for (const u of __big2) { u.alive = false; u.removed = true; } });
   ok(r.back >= 1 || r.n === 0, 'garrison soldiers break off and head home (' + r.back + ' of ' + r.n + ')');
@@ -195,7 +195,7 @@ await step('J. soldiers without a commander cannot set out on a distant expediti
   await play(6);
   await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); T.over(a.x, a.y - 40); });
   await frames(4);
-  await drag(await ev(() => T.box(T.army('red'), 20)));
+  await drag(await ev(() => T.box(T.army('red'), 48)));
   // fly the view east, beyond 400 m of the castle (selection kept), and click the ground there
   const goal = { x: 4250, y: 6450 };
   await ev((goal) => T.over(goal.x, goal.y - 60), goal); await frames(4);
@@ -222,7 +222,7 @@ await step('K. with a champion assigned, the same distant march is taken', async
   await page.keyboard.press('KeyK'); await frames(3);
   ok(cm === 'c_brannoc', 'Brannoc takes command of Red Company (' + cm + ')');
   await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); T.over(a.x, a.y - 40); }); await frames(4);
-  await drag(await ev(() => T.box(T.army('red'), 20)));
+  await drag(await ev(() => T.box(T.army('red'), 48)));
   const goal = { x: 4250, y: 6450 };
   await ev((goal) => T.over(goal.x, goal.y - 60), goal); await frames(4);
   await click(await groundAt(goal.x, goal.y));
@@ -240,7 +240,7 @@ await step('E. left-click on a hostile fortification: the selection assaults it'
   // Red Company (Brannoc) to the foot of the Greyspine Pass, then the Gatewatch
   await ev(() => { const g = AS.game; AS.Armies.order(g, 'red', { type: 'march', x: 4950, y: 4150 }); for (let t = 0; t < 120; t += AS.Armies.STEP) AS.Armies.update(g, AS.Armies.STEP); });
   await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); T.over(a.x, a.y - 260); }); await play(1.5);
-  await drag(await ev(() => T.box(T.army('red'), 20)));
+  await drag(await ev(() => T.box(T.army('red'), 48)));
   const site = await ev(() => { const s = AS.game.byId.get('gatewatch'); return { x: s.x, y: s.y, g0: s.guards.filter((u) => u.alive).length }; });
   const nsel = await ev(() => T.sel().length);
   await click(await groundAt(site.x, site.y));

@@ -61,7 +61,8 @@
   const Armies = {
     STEP, FIELD_R, PACK_R, ENGAGE_R, DEFEND_R, MEET_R, RECOVER, PENDING, LOCAL_R, OUTMATCH,
     // is (x, y) close enough to the army's home for an order without a commander?
-    isLocal(a, q) { return !!q && Math.hypot(q.x - a.home.x, q.y - a.home.y) <= this.LOCAL_R; },
+    isLocal(a, q) { return !!q && Math.hypot(q.x - a.home.x, q.y - a.home.y) <= this.localR(); },
+    localR() { return AS.Command ? AS.Command.CFG.LOCAL_R : this.LOCAL_R; }, // (one setting: Command Mode's CFG.LOCAL_R)
 
     /* ================= setup ================= */
     init(g) {
@@ -214,7 +215,7 @@
       const t = o.type;
       if (a.enc && !opt.keep) return { ok: false, reason: a.name + ' is fighting — resolve the encounter first' };
       const p = this.pos(a);
-      const far = a.name + ' has no commander: it can move and fight near home (within ' + Math.round(this.LOCAL_R / 4) + ' m), but an expedition needs a king or champion';
+      const far = a.name + ' has no commander: it can move and fight near home (within ' + Math.round(this.localR() / 4) + ' m), but an expedition needs a king or champion';
       if (!a.cmdr && (NEED_CMDR[t] || t === 'defend' || t === 'local')) {
         const s = o.siteId && g.byId.get(o.siteId), q = s ? { x: s.x, y: s.y } : o.x !== undefined ? o : null;
         if (t === 'enter') return { ok: false, reason: a.name + ' has no commander: going underground needs a king or champion' };

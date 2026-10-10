@@ -162,6 +162,28 @@ Commanders are in `data/commanders.js`. Near the dragon an army's soldiers are
 ordinary troops. Far away it is a record that moves in fixed steps, and fights
 there are auto-resolved against the actual enemy soldiers.
 
+### Command Mode (C)
+
+Press `C` (or the COMMAND button at the bottom of the screen) to command your
+soldiers directly; `C` again flies the dragon. While you command, the dragon
+hangs in the air (W still flies it, which moves the view) and the mouse no longer
+casts or breathes.
+
+- Drag a box to select soldiers (any mix of types). Click one to select it,
+  Shift-click to add or remove one, double-click to select every soldier of that
+  type nearby.
+- Left-click the ground: the selection moves there. Left-click an enemy: it
+  attacks at once. Left-click a guarded or enemy-held place: it assaults it.
+- Right-click: a small menu with hold, defend, follow the dragon, retreat, move
+  here, return home and the selection shortcuts.
+
+Soldiers need no commander to defend themselves, help friends in a fight nearby,
+fall back home when badly outmatched or obey an order near home. Going further
+than 400 m (`AS.Command.CFG.LOCAL_R`, 1600 units) from
+their home, or into a tunnel, needs a king or champion. A whole army sent
+somewhere gets an ordinary army order, so it keeps going when the dragon leaves.
+The rules are in `src/game/command.js`.
+
 ## Controls
 
 | Key | Action |
@@ -184,7 +206,7 @@ there are auto-resolved against the actual enemy soldiers.
 | **G** | Order your warband: click a site or a rival town on the map |
 | **M** | War map |
 | **Tab** (hold) | Realm overview |
-| **C** | Switch flight controls between keys steering and following the cursor |
+| **C** | Command Mode: select your soldiers and order them with the mouse (C again flies the dragon). The flight style (keys or follow the cursor) is now chosen in Settings |
 | **Esc / P** | Pause |
 
 **Gamepad:** left stick flies, right stick aims, RT casts, LT breathes, A dives,
