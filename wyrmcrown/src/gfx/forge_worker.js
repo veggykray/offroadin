@@ -12,6 +12,7 @@ const LIBS = [
   '../../data/palettes.js', '../../data/factions.js', '../../data/buildings.js', '../../data/sites.js',
   'materials.js', 'dragon_art.js', 'models_nature.js', 'models_human.js', 'models_elf.js', 'models_ice.js', 'models_undead.js',
   'models_units.js', 'models_beasts.js', 'models_beasts2.js', 'models_giants.js', 'models_landmarks_realm.js', 'models_town_extra.js', 'models_sites.js', 'models_world.js',
+  'arch_p1/modules.js', 'arch_p1/models.js', // the revision-3 architectural assemblies (AS.Models.p1_*)
 ];
 const failed = [];
 for (const f of LIBS) { try { importScripts(f); } catch (e) { failed.push(f + ': ' + e.message); } }

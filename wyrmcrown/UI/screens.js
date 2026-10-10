@@ -185,6 +185,7 @@
           btn('Atlas of Realms', () => this.showMaps(), '', 'Ten realms to conquer'),
           AS.Maps.generateHuge ? btn('Huge World Test', () => AS.App.startMatch('hugeworld', { faction: 'human' }), '', 'A generated continent ~160 km across, built as you fly · explore it') : null,
           AS.Maps.byId.armytest && AS.ArmyTest ? btn('Army Command Test', () => AS.ArmyTest.start(null), '', 'Independent armies and commanders: orders, a guarded pass, a ground-only tunnel · development test') : null,
+          AS.Maps.byId.archtest && AS.ArchTest ? btn('Architecture Compatibility Test', () => AS.App.startMatch('archtest', { faction: 'human' }), '', 'Six revision-3 architectural assets on real terrain · ` then 1–6 to inspect · development test') : null,
           AS.Maps.byId.mountaintest ? btn('Mountain Test', () => AS.App.startMatch('mountaintest', { faction: 'human' }), '', 'One mountain region with real elevation: flight ceiling, passes, gorge, waterfall, dwarf hold · prototype') : null,
           AS.Maps.byId.largeworld ? btn('Large World Test', () => AS.App.startMatch('largeworld', { faction: 'human' }), '', 'A continuous island several kilometres across · technical test') : null,
           AS.Conquest && AS.Conquest.UI ? btn('Conquest', () => AS.Conquest.UI.open(), '', 'A campaign across a new archipelago every time') : null,

@@ -97,6 +97,8 @@
       if (m.largeWorld && AS.LargeWorld) AS.LargeWorld.setup(this);
       // the Mountain Test: the dragon's altitude, the ceiling, the test scenarios (src/game/mountain.js)
       if (m.mountain && AS.Mountain) AS.Mountain.setup(this);
+      // the Architecture Compatibility Test: six revision-3 structures on that terrain (src/game/archtest.js)
+      if (m.archTest && AS.ArchTest) AS.ArchTest.setup(this);
       // the ground is final: start the terrain workers now, so they are up (and forging
       // their trees and rocks) by the time the match begins. Until then the loading
       // screen shades the opening view here, exactly.

@@ -158,6 +158,23 @@ arrow at the screen edge points to each army out of sight.
 The rules are in `src/game/armies.js` (armies, commanders, orders, encounters,
 save data), `src/game/routes.js` (route types and permissions) and
 `src/game/autoresolve.js` (fights settled from the existing troop statistics).
+
+### The Architecture Compatibility Test
+
+`index.html?world=arch` (also "Architecture Compatibility Test" on the title
+menu) puts six of Astra's revision-3 architectural assets into the game on the
+Mountain Test's terrain (`maps/archtest.js`, `src/game/archtest.js`). The
+sources in `src/gfx/arch_p1/` are the delivered files, unchanged. A royal
+fortress and a merchant house stand on level lowland east of the castle fields,
+an elven council citadel and a tree dwelling in the western foothill forest, and
+a dwarven kingdom gate against the Wall with a vaulted hall below it. Each has
+three of your troops at its door for scale.
+
+Press `` ` `` then `1`–`6` to fly to each structure, `7`–`9` to see each pair
+from the flight ceiling, and `0` to unload all six (their sheets leave the
+sprite cache) and `0` again to put them back. The developer panel (`F3`) shows
+the six sheets' memory. The technical rules for future assets are in
+`handover/ASTRA_ASSET_CONTRACT.md`.
 Commanders are in `data/commanders.js`. Near the dragon an army's soldiers are
 ordinary troops. Far away it is a record that moves in fixed steps, and fights
 there are auto-resolved against the actual enemy soldiers.
@@ -311,6 +328,7 @@ URL options (add them to `index.html?…`):
 | `allRealms=1` | Unlock every realm and map |
 | `fps=1` | Frame-time readout |
 | `world=army` | The Army Command Test (`K`: command panel) |
+| `world=arch` | The Architecture Compatibility Test (`` ` `` then `1`–`0`) |
 
 The browser console has `AS.Debug`:
 
@@ -345,6 +363,10 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
 - `node wyrmcrown/tools/test_armies.mjs` checks the Army Command Test:
   commander rules, route restrictions, the tunnel, auto-resolve, commander
   defeat, movement off the field, troop conservation, save and load.
+- `node wyrmcrown/tools/test_archtest.mjs` checks the Architecture
+  Compatibility Test: source hashes, sheets and drawn bounds against Astra's
+  manifest, masonry overlays, ground contact, the shortcuts, shared sheets,
+  unload and reload, and forge cost.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.

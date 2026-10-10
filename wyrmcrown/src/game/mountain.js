@@ -123,7 +123,7 @@
       if (p) { p._m = null; }
       // hooks the realm reads
       g.perfLines = () => this.perfLines(g);
-      if (!g.opts.demo) g.msg('MOUNTAIN TEST — press ` then 1–0 for test scenarios A–J · Z climbs · X descends', '#ffe7a8', 7);
+      if (!g.opts.demo) g.msg(m.testMsg || 'MOUNTAIN TEST — press ` then 1–0 for test scenarios A–J · Z climbs · X descends', '#ffe7a8', 7);
       // (a page that wants to drive the tests: window.__mtn)
       if (typeof window !== 'undefined') window.__mtn = { g, test: (k) => this.startTest(g, k), state: () => this.state(g), M: this };
     },
@@ -520,6 +520,7 @@
       if (g.terrain.warmAt) g.terrain.warmAt([{ x: p.x, y: p.y - p.z }], g.camera.w * 1.6, g.camera.h * 1.6);
       M.test = { k, name: T.name, t: 0, log: [], start: { x: T.x, y: T.y, alt } };
       g.msg('TEST ' + k + ' — ' + T.name.toUpperCase(), '#ffe7a8', 4);
+      if (m.archTest && AS.ArchTest) return AS.ArchTest.onTest(g, k); // (the Architecture Compatibility Test's shortcuts)
       const say = (s) => g.msg(s, '#cfe8ff', 7);
       if (k === 'A') say('Fly north (W) over farmland and forest toward the mountains: the land rises under you');
       if (k === 'B') say('Fly north at the Wall: on its own the dragon rises over the slopes but skims along the cliff — hold Z to climb it, then on toward the Great Peak');
@@ -624,7 +625,7 @@
       ctx.fillText(S.level !== null ? 'hold' : 'follow', gx + 4 * s, gy0 + gh + 26 * s);
       // the test, and the keys
       ctx.textAlign = 'left'; ctx.fillStyle = '#e8dcb8'; ctx.font = (11 * s).toFixed(0) + 'px Georgia, serif';
-      const lines = ['MOUNTAIN TEST · Z climb · X descend · SPACE dive · ` then 1–0: tests A–J'];
+      const lines = [g.map.archTest ? 'ARCHITECTURE TEST · Z climb · X descend · ` then 1–6: structures, 7–9: high views, 0: unload / reload' : 'MOUNTAIN TEST · Z climb · X descend · SPACE dive · ` then 1–0: tests A–J'];
       if (M.test) lines.push('TEST ' + M.test.k + ' — ' + M.test.name + ' (' + Math.round(M.test.t) + ' s)');
       const A = M.army;
       if (A) lines.push('ARMY: ' + A.alive + ' marching · ' + Math.round(A.prog * 100) + '% of the way · ' + A.arrived + ' through · highest ground ' + Math.round(A.maxE) + (A.done ? ' · CROSSED in ' + Math.round(A.done) + ' s' : '') + (A.reach ? '' : ' · NO ROUTE'));

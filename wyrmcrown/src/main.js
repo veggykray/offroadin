@@ -8,6 +8,7 @@
  *   &perf=1            developer performance overlay open (F3 toggles it)
  *   ?mode=conquest     open the Conquest campaign screen (&cqdebug=1: its debug tools)
  *   ?world=army        the Army Command Test (independent armies and commanders; K: command panel)
+ *   ?world=arch        the Architecture Compatibility Test (six revision-3 assets on real terrain)
  *   &demo=1            all four dragons flown by the AI (attract mode)
  *   &gold=5000         starting gold for every realm (testing) */
 'use strict';
@@ -36,7 +37,7 @@
       document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === 'play') this.pause(); });
       requestAnimationFrame((t) => this.loop(t));
       // ?world=large starts the Large World Test (&bench=A…H or all, &pop=N for the crowd test)
-      const m = this.params.get('world') === 'large' ? 'largeworld' : this.params.get('world') === 'huge' ? 'hugeworld' : this.params.get('world') === 'mountain' ? 'mountaintest' : this.params.get('world') === 'army' ? 'armytest' : this.params.get('map');
+      const m = this.params.get('world') === 'large' ? 'largeworld' : this.params.get('world') === 'huge' ? 'hugeworld' : this.params.get('world') === 'mountain' ? 'mountaintest' : this.params.get('world') === 'army' ? 'armytest' : this.params.get('world') === 'arch' ? 'archtest' : this.params.get('map');
       const direct = m && AS.Maps.byId[m];
       if (AS.UI) AS.UI.boot(!direct);
       if (direct) {
