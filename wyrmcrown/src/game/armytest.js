@@ -2,8 +2,9 @@
  * and commanders (maps/armytest.js). Opened with index.html?world=army or from the
  * title menu ("Army Command Test").
  *
- *   two armies     Red Company at the castle (no commander) and the Hollowford
- *                  Guard defending Hollowford under King Osric
+ *   three armies   Red Company and the Castle Watch at the castle (no commander) and
+ *                  the Hollowford Guard defending Hollowford under King Osric
+ *   foes near home outlaws at the Burnt Mill and Thornwick camp, west of the castle
  *   two commanders King Osric (leading) and Brannoc Deepdelver (waiting at the castle)
  *   the world      the Greyspine wall, its guarded pass, the ground-only Delverway
  *                  under it with the Gloomvault Horde inside, Blackthorn Fort beyond
@@ -38,7 +39,7 @@
       for (const a of M.armies) AS.Armies.create(g, Object.assign({ owner: g.playerKey }, a));
       for (const G of M.groups) A.groups[G.id] = Object.assign({ wounds: {}, defeated: false }, JSON.parse(JSON.stringify(G)));
       g.later(2, () => g.msg('ARMY COMMAND TEST — PRESS K FOR THE COMMAND PANEL', '#ffe7a8', 5));
-      g.later(7.5, () => g.news('Brannoc Deepdelver waits at the castle beside Red Company. King Osric holds Hollowford. Raiders from Blackthorn Fort are expected.', g.playerKey, true));
+      g.later(7.5, () => g.news('Brannoc Deepdelver waits at the castle beside Red Company and the Castle Watch. Outlaws squat in the Burnt Mill west of the castle and at Thornwick camp to the north-west. King Osric holds Hollowford. Raiders from Blackthorn Fort are expected.', g.playerKey, true));
     },
     update(g, dt) {
       const T = g.at; if (!T) return;
@@ -124,13 +125,17 @@
       });
       // armies out of sight: an arrow at the screen edge (with distance); armies in the
       // ground: shown at their place on the war map position, dashed
-      const dpr = R.dpr || 1;
+      const dpr = R.dpr || 1, placed = [];
       for (const a of list) {
         const q = AS.Armies.pos(a), wx = a.layer === 'under' ? (AS.Routes.node(g, a.node) || {}).mx || q.x : q.x, wy = a.layer === 'under' ? (AS.Routes.node(g, a.node) || {}).my || q.y : q.y;
         const sc = R.worldToScreen(wx, wy, cam), sx = sc.x, sy = sc.y;
         const inside = sx > 30 * s && sx < W - 30 * s && sy > 30 * s && sy < H - 30 * s;
         if (inside && a.units) continue; // its soldiers are right there
-        const ex = U.clamp(sx, 40 * s, W - 40 * s), ey = U.clamp(sy, 170 * s, H - 50 * s); // (clear of the flasks and the gold)
+        const ex = U.clamp(sx, 40 * s, W - 40 * s);
+        let ey = U.clamp(sy, 170 * s, H - 50 * s); // (clear of the flasks and the gold)
+        // two armies in the same direction: their arrows stack instead of overlapping
+        for (let k = 0; k < 6 && placed.some((q) => Math.abs(q[0] - ex) < 150 * s && Math.abs(q[1] - ey) < 30 * s); k++) ey -= 32 * s;
+        placed.push([ex, ey]);
         const ang = Math.atan2(sy - H / 2, sx - W / 2);
         ctx.save(); ctx.translate(ex, ey);
         ctx.fillStyle = a.enc ? '#ff7a4a' : a.layer === 'under' ? '#b89aff' : '#ffe28c';

@@ -294,6 +294,8 @@
       }
       a.units = units; a.fieldN = units.length;
       if (a.cmdr) this.spawnCommander(g, a);
+      // selected in Command Mode before it was packed away (a tunnel): still selected
+      if (a.wasSelected && AS.Command) { a.wasSelected = false; AS.Command.select(g, a.cmdrUnit ? units.concat([a.cmdrUnit]) : units, true); }
       this.fieldOrders(g, a);
     },
     spawnCommander(g, a) {
@@ -310,6 +312,7 @@
     // pack the soldiers back into the record (exact counts, their health)
     dematerialize(g, a) {
       if (!a.units) return;
+      if (a.units.some((u) => u.selected && u.alive)) a.wasSelected = true;
       const p = this.pos(a), st = {}, hp = {}, max = {};
       for (const u of a.units) {
         if (!u.alive || u.removed) continue;
@@ -372,7 +375,7 @@
           const q = this.pos(a), d = Math.hypot(q.x - p.x, q.y - p.y);
           const seen = cam && q.x > cam.x - 150 && q.x < cam.x + cam.w + 150 && q.y > cam.y - 150 && q.y < cam.y + cam.h + 250;
           if (!a.units && (d < FIELD_R || seen) && !a.enc && !a.inLink) this.materialize(g, a);
-          else if (a.units && d > PACK_R && !seen && !this.fighting(a)) this.dematerialize(g, a);
+          else if (a.units && d > PACK_R && !seen && !this.fighting(a) && !a.units.some((u) => u.selected)) this.dematerialize(g, a); // (soldiers selected in Command Mode stay on the field)
         }
         if (!a.units) this.recordStep(g, a, h);
         // a commander standing about near the dragon says something now and then

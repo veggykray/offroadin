@@ -66,7 +66,7 @@ await test('A. the scenario: two armies, two commanders, the wall, the pass, the
     return { armies: A.list.length, cmdrs: Object.keys(A.cmdrs).length, ridge, cross, guard: A.byId.guard.cmdr, red: A.byId.red.cmdr, sites: ['hollowford', 'gatewatch', 'blackthorn', 'delversdoor', 'hollowstair'].map((id) => !!g.byId.get(id)),
       hf: g.byId.get('hollowford').owner, gw: g.byId.get('gatewatch').guarded(), group: A.groups.gloomhost.stacks };
   });
-  ok(r.armies === 2 && r.cmdrs === 2, 'two armies and two commanders (' + r.armies + ', ' + r.cmdrs + ')');
+  ok(r.armies === 3 && r.cmdrs === 2, 'three armies and two commanders (' + r.armies + ', ' + r.cmdrs + ')');
   ok(r.guard === 'k_osric' && r.red === null, 'King Osric leads the Hollowford Guard; Red Company has no commander');
   ok(r.ridge.every((v) => !v), 'the Greyspine cannot be walked (' + r.ridge + ')');
   ok(r.cross !== null && Math.abs(r.cross - 4950) < 600, 'the way north crosses the range at the pass (x ' + Math.round(r.cross) + ')');

@@ -182,6 +182,10 @@
       else if (braking) { freq = this.speed < 90 ? 1.7 : 0.9; amp = 0.72; }
       else if (this.speed < cruise - 18) { freq = 1.25; amp = 0.42; } // lazy beats to hold cruise
       else freq = 0; // glide
+      // Command Mode (src/game/command.js): the player's dragon soars in slow circles on
+      // still wings while you command the soldiers (no wing beats)
+      const soar = this.isPlayer && this.g.cmd && this.g.cmd.on;
+      if (soar) { freq = 0; amp = 0.5; }
       this.freq = U.damp(this.freq, freq, 6, dt);
       this.amp = U.damp(this.amp, amp, 4, dt);
       const flapping = this.freq > 0.25;
@@ -212,6 +216,8 @@
       } else if (thr > 0.1) {
         sp += F.flapAcc * down * thr * dt * 1.25;
         if (sp > F.flapMax * sm) sp = U.damp(sp, F.flapMax * sm, 1.2, dt);
+      } else if (soar) {
+        sp = U.approach(sp, F.hover, F.brakeDec * dt);
       } else if (braking) {
         sp = U.approach(sp, F.hover * (exhausted ? 1.5 : 1), F.brakeDec * -thr * dt);
       } else {

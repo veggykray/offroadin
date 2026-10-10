@@ -1,7 +1,7 @@
 /* WYRMCROWN — COMMAND MODE: direct control of your soldiers on the ground.
  *
  * C (or the COMMAND button) switches between flying the dragon and commanding.
- * While commanding, the dragon hangs in the air where it is, W A S D (or the
+ * While commanding, the dragon soars quietly in slow circles, W A S D (or the
  * arrows) pan the view instead of flying, the mouse no longer casts or breathes, and:
  *   drag a box            select the soldiers under it (any mix of types)
  *   click a soldier       select it; SHIFT-click adds or removes one

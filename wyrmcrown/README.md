@@ -144,7 +144,10 @@ cross, stand your castle and the village of Hollowford. The Greyspine Pass is
 held by raiders at the Gatewatch. Delver's Door leads underground through the
 Gloomvault, where a horde waits, and up the Hollow Stair on the north side.
 Blackthorn Fort stands beyond. Red Company waits at the castle with Brannoc
-Deepdelver, a champion, and no commander. King Osric leads the Hollowford Guard
+Deepdelver, a champion, and no commander; the Castle Watch (footmen and longbows)
+stands beside it. Outlaws squat in the Burnt Mill west of the castle and at
+Thornwick camp to the north-west: someone to fight near home (their guards come
+back a while after you clear them). King Osric leads the Hollowford Guard
 in defending the village. At 150 s of army time, raiders march from Blackthorn on
 Hollowford.
 
@@ -183,8 +186,9 @@ there are auto-resolved against the actual enemy soldiers.
 
 Press `C` (or the COMMAND button at the bottom of the screen) to command your
 soldiers directly; `C` again flies the dragon. While you command, the dragon
-hangs in the air (W still flies it, which moves the view) and the mouse no longer
-casts or breathes.
+soars quietly in slow circles, W A S D (or the arrows) pan the view, and the mouse
+no longer casts or breathes. Soldiers you select stay selected when they leave the
+screen.
 
 - Drag a box to select soldiers (any mix of types). Click one to select it,
   Shift-click to add or remove one, double-click to select every soldier of that

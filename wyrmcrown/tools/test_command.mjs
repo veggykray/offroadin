@@ -104,7 +104,8 @@ await step('B. a box around mixed soldiers selects exactly them (no new army rec
   ok(r.types.h_soldier >= 8 && r.types.h_archer >= 4, 'footmen and longbows together (' + JSON.stringify(r.types) + ')');
   ok(!r.dup && r.armies === n0, 'no duplicates and no new army record (' + r.armies + ')');
   // shift-click one out and back in; a double-click picks the type
-  const one = await ev(() => { const u = T.army('red').find((u) => u.ctype === 'h_archer'); return T.scr(u.x, u.y - 6); });
+  // (that longbow stands still for the clicks: soldiers holding ground mill about)
+  const one = await ev(() => { const u = T.army('red').find((u) => u.ctype === 'h_archer'); u.root = 4; u.vx = u.vy = 0; return T.scr(u.x, u.y - 6); });
   await page.keyboard.down('Shift'); await click(one); await page.keyboard.up('Shift');
   const less = await ev(() => T.sel().length);
   await page.keyboard.down('Shift'); await click(one); await page.keyboard.up('Shift');
@@ -271,8 +272,9 @@ await step('K. with a champion assigned, the same distant march is taken', async
   await click(await groundAt(goal.x, goal.y));
   const r = await ev(() => ({ order: AS.game.armies.byId.red.order.type, x: AS.game.armies.byId.red.order.x }));
   ok(r.order === 'march', 'the march is accepted (' + r.order + ')');
-  // the dragon leaves; the army keeps marching (as a record) and arrives
-  await ev(() => T.over(8800, 900));
+  // the dragon leaves (and the selection is cleared: selected soldiers stay on the field);
+  // the army keeps marching as a record and arrives
+  await ev(() => { AS.Command.clear(AS.game); T.over(8800, 900); });
   await ev(() => { const g = AS.game; for (let t = 0; t < 90; t += AS.Armies.STEP) AS.Armies.update(g, AS.Armies.STEP); });
   const f = await ev((goal) => { const a = AS.game.armies.byId.red, p = AS.Armies.pos(a); return { d: Math.hypot(p.x - goal.x, p.y - goal.y), st: a.status, n: AS.Armies.count(a) }; }, goal);
   ok(f.d < 200, 'Red Company under Brannoc reaches the far spot with the dragon away (' + Math.round(f.d) + ', ' + f.st + ')');
@@ -301,7 +303,7 @@ await step('M. the K panel still works and every troop count is right', async ()
   await page.keyboard.press('KeyK'); await frames(4);
   const panel = await ev(() => ({ overlay: AS.App.overlay, cards: document.querySelectorAll('#armycmd [data-army]').length }));
   await page.keyboard.press('KeyK'); await frames(3);
-  ok(panel.overlay === 'armycmd' && panel.cards === 2, 'the K panel opens with both armies (' + panel.cards + ')');
+  ok(panel.overlay === 'armycmd' && panel.cards === 3, 'the K panel opens with all three armies (' + panel.cards + ')');
   const r = await ev(() => {
     const g = AS.game, out = { armies: g.armies.list.length, bad: [] };
     const owner = new Map();
@@ -317,7 +319,7 @@ await step('M. the K panel still works and every troop count is right', async ()
     out.lead = Object.values(lead).every((n) => n === 1);
     return out;
   });
-  ok(r.armies === 2 && !r.bad.length && r.lead, 'two armies, each soldier in one, counts match (' + JSON.stringify(r) + ')');
+  ok(r.armies === 3 && !r.bad.length && r.lead, 'three armies, each soldier in one, counts match (' + JSON.stringify(r) + ')');
   // save and load keep them
   const before = await ev(() => { const g = AS.game; AS.ArmyTest.save(g); window.__old = g; return g.armies.list.map((a) => a.id + ':' + AS.Armies.count(a) + ':' + a.cmdr).join(','); });
   await ev(() => AS.ArmyTest.start(AS.ArmyTest.load()));
@@ -325,6 +327,53 @@ await step('M. the K panel still works and every troop count is right', async ()
   const s = { before, after: await ev(() => AS.game.armies.list.map((a) => a.id + ':' + AS.Armies.count(a) + ':' + a.cmdr).join(',')) };
   ok(s.before === s.after, 'save and load keep the counts (' + s.before + ' / ' + s.after + ')');
   return 'Red ' + r.red + ', Guard ' + r.guard;
+});
+
+// ---- the playtest feedback: selection kept off screen, quiet wings, a fight near town ----
+await step('O. a selection is kept when the soldiers leave the screen (and still takes orders)', async () => {
+  await fresh(); await cmdOn();
+  await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); T.over(a.x, a.y - 40); }); await frames(4);
+  await drag(await ev(() => T.box(T.army('red'), 48)));
+  const n0 = await ev(() => T.army('red').filter((u) => u.selected).length);
+  // pan far east with D: Red Company leaves the screen and the dragon is far behind it
+  await page.keyboard.down('KeyD'); await play(3); await page.keyboard.up('KeyD'); await play(3);
+  const r = await ev(() => { const cam = AS.game.camera, red = T.army('red'), c = AS.Command.centre(red); return { sel: red.filter((u) => u.selected).length, field: !!AS.game.armies.byId.red.units, off: !c || c.x < cam.x || c.x > cam.x + cam.w, all: T.sel().length }; });
+  ok(n0 >= 12 && r.off, 'Red Company selected (' + n0 + ') and now off screen (' + r.off + ')');
+  ok(r.sel === n0 && r.all >= n0, 'still selected off screen (' + r.sel + ' of ' + n0 + ')');
+  // an order given from here still reaches them
+  const goal = await ev(() => { const c = AS.Command.centre(T.army('red')); return { x: c.x + 250, y: c.y - 100 }; });
+  const res = await ev((goal) => AS.Command.issue(AS.game, 'move', goal), goal);
+  ok(res.ok && res.n >= 12, 'and an order still reaches them (' + JSON.stringify(res) + ')');
+  return r.sel + ' still selected with the view ' + Math.round(await ev(() => AS.game.camera.x - AS.Armies.pos(AS.game.armies.byId.red).x)) + ' away';
+});
+
+await step('P. no wing beats while the dragon soars in Command Mode', async () => {
+  await ev(() => { window.__beats = 0; const f = AS.Audio.sfx.bind(AS.Audio); AS.Audio.sfx = (k, o) => { if (k === 'wing_beat') __beats++; return f(k, o); }; });
+  await play(1); await ev(() => { __beats = 0; }); await play(4);
+  const r = await ev(() => ({ beats: __beats, speed: Math.round(AS.game.player.speed), z: Math.round(AS.game.player.z), on: AS.Command.on(AS.game) }));
+  await page.keyboard.press('KeyC'); await frames(3);
+  await page.keyboard.down('KeyW'); await play(3); await page.keyboard.up('KeyW');
+  const flying = await ev(() => __beats);
+  ok(r.on && r.beats === 0, 'no wing beats in 4 s of Command Mode (' + r.beats + ', speed ' + r.speed + ', height ' + r.z + ')');
+  ok(flying > 0, 'the wings beat again when you fly (' + flying + ')');
+  return 'speed ' + r.speed + ', height ' + r.z;
+});
+
+await step('Q. someone to fight near town: the Castle Watch clears the Burnt Mill', async () => {
+  await fresh(); await cmdOn();
+  const s0 = await ev(() => { const g = AS.game, s = g.byId.get('oldmill'), w = g.armies.byId.watch; return { n: s.guards.filter((u) => u.alive).length, d: Math.round(Math.hypot(s.x - w.home.x, s.y - w.home.y)), types: [...new Set(T.army('watch').map((u) => u.ctype))].join(',') }; });
+  ok(s0.n >= 6 && /h_soldier/.test(s0.types) && /h_archer/.test(s0.types), 'footmen and longbows at the castle, outlaws at the Burnt Mill (' + s0.n + ', ' + s0.types + ')');
+  await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.watch); T.over(a.x, a.y - 40); }); await frames(4);
+  await drag(await ev(() => T.box(T.army('watch'), 40)));
+  await ev(() => { const s = AS.game.byId.get('oldmill'); T.over(s.x + 150, s.y + 150); }); await frames(6);
+  const q = await ev(() => { const s = AS.game.byId.get('oldmill'); return T.scr(s.x, s.y); });
+  await click(q);
+  const r0 = await ev(() => ({ order: AS.game.armies.byId.watch.order.type, site: AS.game.armies.byId.watch.order.siteId, msg: AS.game.msgs.map((m) => m.text).join(' | ') }));
+  ok(r0.order === 'attack' && r0.site === 'oldmill', 'the Castle Watch (no commander, near home) is sent against the mill (' + r0.order + ' ' + (r0.site || '') + ' ' + r0.msg + ')');
+  await page.waitForFunction(() => AS.game.byId.get('oldmill').guards.filter((u) => u.alive).length <= 2 || AS.game.armies.byId.watch.status === 'destroyed', null, { timeout: 150000, polling: 500 }).catch(() => {});
+  const r = await ev(() => ({ left: AS.game.byId.get('oldmill').guards.filter((u) => u.alive).length, watch: AS.Armies.count(AS.game.armies.byId.watch) }));
+  ok(r.left < s0.n, 'the outlaws fall (' + s0.n + ' → ' + r.left + '; the Watch has ' + r.watch + ' left)');
+  return 'outlaws ' + s0.n + ' → ' + r.left + ', Castle Watch 12 → ' + r.watch;
 });
 
 await step('N. other modes: C in an ordinary battle map works and breaks nothing', async () => {

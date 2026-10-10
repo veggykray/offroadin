@@ -64,10 +64,10 @@
       }
       const m = I.mouse;
       // Command Mode (src/game/command.js): the mouse commands the soldiers, the movement
-      // keys pan the view, and the dragon hangs in the air where it is
+      // keys pan the view, and the dragon soars quietly in slow circles where it is
       if (g.cmd && g.cmd.on) {
         dblClicked = false; inp.steer = null;
-        inp.throttle = -1; inp.turn = 0; inp.dive = false; inp.loop = false; inp.sprint = false;
+        inp.throttle = 0; inp.turn = 0.35; inp.dive = false; inp.loop = false; inp.sprint = false; // (it soars in slow circles: src/game/dragon.js)
         inp.fire = false; inp.breath = I.down('breath');
         if (this.quarry) this.stopHunt(d);
         return;

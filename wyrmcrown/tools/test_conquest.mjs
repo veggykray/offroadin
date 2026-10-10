@@ -25,7 +25,7 @@ const C = AS.Conquest, R = C.Rules, G = C.WorldGen, W = C.World, D = C.Data;
 let n = 0; const ok = (name, fn) => { fn(); n++; console.log('PASS ' + name); };
 
 ok('data: every troop type is well formed and reuses battle-mode stats', () => {
-  const src = fs.readdirSync(path.join(root, 'src/gfx')).map((f) => fs.readFileSync(path.join(root, 'src/gfx', f), 'utf8')).join('\n') + fs.readFileSync(path.join(root, 'src/game/life.js'), 'utf8');
+  const src = fs.readdirSync(path.join(root, 'src/gfx')).filter((f) => f.endsWith('.js')).map((f) => fs.readFileSync(path.join(root, 'src/gfx', f), 'utf8')).join('\n') + fs.readFileSync(path.join(root, 'src/game/life.js'), 'utf8');
   for (const t of C.Data.troopList) {
     assert.ok(AS.Data.troops[t.base], t.id + ': base ' + t.base + ' is a battle-mode troop');
     assert.ok(C.Data.allegiances[t.allegiance], t.id + ': allegiance');

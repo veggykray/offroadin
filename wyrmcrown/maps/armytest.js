@@ -59,6 +59,9 @@
       { id: 'blackthorn', k: 'fort', name: 'Blackthorn Fort', x: FORT[0], y: FORT[1], guard: [['bandit', 6], ['ogre', 1]] },
       { id: 'delversdoor', k: 'dungeon', name: 'Delver\'s Door', x: DOOR[0], y: DOOR[1] },
       { id: 'hollowstair', k: 'dungeon', name: 'The Hollow Stair', x: STAIR[0], y: STAIR[1] },
+      // someone to fight near the castle (Command Mode practice); their guards come back after a while
+      { id: 'oldmill', k: 'ruins', name: 'The Burnt Mill', x: 1150, y: 6050, guard: [['bandit', 4], ['wolf', 3]] },
+      { id: 'thornwick', k: 'banditcamp', name: 'Thornwick Outlaw Camp', x: 1550, y: 5500, guard: [['bandit', 5], ['wolf', 2], ['ogre', 1]] },
     ],
     wild: [{ k: 'deer', x: 3000, y: 5600, n: 5 }, { k: 'boar', x: 5600, y: 5400, n: 4 }, { k: 'deer', x: 4000, y: 2200, n: 4 }],
     runes: [[3000, 5000], [6000, 4800]],
@@ -107,6 +110,7 @@
       ],
       armies: [
         { id: 'red', name: 'Red Company', x: CASTLE[0] + 40, y: CASTLE[1] + 260, stacks: { h_soldier: 8, h_archer: 4 } },
+        { id: 'watch', name: 'Castle Watch', x: CASTLE[0] - 300, y: CASTLE[1] + 230, stacks: { h_soldier: 6, h_archer: 6 } },
         { id: 'guard', name: 'Hollowford Guard', x: HOLLOW[0] - 80, y: HOLLOW[1] + 160, stacks: { h_soldier: 6, h_knight: 2, h_archer: 2 }, cmdr: 'k_osric', order: { type: 'defend', siteId: 'hollowford' } },
       ],
       groups: [
