@@ -36,8 +36,9 @@
     DIVE_DESCEND: 210,// SPACE with a held altitude
     /* the dragon's shadow against its height above the ground under it (h0 → h1 units):
      * size (×), darkness (× the scene's shadow strength), blur (world units); curve < 1
-     * makes the first few hundred units count most. Live-tunable: __mtn.M.SHADOW */
-    SHADOW: { h0: 6, h1: 520, scaleMin: 0.9, scaleMax: 1.95, alphaMax: 1.55, alphaMin: 0.2, softMax: 10, curve: 0.85 },
+     * makes the first few hundred units count most. The same object as AS.Altitude.SHADOW
+     * (game/altitude.js), so one set of numbers tunes every world. Live-tunable: __mtn.M.SHADOW */
+    SHADOW: AS.Altitude ? AS.Altitude.SHADOW : { h0: 6, h1: 520, scaleMin: 0.9, scaleMax: 1.95, alphaMax: 1.55, alphaMin: 0.2, softMax: 10, curve: 0.85 },
     _cache: null,
 
     /* ---------------- the terrain (called from Realm.makeTerrain) ---------------- */

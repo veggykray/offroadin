@@ -296,6 +296,7 @@
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }
       if (this.mtn) AS.Mountain.update(this, dt);
+      else if (AS.Altitude) AS.Altitude.update(this, dt); // (Z/X: a held altitude, the camera follows it)
       // camera: follows the dragon's body, leads its travel, pulls back with speed
       if (this.demo) this.demoCamera(dt);
       const p = this.demo ? this.focus : this.player;

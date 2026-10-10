@@ -294,7 +294,7 @@
       d.ai = this;
       if (!F.lord) new AILord(g, F);
       const L = F.lord, S = L.style, gl = L.goal;
-      inp.fire = false; inp.breath = false; inp.breathTarget = null; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false; inp.loop = false;
+      inp.fire = false; inp.breath = false; inp.breathTarget = null; inp.dive = false; inp.skim = false; inp.sprint = false; inp.eatHit = false; inp.eat = false; inp.steer = null; inp.spellHit = false; inp.loop = false; inp.holdZ = 0;
       this.t = (this.t || 0) + dt;
       // keep the goal's position fresh for moving targets
       if (gl.ref && gl.ref.x !== undefined) { gl.x = gl.ref.x; gl.y = gl.ref.y; }
@@ -448,8 +448,9 @@
         const behind = Math.abs(U.wrapAngle(Math.atan2(d.y - e.y, d.x - e.x) - e.angle)) < 0.35 && dist < 220;
         if (behind && S.duel < 0.7) { inp.turn = this.orbitDir; inp.dive = d.z > 30; }
       }
-      // match the foe's height a little
+      // match the foe's height a little; climb to meet one flying high (game/altitude.js)
       if (e.z < 40 && dist < 300) inp.skim = true;
+      if (e.z > AS.Dragon.FLIGHT.zHigh + 15 && dist < 1400) inp.holdZ = e.z;
       if (dist < 560) this.aimAt(d, inp, e);
       this.breathIfAligned(d, inp, e);
     }

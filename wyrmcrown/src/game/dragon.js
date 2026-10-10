@@ -118,7 +118,7 @@
       const g = this.g;
       this.t += dt;
       for (const k in this.buffs) { this.buffs[k] -= dt; if (this.buffs[k] <= 0) { delete this.buffs[k]; if (this.onBuffEnd) this.onBuffEnd(k); } }
-      if (this.down > 0) { this.loop = null; this.updateDown(dt); return; }
+      if (this.down > 0) { this.loop = null; this.altHold = null; this.updateDown(dt); return; }
       if (this.pilot) this.pilot.read(this, this.input, dt);
       this.loopCd -= dt;
       if (this.input.loop) { this.input.loop = false; this.startLoop(); }
@@ -221,7 +221,8 @@
       // turning costs a little speed (induced drag)
       sp -= Math.abs(this.angVel) * sp * 0.05 * dt;
       // pulling out of a dive trades speed for height
-      if (this.vz > 0 && !dive) sp -= this.vz * 1.1 * dt;
+      // (a deliberate climb to a held altitude costs far less: the wings are working for it)
+      if (this.vz > 0 && !dive) sp -= this.vz * (this.altHold != null ? 0.35 : 1.1) * dt;
       if (exhausted) sp = Math.min(sp, 170);
       this.speed = Math.max(F.hover * 0.6, sp);
       // ---- turning: rate limited by speed, rolled in smoothly
@@ -242,8 +243,11 @@
       if (I.skim) tz = F.zLow + 6;
       if (this.carry) tz = Math.max(tz, 26);
       if (exhausted) tz = Math.min(tz, 40);
+      // a held altitude (Z climbs, X descends; game/altitude.js) replaces the automatic height
+      const held = AS.Altitude && !g.mtn ? AS.Altitude.hold(this, I, dt, tz, dive, exhausted) : null;
+      if (held) tz = held.tz;
       const dz = tz - this.z;
-      const vzT = dive ? U.clamp(dz * 3, -150, 40) : U.clamp(dz * 1.6, -70, 75);
+      const vzT = held ? U.clamp(dz * 1.8, -held.down, held.up) : dive ? U.clamp(dz * 3, -150, 40) : U.clamp(dz * 1.6, -70, 75);
       this.vz = U.damp(this.vz, vzT, 3.5, dt);
       this.z = Math.max(4, this.z + this.vz * dt);
       if (this.takeoffT > 0) this.takeoffT -= dt;

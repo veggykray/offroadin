@@ -55,7 +55,7 @@
       forward: 'Beat wings (accelerate)', back: 'Flare wings (brake / hover)', left: 'Bank left', right: 'Bank right',
       dive: 'Dive (hold) — release to pull up', sprint: 'Sprint (costs energy)', eat: 'Snatch / eat / drop prey',
       spell: 'Cast the first stored spell', spell1: 'Cast spell slot 1', spell2: 'Cast spell slot 2', spell3: 'Cast spell slot 3', town: 'Hold court in your town', warband: 'Order your warband', map: 'War map',
-      objectives: 'Realm overview', pause: 'Pause', controlMode: 'Toggle flight control mode', breath: 'Breathe fire (also right mouse)', highFlight: 'High flight: see far (large world)', hire: 'Hire troops (campaign)', army: 'Army: follow / hold (campaign)', climb: 'Climb (Mountain Test)', descend: 'Descend (Mountain Test)',
+      objectives: 'Realm overview', pause: 'Pause', controlMode: 'Toggle flight control mode', breath: 'Breathe fire (also right mouse)', highFlight: 'High flight: see far (large world)', hire: 'Hire troops (campaign)', army: 'Army: follow / hold (campaign)', climb: 'Climb and hold the height', descend: 'Descend',
     },
     preventKeys: ['KeyQ'],
     // standard gamepad: left stick flies, right stick aims, triggers cast and breathe
