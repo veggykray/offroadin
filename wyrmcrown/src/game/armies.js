@@ -52,9 +52,16 @@
   const RECOVER = 120;        // seconds for an incapacitated commander to recover
   const PENDING = 15;         // seconds before an unattended underground encounter is auto-resolved
   const NEED_CMDR = { march: 1, attack: 1, enter: 1 };
+  /* Without a commander an army still moves and fights NEAR HOME: a march or an attack
+   * whose goal is within LOCAL_R of the army's home, over ground (no tunnel, no sea), is a
+   * local tactical order. Anything further is an expedition and needs a king or champion.
+   * An uncommanded army facing OUTMATCH times its strength falls back on its own. */
+  const LOCAL_R = 1600, OUTMATCH = 2.2;
 
   const Armies = {
-    STEP, FIELD_R, PACK_R, ENGAGE_R, DEFEND_R, MEET_R, RECOVER, PENDING,
+    STEP, FIELD_R, PACK_R, ENGAGE_R, DEFEND_R, MEET_R, RECOVER, PENDING, LOCAL_R, OUTMATCH,
+    // is (x, y) close enough to the army's home for an order without a commander?
+    isLocal(a, q) { return !!q && Math.hypot(q.x - a.home.x, q.y - a.home.y) <= this.LOCAL_R; },
 
     /* ================= setup ================= */
     init(g) {
@@ -206,17 +213,18 @@
       if (!a || a.status === 'destroyed') return { ok: false, reason: 'no such army' };
       const t = o.type;
       if (a.enc && !opt.keep) return { ok: false, reason: a.name + ' is fighting — resolve the encounter first' };
-      if (NEED_CMDR[t] && !a.cmdr) return { ok: false, reason: a.name + ' has no commander: it can hold, defend where it stands, follow the dragon or fall back' };
       const p = this.pos(a);
-      if (t === 'defend' && !a.cmdr && (o.x !== undefined || o.siteId)) {
-        const s = o.siteId && g.byId.get(o.siteId), q = s ? { x: s.x, y: s.y } : o;
-        if (Math.hypot(q.x - p.x, q.y - p.y) > 400) return { ok: false, reason: a.name + ' has no commander: it can only defend where it stands' };
+      const far = a.name + ' has no commander: it can move and fight near home (within ' + Math.round(this.LOCAL_R / 4) + ' m), but an expedition needs a king or champion';
+      if (!a.cmdr && (NEED_CMDR[t] || t === 'defend' || t === 'local')) {
+        const s = o.siteId && g.byId.get(o.siteId), q = s ? { x: s.x, y: s.y } : o.x !== undefined ? o : null;
+        if (t === 'enter') return { ok: false, reason: a.name + ' has no commander: going underground needs a king or champion' };
+        if (q ? !this.isLocal(a, q) : NEED_CMDR[t]) return { ok: false, reason: far };
       }
       if (a.layer === 'under' && t !== 'march' && t !== 'retreat' && t !== 'hold' && t !== 'defend') return { ok: false, reason: a.name + ' is underground' };
       let target = null, plan = null;
       if (t === 'follow') {
         if (a.layer === 'under') return { ok: false, reason: 'the dragon cannot be followed underground' };
-      } else if (t === 'hold' || (t === 'defend' && o.x === undefined && !o.siteId)) {
+      } else if (t === 'hold' || t === 'local' || (t === 'defend' && o.x === undefined && !o.siteId)) {
         target = a.layer === 'under' ? { node: a.node } : { x: p.x, y: p.y };
       } else {
         if (t === 'retreat') {
@@ -236,15 +244,16 @@
           a.speed = this.speedOf(g, a);
           plan = AS.Routes.plan(g, Object.assign({}, a, { x: p.x, y: p.y }), target);
           if (!plan.ok) return { ok: false, reason: plan.reason };
+          if (!a.cmdr && plan.legs.some((L) => L.kind === 'link')) return { ok: false, reason: far };
         }
       }
       // the order stands
       a.order = Object.assign({ type: t }, target || {}, o.siteId ? { siteId: o.siteId } : {});
       a.plan = plan ? { legs: plan.legs, li: 0, pi: 1, lt: 0 } : null;
-      a.status = t === 'follow' ? 'following' : t === 'hold' ? 'holding' : t === 'defend' && !plan ? 'defending' : 'moving';
+      a.status = t === 'follow' ? 'following' : t === 'hold' ? 'holding' : t === 'local' ? 'commanded' : t === 'defend' && !plan ? 'defending' : 'moving';
       a.followAt = null;
       if (t === 'retreat') a.morale = Math.max(a.morale, 15);
-      if (a.units) this.fieldOrders(g, a);
+      if (a.units && t !== 'local') this.fieldOrders(g, a); // ('local': the soldiers take their orders one by one, src/game/command.js)
       if (!opt.quiet) {
         if (a.cmdr) this.remark(g, a.cmdr, t === 'enter' ? 'enter' : t, true);
         this.note(g, a.name + ': ' + this.describeOrder(g, a), false);
@@ -261,6 +270,7 @@
         case 'attack': return 'attacking ' + (nm || 'a point');
         case 'retreat': return 'falling back to ' + (nm || 'safety');
         case 'enter': return 'taking ' + (o.passage || 'the passage') + ' to ' + (nm || 'the far side');
+        case 'local': return 'under your direct command';
       }
       return o.type;
     },
@@ -324,7 +334,7 @@
       if (a.cmdrUnit) live.push(a.cmdrUnit);
       const p = this.pos(a), o = a.order, L = a.plan && a.plan.legs[a.plan.li];
       const form = (cx, cy, i, spread) => { const an = i * 2.399, r = (spread || 20) + Math.sqrt(i) * 16; return [cx + Math.cos(an) * r, cy + Math.sin(an) * r * 0.8]; };
-      live.forEach((u, i) => { u.noFight = o.type === 'retreat'; });
+      live.forEach((u, i) => { u.noFight = o.type === 'retreat'; u.focus = null; u.disengage = false; u.leash = null; u.assault = null; }); // (an army order replaces any Command Mode order)
       if (L && L.kind === 'walk') {
         const pts = [[p.x, p.y]].concat(L.pts.slice(Math.max(1, a.plan.pi)));
         const end = pts[pts.length - 1];
@@ -490,6 +500,13 @@
       if (a.tickT > 0) return;
       a.tickT = 0.5;
       const p = this.pos(a); a.x = p.x; a.y = p.y;
+      // with no commander to steady them, soldiers badly outmatched fall back home and regroup
+      const safe = !a.cmdr && a.order.type !== 'retreat' && this.nearestFriendly(g, a);
+      if (safe && Math.hypot(safe.x - p.x, safe.y - p.y) > 400 && AS.Command && AS.Command.outmatched(g, live, a.owner, this.OUTMATCH)) {
+        this.note(g, a.name + ' is outmatched and falls back to regroup', true);
+        this.order(g, a.id, { type: 'retreat' }, { quiet: true, keep: true });
+        return;
+      }
       // the commander keeps with the army
       const cu = a.cmdrUnit;
       if (cu && cu.alive && !cu.target && Math.hypot(cu.x - p.x, cu.y - p.y) > 90) { cu.state = 'march'; cu.path = AS.Nav.path(g, cu.x, cu.y, p.x, p.y + 20); cu.pi = 1; cu.dest = { x: p.x, y: p.y + 20, r: 40 }; }

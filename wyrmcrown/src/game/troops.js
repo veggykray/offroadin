@@ -90,7 +90,7 @@
     onHurt(dmg, dtype, src) {
       this.hpBarT = 3;
       if (['giant', 'troll'].includes(this.role) && this.g.time > (this.painSoundAt || 0)) { this.painSoundAt = this.g.time + 2; AS.Audio.sfx(this.role + '_pain', { x: this.x, y: this.y, vol: 0.65 }); }
-      if (src && src.alive !== false && src.team !== this.team && !this.target) this.target = src;
+      if (src && src.alive !== false && src.team !== this.team && !this.target && !this.disengage) this.target = src;
       if (this.state === 'guard' || this.state === 'garrison') this.provoked = 6;
     }
     die(src) {
@@ -163,7 +163,10 @@
       // perception
       this.scanT = (this.scanT || 0) - dt;
       if (this.target && (!this.target.alive || this.target.targetable === false || this.noFight)) this.target = null;
-      if (this.scanT <= 0 && !this.noFight) { // (an army falling back does not stop to fight: src/game/armies.js)
+      // Command Mode (src/game/command.js): an attack order sticks to its foe; a move does not stop to fight
+      if (this.focus) { if (this.focus.alive && !this.focus.removed && this.focus.targetable !== false) this.target = this.focus; else this.focus = null; }
+      if (this.disengage && this.target && !this.focus) this.target = null;
+      if (this.scanT <= 0 && !this.noFight && !this.focus && !this.disengage) { // (an army falling back does not stop to fight: src/game/armies.js)
         this.scanT = 0.45 + Math.random() * 0.3;
         const sight = this.tdef.ranged ? this.tdef.ranged.range + 60 : this.tdef.throwRock ? this.tdef.throwRock.range : 240;
         const t = this.tdef.passive && !this.provoked ? null : g.nearestFoe(this.team, this.x, this.y, this.state === 'guard' && !this.provoked ? Math.min(sight, 280) : sight, { prefer: this.tdef.ranged && this.tdef.ranged.buildingPref ? (e) => e.isBuilding : (e) => !e.isBuilding && !e.isDragon });
@@ -173,6 +176,8 @@
       const lx = this.home.x, ly = this.home.y;
       const leash = this.state === 'guard' ? 420 : this.state === 'garrison' ? 600 : this.state === 'patrol' ? 380 : 1e9;
       if ((this.state === 'guard' || this.state === 'garrison') && U.dist(this.x, this.y, lx, ly) > leash) this.target = null;
+      // soldiers sent somewhere chase no further than their leash (Command Mode)
+      if (this.leash && this.target && !this.focus && U.dist(this.x, this.y, this.leash.x, this.leash.y) > this.leash.r) this.target = null;
       // patrols leave a fight that drags them too far off their round
       if (this.state === 'patrol' && this.target && this.route) { const wp = this.route[this.ri % this.route.length]; if (U.dist(this.x, this.y, wp[0], wp[1]) > 520) this.target = null; }
       let mx = null, my = null, sp = this.tdef.speed;
@@ -355,6 +360,8 @@
     draw(ctx, ox, oy, R) {
       const lunge = this.lunge > 0 ? 3 : 0;
       const x = this.x + Math.cos(this.angle) * lunge, y = this.y + Math.sin(this.angle) * lunge;
+      // selected in Command Mode: a ring at the feet
+      if (this.selected) { ctx.strokeStyle = this.cmdrName ? '#ffe28c' : '#9cf07a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(x - ox, y - oy + 1, this.r + 4, (this.r + 4) * 0.55, 0, 0, TAU); ctx.stroke(); }
       if (this.horse) R.sprite(ctx, this.horse, this.angle, this.anim, x + Math.cos(this.angle) * 14, y + Math.sin(this.angle) * 14, 0, ox, oy);
       R.sprite(ctx, this.sheet, this.angle, this.anim, x, y, 0, ox, oy);
       if (this.flash > 0) R.flashSprite(ctx, this.sheet, this.angle, this.anim, x, y, 0, ox, oy);

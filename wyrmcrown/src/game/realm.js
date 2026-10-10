@@ -286,6 +286,7 @@
       }
       // independent armies: their soldiers on the field, or their records far away (src/game/armies.js)
       if (this.armies && AS.Armies) AS.Armies.update(this, dt);
+      if (AS.Command && this.player && !this.demo) AS.Command.tick(this, dt); // (Command Mode: the soldiers' own sense)
       for (let i = this.buildings.length - 1; i >= 0; i--) { const b = this.buildings[i]; if (b.removed) { this.buildings.splice(i, 1); continue; } b.update(dt); }
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }

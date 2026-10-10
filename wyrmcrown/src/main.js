@@ -158,7 +158,8 @@
       if (g && (this.state === 'play' || this.state === 'paused' || this.state === 'results')) {
         if (this.state === 'play') {
           if (I.hit('pause')) {
-            if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay === 'hire') AS.HirePanel.close(); else if (this.overlay === 'armycmd') AS.ArmyPanel.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
+            if (AS.Command && g.cmd && g.cmd.menu) AS.Command.closeMenu();
+            else if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay === 'hire') AS.HirePanel.close(); else if (this.overlay === 'armycmd') AS.ArmyPanel.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
           } else if (I.hit('map') && this.overlay !== 'court' && this.overlay !== 'armycmd') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
           else if (I.hit('town') && AS.Court && !g.opts.conquest) AS.Court.toggle(g);
           else if (I.hit('highFlight') && g.map.highFlight) { g.highFlight = !g.highFlight; g.msg(g.highFlight ? 'HIGH FLIGHT — H TO DESCEND' : 'BACK DOWN TO THE FIGHT', '#cfe8ff', 2); }
@@ -166,13 +167,16 @@
           else if (g.bc && I.hit('hire') && AS.HirePanel && this.overlay !== 'court' && this.overlay !== 'map') AS.HirePanel.toggle(g);
           else if (g.bc && (I.hit('army') || I.hit('warband')) && !this.overlay) AS.BigCampaign.toggleMode(g); // (the campaign's army follows the dragon: G holds or follows too)
           else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court' && !g.bc) { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
-          if (I.hit('controlMode')) {
+          // C: Command Mode (src/game/command.js) — select soldiers, click to move or attack
+          if (I.hit('commandMode') && AS.Command && g.player && !this.overlay) AS.Command.toggle(g);
+          else if (I.hit('controlMode')) {
             AS.Settings.controlMode = AS.Settings.controlMode === 'mouse' ? 'keys' : 'mouse'; AS.Save.saveSettings();
             g.msg(AS.Settings.controlMode === 'mouse' ? 'FLIGHT: FOLLOW THE CURSOR' : 'FLIGHT: KEYS STEER, MOUSE AIMS', '#ffe7a8', 2.2);
           }
           AS.HUD && AS.HUD.tabTick && AS.HUD.tabTick(I.down('objectives'), dt);
           // the war map and the court pause the realm
           mark('input');
+          if (AS.Command && g.cmd && !this.overlay) AS.Command.input(g, dt);
           if (!this.overlay) { const u0 = performance.now(); g.update(dt); this.updMs = performance.now() - u0; mark('update'); AS.Voices && AS.Voices.update(dt, g); mark('voices'); }
           else { AS.Particles.update(0); }
         } else if (this.state === 'results') AS.Particles.update(dt * 0.5);
@@ -207,6 +211,7 @@
         AS.Audio.update && AS.Audio.update(dt, null);
       }
       AS.Music.update && AS.Music.update(dt);
+      if (AS.Command) AS.Command.button(this.state === 'play' ? g : null); // (the COMMAND button shows only in play)
       if (this.state === 'play' && !this.overlay && g && this.params.get('fixedres') !== '1') this.keepSmooth(ts, g);
       const work = performance.now() - t0;
       if (PF && PF.on) { mark('music+other'); PF.end(work); }

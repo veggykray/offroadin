@@ -215,3 +215,14 @@ table.keys td:first-child { color: var(--gold); font-family: var(--title); font-
 #armycmd .ac-log div, #armycmd .ac-cm { font: 500 12px/1.35 var(--text); margin-top: 3px; }
 #armycmd .ac-cm .dim { font-size: 11.5px; }
 #armycmd .ac-last { color: #e8d0a0; }
+
+/* Command Mode (src/game/command.js): the button and the right-click menu */
+#cmdbtn { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); pointer-events: auto; z-index: 6;
+  font: bold 13px Georgia, serif; letter-spacing: 0.04em; color: #ffe7a8; background: rgba(20, 13, 7, 0.82);
+  border: 1px solid rgba(232, 192, 80, 0.7); border-radius: 5px; padding: 6px 14px; cursor: pointer; }
+#cmdbtn:hover { background: rgba(48, 32, 14, 0.9); }
+#cmdbtn.on { color: #d8ffc8; border-color: #9cf07a; background: rgba(18, 34, 12, 0.88); }
+#cmdmenu { position: fixed; z-index: 7; pointer-events: auto; display: flex; flex-direction: column; min-width: 170px;
+  background: rgba(16, 10, 5, 0.94); border: 1px solid rgba(160, 230, 130, 0.65); border-radius: 5px; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+#cmdmenu button { font: 13px Georgia, serif; color: #f0e2c0; background: none; border: 0; text-align: left; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+#cmdmenu button:hover { background: rgba(120, 200, 90, 0.22); color: #fff; }
