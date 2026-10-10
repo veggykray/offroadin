@@ -111,6 +111,18 @@ the ground beneath it; its tunables live in `MT.SHADOW` in
 Khaz Durn, the dwarf hold, is carved into the Wall (`hold` in the map's
 relief) with an approach yard of halls, a smithy and watchtowers.
 
+### Independent ground armies (test ground)
+
+`wyrmcrown/armies/` is a separate layer, not loaded by the game, for ground armies
+that act on their own orders while the dragon is elsewhere: follow the dragon,
+hold, move, attack, defend a captured place, retreat to safety, and enter
+ground-only tunnels and caves. Armies walk only on valid ground (never over
+mountains, deep water or blocked passages). Far from the dragon they are
+simulated cheaply. Battles the dragon cannot reach are auto-resolved from the
+existing troop data. It is developed on its own Tunnel Test scenario and does
+not touch the campaign map. Watch it in `tools/armies.html` ("run the tunnel
+demo"); the design is in [`armies/ARCHITECTURE.md`](armies/ARCHITECTURE.md).
+
 ## Controls
 
 | Key | Action |
@@ -262,6 +274,10 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
 - `node wyrmcrown/tools/test_mountain.mjs` checks the Mountain Test: the
   ceiling, the pass, the gorge, cliff deflection, the shadow, the dwarf
   hold, army routes, line of sight and streaming.
+- `node wyrmcrown/tools/test_armies.mjs` (no server or browser needed) checks
+  the independent ground armies: routes, every order, the tunnel demo, the
+  cave, the tactical hand-off, auto-resolve, determinism and offscreen cost.
+- `tools/armies.html` shows the ground armies' Tunnel Test, with orders.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.

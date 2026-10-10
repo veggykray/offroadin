@@ -1,0 +1,157 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>WYRMCROWN ground armies</title>
+<style>
+  body{margin:0;background:#111;color:#ddd;font:12px monospace;display:flex;flex-wrap:wrap;gap:8px;padding:8px}
+  #map{display:block;border:1px solid #333;cursor:crosshair;max-width:100%}
+  #side{flex:1;min-width:280px;max-width:520px}
+  button{font:12px monospace;background:#222;color:#ddd;border:1px solid #444;padding:4px 7px;margin:0 3px 4px 0;cursor:pointer}
+  button.on{background:#4a3a14;border-color:#c9a040;color:#ffe3a0}
+  h3{margin:8px 0 4px;font-size:12px;color:#c9a040}
+  #status,#log,#battle{white-space:pre-wrap;background:#181818;border:1px solid #2a2a2a;padding:6px;margin:0 0 6px}
+  #log{height:220px;overflow:auto}
+  #battle{max-height:200px;overflow:auto}
+</style></head>
+<body>
+<canvas id="map"></canvas>
+<div id="side">
+  <div><b>Tunnel Test</b> — independent ground armies (armies/). Click the map: <span id="mode">move the dragon</span>.</div>
+  <h3>Orders for the Host</h3>
+  <div id="orders"></div>
+  <h3>Click mode</h3>
+  <div><button data-mode="dragon" class="on">dragon</button><button data-mode="move">move order</button></div>
+  <h3>Ground</h3>
+  <div id="blocks"></div>
+  <h3>Time</h3>
+  <div><button data-speed="0">pause</button><button data-speed="1">×1</button><button data-speed="4" class="on">×4</button><button data-speed="16">×16</button>
+    <button id="demo">run the tunnel demo</button><button id="reset">reset</button></div>
+  <h3>Host</h3><div id="status"></div>
+  <h3>Last battle</h3><div id="battle">—</div>
+  <h3>Events</h3><div id="log"></div>
+</div>
+<script src="../../alien-strike/src/core/util.js"></script>
+<script>window.AS.Data = window.AS.Data || {};</script>
+<script src="../data/palettes.js"></script>
+<script src="../data/factions.js"></script>
+<script src="../data/buildings.js"></script>
+<script src="../conquest/conquest.js"></script>
+<script src="../conquest/data/allegiances.js"></script>
+<script src="../conquest/data/troops.js"></script>
+<script src="../armies/armies.js"></script>
+<script src="../armies/core/stats.js"></script>
+<script src="../armies/core/ground.js"></script>
+<script src="../armies/core/autoresolve.js"></script>
+<script src="../armies/core/orders.js"></script>
+<script src="../armies/core/sim.js"></script>
+<script src="../armies/data/scenario_tunnel.js"></script>
+<script>
+/* A debug view of the army layer on the Tunnel Test scenario. Pure diagnostics:
+ * flat colours for terrain, rings for places, discs for armies (hollow = far,
+ * simulated offscreen), the dragon as a red diamond, routes as lines. The real
+ * game's look is untouched; nothing here is loaded by index.html.
+ * ?scale=16 sets pixels per cell. */
+const A = AS.Armies, O = A.Orders, SC = A.Scenarios.tunnel;
+const q = new URLSearchParams(location.search);
+const PX = +(q.get('scale') || 16), CELL = SC.CELL, K = PX / CELL;
+const cv = document.getElementById('map'), ctx = cv.getContext('2d');
+cv.width = 56 * PX; cv.height = 30 * PX;
+const COL = { plain: '#4d5a37', road: '#8a7a55', forest: '#2f4527', hill: '#6b6644', mountain: '#5a5550', deep: '#1d3550', shallow: '#3c6a80', bridge: '#9a8460', tunnel: '#2a2420', cave: '#33261c', town: '#7a6a50', fort: '#5e5048' };
+const SIDE = { human: '#e8c050', undead: '#9a6ad8', wild: '#c06040' };
+let W, mode = 'dragon', speed = 4, demoStep = null;
+function reset() {
+  W = SC.create({ viewR: 700 });
+  W.sim.on((e) => {
+    if (e.type === 'lod' && e.army !== 'host') return;
+    const t = String(Math.round(e.t)).padStart(4) + 's ';
+    const txt = e.text || e.reason || e.passage || e.location || e.lod || e.winner || e.to || '';
+    logEl.textContent = t + e.type + ' ' + (e.army || e.battle || '') + ' ' + txt + '\n' + logEl.textContent;
+    if (e.type === 'battle-end') showBattle(e.battle);
+  });
+  logEl.textContent = ''; battleEl.textContent = '—'; demoStep = null;
+  W.sim.setDragon({ side: 'human', x: W.points.muster.x + 80, y: W.points.muster.y - 160 });
+}
+const logEl = document.getElementById('log'), battleEl = document.getElementById('battle'), statusEl = document.getElementById('status');
+function showBattle(id) {
+  const B = W.sim.battles.find((b) => b.id === id);
+  battleEl.textContent = id + ' at ' + (B.location || B.x + ',' + B.y) + ' · ' + B.terrain + ' · ' + B.mode + ' (dragon ' + (B.dragon ? 'joins' : 'absent: ' + B.dragonWhy) + ')\n' +
+    'winner ' + B.result.winner + ' (' + B.result.reason + ', ' + B.result.rounds + ' rounds)\n' +
+    'attacker lost ' + JSON.stringify(B.result.attacker.casualties) + '\ndefender lost ' + JSON.stringify(B.result.defender.casualties) + '\n' + B.result.log.join('\n');
+}
+const ORDERS = [
+  ['follow dragon', () => O.follow()], ['hold', () => O.hold()],
+  ['enter Deepdelve', () => O.enter('deepdelve')], ['enter Troll Cave', () => O.enter('trollcave')],
+  ['attack Blackspire', () => O.attack('blackspire')], ['defend Blackspire', () => O.defend('blackspire')],
+  ['retreat', () => O.retreat()],
+];
+const ob = document.getElementById('orders');
+for (const [label, f] of ORDERS) { const b = document.createElement('button'); b.textContent = label; b.onclick = () => give(f()); ob.appendChild(b); }
+function give(o) { const r = W.sim.order('host', o); if (!r.ok) logEl.textContent = 'REFUSED: ' + r.reason + '\n' + logEl.textContent; }
+const bl = document.getElementById('blocks');
+for (const id of ['deepdelve', 'oldmine', 'northbridge', 'fortbridge']) {
+  const b = document.createElement('button'); bl.appendChild(b);
+  const sync = () => { const p = W.ground.byId[id]; b.textContent = (p.blocked ? 'open ' : 'block ') + p.name; b.className = p.blocked ? 'on' : ''; };
+  b.onclick = () => { W.ground.setBlocked(id, !W.ground.byId[id].blocked); sync(); };
+  b.sync = sync;
+}
+const syncBlocks = () => [...bl.children].forEach((b) => b.sync());
+document.querySelectorAll('[data-mode]').forEach((b) => b.onclick = () => { mode = b.dataset.mode; document.querySelectorAll('[data-mode]').forEach((x) => x.className = x === b ? 'on' : ''); document.getElementById('mode').textContent = mode === 'dragon' ? 'move the dragon' : 'order the Host to march there'; });
+document.querySelectorAll('[data-speed]').forEach((b) => b.onclick = () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach((x) => x.className = x === b ? 'on' : ''); });
+cv.onclick = (ev) => {
+  const r = cv.getBoundingClientRect(), x = (ev.clientX - r.left) * (cv.width / r.width) / K, y = (ev.clientY - r.top) * (cv.height / r.height) / K;
+  if (mode === 'dragon') W.sim.setDragon({ side: 'human', x, y }); else give(O.move(x, y));
+};
+document.getElementById('reset').onclick = () => { reset(); syncBlocks(); };
+// the demonstration: the dragon waits outside the western mouth; the Host goes through and storms Blackspire
+document.getElementById('demo').onclick = () => {
+  reset(); syncBlocks();
+  const P = W.points;
+  W.sim.setDragon({ side: 'human', x: P.tunnelWest.x - 160, y: P.tunnelWest.y - 120 });
+  give(O.enter('deepdelve'));
+  demoStep = () => { const h = W.host; if (h.status === 'idle' && h.order && h.order.kind === 'enter') { give(O.attack('blackspire')); demoStep = null; } };
+};
+function draw() {
+  const G = W.ground;
+  for (let j = 0; j < G.H; j++) for (let i = 0; i < G.W; i++) {
+    const k = j * G.W + i, kind = A.Ground.KINDS[G.kinds[k]], p = G.pass[k] >= 0 ? G.passages[G.pass[k]] : null;
+    ctx.fillStyle = p && p.blocked ? '#401818' : COL[kind.key] || '#444';
+    ctx.fillRect(i * PX, j * PX, PX, PX);
+  }
+  ctx.font = '10px monospace'; ctx.fillStyle = '#ddd';
+  for (const p of G.passages) { const c = G.centre(p.cells[Math.floor(p.cells.length / 2)]); ctx.fillText(p.name + (p.blocked ? ' (blocked)' : ''), c.x * K - 30, c.y * K - PX * 0.8); }
+  for (const L of W.sim.locations) {
+    ctx.strokeStyle = SIDE[L.owner] || '#aaa'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(L.x * K, L.y * K, L.r * K, 0, Math.PI * 2); ctx.stroke();
+    const n = L.garrison.reduce((s, g) => s + g.count, 0);
+    ctx.fillStyle = '#fff'; ctx.fillText(L.name + (n ? ' [' + n + ']' : ''), L.x * K - 24, L.y * K + L.r * K + 11);
+  }
+  const D = W.sim.dragon, V = D;
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(V.x * K, V.y * K, W.sim.viewR * K, 0, Math.PI * 2); ctx.stroke();
+  for (const a of W.sim.armies.values()) {
+    if (!a.alive) continue;
+    if (a.plan) {
+      ctx.strokeStyle = 'rgba(255,230,160,0.55)'; ctx.setLineDash([4, 3]); ctx.beginPath();
+      ctx.moveTo(a.rx * K, a.ry * K); for (const p of a.plan.route.pts) ctx.lineTo(p[0] * K, p[1] * K); ctx.stroke(); ctx.setLineDash([]);
+    }
+    const n = a.stacks.reduce((s, x) => s + x.count, 0), r = 4 + Math.sqrt(n) * 1.2;
+    ctx.beginPath(); ctx.arc(a.rx * K, a.ry * K, r, 0, Math.PI * 2);
+    if (a.lod === 'near') { ctx.fillStyle = SIDE[a.side] || '#ccc'; ctx.fill(); } else { ctx.strokeStyle = SIDE[a.side] || '#ccc'; ctx.lineWidth = 2; ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.fillText(n + ' ' + a.status, a.rx * K + r + 2, a.ry * K + 3);
+  }
+  ctx.fillStyle = '#ff4030'; ctx.beginPath(); ctx.moveTo(D.x * K, D.y * K - 8); ctx.lineTo(D.x * K + 7, D.y * K); ctx.lineTo(D.x * K, D.y * K + 8); ctx.lineTo(D.x * K - 7, D.y * K); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.fillText('dragon', D.x * K + 9, D.y * K + 3);
+  const h = W.host;
+  statusEl.textContent = 't ' + Math.round(W.sim.t) + ' s · ' + (h.alive ? h.status : 'routed') + ' · ' + O.describe(W.sim, h.order) + '\n' +
+    'near/far: ' + h.lod + (h.passage ? ' · inside ' + G.byId[h.passage].name : '') + ' · morale ' + h.morale.toFixed(2) + '\n' +
+    h.stacks.map((s) => s.count + ' × ' + A.Stats.profile(s.troop).name).join('\n');
+}
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (speed) { W.sim.step(dt * speed); if (demoStep) demoStep(); }
+  W.sim.frame(); draw();
+  requestAnimationFrame(loop);
+}
+reset(); syncBlocks();
+window.__armies = { get W() { return W; }, A };
+requestAnimationFrame(loop);
+</script>
+</body></html>
