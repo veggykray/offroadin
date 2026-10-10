@@ -153,6 +153,7 @@
       this.prompts(ctx, g, W, H, s);
       if (AS.Voices) AS.Voices.draw(ctx, g, W, H, s);
       this.messages(ctx, g, W, H, s);
+      if (g.armies && AS.ArmyTest) AS.ArmyTest.drawHUD(ctx, g, W, H, s);
       if (g.player.down > 0 && g.player.fall <= 0) this.downBanner(ctx, g, W, H, s);
       ctx.restore();
     },

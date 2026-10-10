@@ -162,8 +162,8 @@
       }
       // perception
       this.scanT = (this.scanT || 0) - dt;
-      if (this.target && (!this.target.alive || this.target.targetable === false)) this.target = null;
-      if (this.scanT <= 0) {
+      if (this.target && (!this.target.alive || this.target.targetable === false || this.noFight)) this.target = null;
+      if (this.scanT <= 0 && !this.noFight) { // (an army falling back does not stop to fight: src/game/armies.js)
         this.scanT = 0.45 + Math.random() * 0.3;
         const sight = this.tdef.ranged ? this.tdef.ranged.range + 60 : this.tdef.throwRock ? this.tdef.throwRock.range : 240;
         const t = this.tdef.passive && !this.provoked ? null : g.nearestFoe(this.team, this.x, this.y, this.state === 'guard' && !this.provoked ? Math.min(sight, 280) : sight, { prefer: this.tdef.ranged && this.tdef.ranged.buildingPref ? (e) => e.isBuilding : (e) => !e.isBuilding && !e.isDragon });
@@ -365,6 +365,17 @@
       // faction pennant dot and a health bar when hurt
       const top = y - oy - this.hc * 2 - 6;
       if (this.faction) { ctx.fillStyle = this.faction.def.color; ctx.fillRect(Math.round(x - ox) - 1, Math.round(top), 3, 3); }
+      // an army's commander (src/game/armies.js): a crest pennant and the name
+      if (this.cmdrName) {
+        ctx.save();
+        const cx = Math.round(x - ox), cy = Math.round(top) - 4;
+        ctx.fillStyle = '#2a1c10'; ctx.fillRect(cx, cy - 12, 1, 14);
+        ctx.fillStyle = this.crest || '#e8c050'; ctx.beginPath(); ctx.moveTo(cx + 1, cy - 12); ctx.lineTo(cx + 9, cy - 9); ctx.lineTo(cx + 1, cy - 6); ctx.fill();
+        ctx.font = R.textFont || 'bold 9px Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = 'rgba(0,0,0,0.75)'; ctx.fillText(this.cmdrName, cx + 1, cy - 15);
+        ctx.fillStyle = '#ffe7a8'; ctx.fillText(this.cmdrName, cx, cy - 16);
+        ctx.restore();
+      }
       if (this.hpBarT > 0 && this.hp < this.maxHp) {
         const w = Math.max(12, this.r * 2), bx = Math.round(x - ox - w / 2), by = Math.round(top - 4);
         ctx.globalAlpha = Math.min(1, this.hpBarT);

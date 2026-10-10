@@ -135,6 +135,33 @@ the ground beneath it; its tunables live in `MT.SHADOW` in
 Khaz Durn, the dwarf hold, is carved into the Wall (`hold` in the map's
 relief) with an approach yard of halls, a smithy and watchtowers.
 
+### The Army Command Test
+
+`index.html?world=army` (also "Army Command Test" on the title menu) is a small
+development scenario for armies that act without the dragon
+(`maps/armytest.js`). South of the Greyspine, a mountain wall armies cannot
+cross, stand your castle and the village of Hollowford. The Greyspine Pass is
+held by raiders at the Gatewatch. Delver's Door leads underground through the
+Gloomvault, where a horde waits, and up the Hollow Stair on the north side.
+Blackthorn Fort stands beyond. Red Company waits at the castle with Brannoc
+Deepdelver, a champion, and no commander. King Osric leads the Hollowford Guard
+in defending the village. At 150 s of army time, raiders march from Blackthorn on
+Hollowford.
+
+Press `K` for the command panel (the realm waits while it is open). From it you
+can assign commanders, give orders (follow, hold, defend, march, attack,
+retreat, enter a passage) and settle an underground fight (auto-resolve or
+retreat). You can also move troops between armies, save, load, send the raid at
+once and unseal the Old King's Road. The armies are listed on the right, and an
+arrow at the screen edge points to each army out of sight.
+
+The rules are in `src/game/armies.js` (armies, commanders, orders, encounters,
+save data), `src/game/routes.js` (route types and permissions) and
+`src/game/autoresolve.js` (fights settled from the existing troop statistics).
+Commanders are in `data/commanders.js`. Near the dragon an army's soldiers are
+ordinary troops. Far away it is a record that moves in fixed steps, and fights
+there are auto-resolved against the actual enemy soldiers.
+
 ## Controls
 
 | Key | Action |
@@ -261,6 +288,7 @@ URL options (add them to `index.html?…`):
 | `demo=1` | All four dragons flown by the AI |
 | `allRealms=1` | Unlock every realm and map |
 | `fps=1` | Frame-time readout |
+| `world=army` | The Army Command Test (`K`: command panel) |
 
 The browser console has `AS.Debug`:
 
@@ -292,6 +320,9 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
   Z/X and the ceiling, camera and shadow, weapons at height, a rival climbing,
   the Large and Huge Worlds, and the big worlds' relief (summits, saddles,
   ridges blocking shots).
+- `node wyrmcrown/tools/test_armies.mjs` checks the Army Command Test:
+  commander rules, route restrictions, the tunnel, auto-resolve, commander
+  defeat, movement off the field, troop conservation, save and load.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.

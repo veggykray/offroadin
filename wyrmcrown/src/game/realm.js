@@ -113,6 +113,8 @@
       this.revealArea(pt.x, pt.y, 1500);
       // the campaign in the Wide Realm (opt-in): its saved progress, its army, its clock
       if (this.opts.campaign && AS.BigCampaign) AS.BigCampaign.setup(this);
+      // the Army Command Test: independent armies and their commanders (src/game/armytest.js)
+      if (m.armyTest && AS.ArmyTest) AS.ArmyTest.setup(this);
       // a streamed map: build the world round the start now (later, round the dragon as it flies)
       if (this.stream) AS.Stream.update(this, 0, true);
       const p = this.player;
@@ -282,6 +284,8 @@
         t.dormant = false;
         t.update(dt);
       }
+      // independent armies: their soldiers on the field, or their records far away (src/game/armies.js)
+      if (this.armies && AS.Armies) AS.Armies.update(this, dt);
       for (let i = this.buildings.length - 1; i >= 0; i--) { const b = this.buildings[i]; if (b.removed) { this.buildings.splice(i, 1); continue; } b.update(dt); }
       for (const s of this.sites) s.update(dt);
       for (let i = this.pickups.length - 1; i >= 0; i--) { const q = this.pickups[i]; if (!q.alive) { this.pickups.splice(i, 1); continue; } q.update(dt); }
@@ -319,6 +323,7 @@
       // a Conquest battle has its own victory and defeat (the site, the dragon, the camp)
       if (this.opts.conquest && AS.Conquest && AS.Conquest.Battle) AS.Conquest.Battle.update(this, dt);
       else if (this.map.mountain) { /* the Mountain Test is a sandbox: no victory, no defeat */ }
+      else if (this.map.armyTest) { if (AS.ArmyTest) AS.ArmyTest.update(this, dt); } // (a sandbox too)
       else if (this.map.largeWorld && AS.LargeWorld) {
         AS.LargeWorld.update(this, dt); // the test is a sandbox: no victory, no defeat
         if (this.bc && AS.BigCampaign) AS.BigCampaign.update(this, dt); // the campaign has its own end

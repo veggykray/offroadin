@@ -7,6 +7,7 @@
  *   &god=1             invulnerable dragon      &fps=1  frame-time readout
  *   &perf=1            developer performance overlay open (F3 toggles it)
  *   ?mode=conquest     open the Conquest campaign screen (&cqdebug=1: its debug tools)
+ *   ?world=army        the Army Command Test (independent armies and commanders; K: command panel)
  *   &demo=1            all four dragons flown by the AI (attract mode)
  *   &gold=5000         starting gold for every realm (testing) */
 'use strict';
@@ -35,7 +36,7 @@
       document.addEventListener('visibilitychange', () => { if (document.hidden && this.state === 'play') this.pause(); });
       requestAnimationFrame((t) => this.loop(t));
       // ?world=large starts the Large World Test (&bench=A…H or all, &pop=N for the crowd test)
-      const m = this.params.get('world') === 'large' ? 'largeworld' : this.params.get('world') === 'huge' ? 'hugeworld' : this.params.get('world') === 'mountain' ? 'mountaintest' : this.params.get('map');
+      const m = this.params.get('world') === 'large' ? 'largeworld' : this.params.get('world') === 'huge' ? 'hugeworld' : this.params.get('world') === 'mountain' ? 'mountaintest' : this.params.get('world') === 'army' ? 'armytest' : this.params.get('map');
       const direct = m && AS.Maps.byId[m];
       if (AS.UI) AS.UI.boot(!direct);
       if (direct) {
@@ -157,10 +158,11 @@
       if (g && (this.state === 'play' || this.state === 'paused' || this.state === 'results')) {
         if (this.state === 'play') {
           if (I.hit('pause')) {
-            if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay === 'hire') AS.HirePanel.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
-          } else if (I.hit('map') && this.overlay !== 'court') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
+            if (this.overlay === 'court') AS.Court && AS.Court.close(); else if (this.overlay === 'hire') AS.HirePanel.close(); else if (this.overlay === 'armycmd') AS.ArmyPanel.close(); else if (this.overlay) this.closeOverlay(); else this.pause();
+          } else if (I.hit('map') && this.overlay !== 'court' && this.overlay !== 'armycmd') { if (this.overlay === 'map') this.closeOverlay(); else this.openOverlay('map'); }
           else if (I.hit('town') && AS.Court && !g.opts.conquest) AS.Court.toggle(g);
           else if (I.hit('highFlight') && g.map.highFlight) { g.highFlight = !g.highFlight; g.msg(g.highFlight ? 'HIGH FLIGHT — H TO DESCEND' : 'BACK DOWN TO THE FIGHT', '#cfe8ff', 2); }
+          else if (g.armies && I.hit('command') && AS.ArmyPanel && (!this.overlay || this.overlay === 'armycmd')) AS.ArmyPanel.toggle(g);
           else if (g.bc && I.hit('hire') && AS.HirePanel && this.overlay !== 'court' && this.overlay !== 'map') AS.HirePanel.toggle(g);
           else if (g.bc && (I.hit('army') || I.hit('warband')) && !this.overlay) AS.BigCampaign.toggleMode(g); // (the campaign's army follows the dragon: G holds or follows too)
           else if (I.hit('warband') && AS.WarMap && this.overlay !== 'court' && !g.bc) { if (this.overlay === 'map') this.closeOverlay(); else AS.WarMap.openOrders(g); }
