@@ -313,7 +313,9 @@
       // high flight (large maps, H): the view widens to twice the distance (the terrain switches to its far layer)
       this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1) * (this.highFlight ? 0.5 : 1) * (this.camZoom || 1);
       const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z + (this.camLift || 0);
-      this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
+      const V = !this.demo && this.cmd && this.cmd.on && this.cmd.view; // (Command Mode: the view is panned with the movement keys, src/game/command.js)
+      if (V) this.camera.update(dt, V.x, V.y, 0, 0);
+      else this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
       if (this.demo) { this.updateRegion(dt); return; }
       this.exploreT = (this.exploreT || 0) - dt;
       if (this.exploreT <= 0) { this.exploreT = 0.3; this.revealArea(p.x, p.y, 900); if (AS.Factions) AS.Factions.reveal(this); }

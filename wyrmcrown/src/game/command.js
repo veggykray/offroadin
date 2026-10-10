@@ -1,9 +1,8 @@
 /* WYRMCROWN — COMMAND MODE: direct control of your soldiers on the ground.
  *
  * C (or the COMMAND button) switches between flying the dragon and commanding.
- * While commanding, the dragon hangs in the air where it is (W still beats the
- * wings, A/D still turn: that moves the view), the mouse no longer casts or
- * breathes, and:
+ * While commanding, the dragon hangs in the air where it is, W A S D (or the
+ * arrows) pan the view instead of flying, the mouse no longer casts or breathes, and:
  *   drag a box            select the soldiers under it (any mix of types)
  *   click a soldier       select it; SHIFT-click adds or removes one
  *   double-click          every soldier of that type near it
@@ -45,6 +44,7 @@
     SAME_R: 560,      // a double-click selects soldiers of the type this close
     DRAG_PX: 8,       // a press that moves less than this is a click, not a box
     DBL_T: 0.38,      // seconds between the clicks of a double-click
+    PAN: 900,         // how fast W A S D move the view while commanding (units a second)
   };
 
   const Command = {
@@ -57,6 +57,9 @@
       if (C.on === on) return;
       C.on = on; C.drag = null;
       this.closeMenu();
+      // the view stays put (the movement keys pan it) until you fly again
+      const cam = g.camera;
+      C.view = on ? { x: cam.x + cam.w / 2, y: cam.y + cam.h / 2 } : null;
       if (on) g.msg('COMMAND MODE — DRAG TO SELECT · CLICK GROUND TO MOVE · CLICK A FOE TO ATTACK · C TO FLY', '#bfe8a8', 3.5);
       else { g.msg('BACK TO THE DRAGON', '#ffe7a8', 1.6); }
       AS.Audio.sfx('ui_click');
@@ -106,11 +109,13 @@
     tol(g, px) { const R = AS.Renderer; return px * (R.dpr || 1) / R.worldScale(g.camera); }, // CSS pixels → world units
     pickUnit(g, w, pred) {
       let best = null, bd = 1e9;
-      const slack = this.tol(g, 10);
-      for (const e of g.near(w.x, w.y + 12, 90)) {
+      const slack = this.tol(g, 12);
+      for (const e of g.near(w.x, w.y + 20, 110)) {
         if (!pred(e)) continue;
-        const d = Math.hypot(e.x - w.x, e.y - (e.hc || 8) * 0.55 - w.y);
-        if (d < (e.hitR || e.r || 8) + slack && d < bd) { bd = d; best = e; }
+        // the figure stands from its feet up to its head: a click anywhere on it counts
+        const top = e.y - (e.hc || 8) * 1.8, cy = U.clamp(w.y, top, e.y);
+        const d = Math.hypot(e.x - w.x, cy - w.y);
+        if (d < (e.hitR || e.r || 8) * 0.8 + slack && d < bd) { bd = d; best = e; }
       }
       return best;
     },
@@ -170,6 +175,12 @@
       this.live(g);
       if (!C.on || g.uiBlocking) { C.drag = null; return; }
       const shift = I.keys.has('ShiftLeft') || I.keys.has('ShiftRight');
+      // W A S D (or the arrows) pan the view
+      if (C.view) {
+        const sp = CFG.PAN / Math.max(0.3, g.camera.zoom || 1);
+        C.view.x = U.clamp(C.view.x + ((I.down('right') ? 1 : 0) - (I.down('left') ? 1 : 0)) * sp * dt, 0, g.map.w);
+        C.view.y = U.clamp(C.view.y + ((I.down('back') ? 1 : 0) - (I.down('forward') ? 1 : 0)) * sp * dt, 0, g.map.h);
+      }
       if (m.lPressed) { if (C.menu) this.closeMenu(); C.drag = { x0: m.x, y0: m.y, x1: m.x, y1: m.y, shift }; }
       if (C.drag && m.l) { C.drag.x1 = m.x; C.drag.y1 = m.y; }
       if (C.drag && (m.lReleased || !m.l)) {
@@ -185,7 +196,7 @@
       C.last = { t: now, x: sx, y: sy };
       const H = this.under(g, sx, sy), sel = this.live(g);
       if (H.own) {
-        if (dbl) { C.last = null; return this.selectSame(g, H.own); }
+        if (dbl && !shift) { C.last = null; return this.selectSame(g, H.own); }
         if (shift) { if (H.own.selected) this.deselect(g, H.own); else this.select(g, [H.own], true); }
         else this.select(g, [H.own], false);
         return;
@@ -502,7 +513,7 @@
         [sel.length ? sel.length + ' selected: ' + bits.join(', ') : 'Nothing selected: drag a box around your soldiers', '#f0e2c0'],
       ];
       if (sel.length) lines.push([who, '#c8b898']);
-      lines.push(['Click ground: move · click a foe: attack · right-click: more · C: fly', '#a89878']);
+      lines.push(['Click ground: move · click a foe: attack · right-click: more · WASD: look · C: fly', '#a89878']);
       const pw = 470 * s, lh = 17 * s, px = W / 2 - pw / 2, py = H - (lines.length * lh + 16 * s) - 64 * s;
       ctx.fillStyle = 'rgba(14,9,5,0.78)'; ctx.fillRect(px, py, pw, lines.length * lh + 14 * s);
       ctx.strokeStyle = 'rgba(160,230,130,0.6)'; ctx.lineWidth = 1.2 * s; ctx.strokeRect(px, py, pw, lines.length * lh + 14 * s);

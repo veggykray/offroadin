@@ -63,11 +63,11 @@
         if (mode === 'mouse' && I.mouse.inside) inp.steer = { x: w.x, y: w.y + d.z };
       }
       const m = I.mouse;
-      // Command Mode (src/game/command.js): the mouse commands the soldiers and the dragon
-      // hangs in the air where it is unless W beats the wings
+      // Command Mode (src/game/command.js): the mouse commands the soldiers, the movement
+      // keys pan the view, and the dragon hangs in the air where it is
       if (g.cmd && g.cmd.on) {
         dblClicked = false; inp.steer = null;
-        if (!I.down('forward') && !(pad && I.padState.moveY < -0.25)) inp.throttle = -1;
+        inp.throttle = -1; inp.turn = 0; inp.dive = false; inp.loop = false; inp.sprint = false;
         inp.fire = false; inp.breath = I.down('breath');
         if (this.quarry) this.stopHunt(d);
         return;

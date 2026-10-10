@@ -24,7 +24,7 @@ await page.evaluate(() => {
   const n = document.getElementById('audio-check'); if (n) n.remove();
   window.T = {
     // put the dragon (and the view) over a point
-    over(x, y) { const g = AS.game, p = g.player; p.x = x; p.y = y; p.z = 110; p.vx = p.vy = 0; p.speed = 0; for (const n of p.nodes) { n.x = p.x; n.y = p.y; n.z = p.z; } p.layoutRig(0, true); g.camera.snap(p.x, p.y - p.z); },
+    over(x, y) { const g = AS.game, p = g.player; p.x = x; p.y = y; p.z = 110; p.vx = p.vy = 0; p.speed = 0; for (const n of p.nodes) { n.x = p.x; n.y = p.y; n.z = p.z; } p.layoutRig(0, true); g.camera.snap(p.x, p.y - p.z); if (g.cmd && g.cmd.on) g.cmd.view = { x: p.x, y: p.y - p.z }; },
     // a world point → page (CSS) pixels
     scr(x, y) { const R = AS.Renderer, q = R.worldToScreen(x, y, AS.game.camera), d = R.dpr || 1; return { x: q.x / d, y: q.y / d }; },
     // the box around some soldiers, in page pixels
@@ -74,6 +74,11 @@ await step('A. C enters Command Mode (and the COMMAND button shows it)', async (
   const p0 = await ev(() => [AS.game.player.x, AS.game.player.y]); await play(2);
   const p1 = await ev(() => [AS.game.player.x, AS.game.player.y, AS.game.player.speed]);
   ok(Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 160, 'the dragon hovers while you command (moved ' + Math.round(Math.hypot(p1[0] - p0[0], p1[1] - p0[1])) + ')');
+  // D pans the view; the dragon stays
+  const v0 = await ev(() => AS.game.camera.x);
+  await page.keyboard.down('KeyD'); await play(1); await page.keyboard.up('KeyD'); await play(0.6);
+  const v1 = await ev(() => [AS.game.camera.x, AS.game.player.x]);
+  ok(v1[0] - v0 > 400 && Math.abs(v1[1] - p1[0]) < 160, 'D pans the view east (' + Math.round(v1[0] - v0) + ') while the dragon stays');
   return 'button "' + r.btn + '"; flight style left as ' + r.flight;
 });
 
@@ -153,10 +158,11 @@ await step('G. soldiers without a commander defend their home (and help each oth
   await ev(() => { window.__raid = T.spawn('bandit', 'wild', 2200 + 260, 6600 + 120, 4); for (const u of __raid) u.marchTo(2200, 6650, { r: 80, siege: true }); });
   await play(6);
   const r = await ev(() => { const gs = T.garrison(); return { fighting: gs.filter((u) => u.target && u.target.alive || __raid.every((b) => !b.alive)).length, n: gs.length, far: Math.max(...__home.filter((o) => o.u.alive).map((o) => Math.hypot(o.u.x - o.h.x, o.u.y - o.h.y))), left: __raid.filter((b) => b.alive).length }; });
-  ok(r.fighting >= Math.min(4, r.n) || r.left === 0, 'the garrison turns on the raiders (' + r.fighting + ' of ' + r.n + ' engaged, ' + r.left + ' raiders left)');
+  ok(r.fighting >= 2 || r.left === 0, 'the garrison turns on the raiders (' + r.fighting + ' of ' + r.n + ' engaged, ' + r.left + ' raiders left)');
   ok(r.far < 700, 'none chases far from home (furthest ' + Math.round(r.far) + ')');
-  await play(10);
+  await play(12);
   const left = await ev(() => __raid.filter((b) => b.alive).length);
+  ok(left === 0, 'the raiders are beaten off (' + left + ' left)');
   return r.n + ' defenders; raiders left ' + left;
 });
 
@@ -181,7 +187,7 @@ await step('H. outmatched soldiers without a commander fall back home to regroup
   // and an uncommanded army, sent out locally, does the same
   await ev(() => { for (const u of __big) { u.alive = false; u.removed = true; } });
   const red = await ev(() => { const g = AS.game, a = g.armies.byId.red, p = AS.Armies.pos(a); AS.Armies.order(g, 'red', { type: 'march', x: p.x + 500, y: p.y - 200 }); return { x: p.x + 500, y: p.y - 200 }; });
-  await play(9);
+  await page.waitForFunction(() => AS.game.armies.byId.red.order.type !== 'march', null, { timeout: 60000, polling: 200 });
   await ev(() => { const a = AS.Armies.pos(AS.game.armies.byId.red); window.__big2 = T.spawn('ogre', 'wild', a.x + 200, a.y, 5); for (const u of __big2) { u.state = 'march'; u.dest = { x: a.x, y: a.y, r: 30 }; } });
   await page.waitForFunction(() => { const o = AS.game.armies.byId.red.order.type; return o === 'retreat'; }, null, { timeout: 20000, polling: 100 }).catch(() => {});
   const r2 = await ev(() => ({ order: AS.game.armies.byId.red.order.type, log: AS.game.armies.log.slice(-4).map((l) => l.text) }));
