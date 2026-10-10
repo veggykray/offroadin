@@ -491,6 +491,7 @@
       if (AS.Life) AS.Life.collect(this, list, x0, y0, x1, y1);
       if (AS.Scenery) AS.Scenery.collect(this, list, x0, y0, x1, y1);
       if (this.mtn) AS.Mountain.collect(this, list, x0, y0, x1, y1);
+      else if (AS.Altitude) AS.Altitude.collectMist(this, list, x0, y0, x1, y1); // (the mist in the air: game/altitude.js)
     }
     drawGround(ctx, ox, oy, R) {
       if (AS.Scenery) AS.Scenery.drawGround(ctx, ox, oy, R, this);

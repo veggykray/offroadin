@@ -15,6 +15,10 @@
  *  - an AI dragon fighting one that is high climbs to meet it (ai.js duel)
  *  - the camera slides down toward the ground and widens as the dragon climbs,
  *    and the shadow grows, fades and softens with the height
+ *  - MIST: thin wisps hang in the air 190–360 above the ground, thickest over rivers,
+ *    lakes and woods. Below them they are a faint veil overhead; climbing through them
+ *    they thin around the dragon; above them they drift under it — the plainest sign
+ *    of being high. Laid out in cells from the map's seed, so any size of world works.
  *
  * The Mountain Test (game/mountain.js) has its own vertical flight over real
  * terrain, with the same keys, ceiling and shadow; this module stands aside there.
@@ -79,6 +83,75 @@
         A.show = U.damp(A.show, p.altHold != null || c > AS.Dragon.FLIGHT.zHigh + 12 ? 1 : 0, 3, dt);
       } else { A.lift = U.damp(A.lift, 0, 3, dt); A.zoom = U.damp(A.zoom, 1, 2, dt); A.show = U.damp(A.show, 0, 3, dt); }
       g.camLift = A.lift; g.camZoom = A.zoom;
+    },
+
+    /* ---------------- the mist ---------------- */
+    MIST: { cell: 1100, alt0: 190, alt1: 360, alpha: 0.72 },
+    mistSprites() {
+      if (this._mistImg) return this._mistImg;
+      const rng = new U.RNG(4711), out = [];
+      for (let i = 0; i < 4; i++) {
+        const cv = AS.Forge.canvas(256, 112), c = cv.getContext('2d');
+        for (let j = 0; j < 9; j++) {
+          const x = 40 + rng.next() * 176, y = 40 + rng.next() * 32, r = 22 + rng.next() * 30;
+          const gr = c.createRadialGradient(x, y, 0, x, y, r);
+          gr.addColorStop(0, 'rgba(255,255,255,0.55)'); gr.addColorStop(0.55, 'rgba(244,248,255,0.28)'); gr.addColorStop(1, 'rgba(240,246,255,0)');
+          c.fillStyle = gr; c.beginPath(); c.ellipse(x, y, r * 1.5, r * 0.75, 0, 0, U.TAU); c.fill();
+        }
+        out.push(cv);
+      }
+      return (this._mistImg = out);
+    },
+    // the wisps of one cell (made once, from the map's seed and the cell)
+    mistCell(g, ci, cj) {
+      const M = this.MIST, C = g._mist || (g._mist = new Map()), key = ci * 100003 + cj;
+      let L = C.get(key);
+      if (L) return L;
+      if (C.size > 600) C.clear();
+      const rng = new U.RNG(((g.map.seed || 1) * 2654435761 ^ (ci * 73856093) ^ (cj * 19349663)) >>> 0), T = g.terrain, img = this.mistSprites();
+      L = [];
+      for (let n = 0; n < 5; n++) {
+        const u = rng.next() * M.cell, v = rng.next() * M.cell, x = ci * M.cell + u, y = cj * M.cell + v;
+        if (x < 0 || y < 0 || x > g.map.w || y > g.map.h) continue;
+        // thickest over water and woods, thin over open ground
+        let k = 0.5;
+        try {
+          if (T.gs && T.gWater) { const wd = T.gs(T.gWater, x, y); k = wd < 0 ? 1 : wd < 500 ? 0.9 : 0.5; }
+          if (T.gs && T.gForest && k < 0.8 && T.gs(T.gForest, x, y) > 0.4) k = 0.7;
+        } catch (e) { k = 0.5; }
+        if (rng.next() > k) continue;
+        const w = { x0: x, gy: y, alt: M.alt0 + rng.next() * (M.alt1 - M.alt0), w: 240 + rng.next() * 180, k: 0.55 + rng.next() * 0.45, vx: 5 + rng.next() * 6, u, ci, img: img[(rng.next() * img.length) | 0], x: x, sortY: 0, a: 0 };
+        w.draw = (ctx, ox, oy) => {
+          if (w.a < 0.01) return;
+          const Y = w.gy - w.alt, h = w.w * 0.44;
+          ctx.save(); ctx.globalAlpha = w.a;
+          ctx.drawImage(w.img, w.x - w.w / 2 - ox, Y - h / 2 - oy, w.w, h);
+          ctx.restore();
+        };
+        L.push(w);
+      }
+      C.set(key, L);
+      return L;
+    },
+    collectMist(g, list, x0, y0, x1, y1) {
+      const M = this.MIST, p = g.player, pz = p ? p.z : 60, t = g.time || 0;
+      // (seen from below, the veil overhead stays faint; it thickens as the dragon nears it)
+      const veil = 0.15 + 0.85 * sstep(90, 200, pz);
+      const ci0 = Math.floor((x0 - 400) / M.cell), ci1 = Math.floor((x1 + 400) / M.cell);
+      const cj0 = Math.floor(y0 / M.cell), cj1 = Math.floor((y1 + M.alt1 + 200) / M.cell);
+      for (let cj = cj0; cj <= cj1; cj++) for (let ci = ci0; ci <= ci1; ci++) {
+        for (const w of this.mistCell(g, ci, cj)) {
+          // drifting with the wind across its cell, fading out at one side and in at the other
+          const u = (w.u + t * w.vx) % M.cell;
+          w.x = ci * M.cell + u;
+          const Y = w.gy - w.alt;
+          if (w.x + w.w < x0 || w.x - w.w > x1 || Y + w.w * 0.3 < y0 || Y - w.w * 0.3 > y1) continue;
+          const below = pz > w.alt + 8;
+          w.sortY = below && p ? p.sortY - 0.5 : 1e9;
+          w.a = M.alpha * w.k * sstep(0, 220, u) * (1 - sstep(M.cell - 220, M.cell, u)) * (1 - 0.65 * (1 - sstep(10, 70, Math.abs(pz - w.alt)))) * (below ? 1 : veil);
+          list.push(w);
+        }
+      }
     },
 
     /* the altitude gauge (right edge), shown while the dragon is above its usual height */

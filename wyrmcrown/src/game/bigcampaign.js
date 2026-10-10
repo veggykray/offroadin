@@ -33,10 +33,31 @@
   const START_GOLD = 250, BASE_LEAD = 60;
   const LORD_TOWN = { x: 25000, y: 6700 }, LORD_GATE = 2.63, LORD_HOME_R = 3400;
   // leadership (renown) for taking a place, and the spoils found there the first time
-  const LEAD = { village: 10, goldmine: 15, tradepost: 10, watchtower: 5, bridge: 10, fort: 40, castle: 70, shrine: 5, magicwell: 10, grove: 10, wizardtower: 15, ruins: 10, cave: 10, nest: 10 };
-  const SPOILS = { village: 40, goldmine: 80, fort: 200, castle: 400, bridge: 30, wizardtower: 60 };
+  const LEAD = { village: 10, goldmine: 15, tradepost: 10, watchtower: 5, bridge: 10, fort: 40, castle: 70, shrine: 5, magicwell: 10, grove: 10, wizardtower: 15, ruins: 10, cave: 10, nest: 10,
+    town: 25, walledtown: 50, stronghold: 70, farmstead: 8, shire: 15, elfvillage: 20, abbey: 15, inn: 8, banditcamp: 15, dungeon: 25 };
+  const SPOILS = { village: 40, goldmine: 80, fort: 200, castle: 400, bridge: 30, wizardtower: 60, town: 120, walledtown: 300, stronghold: 400, farmstead: 30, shire: 60, elfvillage: 80, abbey: 60, inn: 40 };
   // what each kind of place recruits (Conquest recruitment kinds, conquest/data/sites.js)
-  const HIRE = { village: ['village'], fort: ['barracks', 'archery_range'], castle: ['knight_barracks', 'archery_range', 'barracks'], watchtower: ['archery_range'], cave: ['wolf_den'], ruins: ['bandit_camp'], grove: ['enchanted_grove'] };
+  const HIRE = { village: ['village'], fort: ['barracks', 'archery_range'], castle: ['knight_barracks', 'archery_range', 'barracks'], watchtower: ['archery_range'], cave: ['wolf_den'], ruins: ['bandit_camp'], grove: ['enchanted_grove'],
+    town: ['village', 'barracks'], walledtown: ['barracks', 'archery_range', 'knight_barracks'], stronghold: ['knight_barracks', 'archery_range', 'barracks'], farmstead: ['village'], shire: ['village'], elfvillage: ['enchanted_grove'], banditcamp: ['bandit_camp'] };
+  /* the Wide Realm's places as the campaign has them: some of the Large World's villages
+   * and its castle are built as the Huge World's settlements (src/game/settlements.js),
+   * and outlaw camps and dungeons (treasure, and sometimes a relic) are added */
+  const GRAND = { ashford: 'town', kingsmead: 'walledtown', elmshade: 'elfvillage', saltmere: 'shire', eastfield: 'farmstead', brackenfold: 'farmstead', blackcrag: 'stronghold' };
+  const EXTRA = [
+    { id: 'aldricabbey', k: 'abbey', name: 'Abbey of Saint Aldric', x: 8200, y: 15000 },
+    { id: 'crossedkeys', k: 'inn', name: 'The Crossed Keys', x: 11200, y: 15300 },
+    { id: 'wolfsbane', k: 'banditcamp', name: 'Wolfsbane Stockade', x: 10000, y: 17500, guard: 'outlaws' },
+    { id: 'redcap', k: 'banditcamp', name: 'Redcap Hollow', x: 17400, y: 13200, guard: 'outlaws' },
+    { id: 'greybarrow', k: 'dungeon', name: 'Barrow of the Grey Kings', x: 18400, y: 18900, guard: 'undead' },
+    { id: 'deepdelve', k: 'dungeon', name: 'Deepdelve', x: 17200, y: 9400, guard: 'ice' },
+    { id: 'thornroot', k: 'dungeon', name: 'Thornroot Hollow', x: 7000, y: 9400, guard: 'beasts' },
+  ];
+  const DEN = {
+    outlaws: [[['bandit', 6]], [['bandit', 5], ['wolf', 2]], [['bandit', 7], ['ogre', 1]]],
+    undead: [[['skeleton', 8], ['gravehound', 2]], [['skeleton', 10]], [['skeleton', 6], ['gravehound', 3]]],
+    ice: [[['snowstalker', 4], ['troll', 1]], [['snowstalker', 5]], [['troll', 2], ['snowstalker', 2]]],
+    beasts: [[['wolf', 5], ['bear', 1]], [['bear', 2], ['wolf', 3]], [['wolf', 6]]],
+  };
   // guardians by tier, for rearranging the realm on each new campaign
   const POOLS = {
     0: [[['bandit', 3]], [['wolf', 4]], [['bandit', 2], ['wolf', 2]], [['bear', 1], ['wolf', 2]]],
@@ -65,7 +86,7 @@
       const biomeAt = (x, y) => { let b = 'neutral', best = 1e9; for (const r of base.regions) { const d = Math.hypot(x - r.x, y - r.y) / r.r; if (d < 1 && d < best) { best = d; b = r.biome; } } return b; };
       const pickGuard = (x, y, k) => {
         let t = tierAt(x, y);
-        if (k === 'fort') t = Math.max(t, 2); if (k === 'castle') t = 3;
+        if (k === 'fort' || k === 'walledtown') t = Math.max(t, 2); if (k === 'castle' || k === 'stronghold') t = 3;
         const loc = LOCAL[biomeAt(x, y)], opts = POOLS[t].slice();
         if (loc && loc[t]) opts.push(loc[t], loc[t]);
         return rng.pick(opts).map((q) => q.slice());
@@ -84,10 +105,12 @@
         const o = Object.assign({}, s);
         if (s.id === 'ravenhold') Object.assign(o, { k: 'fort', name: 'Ravenhold', x: 25900, y: 8400 });
         if (s.id === 'ravenrest') Object.assign(o, { x: 26300, y: 6100 });
+        if (GRAND[s.id]) o.k = GRAND[s.id];
         if (o.guard) o.guard = pickGuard(o.x, o.y, o.k);
-        else if (o.k === 'village' && tierAt(o.x, o.y) === 0 && Math.hypot(o.x - C.x, o.y - C.y) > 2200) unguarded.push(o);
+        else if ((o.k === 'village' || o.k === 'farmstead') && tierAt(o.x, o.y) === 0 && Math.hypot(o.x - C.x, o.y - C.y) > 2200) unguarded.push(o);
         return o;
       });
+      for (const e of EXTRA) m.sites.push(Object.assign({}, e, { guard: e.guard ? rng.pick(DEN[e.guard]).map((q) => q.slice()) : undefined }));
       // one or two of the nearby farms are held by brigands this time
       for (let i = rng.int(1, 2); i > 0 && unguarded.length; i--) { const o = unguarded.splice(rng.int(0, unguarded.length - 1), 1)[0]; o.guard = pickGuard(o.x, o.y, o.k); }
       // warbands: the isle's garrison is the Lord's own now; the others vary in strength
