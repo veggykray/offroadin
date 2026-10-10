@@ -502,7 +502,7 @@
 
     return {
       id: 'hugeworld', name: 'The Great Continent (Huge World Test)', w: W, h: W, seed: seed % 997, index: 1,
-      stream: true, riversCut: true, largeWorld: true, sandbox: true, highFlight: true, prefetchAll: true, simR: 3400, tacScale: 128,
+      stream: true, riversCut: true, largeWorld: true, sandbox: true, highFlight: true, prefetchAll: true, simR: 3400, tacScale: 128, relief: { hmax: 620, m1: 1.4 },
       blurb: 'A generated continent about 160 km across, built around the dragon as it flies.',
       difficulty: 'Test',
       provinces: prov.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y), theme: p.theme, tier: p.tier })),

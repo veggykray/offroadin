@@ -649,9 +649,13 @@
       const sy = (o.y !== undefined ? o.y : src.y) - sz;
       // a dragon flying high is out of reach of all but the longest shots: the range counts in 3D
       // (the Mountain Test checks its own, with line of sight over the terrain)
-      if (target.isDragon && target.z > 90 && !g.mtn) {
+      // (in a world with relief the heights are above the sea, and a ridge between blocks the shot: game/altitude.js)
+      const RL = target.isDragon && !g.mtn && AS.Altitude ? AS.Altitude.relief(g) : null;
+      if (target.isDragon && (target.z > 90 || RL) && !g.mtn) {
         const rng = { arrow: 380, spear: 260, ballista: 640, magic: 520, crossbow: 360, stone: 520, rock: 300 }[kind] || 400;
-        if (Math.hypot(target.x - sx, target.y - (o.y !== undefined ? o.y : src.y), target.z - sz) > rng * 1.12) return;
+        const gy = o.y !== undefined ? o.y : src.y, hs = RL ? RL.h(sx, gy) : 0, ht = RL && target._rf ? target._rf.A : (RL ? RL.h(target.x, target.y) : 0) + target.z;
+        if (Math.hypot(target.x - sx, target.y - gy, ht - hs - sz) > rng * 1.12) return;
+        if (RL && !AS.Altitude.reliefLOS(g, { x: sx, y: gy }, sz, target)) return;
       }
       const tpy = target.py !== undefined ? target.py : target.y;
       const d = Math.hypot(target.x - sx, tpy - sy);

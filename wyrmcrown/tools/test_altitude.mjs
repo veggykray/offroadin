@@ -149,6 +149,70 @@ for (const [name, q] of [['Large World', '?world=large&god=1'], ['Huge World', '
   });
 }
 
+/* ---------------- relief: the big worlds' mountains have height ---------------- */
+await test('relief: the Large World\'s ranges have height — summits above the ceiling, saddles below it', async (keep) => {
+  const page = keep(await open('?world=large&god=1'));
+  const r = await ev(page, () => {
+    const g = AS.game, R = AS.Altitude.relief(g);
+    let hi = 0, lo = 0; const crest = [];
+    for (let x = 15000; x <= 21000; x += 100) { let b = 0; for (let y = 6000; y <= 9500; y += 50) b = Math.max(b, R.h(x, y)); crest.push(b); if (b > 505) hi++; else lo++; }
+    let heart = 0; for (let s = -1400; s <= 1400; s += 50) heart = Math.max(heart, R.h(12800 + s * 0.707, 12300 - s * 0.707));
+    return { hi, lo, max: Math.max(...crest), min: Math.min(...crest), heart, flat: R.h(6400, 18200), mtn: !!g.mtn, battle: false };
+  });
+  ok(r.hi > 5 && r.lo > 10, 'the Frostspine crest has summits over the ceiling (' + r.hi + ' samples) and saddles under it (' + r.lo + ')');
+  ok(r.heart > 150 && r.heart < 400 && r.flat === 0, 'the heartland ridge stands ' + Math.round(r.heart) + ', the farmland is flat');
+  return 'Frostspine crest ' + Math.round(r.min) + '–' + Math.round(r.max) + ', heartland ridge ' + Math.round(r.heart);
+});
+
+await test('relief: a summit above the ceiling turns the dragon aside; Z climbs over a saddle', async (keep) => {
+  const page = keep(await open('?world=large&god=1'));
+  // the highest and lowest crest points of the Frostspine, and where they are
+  const P0 = await ev(page, () => {
+    const R = AS.Altitude.relief(AS.game), best = (x) => { let b = 0, by = 0; for (let y = 6000; y <= 9500; y += 25) { const h = R.h(x, y); if (h > b) { b = h; by = y; } } return [b, by]; };
+    let peak = null, sad = null;
+    for (let x = 15200; x <= 20800; x += 100) { const [h, y] = best(x); if (!peak || h > peak.h) peak = { x, y, h }; if (!sad || h < sad.h) sad = { x, y, h }; }
+    return { peak, sad };
+  });
+  ok(P0.peak.h > 505 && P0.sad.h < 480, 'a summit (' + Math.round(P0.peak.h) + ') and a saddle (' + Math.round(P0.sad.h) + ')');
+  const fly = async (pt, climb, secs) => {
+    await ev(page, (pt) => { AS.Debug.hold(false); const p = AS.game.player; p.altHold = null; p._rf = null; AS.Debug.tp(pt.x, pt.y + 900, 62); p.angle = p.velA = -Math.PI / 2; p.speed = 200; }, pt);
+    await page.keyboard.down('KeyW'); if (climb) await page.keyboard.down('KeyZ');
+    let worst = 1e9, minY = 1e9, blocked = 0, t0 = await ev(page, () => AS.game.time);
+    while ((await ev(page, () => AS.game.time)) < t0 + secs) {
+      const s = await ev(page, () => { const p = AS.game.player, R = AS.Altitude.relief(AS.game); p.angle = p.velA = -Math.PI / 2; return { clr: p._rf ? p._rf.A - R.h(p.x, p.y) : 99, y: p.y, b: p._rf ? p._rf.blocked : 0, v: p.speed }; });
+      worst = Math.min(worst, s.clr); minY = Math.min(minY, s.y); if (s.b > 0) blocked++;
+      await page.waitForTimeout(60);
+    }
+    await page.keyboard.up('KeyW'); if (climb) await page.keyboard.up('KeyZ');
+    const v = await ev(page, () => AS.game.player.speed);
+    return { worst, minY, blocked, v };
+  };
+  const a = await fly(P0.peak, false, 9);
+  ok(a.minY > P0.peak.y - 60, 'it does not cross the summit (got to y ' + Math.round(a.minY) + ', crest at ' + Math.round(P0.peak.y) + ')');
+  ok(a.blocked > 0 && a.worst > 0 && a.v > 30, 'it is turned aside, never inside the rock (closest ' + Math.round(a.worst) + '), still flying (' + Math.round(a.v) + ')');
+  const b = await fly(P0.sad, true, 14);
+  ok(b.minY < P0.sad.y - 300 && b.worst > 0, 'holding Z it climbs over the saddle (to y ' + Math.round(b.minY) + ', crest at ' + Math.round(P0.sad.y) + ', closest ' + Math.round(b.worst) + ')');
+  return 'held off the ' + Math.round(P0.peak.h) + ' summit; over the ' + Math.round(P0.sad.h) + ' saddle with Z';
+});
+
+await test('relief: a ridge between blocks a shot at the dragon', async (keep) => {
+  const page = keep(await open('?world=large&god=1'));
+  const r = await ev(page, () => {
+    const g = AS.game, p = g.player, R = AS.Altitude.relief(g), act = AS.Proj.pool.active, C = AS.Combat;
+    // across the heartland ridge (crest near 12800, 12300; the ridge runs north-east)
+    const at = (s) => [12800 + s * 0.707, 12300 - s * 0.707];
+    const [sx, sy] = at(-350), [dx, dy] = at(250);
+    AS.Debug.tp(dx, dy, 40); AS.Debug.hold(true);
+    const src = { g, x: sx, y: sy, team: 'neutral', hc: 10 };
+    g.hostile = ((h) => (a, b) => (a === 'neutral' && b === g.playerKey) || h.call(g, a, b))(g.hostile);
+    const fire = (z) => { p.z = z; p._rf = { A: R.h(p.x, p.y) + z, H: R.h(p.x, p.y), X: p.x, Y: p.y, blocked: 0, hitT: 0 }; const n = act.length; C.shoot(src, p, 'ballista'); return act.length - n; };
+    return { low: fire(40), high: fire(320), crest: Math.round(R.h(12800, 12300)), hs: Math.round(R.h(sx, sy)), hd: Math.round(R.h(dx, dy)) };
+  });
+  ok(r.low === 0, 'a ballista behind the ridge cannot shoot a dragon flying low on the far side');
+  ok(r.high === 1, 'it can when the dragon is high over the ridge');
+  return 'ridge ' + r.crest + ', shooter ground ' + r.hs + ', dragon ground ' + r.hd;
+});
+
 await browser.close();
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

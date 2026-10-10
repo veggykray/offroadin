@@ -8,7 +8,7 @@
 (function (AS) {
   const U = AS.U;
   const TIPS = [
-    { t: 0, title: 'FLIGHT', text: 'W beats your wings, S flares to brake, A/D bank. Hold SPACE to fly low — add W for a fast power dive, or S to slow right down.' },
+    { t: 0, title: 'FLIGHT', text: 'W beats your wings, S flares to brake, A/D bank. Hold SPACE to fly low — add W for a fast power dive, or S to slow right down. Hold Z to climb high, X to come down.' },
     { t: 9, title: 'WIZARD & DRAGON', text: 'Left mouse casts bolts where you aim. Right mouse (or F) breathes fire — your dragon turns its head toward the cursor.' },
     { t: 19, title: 'FOOD', text: 'Your dragon tires as it flies. Fly low and not too fast over an animal and tap E to eat it (hold E to carry it home).' },
     { t: 30, title: 'THE LAND', text: 'Neutral mines, villages and towers dot the realm. Defeat their guardians, then circle low to claim them.' },

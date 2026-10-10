@@ -25,6 +25,7 @@
     id: 'largeworld', name: 'The Wide Realm (Large World Test)', w: 28000, h: 28000, seed: 77, index: 1,
     largeWorld: true, sandbox: true, riversCut: true,
     highFlight: true,  // H zooms far out (terrain far layer)
+    relief: { hmax: 620, m1: 1.4 }, // the mountains have height for flight and line of sight (src/game/altitude.js)
     prefetchAll: true, // terrain prepared all round the view, not only ahead
     simR: 3400,        // troops beyond this distance from the dragon sleep (no combat AI)
     tacScale: 56,      // war-map resolution (units per pixel)

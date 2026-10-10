@@ -450,7 +450,7 @@
       }
       // match the foe's height a little; climb to meet one flying high (game/altitude.js)
       if (e.z < 40 && dist < 300) inp.skim = true;
-      if (e.z > AS.Dragon.FLIGHT.zHigh + 15 && dist < 1400) inp.holdZ = e.z;
+      if (e.z > AS.Dragon.FLIGHT.zHigh + 15 && dist < 1400) inp.holdZ = e.z + (e._rf ? e._rf.H : 0); // (above the sea where the world has relief)
       if (dist < 560) this.aimAt(d, inp, e);
       this.breathIfAligned(d, inp, e);
     }

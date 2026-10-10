@@ -61,6 +61,30 @@ of its blows. Poison is a timed effect (`AS.Poison`): orb stacks are capped at
 12, breath poison refreshes without stacking, and kills are credited to the
 poisoner.
 
+### Height in every world
+
+`Z` and `X` work in every world (`src/game/altitude.js`). The dragon climbs to
+and holds a height of up to 500 over the ground. The camera slides down and
+widens as it climbs, and the shadow grows, fades and softens with height. Shots
+at a dragon need range in 3D: bows and spears cannot reach one high overhead,
+but ballistae, catapults and magic reach further. From high up, the breath burns
+out before it reaches the ground. A rival dragon climbs to meet one that is
+flying high. Thin mist hangs 190 to 360 over the ground, thickest over water
+and woods.
+
+The Large and Huge Worlds and the Wide Realm campaign also have relief
+(`relief` in the map). Their mountain ranges have height, with summits and
+saddles. Rising ground must be climbed. A steep face turns the dragon to skim
+along it unless `Z` is held. Summits above the ceiling cannot be crossed, and
+a ridge between an archer and the dragon blocks the shot. The ground there is
+still painted flat; only the Mountain Test draws its relief.
+
+The Wide Realm campaign builds some of its places as the Huge World's
+settlements: Ashford is a market town, Kingsmead a walled town, Blackcrag a
+castle, Elmshade an elf village, Saltmere a shire and two farms are farmsteads.
+It adds an abbey, a roadside inn, two outlaw camps and three dungeons whose
+hoards can hold a relic.
+
 ### The Huge World Test
 
 `index.html?world=huge` (also on the title menu) is a generated continent
@@ -121,6 +145,8 @@ relief) with an approach yard of halls, a smithy and watchtowers.
 | **Space** (hold) | Fly low at your current pace. Add **W** for a fast power dive, or **S** to slow right down. Release to climb. |
 | **Space** (double-tap) | Loop the loop. Bolts, arrows and breath miss you while you are over the top. Short cooldown, a little energy. |
 | **Shift** | Sprint (burns energy) |
+| **Z** (hold) | Climb and hold the height reached, up to a ceiling of 500. High up, bows cannot reach you, but your breath burns out before the ground. |
+| **X** (hold) | Descend. **Space** drops a held height fast; back in the usual flying band the dragon keeps its own height again. |
 | **Mouse** | Aim the wizard's staff |
 | **Left click** | Cast magic bolts |
 | **Double-click an animal** | Your dragon swoops down, snatches and eats it. Any flight key breaks off the hunt. |
@@ -262,6 +288,10 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
 - `node wyrmcrown/tools/test_mountain.mjs` checks the Mountain Test: the
   ceiling, the pass, the gorge, cliff deflection, the shadow, the dwarf
   hold, army routes, line of sight and streaming.
+- `node wyrmcrown/tools/test_altitude.mjs` checks height in the other worlds:
+  Z/X and the ceiling, camera and shadow, weapons at height, a rival climbing,
+  the Large and Huge Worlds, and the big worlds' relief (summits, saddles,
+  ridges blocking shots).
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.
