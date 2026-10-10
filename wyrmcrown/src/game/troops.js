@@ -251,6 +251,8 @@
     face(t) { this.angle = Math.atan2(t.y - this.y, t.x - this.x); }
     move(mx, my, sp, dt) {
       const g = this.g;
+      // real ground (the Mountain Test): a march covers ground distance, slower uphill
+      if (g.terrain.moveScale && mx !== null && mx !== undefined) sp *= g.terrain.moveScale(this.x, this.y, mx - this.x, my - this.y);
       if (mx !== null && mx !== undefined) {
         let a = Math.atan2(my - this.y, mx - this.x);
         a = this.passableDir(a);

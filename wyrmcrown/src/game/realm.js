@@ -86,15 +86,17 @@
       // bridges that are not objectives still need their stonework
       // (a streamed map builds its bridges and lays its roads area by area: src/game/stream.js)
       if (AS.Sites && !m.stream) for (const b of m.bridges || []) if (!b.site) AS.Sites.bridge(this, b, null);
-      if (AS.Roads && !m.stream) AS.Roads.lay(this);
+      if (AS.Roads && !m.stream && !m.mountain) AS.Roads.lay(this); // (the Mountain Test paints its roads into the ground)
       if (AS.Powerups) AS.Powerups.init(this);
       // the places of the realm (ruins, hamlets, glades, graveyards…), kept clear of everything above
-      if (AS.Scenery && !m.stream) AS.Scenery.init(this);
+      if (AS.Scenery && !m.stream && !m.mountain) AS.Scenery.init(this);
       if (m.stream && AS.Stream) AS.Stream.setup(this);
       // Conquest: the defenders and the player's army take the field
       if (CQ) CQ.setup(this);
       // the Large World Test streams its armies in and out (src/game/largeworld.js)
       if (m.largeWorld && AS.LargeWorld) AS.LargeWorld.setup(this);
+      // the Mountain Test: the dragon's altitude, the ceiling, the test scenarios (src/game/mountain.js)
+      if (m.mountain && AS.Mountain) AS.Mountain.setup(this);
       // the ground is final: start the terrain workers now, so they are up (and forging
       // their trees and rocks) by the time the match begins. Until then the loading
       // screen shades the opening view here, exactly.
@@ -293,6 +295,7 @@
       if (AS.Combat && AS.Combat.update) AS.Combat.update(this, dt); // (timed poison)
       AS.Particles.update(dt);
       for (let i = this.laterQ.length - 1; i >= 0; i--) { const l = this.laterQ[i]; l.t -= dt; if (l.t <= 0) { this.laterQ.splice(i, 1); l.fn(); } }
+      if (this.mtn) AS.Mountain.update(this, dt);
       // camera: follows the dragon's body, leads its travel, pulls back with speed
       if (this.demo) this.demoCamera(dt);
       const p = this.demo ? this.focus : this.player;
@@ -302,8 +305,8 @@
       const wheel = !this.demo && AS.Input.mouse.wheel;
       if (wheel) AS.App.userZoom = U.clamp((AS.App.userZoom || 1) * (wheel > 0 ? 1 / 1.1 : 1.1), 0.8, 1.4);
       // high flight (large maps, H): the view widens to twice the distance (the terrain switches to its far layer)
-      this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1) * (this.highFlight ? 0.5 : 1);
-      const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z;
+      this.camera.baseZoom = (U.lerp(1, 0.8, zoomT) - (p.diving ? 0.03 : 0)) * (this.demo ? 1 : AS.App.userZoom || 1) * (this.highFlight ? 0.5 : 1) * (this.camZoom || 1);
+      const tx = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).x : p.x, ty = p.down > 0 && p.fall <= 0 ? this.roostOf(p.faction).y : p.y - p.z + (this.camLift || 0);
       this.camera.update(dt, tx, ty, p.down > 0 ? 0 : p.vx, p.down > 0 ? 0 : p.vy);
       if (this.demo) { this.updateRegion(dt); return; }
       this.exploreT = (this.exploreT || 0) - dt;
@@ -314,6 +317,7 @@
       this.updateMusic(dt);
       // a Conquest battle has its own victory and defeat (the site, the dragon, the camp)
       if (this.opts.conquest && AS.Conquest && AS.Conquest.Battle) AS.Conquest.Battle.update(this, dt);
+      else if (this.map.mountain) { /* the Mountain Test is a sandbox: no victory, no defeat */ }
       else if (this.map.largeWorld && AS.LargeWorld) {
         AS.LargeWorld.update(this, dt); // the test is a sandbox: no victory, no defeat
         if (this.bc && AS.BigCampaign) AS.BigCampaign.update(this, dt); // the campaign has its own end
@@ -485,6 +489,7 @@
       for (const q of this.pickups) if (q.alive && inV(q, 20)) list.push(q);
       if (AS.Life) AS.Life.collect(this, list, x0, y0, x1, y1);
       if (AS.Scenery) AS.Scenery.collect(this, list, x0, y0, x1, y1);
+      if (this.mtn) AS.Mountain.collect(this, list, x0, y0, x1, y1);
     }
     drawGround(ctx, ox, oy, R) {
       if (AS.Scenery) AS.Scenery.drawGround(ctx, ox, oy, R, this);
@@ -508,6 +513,7 @@
   /* terrain for a map: towns and sites flatten their ground and keep trees off,
    * farmland rings the towns and villages, bridges make water passable */
   Realm.makeTerrain = function (world, m) {
+    if (m.mountain && AS.Mountain) return AS.Mountain.makeTerrain(world, m);
     const zones = [], fields = [], clearings = [];
     for (const fk in m.factions) {
       const t = m.factions[fk].town;

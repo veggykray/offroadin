@@ -35,6 +35,8 @@
       for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
         const x = i * CELL + CELL / 2, y = j * CELL + CELL / 2;
         let c = 1;
+        // real ground (the Mountain Test): the terrain judges the whole cell (narrow mountain roads)
+        if (T.navCost) { cost[j * W + i] = T.navCost(x, y, CELL); continue; }
         if (!T.groundPassable(x, y)) {
           // a bridge corridor crossing this cell keeps it open
           let open = false;
@@ -71,6 +73,7 @@
       const T = g.terrain;
       const pts = cells.map((k) => {
         const x = (k % N.W) * CELL + CELL / 2, y = Math.floor(k / N.W) * CELL + CELL / 2;
+        if (T.navPoint) { const q = T.navPoint(x, y, CELL); if (q) return q; }
         if (T.groundPassable(x, y)) return [x, y];
         // a cell opened by a bridge: walk the deck itself, not the water beside it
         for (const b of T.bridges) if (U.segDist(x, y, b.x0, b.y0, b.x1, b.y1) < CELL * 1.2) {

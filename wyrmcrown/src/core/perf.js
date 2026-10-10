@@ -96,6 +96,7 @@
           L.push(['troops: ' + C.total + ' exist · ' + C.active + ' running AI · ' + C.asleep + ' asleep · ' + C.visible + ' on screen (drawn + animated)']);
         }
       }
+      if (g && g.perfLines) for (const l of g.perfLines()) L.push(l);
       L.push(['particles ' + AS.Particles.pool.active.length + '/' + AS.Particles.pool.capacity + '  projectiles ' + AS.Proj.pool.active.length + '/' + AS.Proj.pool.capacity]);
       if (T) {
         const busy = T._wk ? T._wk.reduce((s, w) => s + (w.busy || 0), 0) : 0;

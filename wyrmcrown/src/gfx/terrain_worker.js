@@ -17,7 +17,7 @@ const LIBS = [
   'materials.js', 'dragon_art.js', 'models_nature.js', 'models_human.js', 'models_elf.js', 'models_ice.js', 'models_undead.js',
   'models_units.js', 'models_beasts.js', 'models_beasts2.js', 'models_giants.js', 'models_landmarks_realm.js', 'models_town_extra.js', 'models_sites.js',
   '../../../alien-strike/src/gfx/decals.js', 'decals_realm.js',
-  '../../../alien-strike/src/gfx/terrain.js', 'realm_terrain.js',
+  '../../../alien-strike/src/gfx/terrain.js', 'realm_terrain.js', 'mountain_terrain.js',
 ];
 for (const f of LIBS) { try { importScripts(f); } catch (e) { /* a model file that cannot load here: its decor falls back */ } }
 
@@ -43,7 +43,8 @@ self.onmessage = (e) => {
     // the page's lookup grids arrive with the message: use them instead of rebuilding
     const P = AS.RealmTerrain.prototype, build = P.buildGrids;
     if (m.grids) P.buildGrids = function () { Object.assign(this, m.grids); };
-    try { T = new AS.RealmTerrain(m.world, m.map); } finally { P.buildGrids = build; }
+    // (the Mountain Test: the same lookups, plus the heightfield it rasterises in projection)
+    try { T = m.map.mountain && AS.MountainTerrain ? new AS.MountainTerrain(m.world, m.map) : new AS.RealmTerrain(m.world, m.map); } finally { P.buildGrids = build; }
     if (m.clearAreas) T.clearAreas = m.clearAreas;
     if (m.clearSegs) T.clearSegs = m.clearSegs;
     // decal kinds painted here (some painters live in game code the worker does not load)
@@ -74,6 +75,18 @@ self.onmessage = (e) => {
   if (m.type === 'tile') {
     const t = T.tileAt(m.ti, m.tj);
     self.postMessage({ type: 'tile', ti: m.ti, tj: m.tj, gWater: t.gWater, gMount: t.gMount, gForest: t.gForest, gBiome: t.gBiome, gRoad: t.gRoad, gField: t.gField, kind: t.kind, gTintR: t.gTintR, gTintG: t.gTintG, gTintB: t.gTintB, gFlora: t.gFlora });
+    return;
+  }
+  if (m.type === 'chunk' && T.isMountain) {
+    const t0 = performance.now(), cx = m.cx, cy = m.cy;
+    if (AS.Forge && m.forgeRes && AS.Forge.res !== m.forgeRes) AS.Forge.setRes(m.forgeRes);
+    T.TD = m.TD;
+    const cv = T.renderChunk(cx, cy, m.TD);
+    const t1 = performance.now();
+    const list = T.sdecals.get(cx * 10000 + cy);
+    if (list) for (const d of list) { try { T.paintDecal(cv, cx, cy, d); } catch (err) { /* skip a decal that cannot paint */ } }
+    const bmp = cv.transferToImageBitmap();
+    self.postMessage({ type: 'chunk', cx, cy, TD: m.TD, far: !!m.far, bmp, sseq, ms: performance.now() - t0, parts: [t1 - t0, 0, performance.now() - t1] }, [bmp]);
     return;
   }
   if (m.type === 'chunk') {

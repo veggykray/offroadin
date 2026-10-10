@@ -84,6 +84,24 @@ outlaw hoards can hold a relic, which gives a free upgrade level.
 The settlement layouts are in `src/game/settlements.js`, and the new
 buildings in `src/gfx/models_world.js`.
 
+### The Mountain Test
+
+`index.html?world=mountain` (also "Mountain Test" on the title menu) is one
+self-contained mountain region, 3 km by 3.5 km (`maps/mountaintest.js`). It
+has a true heightfield (`src/gfx/mountain_terrain.js`): a Great Range with a
+peak of about 250 m, a lower Front Range, a deep valley, a winding gorge, a
+high pass with a fortified outpost, a waterfall, a river, a hidden basin, a
+dwarven hold cut into the rock and a troll cave.
+
+The dragon's flight ceiling is measured above sea level (125 m). Hills and
+the Front Range can be flown over; the Great Range crest and the peak stand
+above the ceiling, so the dragon must use the High Pass or the Windgap.
+`Z` raises and `X` lowers a held altitude. Press `` ` `` (left of `1`) and
+then `1`–`0` to start test scenarios A–J (`1` lowland approach … `7` an army
+crossing the pass … `0` altitude descent); outside the picker the number row
+casts spells as usual. The game logic is in `src/game/mountain.js`. Nothing outside this
+map changes behaviour.
+
 ## Controls
 
 | Key | Action |
@@ -232,6 +250,8 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
 - `node wyrmcrown/tools/test_hugeworld.mjs` checks the Huge World Test:
   streaming, where places stand, composed settlements, discovery, relics,
   road routes.
+- `node wyrmcrown/tools/test_mountain.mjs` checks the Mountain Test: the
+  ceiling, the pass, the gorge, army routes, line of sight and streaming.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.
