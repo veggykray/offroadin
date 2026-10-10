@@ -43,12 +43,13 @@
     [6380, 4820], [6950, 4640], [7480, 4470], [7800, 4260], [8330, 4080], [7820, 3880], [8280, 3640], [8050, 3420], [7990, 3200],
     [8070, 2900], [8180, 2450], [8300, 1950], [8380, 1500],
   ];
-  const ROAD_HOLD = [[6380, 4820], [5800, 4700], [5250, 4600], [4760, 4480], [4700, 4420]];
-  const ROAD_BRIDGE = [[4700, 4420], [4560, 4650], [4420, 4895], [4280, 5100], [3980, 5260], [3700, 5330]];
+  // the hold road: along the valley, in through the yard's gatehouse, up the stair to the great gate
+  const ROAD_HOLD = [[6380, 4820], [5800, 4700], [5250, 4670], [4930, 4672], [4740, 4668], [4700, 4630], [4700, 4420], [4700, 4310]];
+  const ROAD_BRIDGE = [[4700, 4660], [4560, 4750], [4420, 4895], [4280, 5100], [3980, 5260], [3700, 5330]];
   const ROAD_WEST = [[3720, 10420], [2900, 10820], [2100, 11150], [1700, 11300]];
   const ROAD_LAKE = [[3720, 10600], [4700, 11050], [5600, 11400], [6000, 11500]];
   const BRIDGE = [4420, 4895];
-  const HOLD = [4700, 4420], GATE = [4700, 4302];
+  const HOLD = [4700, 4490], GATE = [4700, 4300], FACE = 4290;
   const CASTLE = [3600, 10600], HAMLET = [3700, 5330], OUTPOST = [8060, 3330], CAVE = [3250, 6905], VILLAGE = [1700, 11320], MOOR = [8420, 1420];
 
   const m = {
@@ -97,21 +98,28 @@
           crest: [[0, 360], [1800, 425], [3300, 405], [4800, 375], [5600, 345], [6400, 345], [8000, 425], [9600, 405], [12000, 370]] },
       ],
       // extra mass on the great peak (radial arêtes) and the lesser summits
-      peaks: [{ x: 4100, y: 3250, r: 1050, h: 120, arms: 5 }, { x: 1250, y: 3170, r: 600, h: 60, arms: 4 }, { x: 6400, y: 3320, r: 650, h: 70, arms: 4 }, { x: 9150, y: 3180, r: 600, h: 60, arms: 3 }, { x: 11400, y: 3300, r: 600, h: 50, arms: 4 }, { x: 1800, y: 6330, r: 500, h: 30, arms: 3 }, { x: 8100, y: 6260, r: 500, h: 30, arms: 3 }],
+      peaks: [{ x: 4100, y: 3250, r: 1050, h: 120, arms: 5 }, { x: 1250, y: 3170, r: 600, h: 60, arms: 4 }, { x: 6400, y: 3320, r: 650, h: 70, arms: 4 }, { x: 9150, y: 3180, r: 600, h: 60, arms: 3 }, { x: 11400, y: 3300, r: 600, h: 50, arms: 4 }, { x: 1800, y: 6330, r: 500, h: 30, arms: 3 }, { x: 8100, y: 6260, r: 500, h: 30, arms: 3 },
+        // lesser hills: spurs in the foothills and tors on the moors
+        { x: 2600, y: 7750, r: 520, h: 60, arms: 3 }, { x: 4250, y: 7450, r: 430, h: 48, arms: 3 }, { x: 8900, y: 7650, r: 560, h: 64, arms: 4 }, { x: 10600, y: 7350, r: 480, h: 55, arms: 3 },
+        { x: 3200, y: 1500, r: 500, h: 55, arms: 3 }, { x: 10150, y: 1950, r: 430, h: 45, arms: 3 }],
       // THE WALL: a cliff along the valley's north side; north of it the land stands at least `top`
       wall: { x0: 1250, x1: 5650, y: 4180, wob: 60, wobL: 700, depth: 42, top: [[1250, 260], [1700, 455], [2900, 455], [3500, 415], [4300, 420], [5100, 420], [5650, 270]], reach: 900 },
       basin: { x: 2250, y: 3640, r: 470, floor: 452, rim: 60, notch: [2300, 4110] },
       gorge: { pts: GORGE, floorW: 82, wallW: 128 },
       // site pads (levelled ground): h fixed, else the mean of the ground there
       pads: [
-        { x: HOLD[0], y: HOLD[1], r: 210, h: 200 }, { x: OUTPOST[0], y: OUTPOST[1], r: 130 }, { x: HAMLET[0], y: HAMLET[1], r: 200 },
+        { x: HOLD[0], y: HOLD[1], r: 230, h: 200 }, { x: HOLD[0], y: 4600, r: 120, h: 200 }, { x: OUTPOST[0], y: OUTPOST[1], r: 130 }, { x: HAMLET[0], y: HAMLET[1], r: 200 },
         { x: CASTLE[0], y: CASTLE[1], r: 430 }, { x: VILLAGE[0], y: VILLAGE[1], r: 260 }, { x: MOOR[0], y: MOOR[1], r: 200 }, { x: CAVE[0], y: CAVE[1] + 40, r: 70 },
       ],
       // small sheer faces (the cave in the Front Range)
       cliffs: [{ x: CAVE[0], y: CAVE[1] - 20, w: 120, depth: 34, rise: 95 }],
       grade: 0.14,
       // painted on the faces: the hold's carved front and the cave mouth
-      marks: [{ k: 'facade', x: GATE[0], y: GATE[1] - 14, w: 190 }, { k: 'cave', x: CAVE[0], y: CAVE[1] - 22, w: 34 }],
+      marks: [{ k: 'facade', x: GATE[0], y: FACE, w: 200 }, { k: 'cave', x: CAVE[0], y: CAVE[1] - 22, w: 34 }],
+      // the front of Khaz Durn, cut into the Wall: a dressed face 200 high with its great gate,
+      // two towers standing out of the rock, a stepped gable over the cliff's edge, a raised
+      // forecourt and a stair down to the yard (see AS.MountainGen, step 7)
+      hold: { x: GATE[0], face: FACE, w: 200, tw: 56, td: 44, floor: 216, yard: 200, faceH: 204, towerH: 312, court: 86, stair: 40, sw: 46, gw: 124, gd: 46, gableH: 272, gstep: 42, gdrop: 22 },
       snow: 530, treeLine: 350,
     },
     // places (ground coordinates; converted on load)

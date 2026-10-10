@@ -1134,7 +1134,10 @@
      * ground once at the shadow's strength (the caller's globalAlpha). Overlapping
      * pieces no longer darken each other, and the buffer's lower resolution, smoothed
      * when it is laid down, gives the shadow a slightly soft edge. */
-    drawShadow(ctx, st, ox, oy) {
+    /* one clean silhouette on the ground. o (optional, the mountain region): { scale, alpha,
+     * soft (blur in world units), ax, ay (the point it grows from) } — a dragon high above
+     * the ground casts a larger, fainter, softer shadow */
+    drawShadow(ctx, st, ox, oy, o) {
       const rg = rig(st.fk, st.scale), n = st.nodes;
       const pieces = [], wings = [];
       let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
@@ -1163,7 +1166,15 @@
       for (const pts of wings) { c.beginPath(); for (let i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); } c.closePath(); c.fill(); }
       const q = ctx.imageSmoothingQuality;
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(cv, 0, 0, W, H, x0 - ox, y0 - oy, W / k, H / k);
+      let dx = x0 - ox, dy = y0 - oy, dw = W / k, dh = H / k;
+      if (o) {
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, ctx.globalAlpha * o.alpha);
+        if (o.scale !== 1) { const ax = o.ax - ox, ay = o.ay - oy; dx = ax + (dx - ax) * o.scale; dy = ay + (dy - ay) * o.scale; dw *= o.scale; dh *= o.scale; }
+        if (o.soft > 0.4 && 'filter' in ctx) { const m = ctx.getTransform(); ctx.filter = 'blur(' + (o.soft * Math.abs(m.a || 1)).toFixed(1) + 'px)'; }
+      }
+      ctx.drawImage(cv, 0, 0, W, H, dx, dy, dw, dh);
+      if (o) ctx.restore();
       ctx.imageSmoothingQuality = q;
     },
   };

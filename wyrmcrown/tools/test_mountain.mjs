@@ -114,8 +114,56 @@ try {
   step('the gorge is flown low between its walls (highest clearance ' + gmax + ', ground under the dragon ' + Math.min(...gorge.track.map((t) => t[3])) + '–' + Math.max(...gorge.track.map((t) => t[3])) + ')');
 
   const down = await fly({ test: 'J', keys: ['KeyX', 'KeyW'], steps: 300 });
-  ok(down.end[2] < 330 && down.worst <= -3.9, 'descent ' + JSON.stringify(down.end));
-  step('from the ceiling, X brings the dragon down over the Wall into the valley (altitude ' + Math.round(down.end[2]) + ' after ' + (down.frames / 30).toFixed(0) + ' s)');
+  const lowest = down.track.reduce((m, t) => (t[2] < m[2] ? t : m), down.track[0]);
+  ok(lowest[2] < 260 && lowest[1] > 4300 && down.worst <= -3.9, 'descent ' + JSON.stringify(down.track));
+  step('from the ceiling, X brings the dragon down over the Wall into the valley (down to ' + Math.round(lowest[2]) + ', ' + Math.round(lowest[2] - lowest[3]) + ' over the valley floor, within ' + (down.track.indexOf(lowest) * 0.5).toFixed(1) + ' s)');
+
+  // ---- climbing on its own vs with Z, and the deflection along a face (the Wall, x 3300)
+  const wallTop = await ev(() => { const R = AS.game.mtn.R; let hi = 0; for (let y = 3950; y < 4250; y += 10) hi = Math.max(hi, R.h(3300, y)); return hi; });
+  const auto = await fly({ test: 'B', start: [3300, 4600, 250], a: -Math.PI / 2, keys: ['KeyW'], steps: 120 });
+  // where it first got north of the cliff's foot: on its own, only after being turned along the face
+  const over = (t) => t.track.find((q) => q[1] < 4080) || t.track[t.track.length - 1];
+  const slid = Math.abs(over(auto)[0] - 3300);
+  ok(!auto.nan && auto.worst <= -3.9 && auto.blocked > 8, 'on its own the dragon was never held by the Wall ' + JSON.stringify({ b: auto.blocked, end: auto.end }));
+  ok(slid > 40 && auto.speed > 100 && auto.jumps === 0, 'against the Wall the dragon did not skim along it ' + JSON.stringify({ slid, speed: auto.speed, jumps: auto.jumps, track: auto.track }));
+  const zc = await fly({ test: 'B', start: [3300, 4600, 250], a: -Math.PI / 2, keys: ['KeyW', 'KeyZ'], steps: 240, stopGy: 3950 });
+  const zslid = Math.abs(over(zc)[0] - 3300);
+  ok(!zc.nan && zc.worst <= -3.9 && zc.minGy < 4000 && zc.jumps === 0 && zslid < slid, 'with Z the dragon did not climb the Wall ' + JSON.stringify({ minGy: zc.minGy, end: zc.end, zslid }));
+  step('the Wall (top ' + Math.round(wallTop) + '): on its own the dragon does not go straight up the cliff — it is turned and skims ' + Math.round(slid) + ' units along the face, still flying (speed ' + Math.round(auto.speed) + '), before it tops out; holding Z it climbs it head-on (' + Math.round(zslid) + ' units of drift), never inside the rock, no jumps');
+
+  // ---- the shadow: its size, darkness and blur follow the height above the ground beneath
+  const sh = await ev(() => {
+    const g = AS.game, M = __mtn.M, R = g.mtn.R, p = g.player;
+    M.startTest(g, 'J');
+    const at = (x, gy, alt) => { const S = p._m; p.x = x; S.gy = gy; S.alt = alt; S.e = R.h(x, gy); S.shC = alt - S.e; p.y = gy - S.e; p.z = alt - S.e; return M.shadowLook(p, S); };
+    // the same altitude (480) over the shelf by the Wall's edge, and out over the valley
+    const ridge = at(2700, 4000, 480), valley = at(2700, 4700, 480), low = at(2700, 4700, R.h(2700, 4700) + 14);
+    // fly south off the Wall's edge at a held altitude: the shadow grows without a jump
+    const S = p._m; at(2700, 3950, 480); S.level = 480; p.angle = p.velA = Math.PI / 2; p.speed = 185;
+    let maxStep = 0, last = null;
+    for (let i = 0; i < 120; i++) { g.update(1 / 30); const o = M.shadowLook(p, p._m); if (last) maxStep = Math.max(maxStep, Math.abs(o.scale - last.scale)); last = o; }
+    return { ridge, valley, low, maxStep, end: last, endC: p._m.alt - p._m.e };
+  });
+  ok(sh.low.scale < sh.ridge.scale && sh.ridge.scale < sh.valley.scale, 'shadow size ' + JSON.stringify(sh));
+  ok(sh.low.alpha > sh.ridge.alpha && sh.ridge.alpha > sh.valley.alpha && sh.valley.soft > sh.ridge.soft, 'shadow darkness/blur ' + JSON.stringify(sh));
+  ok(sh.maxStep < 0.05, 'the shadow jumped ' + sh.maxStep);
+  step('the shadow: at 480 over the shelf (clearance ~' + Math.round(480 - 440) + ') ×' + sh.ridge.scale.toFixed(2) + ' darkness ' + sh.ridge.alpha.toFixed(2) + '; at 480 over the valley ×' + sh.valley.scale.toFixed(2) + ' darkness ' + sh.valley.alpha.toFixed(2) + ' blur ' + sh.valley.soft.toFixed(1) + '; skimming the ground ×' + sh.low.scale.toFixed(2) + ' darkness ' + sh.low.alpha.toFixed(2) + '; flying off the Wall the size changes at most ' + sh.maxStep.toFixed(3) + ' a frame');
+
+  // ---- Khaz Durn: the cut face, the towers over the cliff, the way in for troops and not for a dragon
+  const hold = await ev(() => {
+    const g = AS.game, R = g.mtn.R, H = R.hold, M = __mtn.M;
+    const court = R.h(H.x, H.face + 30), face = R.h(H.x, H.face - 20), tower = R.h(H.x + H.w - H.tw / 2, H.face + 10), gable = R.h(H.x, H.face - 20);
+    let cliff = 0; for (const x of [H.x - H.w - 140, H.x + H.w + 140]) for (let y = H.face - 260; y < H.face; y += 10) cliff = Math.max(cliff, R.h(x, y));
+    const P = (x, y) => M.proj(g, x, y), a = P(H.x, H.face + 360), b = P(H.x, H.face + 24);
+    const reach = AS.Nav.reachable(g, a[0], a[1], b[0], b[1]);
+    const pieces = g.buildings.filter((q) => q.site && q.site.kind === 'dwarfhold').length;
+    return { court, face, tower, gable, cliff, reach, pieces };
+  });
+  ok(hold.face - hold.court > 180 && hold.tower > hold.cliff + 40, 'hold front ' + JSON.stringify(hold));
+  ok(hold.reach && hold.pieces > 20, 'hold approach ' + JSON.stringify(hold));
+  const gate = await fly({ test: 'F', start: [4700, 4560, 300], a: -Math.PI / 2, keys: ['KeyW'], steps: 150 });
+  ok(gate.minGy > 4275 && gate.worst <= -3.9, 'the dragon got into the gate ' + JSON.stringify({ minGy: gate.minGy, end: gate.end }));
+  step('Khaz Durn: the carved front rises ' + Math.round(hold.face - hold.court) + ' over its forecourt (gable included), the towers stand ' + Math.round(hold.tower - hold.cliff) + ' above the cliff beside it; ' + hold.pieces + ' buildings and props in the approach; troops can walk from the yard gate to the great gate; a dragon flying at it is held off (never nearer than y ' + Math.round(gate.minGy) + ', the face at ' + 4290 + ')');
 
   // ---- ground: the walking grid and an army
   const nav = await ev(() => {

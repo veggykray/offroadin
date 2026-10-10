@@ -167,8 +167,14 @@
             if (t >= 1) continue;
             const s = 1 - t, A = Math.max(0, R.hc[i] - B);
             // spurs and gullies run down the slopes (noise stretched across the spine)
-            const gul = ridged(x / 380 + n2(x / 900, d / 900, sd + 24) * 0.6, d / 900, 2, sd + 12) * 0.65 + ridged(x / 170, d / 420, 2, sd + 25) * 0.35;
-            const env = 4 * t * s;
+            // (warped and varied in strength along the range, so they never fall into a regular comb)
+            // (the High Pass corridor keeps the plain, even form: its road needs a steady grade)
+            const pz = 1 - sstep(450, 900, Math.abs(x - 8000));
+            const wx = x + n2(x / 600, d / 500, sd + 27) * 160 * (1 - pz);
+            const gA = ridged(wx / 380 + n2(x / 900, d / 900, sd + 24) * 0.6, d / 900, 2, sd + 12) * 0.65 + ridged(wx / 210 + n2(x / 300, d / 260, sd + 28) * 0.5, d / 420, 2, sd + 25) * 0.35;
+            const gul = pz > 0 ? gA + (ridged(x / 380 + n2(x / 900, d / 900, sd + 24) * 0.6, d / 900, 2, sd + 12) * 0.65 + ridged(x / 170, d / 420, 2, sd + 25) * 0.35 - gA) * pz : gA;
+            const ev = 0.45 + 0.75 * sstep(-0.5, 0.6, n2(x / 1100, d / 800, sd + 29));
+            const env = 4 * t * s * (ev + (1 - ev) * pz);
             let prof = Math.pow(s, 1.55 + n2(x / 1700, 1.7, sd + 26) * 0.35) * (1 + (gul - 0.6) * 0.75 * env);
             // the crest: a sharp arête, broken into summits
             prof *= 1 + (ridged(x / 330, y / 330, 2, sd + 13) - 0.6) * 0.16 * s;
@@ -194,22 +200,47 @@
         let v = h + (ridged(x / 170, y / 170, 3, sd + 15) - 0.55) * 46 * hi;
         const st = 34 + n2(x / 900, y / 900, sd + 16) * 8, q = v / st, f = Math.floor(q), fr = q - f;
         const fr2 = fr < 0.7 ? fr * (0.3 / 0.7) : 0.3 + (fr - 0.7) / 0.3 * 0.7;
-        const tk = sstep(-0.2, 0.4, n2(x / 600, y / 600, sd + 17)) * 0.55 * hi;
+        const tk = sstep(-0.2, 0.4, n2(x / 600, y / 600, sd + 17)) * 0.4 * hi * (0.6 + 0.4 * sstep(-0.3, 0.3, n2(x / 140, y / 140, sd + 29)));
         E[k] = v + ((f + fr2) * st - v) * tk;
       }
-      // ---- 2. the Wall: a cliff, the land north of it held up to the shelf's height
+      // ---- 2. the Wall: a cliff, the land north of it held up to the shelf's height.
+      // The face is not one curtain: it climbs in two or three tiers with broken
+      // ledges between them, juts out in buttresses and falls back in bays along
+      // its length, and sheds a talus of fallen rock at its foot. The shelf above
+      // rolls, with knolls and rock outcrops.
       const WL = RF.wall;
-      if (WL) MG.each(gw, gh, HG, WL.x0 - 200, WL.y - WL.reach - 200, WL.x1 + 200, WL.y + 200, (k, x, y) => {
+      if (WL) MG.each(gw, gh, HG, WL.x0 - 200, WL.y - WL.reach - 200, WL.x1 + 200, WL.y + 260, (k, x, y) => {
         if (x < WL.x0 - 150 || x > WL.x1 + 150) return;
-        const yw = WL.y + Math.sin(x / WL.wobL) * WL.wob + n2(x / 160, 5.5, sd + 18) * 10;
+        const yw = WL.y + Math.sin(x / WL.wobL) * WL.wob + n2(x / 160, 5.5, sd + 18) * 10 + n2(x / 70, 9.5, sd + 30) * 9;
         const ends = sstep(WL.x0 - 150, WL.x0 + 150, x) * (1 - sstep(WL.x1 - 150, WL.x1 + 150, x));
-        if (y > yw) return;
-        const top = curve(WL.top, x) + fbm(x / 300, y / 300, 2, sd + 19) * 14;
         const back = yw - y; // distance north of the cliff foot
-        // the face: the land climbs `top − foot` over `depth` (with a lip of broken crags)
-        const face = sstep(0, WL.depth, back + n2(x / 60, y / 60, sd + 20) * 6);
+        const top0 = curve(WL.top, x);
+        if (back < 0) {
+          // the talus: fans of fallen rock below the face, deepest under its gullies
+          const Ht = Math.max(0, top0 - E[k]), T = 70 + 90 * sstep(-0.4, 0.6, n2(x / 170, 2.2, sd + 31));
+          const fan = 0.55 + 0.75 * sstep(-0.2, 0.7, n2(x / 95, 4.4, sd + 32));
+          const t = -back / T;
+          if (t < 1) E[k] += Ht * 0.17 * fan * Math.pow(1 - t, 1.7) * ends;
+          return;
+        }
+        // the shelf: rolling ground, knolls and outcrops (fading in away from the edge)
+        const inl = sstep(40, 260, back);
+        const top = top0 + fbm(x / 300, y / 300, 2, sd + 19) * 14 + (fbm(x / 520, y / 520, 2, sd + 33) * 16 + Math.max(0, ridged(x / 210, y / 210, 2, sd + 34) - 0.62) * 70) * inl;
+        // the face in plan: buttresses stand out, bays fall back (the depth of the climb varies)
+        const dpt = WL.depth * (0.75 + 1.1 * sstep(0.45, 0.85, ridged(x / 150, 1.7, 2, sd + 35)));
+        const b = back + n2(x / 60, y / 60, sd + 20) * 6;
+        // tiers: two ledges at varying heights, sometimes pinched out
+        const f1 = 0.36 + n2(x / 400, 6.1, sd + 36) * 0.12, f2 = 0.7 + n2(x / 350, 7.3, sd + 37) * 0.1;
+        const w1 = Math.max(0, 12 + 22 * n2(x / 230, 8.2, sd + 38)), w2 = Math.max(0, 9 + 20 * n2(x / 260, 9.4, sd + 39));
+        const r1 = dpt * 0.34, r2 = dpt * 0.3, r3 = dpt * 0.36;
+        let P;
+        if (b < r1) P = f1 * sstep(0, r1, b);
+        else if (b < r1 + w1) P = f1 + 0.04 * (b - r1) / Math.max(1, w1);
+        else if (b < r1 + w1 + r2) P = f1 + 0.04 + (f2 - f1 - 0.04) * sstep(0, r2, b - r1 - w1);
+        else if (b < r1 + w1 + r2 + w2) P = f2 + 0.03 * (b - r1 - w1 - r2) / Math.max(1, w2);
+        else P = f2 + 0.03 + (0.97 - f2) * sstep(0, r3, b - r1 - w1 - r2 - w2) + 0.03 * sstep(r3, r3 + 40, b - r1 - w1 - r2 - w2);
         const fade = 1 - sstep(WL.reach * 0.55, WL.reach, back);
-        const want = E[k] + (Math.max(E[k], top) - E[k]) * face * fade;
+        const want = E[k] + (Math.max(E[k], top) - E[k]) * Math.min(1, P) * fade;
         E[k] = E[k] + (want - E[k]) * ends;
       });
       // ---- 3. the hidden basin: a bowl on the shelf, a rim round it, an outlet notch to the south
@@ -338,6 +369,28 @@
         E[k] = RH[k] + (E[k] - RH[k]) * w;
       }
       padIt();
+      // ---- 7. a hold's front: a sheer dressed face cut back into the cliff, its
+      // forecourt, a stair down to the yard, two towers standing out of the rock and
+      // a stepped gable above the cliff's edge (painted by the terrain: paintMark)
+      const HD = RF.hold;
+      if (HD) MG.each(gw, gh, HG, HD.x - HD.w - 60, HD.face - 160, HD.x + HD.w + 60, HD.face + HD.court + HD.stair + 20, (k, x, y) => {
+        const u = x - HD.x, au = Math.abs(u), back = HD.face - y;
+        const tower = au >= HD.w - HD.tw && au <= HD.w;
+        if (back <= 0) {
+          if (tower && -back <= HD.td) { E[k] = HD.floor + HD.towerH; return; }
+          if (au < HD.w - HD.tw && -back <= HD.court) { E[k] = HD.floor; return; }
+          // the stair from the forecourt down to the yard
+          if (au < HD.sw && -back <= HD.court + HD.stair) { E[k] = HD.floor + (HD.yard - HD.floor) * (-back - HD.court) / HD.stair; return; }
+          return;
+        }
+        if (au > HD.w + 40) return;
+        const side = 1 - sstep(HD.w, HD.w + 40, au);
+        let want = Math.max(E[k], HD.floor + HD.faceH);
+        if (tower && back < 22) want = Math.max(want, HD.floor + HD.towerH);
+        // the gable: steps up toward the middle, a little way back into the shelf
+        if (au < HD.gw && back < HD.gd) want = Math.max(want, HD.floor + HD.gableH - Math.floor(au / HD.gstep) * HD.gdrop);
+        E[k] = E[k] + (want - E[k]) * side;
+      });
       const tGen = performance.now() - t0;
       // ---- shading data: cast shadows (sun from the north-west), cavities, column bounds
       const SH = new Uint8Array(N), SHH = new Float32Array(N);
@@ -349,6 +402,14 @@
       }
       const AO = new Int8Array(N), BL = MG.blur(E, gw, gh, 7);
       for (let k = 0; k < N; k++) AO[k] = clamp(Math.round((E[k] - BL[k]) / 55 * 127), -127, 127);
+      // scree: gentler, hollow ground close below steep ground (the foot of a cliff, a gully's fan)
+      const SL = new Float32Array(N);
+      for (let j = 1; j < gh - 1; j++) for (let i = 1; i < gw - 1; i++) { const k = j * gw + i; const a = E[k + 1] - E[k - 1], b = E[k + gw] - E[k - gw]; SL[k] = Math.sqrt(a * a + b * b) / (2 * HG); }
+      const SB = MG.blur(SL, gw, gh, 4), SC = new Uint8Array(N);
+      for (let k = 0; k < N; k++) {
+        const v = sstep(0.12, 0.5, SB[k] - SL[k]) * sstep(0.08, 0.25, SL[k]) * (1 - sstep(0.7, 1, SL[k])) * sstep(0.1, -0.35, AO[k] / 127);
+        SC[k] = Math.round(clamp(v, 0, 1) * 255);
+      }
       const smW = Math.ceil(W / 64) + 1, smH = Math.ceil(H / 64) + 1, SM = new Float32Array(smW * smH).fill(-1e9);
       for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
         const v = E[j * gw + i], b = Math.floor(j * HG / 64);
@@ -374,7 +435,7 @@
         }
       }
       const RW8 = new Uint8Array(N); for (let k = 0; k < N; k++) RW8[k] = Math.min(255, Math.round(RW[k] * 4));
-      const R = new Relief({ W, H, HG, gw, gh, E, SH, AO, SM, smW, smH, UP, upY0, upRY, upRows, RW8, ceiling: RF.ceiling || 500, snow: RF.snow || 460, treeLine: RF.treeLine || 330, RD, RW, marks: RF.marks || [] });
+      const R = new Relief({ W, H, HG, gw, gh, E, SH, AO, SC, SM, smW, smH, UP, upY0, upRY, upRows, RW8, ceiling: RF.ceiling || 500, snow: RF.snow || 460, treeLine: RF.treeLine || 330, RD, RW, marks: RF.marks || [], hold: RF.hold || null });
       R.stats = { genMs: Math.round(tGen), totalMs: Math.round(performance.now() - t0), cells: N, max: MG.max(E) };
       return R;
     },
@@ -631,40 +692,92 @@
       const R = this.R, G = this.G, e = R.h(x, y);
       R.grad(x, y, g);
       const s2 = Math.sqrt(g[0] * g[0] + g[1] * g[1]);
+      // where this ground shows on screen: texture laid out in (x, Y) is never stretched,
+      // however steep the face it lies on
+      const Y = y - e;
       const wd = this.gs(G.gWater, x, y), fo = this.gs(G.gForest, x, y);
       const m = 0.5 + 0.6 * U.fbm(x / 600, y / 600, 2, sd + 40);
-      this.colorize(x, y, 0.45, m, wd, fo, 1, out);
+      this.colorize(x, Y, 0.45, m, wd, fo, 1, out);
       let r = out[0], gg = out[1], b = out[2];
-      // alpine meadow above the tree line: thin, tawny grass
-      const alp = sstep(R.treeLine - 70, R.treeLine + 90, e);
-      if (alp > 0 && wd > 0) { r = lerp(r, 138, alp * 0.55); gg = lerp(gg, 134, alp * 0.55); b = lerp(b, 94, alp * 0.55); }
-      // bare rock on steep ground and high up. Its texture is laid out in face coordinates
-      // (x across, height up) so a tall face keeps crisp strata, gullies and ledges
-      const n1 = U.noise2(x / 140, y / 140, sd + 81);
-      let rockT = Math.max(sstep(0.5 + n1 * 0.12, 0.95, s2), sstep(R.snow - 170, R.snow + 10, e) * 0.55 * (0.7 + n1 * 0.5));
-      if (wd < 6) rockT *= 0.3;
-      let ledge = 0;
-      if (rockT > 0.01) {
-        const band = U.noise2(e / 11, x / 1400, sd + 82), grain = U.noise2(x / 3.2, e / 3.2, sd + 83);
-        const gully = U.ridged(x / 22 + U.noise2(x / 90, e / 90, sd + 93) * 0.8, e / 150, 2, sd + 94);
-        ledge = sstep(0.5, 0.62, U.noise2(x / 260, e / 9, sd + 95)) * sstep(0.45, 0.9, s2);
-        let k = 0.9 + band * 0.14 + grain * 0.07 - sstep(0.72, 0.95, gully) * 0.26 + ledge * 0.16;
-        if (U.hash2((x / 3) | 0, (e / 2) | 0, sd + 84) > 0.985) k *= 0.72; // cracks
-        const warm = sstep(-0.3, 0.6, U.noise2(x / 700, y / 700, sd + 85));
-        const rr = lerp(126, 142, warm) * k, rg = lerp(122, 126, warm) * k, rb = lerp(120, 108, warm) * k;
-        r = lerp(r, rr, rockT); gg = lerp(gg, rg, rockT); b = lerp(b, rb, rockT);
-        // broken facets: the surface normal wanders across the rock
-        g[0] += U.noise2(x / 9, e / 9, sd + 96) * 0.55 * rockT; g[1] += U.noise2(x / 9 + 31, e / 9, sd + 97) * 0.35 * rockT;
+      const ao = clamp(R.ao(x, y), -1, 1);
+      const nb = U.noise2(x / 52, Y / 40, sd + 80); // breaks up every transition
+      // height reads as colour: lush, warm valley floors; paler, cooler heights
+      const lowK = 1 - sstep(60, 330, e);
+      r *= 1 - 0.05 * lowK; gg *= 1 + 0.05 * lowK; b *= 1 - 0.04 * lowK;
+      // alpine meadow above the tree line: thin, tawny grass (a ragged edge, not a band)
+      const alp = sstep(R.treeLine - 80, R.treeLine + 90, e + nb * 45);
+      if (alp > 0 && wd > 0) { r = lerp(r, 140, alp * 0.55); gg = lerp(gg, 134, alp * 0.55); b = lerp(b, 96, alp * 0.55); }
+      // the turf is never one smooth colour: clumps, bare patches, stones
+      if (wd > 0 && !quick) {
+        const cl = U.noise2(x / 9, Y / 6, sd + 77) * 0.07 + U.noise2(x / 31, Y / 22, sd + 76) * 0.06;
+        r *= 1 + cl; gg *= 1 + cl; b *= 1 + cl * 0.8;
+        if (alp > 0.3 && U.hash2((x / 3) | 0, (Y / 2.4) | 0, sd + 75) > 0.988) { r = 150; gg = 146; b = 136; }
       }
-      // snow: lower on north-facing slopes (dE/dy > 0 faces north); on the steep faces it
-      // only lies on the ledges and in the gullies' heads
-      const line = R.snow + U.noise2(x / 320, y / 320, sd + 86) * 38 - (g[1] > 0.15 ? 30 : 0) + (g[1] < -0.4 ? 18 : 0);
+      // river banks: gravel and shingle rather than crags
+      const bank = wd > 0 ? 1 - sstep(40, 150, wd) : 0;
+      // bare rock: crags break through the turf in ragged patches on steep ground, and
+      // take over high up
+      let rockT = sstep(0.53, 0.6, s2 + nb * 0.18 + U.noise2(x / 13, Y / 9, sd + 78) * 0.12 - Math.max(0, -ao) * 0.1);
+      rockT = Math.max(rockT, sstep(R.snow - 95, R.snow + 20, e + nb * 40) * (0.55 + 0.35 * sstep(-0.2, 0.5, U.noise2(x / 130, Y / 110, sd + 79))));
+      if (wd < 6) rockT *= 0.3;
+      rockT *= 1 - 0.75 * bank;
+      let ledge = 0, fdx = 0, fdy = 0;
+      if (rockT > 0.01 && quick) {
+        // (a stand-in: plain rock, no texture)
+        r = lerp(r, 128, rockT); gg = lerp(gg, 122, rockT); b = lerp(b, 114, rockT);
+      } else if (rockT > 0.01) {
+        // broken rock: big irregular masses, wider than tall (bedded rock), each tilted
+        // to the light its own way; a fracture shows only where two masses differ
+        const fx = x / 44, fy = Y / 19, ix = Math.floor(fx), iy = Math.floor(fy);
+        let d1 = 9, d2 = 9, id = 0, id2 = 0, dyN = 0;
+        for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+          const cx = ix + ox, cy = iy + oy;
+          const dx = cx + U.hash2(cx, cy, sd + 501) - fx, dy = cy + U.hash2(cx, cy, sd + 502) - fy;
+          const d = dx * dx + dy * dy * 1.3;
+          if (d < d1) { d2 = d1; id2 = id; d1 = d; id = cx * 7919 + cy; dyN = dy; } else if (d < d2) { d2 = d; id2 = cx * 7919 + cy; }
+        }
+        const edge = Math.sqrt(d2) - Math.sqrt(d1), hf = U.hash2(id, 3, sd + 503), hf2 = U.hash2(id2, 3, sd + 503);
+        // finer chips inside each mass, and sparse fissures
+        const chip = U.noise2(x / 7, Y / 4.5, sd + 505), fis = U.ridged(x / 60 + U.noise2(x / 120, Y / 120, sd + 506), Y / 26, 2, sd + 507);
+        // strata: beds at a constant height, broken along their length
+        const bed = U.noise2(e / 10, x / 800, sd + 82) * sstep(-0.2, 0.4, U.noise2(x / 300, e / 60, sd + 83));
+        let k = 0.88 + hf * 0.16 + bed * 0.08 + chip * 0.05 + U.noise2(x / 160, Y / 120, sd + 508) * 0.08;
+        if (edge < 0.045 && Math.abs(hf - hf2) > 0.42 && s2 > 0.5) k *= 0.76 + edge * 5;
+        else if (dyN > 0.3 && edge < 0.12) k *= 1.06; // a mass's lit upper lip
+        if (fis > 0.9) k *= 0.8;
+        ledge = sstep(0.55, 0.68, U.noise2(x / 240, e / 8, sd + 95)) * sstep(0.45, 0.9, s2);
+        k += ledge * 0.12;
+        const warm = sstep(-0.3, 0.6, U.noise2(x / 700, y / 700, sd + 85));
+        let rr = lerp(118, 142, warm) * k, rg = lerp(116, 128, warm) * k, rb = lerp(118, 106, warm) * k;
+        // lichen on the lower crags
+        const lich = sstep(0.35, 0.8, U.noise2(x / 24, Y / 18, sd + 87)) * (1 - sstep(260, 460, e)) * 0.35;
+        rr = lerp(rr, 122, lich); rg = lerp(rg, 132, lich); rb = lerp(rb, 80, lich);
+        r = lerp(r, rr, rockT); gg = lerp(gg, rg, rockT); b = lerp(b, rb, rockT);
+        fdx = (hf - 0.5) * 0.8 * rockT; fdy = (U.hash2(id, 5, sd + 504) - 0.5) * 0.5 * rockT;
+      }
+      // grass holds on the ledges and gentler steps among the rock
+      if (rockT > 0.2 && wd > 0 && e < R.treeLine + 120 && !quick) {
+        const tuft = sstep(0.15, 0.55, U.noise2(x / 14, Y / 9, sd + 88)) * (1 - sstep(0.55, 0.95, s2)) * 0.55 * rockT;
+        r = lerp(r, 104, tuft); gg = lerp(gg, 122, tuft); b = lerp(b, 66, tuft);
+      }
+      // scree: loose stone fanned out below the cliffs
+      const sc = R.SC ? R.samp8(R.SC, x, y) / 255 : 0;
+      if ((sc > 0.02 || bank > 0.05) && wd > 4) {
+        const t = Math.max(sstep(0.05, 0.6, sc + nb * 0.25), bank * sstep(0.18, 0.5, s2) * 0.9);
+        const k = quick ? 0.95 : 0.8 + U.hash2((x / 2.6) | 0, (Y / 2.2) | 0, sd + 89) * 0.3 - (U.hash2((x / 5) | 0, (Y / 4) | 0, sd + 90) > 0.86 ? 0.2 : 0);
+        r = lerp(r, 150 * k, t); gg = lerp(gg, 144 * k, t); b = lerp(b, 132 * k, t);
+      }
+      // snow: lower on north-facing slopes and in hollows; on the steep faces it lies only
+      // on ledges and in gullies; the wind scours the sharp crests
+      const line = R.snow + U.noise2(x / 320, y / 320, sd + 86) * 38 + nb * 22 - (g[1] > 0.15 ? 30 : 0) + (g[1] < -0.4 ? 18 : 0) - Math.max(0, -ao) * 40;
       const steep = sstep(0.75, 1.3, s2);
-      let sn = sstep(line - 12, line + 26, e) * (1 - steep) + sstep(line - 110, line, e) * steep * Math.max(ledge, sstep(0.25, 0.6, U.noise2(x / 30, e / 60, sd + 98)) * 0.7);
+      let sn = sstep(line - 14, line + 22, e) * (1 - steep) + sstep(line - 120, line, e) * steep * Math.max(ledge, sstep(0.2, 0.55, U.noise2(x / 26, Y / 16, sd + 98)) * 0.75);
+      sn *= 1 - 0.45 * sstep(0.35, 0.8, ao) * sstep(0.3, 0.7, s2);
       if (sn > 0) {
         const sp = U.hash2((x * 1.3) | 0, (y * 1.3) | 0, sd + 87) > 0.992 ? 14 : 0;
         const blue = sstep(0.2, 0.9, g[1]) * 0.18; // shaded snow is blue
         r = lerp(r, (236 + sp) * (1 - blue), sn); gg = lerp(gg, (241 + sp) * (1 - blue * 0.6), sn); b = lerp(b, 250, sn);
+        fdx *= 1 - sn; fdy *= 1 - sn;
       }
       // falling water: white streaks where the river runs down a steep face
       if (wd < 2 && s2 > 0.45) {
@@ -673,7 +786,7 @@
         r = lerp(r, 232, t); gg = lerp(gg, 242, t); b = lerp(b, 248, t);
       }
       // the road: packed earth in the valleys, worn stone up in the mountains
-      if (wd > 0 || wd > -2) {
+      if (wd > -2) {
         const rd = R.RW8 ? R.samp8(R.RW8, x, y) / 4 : this.gs(G.gRoad, x, y);
         if (rd < 13) {
           const t = 1 - sstep(8.5, 12.5, rd), hi = sstep(220, 380, e);
@@ -684,23 +797,29 @@
         }
       }
       // carved stone and cave mouths on the faces
-      if (marks.length) for (const mk of marks) this.paintMark(mk, x, y, e, s2, out, r, gg, b) && ((r = out[0]), (gg = out[1]), (b = out[2]));
+      this._em = null;
+      if (marks.length) for (const mk of marks) if (this.paintMark(mk, x, y, e, s2, out, r, gg, b)) { r = out[0]; gg = out[1]; b = out[2]; fdx = fdy = 0; break; }
       // light: sun, cast shadow, cavities
-      const nl = Math.hypot(g[0], g[1], 1), ndl = (-g[0] * LX - g[1] * LY + LZ) / (nl * LN);
+      const gx = g[0] + fdx, gy2 = g[1] + fdy;
+      const nl = Math.hypot(gx, gy2, 1), ndl = (-gx * LX - gy2 * LY + LZ) / (nl * LN);
       // (a south face, turned to the viewer, takes some light from the sky and the valley)
-      const south = Math.max(0, -g[1]) / nl;
-      let lit = (0.52 + 0.66 * Math.max(0, ndl) + 0.14 * south) / (0.52 + 0.66 * (LZ / LN));
-      lit *= 1 - 0.4 * R.shadow(x, y);
-      lit *= 1 + 0.24 * clamp(R.ao(x, y), -1, 1);
-      // air: the valleys sit in a blue haze, the heights in clear light
-      const hz = 0.16 * (1 - sstep(0, 420, e)) * sstep(0, 1, 1);
+      const south = Math.max(0, -gy2) / nl;
+      let lit = (0.52 + 0.66 * Math.max(0, ndl) + 0.26 * south) / (0.52 + 0.66 * (LZ / LN));
+      lit *= 1 - 0.46 * R.shadow(x, y) * (1 - 0.3 * sstep(0.8, 2, s2));
+      lit *= 1 + 0.3 * ao;
+      // air: the valleys sit in a blue haze, the heights in clear, cool light
+      const hz = 0.2 * (1 - sstep(20, 460, e));
       const hl = 1 + sstep(380, 900, e) * 0.08;
-      out[0] = lerp(r * lit, HAZE[0], hz) * hl; out[1] = lerp(gg * lit, HAZE[1], hz) * hl; out[2] = lerp(b * lit, HAZE[2], hz) * hl;
+      out[0] = lerp(r * lit, HAZE[0], hz) * hl; out[1] = lerp(gg * lit, HAZE[1], hz) * hl; out[2] = lerp(b * lit, HAZE[2], hz) * (hl + sstep(420, 900, e) * 0.03);
+      // what shines by its own light (fire in the hold, runes, lit windows)
+      const em = this._em;
+      if (em) { out[0] += em[0]; out[1] += em[1]; out[2] += em[2]; }
       void quick;
       return out;
     }
     /* face art at (x, y): the hold's carved front, a cave mouth. Writes out and returns true when painted */
     paintMark(mk, x, y, e, s2, out, r, g, b) {
+      if (mk.k === 'facade') return this.paintHold(x, y, e, s2, out, r, g, b);
       const u = x - mk.x, v = e - mk.e0;
       if (y > mk.y + 10) return false;
       if (mk.k === 'cave') {
@@ -714,45 +833,180 @@
         if (d < 1.25) { const k = 0.7 + (d - 1) * 1.2; out[0] = r * k; out[1] = g * k; out[2] = b * k; return true; }
         return false;
       }
-      if (mk.k === 'facade') {
-        const W = mk.w;
-        if (Math.abs(u) > W + 6 || v < -2 || v > 330 || s2 < 0.6) return false;
-        const sd = this.seed;
-        // dressed stone: ashlar courses with offset joints
-        const course = Math.floor(v / 11), jx = (u + (course % 2) * 9 + 400) % 18;
-        let cr = 150, cg = 142, cb = 128;
-        const tone = 0.9 + U.hash2(course, Math.floor((u + (course % 2) * 9 + 400) / 18), sd + 91) * 0.14;
-        cr *= tone; cg *= tone; cb *= tone;
-        if (v % 11 < 1.1 || jx < 1.1) { cr *= 0.72; cg *= 0.72; cb *= 0.72; }
-        const au = Math.abs(u);
-        // the towers either side, with battlements; arrow slits
-        const tower = au > W - 46 && au <= W;
-        let top = tower ? 300 : 250;
-        if (tower && v > 286 && ((au - (W - 46)) % 12) < 5) top = 286;
-        if (!tower && v > 238 && ((u + 400) % 16) < 6) top = 238;
-        if (v > top) return false;
-        if (tower && (v % 70) > 34 && (v % 70) < 52 && Math.abs(au - (W - 23)) < 2.2) { cr = 26; cg = 22; cb = 20; }
-        // pilasters and the lintel band of runes
-        if (!tower && Math.abs(au - 92) < 9) { cr *= 1.12; cg *= 1.12; cb *= 1.1; }
-        if (v > 150 && v < 168 && au < 110) {
-          cr = 120; cg = 112; cb = 100;
-          if (U.hash2(Math.floor(u / 5), 7, sd + 92) > 0.55 && v > 154 && v < 164 && ((u + 400) % 5) < 2.4) { cr = 120; cg = 210; cb = 255; }
-        }
-        // the great arch: the opening into the mountain (dark, deep)
-        const archW = 62, archH = 92 + Math.sqrt(Math.max(0, archW * archW - u * u)) * 0.85;
-        if (au < archW + 8 && v < archH + 9) {
-          if (au < archW && v < archH) { const dk = 0.25 + 0.2 * (v / archH); cr = 34 * dk + 8; cg = 28 * dk + 7; cb = 26 * dk + 8; }
-          else { cr *= 1.2; cg *= 1.18; cb *= 1.12; } // voussoirs
-        }
-        // carved kings flanking the arch
-        if (au > 108 && au < 132 && v > 20 && v < 140) {
-          const kx = au - 120, body = Math.abs(kx) < 10 - (v > 110 ? (v - 110) * 0.2 : 0);
-          if (body) { cr *= 1.15; cg *= 1.12; cb *= 1.08; if (v > 112 && v < 122 && Math.abs(kx) < 4) { cr *= 0.7; cg *= 0.7; cb *= 0.7; } }
-        }
-        out[0] = cr; out[1] = cg; out[2] = cb;
-        return true;
-      }
       return false;
+    }
+    /* KHAZ DURN's front (map.relief.hold): the dressed face with its gate, the carved
+     * king's head over it, pilasters and lattice panels, the two towers with their
+     * banners, lit windows and battlements, the stepped gable, the paved forecourt,
+     * the stair and the yard. (u across, v up from the forecourt floor) */
+    paintHold(x, y, e, s2, out, r, g, b) {
+      const H = this.R.hold;
+      if (!H) return false;
+      const u = x - H.x, au = Math.abs(u), back = H.face - y;
+      if (au > H.w + 300 || back > 130 || back < -(H.court + H.stair + 380)) return false;
+      const sd = this.seed, v = e - H.floor, W = H.w, tw = H.tw;
+      const tower = au >= W - tw && au <= W && back > -H.td - 3 && back < 27;
+      const em = (cr, cg, cb) => { this._em = [cr, cg, cb]; };
+      const put = (cr, cg, cb) => { out[0] = cr; out[1] = cg; out[2] = cb; return true; };
+      // ashlar: courses of dressed blocks; a joint darkens, each block its own tone
+      const ashlar = (uu, vv, bl, ch, base) => {
+        const c = Math.floor(vv / ch), off = (c % 2) * bl * 0.5, bu = uu + off + 4000, bi = Math.floor(bu / bl);
+        let k = 0.9 + U.hash2(c, bi, sd + 91) * 0.16;
+        if (vv - c * ch < 1.1 || bu - bi * bl < 1.2) k *= 0.7;
+        k *= 1 - 0.1 * sstep(0.2, 0.8, U.noise2(uu / 7, vv / 46, sd + 92)); // rain streaks
+        return [base[0] * k, base[1] * k, base[2] * k];
+      };
+      const STONE = [156, 148, 134], DARK = [26, 22, 20];
+      // ---------------- the ground in front of the face ----------------
+      if (s2 < 0.55 && !tower && back <= 2) {
+        const d = -back;
+        if (au < W - tw && d <= H.court) {
+          // the forecourt: great flagstones, a darker border, an inlaid ring of runes
+          const cu = u + 4000, fi = Math.floor(cu / 17), fj = Math.floor((d + (fi % 2) * 6) / 13);
+          let k = 0.88 + U.hash2(fi, fj, sd + 93) * 0.14;
+          if (cu - fi * 17 < 1.2 || (d + (fi % 2) * 6) - fj * 13 < 1.2) k *= 0.72;
+          if (au > W - tw - 14 || d > H.court - 10) k *= 0.82;
+          let c = [168 * k, 160 * k, 146 * k];
+          const rc = Math.hypot(u, (d - H.court * 0.52) * 1.15);
+          if (rc > 30 && rc < 38) { c = [118, 112, 104]; if (U.hash2(Math.floor(Math.atan2(d - H.court * 0.52, u) * 9), 1, sd + 94) > 0.5 && rc > 32 && rc < 36) { c = [96, 140, 160]; em(18, 46, 60); } }
+          return put(c[0], c[1], c[2]);
+        }
+        if (au < H.sw && d <= H.court + H.stair) {
+          // the stair: treads and risers, low walls either side
+          const t = d - H.court, st = Math.floor(t / 4.5), f = t - st * 4.5;
+          let k = f < 1.4 ? 0.7 : 0.98 + (st % 2) * 0.05;
+          if (au > H.sw - 5) k = 0.8;
+          return put(160 * k, 152 * k, 138 * k);
+        }
+        // the yard: worn cobbles, rutted where the carts come and go
+        const yc = Math.hypot(u * 0.9, d - 210);
+        if (yc < 250 + U.noise2(u / 40, d / 40, sd + 95) * 22 && (d < 328 || (au < 60 + (d - 328) * 0.6 && d < 400))) {
+          const ci = Math.floor((u + 4000) / 6), cj = Math.floor((d + (ci % 2) * 3) / 5);
+          let k = 0.84 + U.hash2(ci, cj, sd + 96) * 0.18;
+          if (U.hash2(ci, cj, sd + 97) > 0.93) k *= 0.8;
+          const ed = sstep(250, 210, yc);
+          return put(lerp(r, 150 * k, ed * 0.85), lerp(g, 140 * k, ed * 0.85), lerp(b, 124 * k, ed * 0.85));
+        }
+        return false;
+      }
+      // retaining walls round the forecourt and the yard: coursed masonry
+      if (!tower && back < -2) {
+        if (s2 < 0.55 || au > W + 260) return false;
+        const c = ashlar(u, v + 40, 15, 7, [140, 134, 122]);
+        return put(c[0], c[1], c[2]);
+      }
+      // ---------------- the towers ----------------
+      if (tower) {
+        const tu = au - (W - tw), tc = tu - tw / 2;
+        if (s2 < 0.55) {
+          // the tower top: flags inside a parapet
+          if (v < H.towerH - 8) return false;
+          const rim = tu < 6 || tu > tw - 6 || back > 16 || back < -H.td + 6;
+          if (rim) { const mer = ((tu + (back + 400)) % 14) < 8; return put(mer ? 170 : 92, mer ? 162 : 86, mer ? 148 : 80); }
+          const k = 0.8 + U.hash2(Math.floor(x / 9), Math.floor(y / 9), sd + 98) * 0.1;
+          return put(118 * k, 112 * k, 104 * k);
+        }
+        let c = ashlar(u, v, 16, 10, STONE);
+        if (v < 24) c = ashlar(u, v, 24, 12, [146, 140, 128]); // the battered plinth
+        if (tu < 6 || tu > tw - 6) { const q = Math.floor(v / 10) % 2; c = ashlar(u + q * 5, v, 10, 10, [168, 160, 146]); } // quoins
+        // string courses carved with chevrons
+        for (const sv of [96, 190]) if (v > sv && v < sv + 6) { const ch = Math.abs(((u + 4000) % 8) - 4) - (v - sv - 1); c = ch < 1.2 && ch > -1.2 ? [112, 106, 96] : [176, 168, 152]; }
+        // machicolations and battlements
+        if (v > 260 && v < 272) { const q = (tu + 1000) % 8; c = q < 4 ? [182, 172, 156] : [70, 64, 58]; if (v < 263) c = [52, 46, 42]; }
+        if (v > 282) { const q = (tu + 1000) % 14; if (q > 8) c = [c[0] * 0.55, c[1] * 0.55, c[2] * 0.58]; }
+        // the banner of the hold: dwarf red, a gold border and the anvil
+        if (v > 150 && v < 252 && Math.abs(tc) < 10 - (v < 160 ? (160 - v) * 0.6 : 0)) {
+          const edge = Math.abs(tc) > 8 || v > 248;
+          c = edge ? [196, 150, 60] : [138, 40, 32];
+          const av = v - 200;
+          if (!edge && ((av > -4 && av < 4 && Math.abs(tc) < 6) || (av > -12 && av <= -4 && Math.abs(tc) < 2.5) || (av > -16 && av <= -12 && Math.abs(tc) < 5))) c = [214, 170, 70];
+        }
+        // windows: arrow slits low and high, lit lancets between
+        if (Math.abs(tc) < 2.2 && ((v > 46 && v < 72) || (v > 216 && v < 238))) { c = DARK; }
+        if (Math.abs(tc) < 6 && v > 112 && v < 138 + Math.sqrt(Math.max(0, 36 - tc * tc)) && !(v > 150)) { c = [60, 34, 18]; em(150, 82, 30); }
+        return put(c[0], c[1], c[2]);
+      }
+      // ---------------- the face ----------------
+      if (s2 < 0.55) {
+        // the gable's steps and the cornice: coping stones
+        if (au < H.gw && back > 0 && back < H.gd + 6 && v > H.faceH + 6) { const k = 0.9 + U.hash2(Math.floor(x / 8), 2, sd + 99) * 0.1, j = ((x + 4000) % 8) < 1 ? 0.8 : 1; return put(146 * k * j, 140 * k * j, 128 * k * j); }
+        return false;
+      }
+      if (au > W + 6 || back < -3) return false;
+      let c = ashlar(u, v, 22, 12, STONE);
+      if (v < 14) c = ashlar(u, v, 30, 14, [138, 132, 120]); // the plinth
+      // the cornice over the face
+      if (v > H.faceH - 8 && v <= H.faceH + 1) c = v > H.faceH - 3 ? [184, 176, 160] : [78, 72, 66];
+      // the gable over the cornice (above the cliff's edge): stepped, each step capped
+      if (v > H.faceH + 1) {
+        const step = Math.floor(au / H.gstep), topv = H.gableH - step * H.gdrop - H.floor + H.floor;
+        c = ashlar(u, v, 18, 11, [150, 144, 132]);
+        if (v > topv - 6) c = [178, 170, 156];
+      }
+      // ---- the king's head over the gate: helm, brow, burning eyes, nose, beard to the lintel
+      const hv = v - 170;
+      if (au < 44 && hv > 0 && hv < 104) {
+        const fw = 40 - Math.max(0, hv - 80) * 0.6; // the helm narrows at the crown
+        if (au < fw) {
+          let fc = [164, 156, 140];
+          if (hv < 36) { // the beard: braids, zig-zag plaited
+            const bw = 36 - (36 - hv) * 0.35;
+            if (au < bw) { const br = Math.floor((u + 400) / 8), z = (hv + Math.abs(((u + 400) % 8) - 4) * 1.5) % 6; fc = z < 2 ? [118, 110, 100] : [170 + (br % 2) * 8, 162 + (br % 2) * 8, 146]; }
+          } else if (hv < 44) { fc = [180, 172, 156]; if (Math.abs(au - 16) < 14 && hv > 39) fc = [120, 112, 102]; } // the moustache
+          else if (hv < 60) { if (au < 6) fc = [182, 174, 158]; else if (au < 8) fc = [110, 104, 96]; } // the nose
+          if (hv >= 56 && hv < 66 && au > 8 && au < 26) { // the eyes, burning deep in the stone
+            const ec = Math.hypot(au - 17, (hv - 61) * 1.4);
+            fc = [26, 20, 18]; if (ec < 4) { fc = [90, 40, 16]; em(170, 80, 20); }
+          }
+          if (hv >= 66 && hv < 74) fc = [128, 120, 110]; // the brow
+          if (hv >= 74) { fc = [128, 130, 138]; if (hv < 78) fc = [168, 170, 176]; else if ((Math.floor(u + 400) % 9) === 0 && hv < 82) fc = [190, 186, 170]; } // the helm: a riveted rim
+          if (hv > 4 && hv < 100) c = fc;
+        }
+      }
+      // ---- the gate: a tall trapezoid portal in three receding orders, the halls glowing beyond
+      const PH = 132, hw = 44 - v * 0.06;
+      if (v < PH + 22 && au < hw + 24) {
+        if (au < hw && v < PH) {
+          // inside: the vaults run back into the dark; firelight from the deep halls
+          const t = Math.max(au / hw, v / PH), ring = (t * 5) % 1;
+          let cr = 20, cg = 16, cb = 15;
+          if (ring < 0.07 && t > 0.2) { cr = 40; cg = 32; cb = 28; }
+          const glow = Math.pow(1 - v / PH, 1.4) * (1 - (au / hw) * (au / hw)) * (1 - t * 0.5);
+          // the great doors, swung back against the jambs: bronze with iron bands and studs
+          if (au > hw * 0.72 && v < PH - 6) {
+            const bandV = (v % 22) < 3, stud = (Math.floor(v) % 11 === 5) && Math.abs(au - hw * 0.86) < 1.2;
+            cr = 92; cg = 66; cb = 38; if (bandV) { cr = 54; cg = 50; cb = 50; } if (stud) { cr = 150; cg = 120; cb = 70; }
+            em(26 * glow, 12 * glow, 4 * glow);
+          } else em(210 * glow, 100 * glow, 36 * glow);
+          return put(cr, cg, cb);
+        }
+        // the orders: deepest (shadowed) to outermost (lit, carved with runes)
+        const o = Math.max(au - hw, v - PH);
+        if (o < 8) c = [c[0] * 0.62, c[1] * 0.6, c[2] * 0.6];
+        else if (o < 16) c = [140, 134, 122];
+        else { c = [176, 168, 152]; if (((Math.floor(v / 6) + Math.floor(au / 6)) % 3 === 0) && Math.abs(o - 20) < 1.5) { c = [100, 150, 170]; em(16, 44, 60); } }
+      }
+      // ---- the lintel: one great slab, a band of glowing runes across it
+      if (v >= PH + 22 && v < 170 && au < 96) {
+        c = [170, 162, 148];
+        if (v > PH + 22 + 5 && v < 165 && au < 88 && au > 44) { if (U.hash2(Math.floor(u / 5), 7, sd + 92) > 0.5 && ((u + 400) % 5) < 2.6) { c = [120, 200, 240]; em(30, 70, 90); } else c = [140, 132, 120]; }
+        if (v < PH + 24 || v > 168) c = [96, 90, 84];
+      }
+      // ---- pilasters, fluted, with capitals and bases
+      for (const pu of [92, 126]) {
+        const dd = Math.abs(au - pu);
+        if (v < 170 && dd < (v > 156 || v < 10 ? 10 : 7)) {
+          c = [172, 164, 150];
+          if (v <= 156 && v >= 10 && dd > 1 && ((dd | 0) % 3 === 0)) c = [132, 126, 116];
+          if (v > 154 && v < 157) c = [92, 86, 80];
+        }
+      }
+      // ---- carved lattice panels between the pilasters
+      if (au > 101 && au < 117 && v > 18 && v < 148) {
+        const pu = (u + 4000) % 12 - 6, pv = v % 12 - 6, dd = Math.abs(pu) + Math.abs(pv);
+        c = Math.abs(dd - 5) < 1 ? [112, 106, 98] : [160, 152, 138];
+      }
+      return put(c[0], c[1], c[2]);
     }
     /* trees and rocks, stamped in projection: rooted on ground that is seen, nearer ones over farther */
     stampTrees(ctx, cx, cy, TD, GY, cols, rows, oc, orow) {
@@ -785,11 +1039,14 @@
         const lone = 0.01;
         if (hv > fo * 0.85 * qual * treeK + lone * treeK) {
           // scree and boulders on the open slopes
-          if (hv < 0.975 || e < 160) continue;
+          // boulders: thick on the scree below the cliffs, rare elsewhere
+          if (hv < 0.9 || e < 120) continue;
+          const sc = R.SC ? R.samp8(R.SC, x, gy) / 255 : 0;
+          if (hv < (sc > 0.25 ? 0.9 : 0.988)) continue;
           const s2 = R.slope(x, gy);
-          if (s2 < 0.32 || s2 > 1.2) continue;
+          if (s2 < 0.15 || s2 > 0.95) continue;
           const Y = gy - e;
-          if (!seen(x, gy, Y) || this.gs(G.gWater, x, gy) < 12 || this.gs(G.gRoad, x, gy) < 20) continue;
+          if (!seen(x, gy, Y) || this.gs(G.gWater, x, gy) < 12 || this.gs(G.gRoad, x, gy) < 20 || zoneHit(x, Y, 6)) continue;
           items.push({ k: e > R.snow ? 'rocksnow' : 'rock', x, Y, v: (U.hash2(gi, gj, sd + 406) * 97) | 0 });
           continue;
         }

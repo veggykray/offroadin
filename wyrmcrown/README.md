@@ -102,6 +102,15 @@ crossing the pass … `0` altitude descent); outside the picker the number row
 casts spells as usual. The game logic is in `src/game/mountain.js`. Nothing outside this
 map changes behaviour.
 
+Without `Z` the dragon only rises over low ground; against a steep face it is
+turned along the rock and skims it until it can top out. Holding `Z` climbs a
+face head-on. The dragon's shadow grows, fades and blurs with height above
+the ground beneath it; its tunables live in `MT.SHADOW` in
+`src/game/mountain.js` (also `__mtn.M.SHADOW` in the browser console:
+`scaleMin`, `scaleMax`, `alphaMax`, `alphaMin`, `softMax`, `h0`, `h1`).
+Khaz Durn, the dwarf hold, is carved into the Wall (`hold` in the map's
+relief) with an approach yard of halls, a smithy and watchtowers.
+
 ## Controls
 
 | Key | Action |
@@ -251,7 +260,8 @@ example with `npx http-server -p 8766` from the repo root, plus Playwright:
   streaming, where places stand, composed settlements, discovery, relics,
   road routes.
 - `node wyrmcrown/tools/test_mountain.mjs` checks the Mountain Test: the
-  ceiling, the pass, the gorge, army routes, line of sight and streaming.
+  ceiling, the pass, the gorge, cliff deflection, the shadow, the dwarf
+  hold, army routes, line of sight and streaming.
 - `node wyrmcrown/tools/sim.mjs 12 normal 1 sundered` fast-forwards an
   all-AI war and logs each realm minute by minute.
 - `tools/mapview.html?map=<id>` previews a whole map.

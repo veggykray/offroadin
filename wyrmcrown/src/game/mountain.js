@@ -27,11 +27,17 @@
   const MT = {
     // the vertical flight tuning (units, units per second)
     MIN_CLR: 10,      // closest the dragon's body comes to the ground in flight
-    CLIMB: 82,        // climb rate when following the terrain
-    SCRAMBLE: 150,    // emergency climb when ground ahead is close
+    CLIMB: 82,        // climb rate when following the terrain on its own (gentle rises, hills)
+    AUTO_SCRAMBLE: 92, // the most it finds on its own when ground ahead is close
+    SCRAMBLE: 155,    // with Z held: a deliberate, hard climb up a steep face
+    STRUGGLE: 0.55,   // against a face too steep for it, on its own it climbs this much slower
     KEY_CLIMB: 95,    // Z: raise the held altitude
     KEY_DESCEND: 125, // X: lower it
     DIVE_DESCEND: 210,// SPACE with a held altitude
+    /* the dragon's shadow against its height above the ground under it (h0 → h1 units):
+     * size (×), darkness (× the scene's shadow strength), blur (world units); curve < 1
+     * makes the first few hundred units count most. Live-tunable: __mtn.M.SHADOW */
+    SHADOW: { h0: 6, h1: 520, scaleMin: 0.9, scaleMax: 1.95, alphaMax: 1.55, alphaMin: 0.2, softMax: 10, curve: 0.85 },
     _cache: null,
 
     /* ---------------- the terrain (called from Realm.makeTerrain) ---------------- */
@@ -92,7 +98,10 @@
       // the hold and the cave: a way in for armies, not for a dragon
       for (const s of g.sites) {
         const spec = m.sites.find((q) => q.id === s.id) || {};
-        if (s.kind === 'dwarfhold') g.mtn.holds.push({ site: s, gate: { x: s.x, y: s.y - 110 }, interior: { name: s.name + ' — the deep halls', capacity: 400, battle: 'underground: armies only (auto-resolve, future)' }, spec: spec.mountain });
+        if (s.kind === 'dwarfhold') {
+          const gq = spec.mountain && spec.mountain.gate ? this.proj(g, spec.mountain.gate[0], spec.mountain.gate[1]) : [s.x, s.y - 110];
+          g.mtn.holds.push({ site: s, gate: { x: gq[0], y: gq[1] }, interior: { name: s.name + ' — the deep halls', capacity: 400, battle: 'underground: armies only (auto-resolve, future)' }, spec: spec.mountain, fx: s._holdFX || null });
+        }
         if (s.kind === 'cave') g.mtn.caves.push({ site: s, mouth: { x: s.x, y: s.y - 40 } });
       }
       // the waterfall: where the river leaves the shelf and where it lands
@@ -102,6 +111,9 @@
         for (let i = 0; i < rv.pts.length - 1; i++) { const a = rv.pts[i], b = rv.pts[i + 1]; const da = R.h(a[0], a[1]), db = R.h(b[0], b[1]); if (da - db > 120) { lip = a; foot = b; break; } }
         if (lip) g.mtn.falls = { lip: this.proj(g, lip[0], lip[1]), foot: this.proj(g, foot[0], foot[1]), gx: (lip[0] + foot[0]) / 2, w: 26 };
       }
+      // cloud wisps hanging in the air: over the valleys below the shelf, and along the
+      // range's flanks just under the ceiling. Flying above them is the plainest sign of height.
+      g.mtn.wisps = this.makeWisps(g);
       // the forces in the mountains (spawned as they are: a small region)
       g.mtn.groups = [];
       for (const e of m.encounters || []) this.spawnGroup(g, e);
@@ -113,6 +125,48 @@
       if (!g.opts.demo) g.msg('MOUNTAIN TEST — press ` then 1–0 for test scenarios A–J · Z climbs · X descends', '#ffe7a8', 7);
       // (a page that wants to drive the tests: window.__mtn)
       if (typeof window !== 'undefined') window.__mtn = { g, test: (k) => this.startTest(g, k), state: () => this.state(g), M: this };
+    },
+    /* KHAZ DURN's approach (built instead of the usual dwarf-hold layout; the gate itself
+     * is cut into the cliff by the terrain): colossal kings and braziers on the raised
+     * forecourt, a walled yard below the stair with a gatehouse and corner towers, the
+     * halls, a smithy and a cargo yard, a mine adit at the cliff's foot, rune-stones and
+     * a lookout on the road. Positions are ground coordinates round the gate. */
+    composeHold(site, rng) {
+      const g = site.g, R = g.terrain.R, H = R.hold, ST = AS.Settlements, X = H.x, F = H.face;
+      const DW = ST.pal('dwarf');
+      site._pal = DW;
+      const P = (x, y) => [x, y - R.h(x, y)];
+      const put = (gen, x, y, o) => { const q = P(x, y); return ST.put(site, gen, q[0], q[1], o); };
+      const run = (gen, a, b, step, o) => ST.run(site, gen, P(a[0], a[1]), P(b[0], b[1]), step, o);
+      const fx = { braziers: [], chimneys: [] };
+      // the forecourt: two colossal kings either side of the gate, braziers, the hold's banners
+      put('lm_colossus_statue', X - 108, F + 26, { r: 16 }); put('lm_colossus_statue', X + 108, F + 26, { r: 16 });
+      for (const [bx, by] of [[X - 62, F + 30], [X + 62, F + 30], [X - 62, F + H.court - 8], [X + 62, F + H.court - 8]]) { put('lm_brazier_huge', bx, by, { r: 9 }); const q = P(bx, by); fx.braziers.push([q[0], q[1] - 1, 44]); }
+      put('prop_banner', X - 132, F + H.court - 6, { solid: false }); put('prop_banner', X + 132, F + H.court - 6, { solid: false });
+      // the yard wall: corner towers, curtain walls, the gatehouse on the road
+      const y0 = F + H.court + H.stair + 8, y1 = F + 322, xl = X - 250, xr = X + 250;
+      put('human_tower', xl, y1, { r: 20 }); put('human_tower', xr, y1, { r: 20 });
+      run('human_wall', [xl + 18, y1], [X - 34, y1], 40, { clear: false });
+      run('human_wall', [X + 34, y1], [xr - 18, y1], 40, { clear: false });
+      run('human_wall', [xl, y1 - 20], [xl + 20, y0], 40, { clear: false });
+      run('human_wall', [xr, y1 - 20], [xr - 20, y0], 40, { clear: false });
+      put('human_gate', X, y1, { angle: 0, r: 24, clear: false });
+      // the halls (west), the smithy and the cargo yard (east), the road kept clear between
+      put('dw_hall', X - 190, y0 + 22, { v: 0, r: 30 }); put('dw_hall', X - 192, y0 + 108, { v: 1, r: 30 }); put('dw_hall', X - 118, y0 + 152, { v: 0, r: 26 });
+      put('human_barracks', X - 98, y0 + 58, { r: 30 });
+      const sm = P(X + 160, y0 + 50); put('human_workshop', X + 160, y0 + 50, { r: 34 }); fx.chimneys.push([sm[0] + 18, sm[1] - 4, 70]);
+      put('prop_cart', X + 90, y0 + 130, { angle: 0.4, solid: false }); put('prop_crates', X + 130, y0 + 150, { solid: false }); put('prop_crates', X + 146, y0 + 160, { solid: false });
+      put('prop_barrels', X + 170, y0 + 148, { solid: false }); put('prop_barrels', X + 186, y0 + 160, { solid: false }); put('prop_logs', X + 200, y0 + 125, { solid: false });
+      put('prop_crates', X + 112, y0 + 175, { solid: false }); put('prop_barrels', X + 96, y0 + 186, { solid: false });
+      // the mine at the cliff's foot, east of the hold
+      put('site_goldmine', X + 330, F + 110, { r: 40 });
+      // outside the gatehouse: rune-stones flank the road, a lookout watches the valley
+      put('lm_obelisk_dark', X - 40, y1 + 34, { r: 8 }); put('lm_obelisk_dark', X + 40, y1 + 34, { r: 8 });
+      put('human_watchtower', X + 300, y1 + 74, { r: 14 });
+      put('human_watchtower', X - 330, y0 + 20, { r: 14 });
+      site._holdFX = fx;
+      ST.people(site, 10, 200, null);
+      site._pal = null;
     },
     spawnGroup(g, e) {
       const G = { def: e, troops: [] };
@@ -168,6 +222,18 @@
           AS.Particles.spawn({ x: f.foot[0] + U.range(-24, 24), y: f.foot[1] + U.range(-6, 10), z: U.range(0, 8), vx: U.range(-20, 20), vy: U.range(-6, 6), vz: U.range(14, 34), shape: AS.Particles.SMOKE, col: '#eef6ff', size: 6, size2: 22, life: 1.6, alpha: 0.28, drag: 1.2 });
         }
       }
+      // the wisps drift with the wind (and come round again)
+      if (M.wisps) for (const w of M.wisps.list) { w.x += w.vx * dt; if (w.x > g.map.w + 300) w.x = -300; }
+      // the hold's fires: braziers flicker, the forge smokes and throws sparks
+      for (const h of M.holds) {
+        const F = h.fx;
+        if (!F || !p || Math.abs(p.x - h.gate.x) > 1500 || Math.abs(p.y - h.gate.y) > 1500) continue;
+        for (const b of F.braziers) if (Math.random() < dt * 9) AS.Particles.spawn({ x: b[0] + U.range(-3, 3), y: b[1] + U.range(-1, 2), z: b[2] + U.range(0, 4), vz: U.range(16, 30), shape: AS.Particles.GLOW, col: Math.random() < 0.5 ? '#ffb040' : '#ff7a20', size: U.range(4, 7), size2: U.range(9, 14), life: U.range(0.25, 0.45), add: true, alpha: 0.75 });
+        for (const c of F.chimneys) {
+          if (Math.random() < dt * 2.6) AS.Particles.spawn({ x: c[0] + U.range(-2, 2), y: c[1], z: c[2], vx: U.range(4, 12), vy: U.range(-3, 3), vz: U.range(14, 24), shape: AS.Particles.SMOKE, col: '#5a524c', col2: '#3a3430', size: 5, size2: 20, life: U.range(2.2, 3.4), alpha: 0.5, drag: 0.6 });
+          if (Math.random() < dt * 3) AS.Particles.spawn({ x: c[0] + U.range(-4, 4), y: c[1] + 8, z: 6, vx: U.range(-20, 20), vy: U.range(-10, 10), vz: U.range(30, 60), shape: AS.Particles.GLOW, col: '#ffc060', size: 1.6, size2: 2.4, life: U.range(0.4, 0.7), add: true, alpha: 0.9 });
+        }
+      }
       this.updateTest(g, dt);
       M.msgT -= dt;
     },
@@ -202,6 +268,7 @@
       const landed = d.landed || d.landing;
       // ---- the vertical
       let alt = S.alt;
+      const alt0 = alt;
       const e1 = R.h(x1, gy1);
       if (landed) {
         alt = e1 + d.z; S.vz = 0; S.level = null;
@@ -235,7 +302,10 @@
         if (S.level !== null) want = Math.max(want, S.level);
         want = Math.min(want, CEIL);
         const danger = soon + this.MIN_CLR > alt;
-        const up = danger ? this.SCRAMBLE : climbK ? Math.max(this.CLIMB, this.KEY_CLIMB) : this.CLIMB;
+        // on its own the dragon rises over hills and gentle slopes; a cliff or a steep
+        // face needs a deliberate climb (Z) — without it, it skims along the face, rising slowly
+        let up = danger ? (climbK ? this.SCRAMBLE : this.AUTO_SCRAMBLE) : climbK ? Math.max(this.CLIMB, this.KEY_CLIMB) : this.CLIMB;
+        if (S.blocked > 0 && !climbK) up *= this.STRUGGLE;
         const down = d.diving ? 230 : descK ? 140 : 110;
         const vzT = U.clamp((want - alt) * 1.8, -down, up);
         S.vz = U.damp(S.vz, vzT, danger ? 7 : 3.5, dt);
@@ -249,28 +319,37 @@
       // (a dragon that finds itself in ground too high — put there by a teleport — may always move downhill)
       if (!landed && floor + this.MIN_CLR > alt && !(floor > CEIL - this.MIN_CLR && eAt(x0, gy0) > floor + 0.01)) {
         const need = floor + this.MIN_CLR;
-        if (need <= CEIL && need - alt < this.SCRAMBLE * dt * 1.6 + 4) { alt = need; S.vz = Math.max(S.vz, 20); }
+        // (it can be lifted only as far as its climb allows this frame: no hopping up a cliff)
+        const cap = climbK ? this.SCRAMBLE : this.AUTO_SCRAMBLE * (S.blocked > 0 ? this.STRUGGLE : 1);
+        const snap = Math.max(0, cap * dt - (alt - alt0)) + 1;
+        if (need <= CEIL && need - alt < snap) { alt = need; S.vz = Math.max(S.vz, 20); }
         else {
-          // too high to clear: no further in; slide along the slope, turn away, lose speed
+          /* too high (or too steep) to clear now: no further in. The dragon is deflected
+           * along the face — it keeps the part of its motion that runs along the slope
+           * (at least a glancing share, so even head-on it slides off to one side rather
+           * than stopping dead), eases out of the rock, banks to follow the face and loses
+           * speed in proportion to how squarely it hit */
           const gr = R.grad(x1, gy1, this._g || (this._g = [0, 0])), gl = Math.hypot(gr[0], gr[1]) || 1, nx = gr[0] / gl, ny = gr[1] / gl;
           let mx = x1 - x0, my = gy1 - gy0;
-          const into = mx * nx + my * ny;
-          if (into > 0) { mx -= nx * into; my -= ny * into; }
-          // and a little back out
-          mx -= nx * 6 * dt * 10; my -= ny * 6 * dt * 10;
-          let sx = x0 + mx * 0.9, sy = gy0 + my * 0.9;
+          const L = Math.hypot(mx, my) || 1e-6, into = (mx * nx + my * ny) / L, head = U.clamp(into, 0, 1);
+          // the tangent nearest the heading
+          let tx = -ny, ty = nx;
+          if (tx * Math.cos(d.velA) + ty * Math.sin(d.velA) < 0) { tx = -tx; ty = -ty; }
+          const along = Math.max(mx * tx + my * ty, L * 0.35 * head);
+          mx = tx * along * 0.92 - nx * (3 + 5 * head) * dt * 10; my = ty * along * 0.92 - ny * (3 + 5 * head) * dt * 10;
+          let sx = x0 + mx, sy = gy0 + my;
           if (eAt(sx, sy) + this.MIN_CLR > alt + 2) { sx = x0 - nx * 2; sy = gy0 - ny * 2; }
           if (eAt(sx, sy) + this.MIN_CLR > alt + 2) { sx = x0; sy = gy0; }
           x1 = sx; gy1 = sy;
-          const away = Math.atan2(my, mx), slideOK = Math.hypot(mx, my) > 0.5;
-          const wantA = slideOK ? away : Math.atan2(-ny, -nx);
-          const turnA = U.clamp(U.wrapAngle(wantA - d.angle), -1, 1) * 2.4 * dt;
+          // bank to run along the face (harder the more head-on), as a flyer would
+          const wantA = Math.atan2(ty, tx);
+          const turnA = U.clamp(U.wrapAngle(wantA - d.angle), -1, 1) * (1.2 + 1.6 * head) * dt;
           d.angle = U.wrapAngle(d.angle + turnA); d.velA = U.wrapAngle(d.velA + turnA * 1.2);
-          d.speed = Math.max(F.hover, d.speed * Math.exp(-2.2 * dt));
+          d.speed = Math.max(F.hover, d.speed * Math.exp(-(0.5 + 1.6 * head) * dt));
           S.blocked = 0.4;
-          if (S.hitT <= 0) {
-            S.hitT = 0.6;
-            if (d.isPlayer && g.camera) g.camera.shake(0.06);
+          if (S.hitT <= 0 && head > 0.35) {
+            S.hitT = 1.1;
+            if (d.isPlayer && g.camera && head > 0.7 && d.speed > 140) g.camera.shake(0.05);
             const q = this.proj(g, x0 + ca * nose, gy0 + sa * nose);
             AS.FX.dust(q[0], q[1], 6, floor > R.snow ? '#eef4fa' : '#8a8070', 50);
           }
@@ -285,6 +364,8 @@
       if (!landed && alt < e + 4) { alt = e + 4; if (S.vz < 0) S.vz = 0; }
       // ---- back to the game's projected frame
       S.gy = gy1; S.alt = alt; S.e = e;
+      // (the shadow follows the height above the ground smoothly: no jump at a cliff edge)
+      S.shC = S.shC === undefined ? alt - e : U.damp(S.shC, alt - e, 7, dt);
       d.x = x1; d.y = gy1 - e; d.z = alt - e; d.vz = S.vz;
       d.vy = Math.sin(d.velA) * d.speed * F.pace - S.vz; // the drawn body's motion on screen
       if (!landed && !d.loop) d.pitch = U.damp(pitch0, U.clamp(-S.vz / 140, -0.7, 0.7) + (d.braking ? -0.18 : 0), 4, dt);
@@ -298,6 +379,11 @@
       const gv = R.unproj(d.x, S.gy - alt);
       S.occ = gv === gv && gv > S.gy + 26 && R.h(d.x, gv) > alt - 30;
       S.X = d.x; S.Y = d.y;
+    },
+    shadowLook(d, S) {
+      const T = this.SHADOW, c = S.shC === undefined ? S.alt - S.e : S.shC;
+      const f = Math.pow(U.clamp((c - T.h0) / (T.h1 - T.h0), 0, 1), T.curve);
+      return { scale: U.lerp(T.scaleMin, T.scaleMax, f), alpha: U.lerp(T.alphaMax, T.alphaMin, f), soft: T.softMax * f, ax: d.x + 2 + d.z * 0.27, ay: d.y + 1 + d.z * 0.06 };
     },
     // a test's autopilot: fly the waypoints flat out (any flight key takes back control)
     autopilot(d, S, dt) {
@@ -346,10 +432,55 @@
       if (d.isPlayer) this.note(g, 'THE MOUNTAIN IS IN THE WAY', '#d8d0c0');
     },
 
-    /* ---------------- drawables: the falling water ---------------- */
+    /* ---------------- drawables: the falling water, the cloud wisps ---------------- */
     collect(g, list, x0, y0, x1, y1) {
       const f = g.mtn.falls;
       if (f && f.lip[0] > x0 - 80 && f.lip[0] < x1 + 80 && f.foot[1] > y0 - 40 && f.lip[1] < y1 + 40) list.push(f.draw || (f.draw = this.fallsDrawable(g, f)));
+      const W = g.mtn.wisps, p = g.player, S = p && p._m, R = g.mtn.R;
+      if (W) for (const w of W.list) {
+        const Y = w.gy - w.alt;
+        if (w.x + w.w < x0 || w.x - w.w > x1 || Y + w.w * 0.4 < y0 || Y - w.w * 0.4 > y1) continue;
+        // hidden where a ridge in front of it rises over it
+        const sg = R.unproj(w.x, Y);
+        if (sg === sg && sg > w.gy + 30) continue;
+        // under the dragon: drawn before it; above it: over everything
+        const below = S && S.alt > w.alt + 8;
+        w.sortY = below ? p.sortY - 0.5 : 1e9;
+        w.a = W.alpha * w.k * (S ? 1 - 0.65 * (1 - U.smoothstep(10, 70, Math.abs(S.alt - w.alt))) : 1);
+        list.push(w);
+      }
+    },
+    makeWisps(g) {
+      const R = g.mtn.R, rng = new U.RNG(4711), sprites = [];
+      for (let i = 0; i < 4; i++) {
+        const cv = AS.Forge.canvas(256, 112), c = cv.getContext('2d');
+        for (let j = 0; j < 9; j++) {
+          const x = 40 + rng.next() * 176, y = 40 + rng.next() * 32, r = 22 + rng.next() * 30;
+          const gr = c.createRadialGradient(x, y, 0, x, y, r);
+          gr.addColorStop(0, 'rgba(255,255,255,0.55)'); gr.addColorStop(0.55, 'rgba(244,248,255,0.28)'); gr.addColorStop(1, 'rgba(240,246,255,0)');
+          c.fillStyle = gr; c.beginPath(); c.ellipse(x, y, r * 1.5, r * 0.75, 0, 0, U.TAU); c.fill();
+        }
+        sprites.push(cv);
+      }
+      const list = [];
+      const add = (x, gy, alt, w, k) => {
+        const o = { x, gy, alt, w, k, a: 0, sortY: 0, img: sprites[list.length % sprites.length], vx: 5 + rng.next() * 5 };
+        o.draw = (ctx, ox, oy) => {
+          if (o.a < 0.01) return;
+          const Y = o.gy - o.alt, h = o.w * 0.44;
+          ctx.save(); ctx.globalAlpha = o.a;
+          ctx.drawImage(o.img, o.x - o.w / 2 - ox, Y - h / 2 - oy, o.w, h);
+          ctx.restore();
+        };
+        list.push(o);
+      };
+      // the valley (y 4300–5800): floating at 300–370, well under a high dragon
+      for (let i = 0; i < 26; i++) add(rng.range(600, 11400), rng.range(4400, 5800), rng.range(300, 370), rng.range(200, 340), rng.range(0.6, 1));
+      // the lowlands and foothills: high, thin
+      for (let i = 0; i < 12; i++) add(rng.range(600, 11400), rng.range(7000, 12500), rng.range(250, 330), rng.range(220, 360), rng.range(0.45, 0.8));
+      // the range's flanks: under the ceiling, where the ground is still below them
+      for (let i = 0; i < 14; i++) { const x = rng.range(600, 11400), gy = rng.range(3550, 4100); if (R.h(x, gy) < 420) add(x, gy, rng.range(445, 485), rng.range(180, 300), rng.range(0.6, 1)); }
+      return { list, alpha: 0.5 };
     },
     fallsDrawable(g, f) {
       const o = { x: f.foot[0], y: f.foot[1] - 2, sortY: f.foot[1] - 2 };
@@ -390,11 +521,11 @@
       g.msg('TEST ' + k + ' — ' + T.name.toUpperCase(), '#ffe7a8', 4);
       const say = (s) => g.msg(s, '#cfe8ff', 7);
       if (k === 'A') say('Fly north (W) over farmland and forest toward the mountains: the land rises under you');
-      if (k === 'B') say('Fly north at the Wall: the dragon climbs to clear it, then on up toward the Great Peak');
+      if (k === 'B') say('Fly north at the Wall: on its own the dragon rises over the slopes but skims along the cliff — hold Z to climb it, then on toward the Great Peak');
       if (k === 'C') say('Fly north into Mount Hrothgar: it rises far above your ceiling — you will be stopped and turned');
       if (k === 'D') say('Follow the gorge north between the walls — or climb (Z) out over the Front Range');
       if (k === 'E') say('The High Pass is ahead (saddle ~400): fly north through it to the moors beyond');
-      if (k === 'F') say('Khaz Durn, the dwarf hold: its gate is cut into the Wall. Fly low to the gate');
+      if (k === 'F') say('Khaz Durn, the dwarf hold: its gate is cut into the Wall. Look it over, then come down (X) toward the forecourt — the gate is for armies, not dragons');
       if (k === 'G') this.armyTest(g);
       if (k === 'H') say('Raiders hold the pass road and the fort: fire (left mouse) and breathe (F) from above, then dive and climb away');
       if (k === 'I') { say('Streaming stress: the autopilot sprints across the region and over the ranges (any flight key takes over)'); p._m.auto = { i: 0, sprint: true, pts: [[3000, 8200, 470], [6000, 5200, 480], [8000, 3000, 495], [10500, 1500, 495], [10500, 3200, 495], [9000, 5000, 470], [5000, 6400, 470], [1500, 7000, 470], [1500, 10500, 300], [6000, 11500, 200]] }; }
@@ -507,7 +638,15 @@
     const P = AS.Dragon.prototype, baseFlight = P.flight, baseShadow = P.drawShadow, baseDraw = P.draw, baseCanLand = P.canLand;
     P.flight = function (dt) { return this.g.mtn ? MT.flight(this, dt, baseFlight) : baseFlight.call(this, dt); };
     // the shadow only shows on ground that is in view
-    P.drawShadow = function (ctx, ox, oy) { if (this.g.mtn && this._m && !this._m.vis) return; return baseShadow.call(this, ctx, ox, oy); };
+    // the shadow lies on the ground under the dragon and tells its height above that ground:
+    // close down it is small, dark and sharp; high up it spreads, fades and softens
+    P.drawShadow = function (ctx, ox, oy) {
+      const S = this._m;
+      if (!(this.g.mtn && S)) return baseShadow.call(this, ctx, ox, oy);
+      if (!S.vis || this.hidden) return;
+      if (this.loop && this.loopPose) return baseShadow.call(this, ctx, ox, oy);
+      AS.DragonArt.drawShadow(ctx, this.syncDraw(), ox, oy, MT.shadowLook(this, S));
+    };
     // a dragon behind a ridge is drawn faintly (the ridge is in front of it)
     P.draw = function (ctx, ox, oy, R) {
       if (!(this.g.mtn && this._m && this._m.occ)) return baseDraw.call(this, ctx, ox, oy, R);
@@ -542,6 +681,17 @@
   if (AS.HUD) {
     const draw = AS.HUD.draw;
     AS.HUD.draw = function (ctx, g, dt) { const r = draw.call(this, ctx, g, dt); if (g && g.mtn) MT.drawHUD(ctx, g); return r; };
+  }
+  if (AS.Settlements) {
+    // the hold of the mountain region is laid out round its cliff-cut gate
+    const build = AS.Settlements.build;
+    AS.Settlements.build = function (site, rng) {
+      if (site.g && site.g.map && site.g.map.mountain && site.g.terrain && site.g.terrain.R && site.g.terrain.R.hold && site.kind === 'dwarfhold') {
+        site.culture = 'dwarf';
+        return MT.composeHold(site, rng);
+      }
+      return build.call(this, site, rng);
+    };
   }
   if (AS.Input) {
     // while the test picker is open, 1–3 pick a scenario instead of casting a spell slot
