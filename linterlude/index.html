@@ -1,0 +1,2204 @@
+<title>Linterlude</title>
+<meta name="description" content="A tiny Undertale-style RPG about a sock that fell through the lint trap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+  /* Layout: one 4:3 pixel screen centred on black; touch pad docks below it on phones. */
+  :root {
+    --bg: #07060b;
+    --fg: #f4f1ff;
+    --dim: #7d7697;
+    --pad: rgba(255, 255, 255, 0.10);
+    --pad-edge: rgba(255, 255, 255, 0.28);
+    --ui: "Press Start 2P", ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--fg); overflow: hidden; }
+  body { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  #wrap { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  body.touch.portrait #wrap { justify-content: flex-start; padding-top: max(8px, env(safe-area-inset-top, 0px)); }
+  canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; background: #000; touch-action: none; outline: none; }
+  #pad { position: fixed; left: 0; right: 0; bottom: 0; height: 200px; pointer-events: none;
+         padding-bottom: env(safe-area-inset-bottom, 0px);
+         padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #pad button { pointer-events: auto; position: absolute; width: 58px; height: 58px; border-radius: 12px;
+         background: var(--pad); border: 2px solid var(--pad-edge); color: var(--fg); font: 14px var(--ui); touch-action: none; }
+  #pad button.on { background: rgba(255, 210, 63, 0.35); }
+  #pad [data-k="up"]    { left: calc(max(16px, env(safe-area-inset-left, 0px)) + 62px); bottom: 128px; }
+  #pad [data-k="down"]  { left: calc(max(16px, env(safe-area-inset-left, 0px)) + 62px); bottom: 12px; }
+  #pad [data-k="left"]  { left: max(16px, env(safe-area-inset-left, 0px)); bottom: 70px; }
+  #pad [data-k="right"] { left: calc(max(16px, env(safe-area-inset-left, 0px)) + 124px); bottom: 70px; }
+  #pad [data-k="z"] { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 0px); bottom: 90px; width: 70px; height: 70px; border-radius: 50%; }
+  #pad [data-k="x"] { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 84px); bottom: 40px; width: 62px; height: 62px; border-radius: 50%; }
+  #pad [data-k="c"] { right: calc(max(16px, env(safe-area-inset-right, 0px)) + 10px); bottom: 12px; width: 50px; height: 40px; font-size: 10px; }
+  body.touch.landscape #pad button { opacity: 0.55; }
+</style>
+
+<div id="wrap"><canvas id="game" width="640" height="480" tabindex="0" aria-label="Linterlude game screen"></canvas></div>
+<div id="pad" hidden>
+  <button data-k="up" aria-label="Up">▲</button>
+  <button data-k="left" aria-label="Left">◀</button>
+  <button data-k="right" aria-label="Right">▶</button>
+  <button data-k="down" aria-label="Down">▼</button>
+  <button data-k="z" aria-label="Confirm">Z</button>
+  <button data-k="x" aria-label="Cancel">X</button>
+  <button data-k="c" aria-label="Menu">MENU</button>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   LINTERLUDE — Chapter 1: The Lint Trap
+   A sock falls through the lint trap into the Lintlands.
+   ===================================================================== */
+
+const W = 640, H = 480, T = 32;
+const cv = document.getElementById('game');
+const ctx = cv.getContext('2d');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------------------------------------------------------- input */
+const keys = {}, pressed = {};
+const KEYMAP = {
+  ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left',
+  ArrowRight: 'right', KeyD: 'right', KeyZ: 'z', Enter: 'z', Space: 'z', KeyX: 'x', ShiftLeft: 'x',
+  ShiftRight: 'x', Escape: 'x', KeyC: 'c', ControlLeft: 'c', KeyM: 'm',
+};
+function press(k) { if (!keys[k]) pressed[k] = true; keys[k] = true; }
+addEventListener('keydown', e => {
+  audio.unlock();
+  if (G.scene === 'name' && G.nameScr && !G.nameScr.confirm) {
+    if (/^[a-zA-Z]$/.test(e.key)) { nameAdd(e.key.toUpperCase()); e.preventDefault(); return; }
+    if (e.key === 'Backspace') { nameDel(); e.preventDefault(); return; }
+    if (e.key === 'Enter') { nameDone(); e.preventDefault(); return; }
+  }
+  const k = KEYMAP[e.code];
+  if (k) { if (!e.repeat) press(k); keys[k] = true; e.preventDefault(); }
+});
+addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) keys[k] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+const jp = k => !!pressed[k];
+cv.addEventListener('pointerdown', () => { audio.unlock(); cv.focus(); if (['boot', 'title', 'intro', 'ending'].includes(G.scene)) press('z'); });
+cv.addEventListener('pointerup', () => { keys.z = false; });
+
+const isTouch = ('ontouchstart' in window) || matchMedia('(pointer: coarse)').matches;
+const pad = document.getElementById('pad');
+if (isTouch) {
+  document.body.classList.add('touch');
+  pad.hidden = false;
+  pad.querySelectorAll('button').forEach(b => {
+    const k = b.dataset.k;
+    const on = e => { e.preventDefault(); audio.unlock(); press(k); b.classList.add('on'); };
+    const off = e => { e.preventDefault(); keys[k] = false; b.classList.remove('on'); };
+    b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
+    b.addEventListener('pointercancel', off); b.addEventListener('pointerleave', off);
+  });
+}
+function resize() {
+  const portrait = innerHeight > innerWidth;
+  document.body.classList.toggle('portrait', portrait);
+  document.body.classList.toggle('landscape', !portrait);
+  let aw = innerWidth, ah = innerHeight;
+  if (isTouch && portrait) ah -= 214;
+  const s = Math.max(0.3, Math.min(aw / W, ah / H));
+  cv.style.width = Math.floor(W * s) + 'px';
+  cv.style.height = Math.floor(H * s) + 'px';
+}
+addEventListener('resize', resize); resize();
+
+/* ---------------------------------------------------------------- audio */
+const audio = {
+  ctx: null, master: null, muted: false,
+  unlock() {
+    if (!this.ctx) {
+      try {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.master = this.ctx.createGain(); this.master.gain.value = 0.55;
+        this.master.connect(this.ctx.destination);
+      } catch (e) { return; }
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+};
+function tone(freq, dur, type = 'square', vol = 0.08, slide = 0, delay = 0) {
+  const a = audio.ctx; if (!a || audio.muted || G.skipping) return;
+  const t = a.currentTime + delay;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, freq + slide), t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(audio.master); o.start(t); o.stop(t + dur + 0.02);
+}
+let noiseBuf = null;
+function noise(dur, vol = 0.15, freq = 1200, delay = 0) {
+  const a = audio.ctx; if (!a || audio.muted || G.skipping) return;
+  if (!noiseBuf) {
+    noiseBuf = a.createBuffer(1, a.sampleRate, a.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  const t = a.currentTime + delay;
+  const s = a.createBufferSource(); s.buffer = noiseBuf;
+  const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 0.8;
+  const g = a.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f); f.connect(g); g.connect(audio.master); s.start(t); s.stop(t + dur + 0.02);
+}
+const SFX = {
+  blip: (p = 1) => tone(200 * p * (0.96 + Math.random() * 0.08), 0.045, 'square', 0.035),
+  select: () => tone(700, 0.04, 'square', 0.05),
+  confirm: () => { tone(523, 0.06, 'square', 0.06); tone(784, 0.09, 'square', 0.06, 0, 0.05); },
+  buzz: () => tone(110, 0.22, 'sawtooth', 0.09),
+  hurt: () => { tone(220, 0.16, 'sawtooth', 0.11, -140); noise(0.1, 0.1, 900); },
+  hit: () => { noise(0.22, 0.25, 1600); tone(130, 0.2, 'square', 0.1, -70); },
+  slash: () => noise(0.18, 0.2, 3500),
+  zap: () => { for (let i = 0; i < 6; i++) tone(700 + Math.random() * 1400, 0.04, 'sawtooth', 0.06, 0, i * 0.03); noise(0.18, 0.14, 4500); },
+  save: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, 'triangle', 0.1, 0, i * 0.08)),
+  spare: () => [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.1, 'square', 0.045, 0, i * 0.05)),
+  heal: () => [440, 554, 659, 880].forEach((f, i) => tone(f, 0.12, 'triangle', 0.09, 0, i * 0.06)),
+  encounter: () => { tone(880, 0.07, 'square', 0.09); tone(1320, 0.14, 'square', 0.09, 0, 0.07); },
+  whump: () => { tone(85, 0.28, 'sine', 0.38, -45); noise(0.16, 0.22, 260); },
+  thud: () => { tone(70, 0.32, 'sine', 0.42, -30); noise(0.22, 0.25, 220); },
+  fall: () => tone(1000, 1.4, 'triangle', 0.07, -880),
+  slurp: () => { tone(180, 0.55, 'sine', 0.22, 1100); noise(0.4, 0.08, 600); },
+  slam: () => { noise(0.3, 0.4, 500); tone(60, 0.35, 'square', 0.18, -20); },
+  ring: () => { for (let i = 0; i < 8; i++) tone(i % 2 ? 1250 : 1500, 0.05, 'square', 0.045, 0, i * 0.07); },
+  sneeze: () => { noise(0.08, 0.1, 2000); noise(0.25, 0.25, 900, 0.12); tone(500, 0.2, 'square', 0.05, -300, 0.12); },
+  snore: () => tone(90, 0.7, 'sawtooth', 0.05, 30),
+  pop: () => tone(300, 0.08, 'sine', 0.2, 500),
+  shatter: () => { noise(0.45, 0.3, 2800); tone(320, 0.4, 'square', 0.08, -260); },
+  crack: () => { noise(0.1, 0.3, 3000); tone(150, 0.12, 'square', 0.1, -40); },
+  dust: () => { noise(0.9, 0.12, 700); tone(400, 0.9, 'triangle', 0.05, -320); },
+  door: () => { tone(110, 0.5, 'square', 0.07, 80); noise(0.4, 0.12, 400); },
+  coin: () => { tone(988, 0.06, 'square', 0.06); tone(1319, 0.2, 'square', 0.06, 0, 0.06); },
+  letter: () => { tone(160, 0.12, 'square', 0.12, -60); noise(0.08, 0.15, 300); },
+};
+
+/* ---- music: tiny two-voice sequencer ---- */
+function noteHz(n) {
+  if (n === '-') return 0;
+  const m = n.match(/^([A-G])(#|b)?(\d)$/);
+  const st = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+  return 440 * Math.pow(2, (12 * (+m[3] + 1) + st - 69) / 12);
+}
+const parseSeq = s => s.replace(/\|/g, ' ').trim().split(/\s+/).map(t => { const [n, d] = t.split(':'); return [noteHz(n), +d]; });
+const TRACKS = {
+  intro: { unit: 60 / 132, lead: ['triangle', 0.07], bass: ['sine', 0.09],
+    a: 'A4:2 C5:2 E5:2 D5:2 | C5:2 B4:2 G4:4 | F4:2 A4:2 C5:2 B4:2 | A4:4 E4:4',
+    b: 'A2:4 E3:4 | F2:4 G2:4 | D2:4 E2:4 | A2:4 E2:4' },
+  lint: { unit: 60 / 210, lead: ['square', 0.028], bass: ['triangle', 0.07],
+    a: 'E5:1 G5:1 C6:1 B5:1 A5:2 G5:2 | F5:1 A5:1 G5:1 E5:1 D5:2 -:2 | E5:1 G5:1 C6:1 D6:1 E6:2 C6:1 A5:1 | G5:1 F5:1 E5:1 D5:1 C5:4',
+    b: 'C3:2 G3:2 C3:2 G3:2 | F2:2 C3:2 G2:2 D3:2 | A2:2 E3:2 F2:2 C3:2 | G2:2 D3:2 C3:4' },
+  battle: { unit: 60 / 300, lead: ['square', 0.03], bass: ['triangle', 0.08],
+    a: 'A4:1 A4:1 C5:1 A4:1 E5:1 D5:1 C5:1 B4:1 | A4:1 A4:1 C5:1 E5:1 G5:2 F5:1 E5:1 | D5:1 D5:1 F5:1 D5:1 A5:1 G5:1 F5:1 E5:1 | E5:1 F5:1 E5:1 D5:1 C5:1 B4:1 G#4:2',
+    b: 'A2:1 A3:1 A2:1 A3:1 A2:1 A3:1 A2:1 A3:1 | F2:1 F3:1 F2:1 F3:1 F2:1 F3:1 F2:1 F3:1 | D2:1 D3:1 D2:1 D3:1 D2:1 D3:1 D2:1 D3:1 | E2:1 E3:1 E2:1 E3:1 E2:1 E3:1 E2:1 E3:1' },
+  boss: { unit: 60 / 330, lead: ['square', 0.032], bass: ['triangle', 0.09],
+    a: 'D5:1 F5:1 A5:1 D6:1 C6:2 A5:2 | A#5:1 A5:1 G5:1 F5:1 E5:2 C5:2 | D5:1 F5:1 A5:1 D6:1 E6:2 F6:2 | E6:1 D6:1 C#6:1 A5:1 D6:4',
+    b: 'D3:1 D3:1 D4:1 D3:1 A#2:1 A#2:1 A#3:1 A#2:1 | G2:1 G2:1 G3:1 G2:1 A2:1 A2:1 A3:1 A2:1 | D3:1 D3:1 D4:1 D3:1 A#2:1 A#2:1 A#3:1 A#2:1 | A2:1 A2:1 A3:1 A2:1 D3:1 D3:1 D4:2' },
+  calm: { unit: 60 / 150, lead: ['triangle', 0.06], bass: ['sine', 0.08],
+    a: 'C5:2 E5:2 G5:2 E5:2 | F5:2 A5:2 G5:4 | E5:2 D5:2 C5:2 A4:2 | B4:2 D5:2 C5:4',
+    b: 'C3:4 G2:4 | F2:4 C3:4 | A2:4 F2:4 | G2:4 C3:4' },
+};
+for (const k in TRACKS) { TRACKS[k].va = parseSeq(TRACKS[k].a); TRACKS[k].vb = parseSeq(TRACKS[k].b); }
+const music = { cur: null, voices: null, timer: null };
+function playMusic(name) {
+  if (music.cur === name) return;
+  stopMusic(); music.cur = name;
+  if (!name || !audio.ctx) return;
+  const tr = TRACKS[name], t0 = audio.ctx.currentTime + 0.05;
+  music.voices = [{ seq: tr.va, i: 0, t: t0, inst: tr.lead }, { seq: tr.vb, i: 0, t: t0, inst: tr.bass }];
+  const tick = () => {
+    if (!audio.ctx) return;
+    const now = audio.ctx.currentTime;
+    for (const v of music.voices) {
+      while (v.t < now + 0.25) {
+        const [hz, d] = v.seq[v.i]; const dur = d * tr.unit;
+        if (hz && !audio.muted) {
+          const o = audio.ctx.createOscillator(), g = audio.ctx.createGain();
+          o.type = v.inst[0]; o.frequency.value = hz;
+          g.gain.setValueAtTime(0.0001, v.t); g.gain.linearRampToValueAtTime(v.inst[1], v.t + 0.01);
+          g.gain.setValueAtTime(v.inst[1], v.t + dur * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, v.t + dur * 0.95);
+          o.connect(g); g.connect(audio.master); o.start(v.t); o.stop(v.t + dur);
+        }
+        v.t += dur; v.i = (v.i + 1) % v.seq.length;
+      }
+    }
+  };
+  tick(); music.timer = setInterval(tick, 60);
+}
+function stopMusic() { clearInterval(music.timer); music.timer = null; music.cur = null; }
+
+/* ---------------------------------------------------------------- sprites */
+const PAL = {
+  k: '#14111c', w: '#ffffff', g: '#c9c4d6', G: '#7a748c', r: '#e8443a', R: '#a02838', y: '#ffd23f', Y: '#c99a1a',
+  h: '#f2b07a', q: '#d4824a', Q: '#8f4a26', o: '#f08a24', b: '#5b8def', B: '#2e4a9a', p: '#f7a1c4', P: '#8e62c9',
+  n: '#b58d5c', N: '#6e5236', c: '#f3e3c0', C: '#d9b77e', s: '#eef4ff', S: '#9fb8ee', e: '#7cc96a', E: '#3f7a3a',
+};
+const sym = half => half.map(r => r + [...r].reverse().join(''));
+const swap = (rows, m) => rows.map(r => [...r].map(c => m[c] || c).join(''));
+const ART = {};
+ART.sock = [
+  '..kkkkkkkk....', '.kggggggggk...', '.kwwwwwwwwk...', '.krrrrrrrrk...', '.kwwwwwwwwk...', '.krrrrrrrrk...',
+  '.kwwwwwwwwk...', '.kwwwwkwkwk...', '.kwwwwkwkwk...', '.kwwwpwwwpk...', '.kwwwwwwwwk...', '.kwwwwwwwwwkk.',
+  '.kwwwwwwwwwwwk', '.kGwwwwwwwrrrk', '..kGGwwwwwrrrk', '...kkkkkkkkkk.',
+];
+ART.sockSleep = ART.sock.map((r, i) => i === 7 ? '.kwwwwwwwwk...' : i === 8 ? '.kwwwGGwGGk...' : r);
+ART.sockBlue = swap(ART.sock, { r: 'b', R: 'B' });
+ART.sockGreen = swap(ART.sock, { r: 'e', R: 'E' });
+ART.moth = sym([
+  '..k......', '...k.....', '....k..kk', '.....kkcc', '....kcccc', '...kcSSSS', '...kSkwkS', '...kSkkkS',
+  '...kcSSSc', '....kcccc', '....kccck', '...nkcccc', '..nnnkPPc', '.nnoonkPP', 'nnoyonkPP', 'nnoonkPPw',
+  '.nnnnkPPP', '..nnnkPPw', '....kPPPP', '....kPPPP', '.....kcck', '.....kk.k',
+]);
+ART.fort = [
+  '......kkkk......', '....kkCCCCkk....', '...kCCcCCCCCk...', '..kCCkCCCCkCCk..', '..kCCkCCCCkCCk..',
+  '.kCCCCCCCCCCCCk.', '.kNNkkkkkkkkNNk.', '.kNkwwwwwwwwkNk.', '..kkwGwGGwGwkk..', '....kwwwwwwk....', '.....kkkkkk.....',
+];
+ART.dummy = sym([
+  '.....kk', '....kGG', '.....kG', '..kkkcc', '.kccccc', 'kcccccc', 'kcckccc', 'kcccccc', 'kcrcccc', '.kccccc',
+  '..kcccc', '..kcccc', '.kcccrc', '.kccccc', '..kkkkk', '.....kN', '.....kN', '.....kN', '.....kN', '...kkkN', '..kNNNN', '.kk...k',
+]);
+ART.bunny = sym([
+  '...kk...', '..kggk..', '..kgpk..', '..kgpk..', '...kgk..', '..kkgkkk', '.kgggggg', 'kgggkggg', 'kgggkggg',
+  'kggggggp', 'kgGggggk', '.kgGgggg', '..kkGGgg', '....kkkk',
+]);
+ART.cling = sym([
+  '...kkkkk', '..ksssss', '.kssssss', '.ksskkss', '.ksskwss', 'ksppssss', 'ksssssks', 'kssssssk', 'kSssssss',
+  'kSssssss', 'kSSsssss', 'kSkSSsSs', 'k.kkSkSk', '....k.k.',
+]);
+ART.penny = sym([
+  '......kr', '.....krr', '......kr', '...kkkkk', '..kGgggg', '.kGggggg', 'kqqkkkkk', 'kqqkyyyk', 'kqqkkkkk',
+  'kqhqqqqq', 'kqhqqqqq', 'kqqqqqqq', 'kQqqqqqq', '.kQqqqqq', '..kQQqqq', '...kkkkk', '....kGk.', '....kGk.', '...kkGkk',
+]);
+ART.save = ['..kkkkk..', '.kyyyyyk.', 'kyhyyyyyk', 'kyyYyYyyk', 'kyyyyyyyk', 'kyyYyYyyk', 'kyyyyyyyk', '.kyyyyyk.', '..kkkkk..'];
+ART.gummy = ['.rr.rr.', '.rrrrr.', '.rkrkr.', '..rrr..', '.rrrrr.', 'rrrrrrr', '.rrrrr.', '.rr.rr.'];
+ART.soul = ['..rrrr..', '..rwwr..', '..rrrr..', '..rrrr..', '..rrrr..', '..rrrrrr', '..rrrrrr', '...rrrr.'];
+ART.sign = ['kkkkkkkkkkkk', 'knnnnnnnnnnk', 'knNNNNNNNNnk', 'knnnnnnnnnnk', 'knNNNNNNnnnk', 'knnnnnnnnnnk', 'kkkkkkkkkkkk',
+  '.....kNk....', '.....kNk....', '.....kNk....', '....kkNkk...'];
+ART.heart = ['.p.p.', 'ppppp', 'ppppp', '.ppp.', '..p..'];
+ART.shirt = ['.ee...ee.', 'eeee.eeee', 'eeeeeeeee', '..eeeee..', '..eeeee..', '..eeeee..', '..eeeee..'];
+ART.coin = ['.yyyy.', 'yyYYyy', 'yYyyyy', 'yYyyyy', 'yyyyYy', '.yyyy.'];
+ART.hat = ['...kkkk...', '..kPPPPk..', '..kPPPPk..', '..kyyyyk..', 'kkPPPPPPkk', 'kPPPPPPPPk', '.kkkkkkkk.'];
+ART.tee = ['.kk....kk.', 'kbbk..kbbk', 'kbbbkkbbbk', '.kkbbbbkk.', '..kbbbbk..', '..kbbbbk..', '..kkkkkk..'];
+ART.shoe = ['.kkk........', 'kNNNk.......', 'kNyNNkkkk...', 'kNNNNNNNNkk.', 'kNNNNNNNNNNk', 'kwwwwwwwwwwk', '.kkkkkkkkkk.'];
+
+const SPR = {};
+for (const name in ART) {
+  const rows = ART[name], w = Math.max(...rows.map(r => r.length)), h = rows.length;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  rows.forEach((r, j) => { for (let i = 0; i < r.length; i++) { const ch = r[i]; if (ch !== '.' && ch !== ' ') { g.fillStyle = PAL[ch] || '#f0f'; g.fillRect(i, j, 1, 1); } } });
+  SPR[name] = c;
+}
+// white silhouettes for hit flashes
+const SPRW = {};
+for (const name in SPR) {
+  const s = SPR[name], c = document.createElement('canvas'); c.width = s.width; c.height = s.height;
+  const g = c.getContext('2d'); g.drawImage(s, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  SPRW[name] = c;
+}
+function spr(name, x, y, s = 2, flip = false, alpha = 1, g = ctx, white = false) {
+  const c = (white ? SPRW : SPR)[name]; if (!c) return;
+  g.save(); g.imageSmoothingEnabled = false; g.globalAlpha *= alpha;
+  if (flip) { g.translate(Math.round(x) + c.width * s, Math.round(y)); g.scale(-1, 1); g.drawImage(c, 0, 0, c.width * s, c.height * s); }
+  else g.drawImage(c, Math.round(x), Math.round(y), c.width * s, c.height * s);
+  g.restore();
+}
+// centre-bottom anchored
+function sprC(name, cx, by, s = 2, flip = false, alpha = 1, g = ctx, white = false) {
+  const c = SPR[name]; if (!c) return;
+  spr(name, cx - c.width * s / 2, by - c.height * s, s, flip, alpha, g, white);
+}
+function sprRot(name, cx, cy, s, ang, flip = false, g = ctx) {
+  const c = SPR[name]; g.save(); g.imageSmoothingEnabled = false; g.translate(cx, cy); g.rotate(ang); if (flip) g.scale(-1, 1);
+  g.drawImage(c, -c.width * s / 2, -c.height * s / 2, c.width * s, c.height * s); g.restore();
+}
+function pcirc(g, cx, cy, r, col, u = 1) {
+  g.fillStyle = col;
+  for (let y = -r; y <= r; y += u) { const w = Math.floor(Math.sqrt(Math.max(0, r * r - y * y)) / u) * u; g.fillRect(Math.round(cx - w), Math.round(cy + y), w * 2 + u, u); }
+}
+function rect(x, y, w, h, c, g = ctx) { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+
+/* ---------------------------------------------------------------- text */
+const FONT_TXT = '"VT323", ui-monospace, monospace', FONT_UI = '"Press Start 2P", ui-monospace, monospace';
+const font = (px, fam = FONT_TXT) => `${px}px ${fam}`;
+const COL = { y: '#ffd23f', r: '#ff5a4e', b: '#8cbcff', p: '#f7a1c4', g: '#8fe08f', o: '#f08a24', w: '#ffffff', d: '#8a84a0', k: '#14111c' };
+class Typer {
+  constructor(text, maxW, size = 30, o = {}) {
+    this.size = size; this.lh = Math.round(size * 1.12); this.voice = o.voice ?? 1; this.base = o.color || '#fff';
+    this.speed = o.speed || 42; this.quiet = !!o.quiet;
+    text = String(text).replaceAll('%N', G.name);
+    const chars = []; let col = this.base, fx = 0;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '{') {
+        const j = text.indexOf('}', i), tag = text.slice(i + 1, j); i = j;
+        if (tag === '/') { col = this.base; fx = 0; } else if (tag === '~') fx = fx === 1 ? 0 : 1; else if (tag === '!') fx = fx === 2 ? 0 : 2; else if (COL[tag]) col = COL[tag];
+        continue;
+      }
+      chars.push({ ch, col, fx });
+    }
+    ctx.font = font(size);
+    const indent = (o.indent !== false && text.startsWith('* ')) ? ctx.measureText('* ').width : 0;
+    const words = []; let cur = [];
+    for (const c of chars) {
+      if (c.ch === '\n') { if (cur.length) words.push(cur); words.push('\n'); cur = []; }
+      else if (c.ch === ' ') { cur.push(c); words.push(cur); cur = []; }
+      else cur.push(c);
+    }
+    if (cur.length) words.push(cur);
+    this.g = []; let x = 0, y = 0;
+    for (const w of words) {
+      if (w === '\n') { x = 0; y += this.lh; continue; }
+      const ww = w.reduce((a, c) => a + (c.ch === ' ' ? 0 : ctx.measureText(c.ch).width), 0);
+      if (x + ww > maxW && x > indent) { x = indent; y += this.lh; }
+      for (const c of w) { this.g.push({ ...c, x, y }); x += ctx.measureText(c.ch).width; }
+    }
+    this.w = maxW; this.h = y + this.lh; this.n = 0; this.t = 0.02; this.k = 0;
+    if (o.instant) this.n = this.g.length;
+  }
+  get done() { return this.n >= this.g.length; }
+  finish() { this.n = this.g.length; }
+  update(dt) {
+    this.t -= dt;
+    while (this.t <= 0 && this.n < this.g.length) {
+      const c = this.g[this.n++];
+      this.t += '.!?'.includes(c.ch) ? 0.13 : c.ch === ',' ? 0.07 : 1 / this.speed;
+      if (c.ch !== ' ' && !this.quiet && (this.k++ % 2 === 0)) SFX.blip(this.voice);
+    }
+  }
+  draw(ox, oy, alpha = 1) {
+    ctx.save(); ctx.font = font(this.size); ctx.textBaseline = 'top'; ctx.globalAlpha *= alpha;
+    for (let i = 0; i < this.n; i++) {
+      const c = this.g[i]; let dx = 0, dy = 0;
+      if (c.fx === 1) dy = Math.sin(G.t * 8 + i * 0.7) * 2;
+      else if (c.fx === 2) { dx = (Math.random() - 0.5) * 2.4; dy = (Math.random() - 0.5) * 2.4; }
+      ctx.fillStyle = c.col; ctx.fillText(c.ch, Math.round(ox + c.x + dx), Math.round(oy + c.y + dy));
+    }
+    ctx.restore();
+  }
+}
+function text(str, x, y, size, col = '#fff', align = 'left', fam = FONT_TXT) {
+  ctx.font = font(size, fam); ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = 'top';
+  ctx.fillText(str, Math.round(x), Math.round(y)); ctx.textAlign = 'left';
+}
+
+/* ---------------------------------------------------------------- game state */
+const G = {
+  scene: 'boot', t: 0, timers: [], tweens: [], dlg: null, busy: false, skipping: false, skipHold: 0,
+  fade: 0, flash: 0, flashCol: '#fff', shake: 0, toast: null,
+  name: 'LEFTY', hp: 20, maxhp: 20, fuz: 1, exp: 0, lint: 0, inv: [], flags: {}, kills: 0, spares: 0, zaps: 0,
+  roomId: null, room: null, roomCanvas: null, ents: [], particles: [], menu: null, battle: null,
+  player: { x: 320, y: 300, face: 'down', flip: false, walkT: 0, moving: false, pose: 'stand', oy: 0, alert: false, hidden: false },
+};
+window.__G = G;
+
+function wait(s) { if (G.skipping) return Promise.resolve(); return new Promise(r => G.timers.push({ t: s, r })); }
+const ease = { lin: t => t, out: t => 1 - (1 - t) * (1 - t), in: t => t * t, io: t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2 };
+function tween(o, to, dur, e = ease.lin) {
+  if (G.skipping || dur <= 0) { Object.assign(o, to); return Promise.resolve(); }
+  return new Promise(r => { const from = {}; for (const k in to) from[k] = o[k]; G.tweens.push({ o, from, to, dur, t: 0, e, r }); });
+}
+const fadeTo = (v, d = 0.35) => tween(G, { fade: v }, d);
+function shake(a) { G.shake = Math.max(G.shake, REDUCED ? a * 0.3 : a); }
+function flash(col = '#fff', a = 1) { G.flashCol = col; G.flash = a; }
+function toast(msg) { G.toast = { msg, t: 1.8 }; }
+async function run(fn) { if (G.busy) return; G.busy = true; try { await fn(); } finally { G.busy = false; } }
+
+/* ---------------------------------------------------------------- dialog */
+const SPEAKERS = {
+  none: { voice: 1.0 },
+  moth: { voice: 1.55, portrait: 'moth' },
+  fort: { voice: 2.3, portrait: 'fort' },
+  penny: { voice: 0.75, portrait: 'penny' },
+  bunny: { voice: 2.0, portrait: 'bunny' },
+  cling: { voice: 1.8, portrait: 'cling' },
+  sock: { voice: 1.3, portrait: 'sock' },
+};
+function say(lines, opts = {}) {
+  if (!Array.isArray(lines)) lines = [lines];
+  if (G.skipping) return Promise.resolve(0);
+  return new Promise(res => {
+    G.dlg = { queue: lines.map(l => typeof l === 'string' ? { text: l } : l), i: -1, res, style: opts.style || 'box', result: 0 };
+    nextLine();
+  });
+}
+const ask = (line, choices, opts) => say([{ ...(typeof line === 'string' ? { text: line } : line), choices }], opts);
+const narrate = t => say([t], { style: 'intro' });
+function nextLine() {
+  const d = G.dlg; d.i++;
+  if (d.i >= d.queue.length) { const r = d.res, v = d.result; G.dlg = null; r(v); return; }
+  const L = d.queue[d.i], sp = SPEAKERS[L.who] || SPEAKERS.none, st = L.style || d.style;
+  let maxW = 540, size = 30;
+  if (st === 'box' && sp.portrait) maxW = 420;
+  if (st === 'intro') { maxW = 470; size = 30; }
+  if (st === 'gameover') { maxW = 440; size = 32; }
+  d.L = L; d.sp = sp; d.st = st; d.hold = 0; d.choice = 0;
+  d.typer = new Typer(L.text, maxW, size, { voice: sp.voice, speed: st === 'intro' ? 30 : 42 });
+}
+function updateDialog(dt) {
+  const d = G.dlg; if (!d) return false;
+  const ty = d.typer;
+  if (!ty.done) {
+    if (jp('x') || jp('z')) { ty.finish(); pressed.z = pressed.x = false; } else ty.update(dt);
+    return true;
+  }
+  const L = d.L;
+  if (L.choices) {
+    const n = L.choices.length;
+    if (jp('left') || jp('up')) { d.choice = (d.choice + n - 1) % n; SFX.select(); }
+    if (jp('right') || jp('down')) { d.choice = (d.choice + 1) % n; SFX.select(); }
+    if (jp('z')) { pressed.z = false; SFX.confirm(); d.result = d.choice; nextLine(); }
+    return true;
+  }
+  if (d.st === 'intro') { d.hold += dt; if (d.hold > 2.1 || jp('z')) { pressed.z = false; nextLine(); } return true; }
+  if (jp('z')) { pressed.z = false; nextLine(); }
+  return true;
+}
+function drawBox(x, y, w, h) { rect(x, y, w, h, '#fff'); rect(x + 4, y + 4, w - 8, h - 8, '#000'); }
+function drawDialog() {
+  const d = G.dlg; if (!d) return;
+  const ty = d.typer;
+  if (d.st === 'intro') { ty.draw(85, 312); return; }
+  if (d.st === 'gameover') { ty.draw(100, 330); drawChoices(d, 120, 330 + ty.h + 10); return; }
+  const top = G.scene === 'world' && G.player.y > 300;
+  const bx = 24, by = top ? 14 : 322, bw = 592, bh = 146;
+  drawBox(bx, by, bw, bh);
+  let tx = bx + 26;
+  if (d.sp.portrait) {
+    const c = SPR[d.sp.portrait], s = Math.min(4, Math.floor(110 / Math.max(c.width, c.height)));
+    const talking = !ty.done && Math.floor(G.t * 8) % 2;
+    sprC(d.sp.portrait, bx + 74, by + bh / 2 + c.height * s / 2 + (talking ? -2 : 0), s);
+    tx = bx + 140;
+  }
+  ty.draw(tx, by + 18);
+  if (ty.done && !d.L.choices && Math.floor(G.t * 3) % 2) rect(bx + bw - 26, by + bh - 22, 10, 6, '#fff');
+  drawChoices(d, tx + 20, by + 18 + ty.h + 6);
+}
+function drawChoices(d, x, y) {
+  if (!d.L.choices || !d.typer.done) return;
+  ctx.font = font(30);
+  let cx = x;
+  d.L.choices.forEach((c, i) => {
+    const label = c.replaceAll('%N', G.name);
+    if (i === d.choice) spr('soul', cx - 6, y + 6, 2);
+    text(label, cx + 16, y, 30, i === d.choice ? '#ffd23f' : '#fff');
+    cx += ctx.measureText(label).width + 80;
+  });
+}
+
+/* ---------------------------------------------------------------- items */
+const ITEMS = {
+  gummy: { name: 'Gummy Bear', heal: 8, use: '* You ate the Gummy Bear. It looked betrayed.', info: '* "Gummy Bear" - Heals 8 HP\n* Slightly fuzzy. Still good. Probably.' },
+  muffin: { name: 'Lint Muffin', heal: 99, use: "* You ate the Lint Muffin. It's dense. It's crunchy in places a muffin shouldn't be.", info: '* "Lint Muffin" - Heals ALL HP\n* Baked in 1997. Aged like a fine wine. Or a cheese.' },
+  scrap: { name: 'Cardigan Scrap', heal: 12, use: '* You hugged the Cardigan Scrap. It smells like mothballs and love.', info: '* "Cardigan Scrap" - Heals 12 HP\n* Slightly chewed. Hug, do not eat.' },
+  phone: { name: 'String Phone', key: true, info: "* \"String Phone\" - Key item\n* Two buttons and some thread. Somehow it works." },
+};
+function addItem(id) { if (G.inv.length < 8) { G.inv.push(id); return true; } return false; }
+function useItem(idx, inBattle) {
+  const id = G.inv[idx], it = ITEMS[id];
+  if (it.key) {
+    const calls = inBattle
+      ? ["* You tug the String Phone.", "* A distant voice: 'I'm watching my stories, dear! Use your words!'"]
+      : ['* Ring ring...', pick([
+        "* Mothilda: 'Hello? Oh, it's you! I'm eating. Don't worry about what.'",
+        "* Mothilda: 'Are you being careful? Are you eating enough? Is it lint? Don't eat the lint.'",
+        "* Mothilda: 'I can't talk long, dear, the pie is getting suspicious.'",
+        "* Mothilda: 'Did you know a moth's ears are on its wings? So when I flap, I hear the wind. It's very loud. Goodbye.'",
+      ])];
+    SFX.ring();
+    return calls;
+  }
+  G.inv.splice(idx, 1);
+  const before = G.hp; G.hp = Math.min(G.maxhp, G.hp + it.heal); SFX.heal();
+  return [it.use, G.hp >= G.maxhp ? '* Your HP was maxed out.' : `* You recovered ${G.hp - before} HP!`];
+}
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+/* ---------------------------------------------------------------- save / load */
+const SAVE_KEY = 'linterlude-save-v1';
+let memSave = null;
+function snapshot() {
+  const p = G.player;
+  return { name: G.name, hp: G.hp, maxhp: G.maxhp, fuz: G.fuz, exp: G.exp, lint: G.lint, inv: [...G.inv], flags: { ...G.flags },
+    kills: G.kills, spares: G.spares, zaps: G.zaps, room: G.roomId, x: p.x, y: p.y };
+}
+function saveGame() { memSave = snapshot(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(memSave)); } catch (e) { /* storage blocked */ } }
+function readSave() { if (memSave) return memSave; try { const s = localStorage.getItem(SAVE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function applySave(s) {
+  Object.assign(G, { name: s.name, hp: s.hp, maxhp: s.maxhp, fuz: s.fuz, exp: s.exp, lint: s.lint, inv: [...s.inv], flags: { ...s.flags }, kills: s.kills, spares: s.spares, zaps: s.zaps });
+  G.dlg = null; G.busy = false; G.menu = null; G.battle = null; G.timers = []; G.tweens = []; G.skipping = false;
+  const p = G.player; p.pose = 'stand'; p.oy = 0; p.alert = false; p.hidden = false; p.face = 'down';
+  G.scene = 'world'; loadRoom(s.room, s.x, s.y);
+}
+async function continueGame() { const s = readSave(); if (!s) return; G.fade = 1; applySave(s); await fadeTo(0, 0.5); }
+function resetStats() {
+  Object.assign(G, { hp: 20, maxhp: 20, fuz: 1, exp: 0, lint: 0, inv: [], flags: {}, kills: 0, spares: 0, zaps: 0 });
+}
+
+/* ================================================================= WORLD */
+function hash(x, y, s) {
+  let h = (x * 374761393 + y * 668265263 + s * 982451653) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296;
+}
+const FIBERS = ['#e58aa8', '#7fb0e8', '#f2d06b', '#8fd49a', '#c99be8'];
+function tileAt(c, r) {
+  const m = G.room.map; c = Math.max(0, Math.min(19, c)); r = Math.max(0, Math.min(14, r)); return m[r][c];
+}
+function renderRoom(room, seed) {
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); const m = room.map;
+  const isWall = ch => ch === '#' || ch === ' ';
+  for (let r = 0; r < 15; r++) for (let col = 0; col < 20; col++) {
+    const ch = m[r][col], x = col * T, y = r * T;
+    const rnd = i => hash(col * 7 + i, r * 13 + i * 3, seed);
+    if (ch === ' ') { rect(x, y, T, T, '#08070c', g); continue; }
+    if (ch === '#') {
+      const below = r < 14 ? m[r + 1][col] : '#';
+      if (!isWall(below)) {
+        rect(x, y, T, T, '#4f4966', g);
+        for (let i = 0; i < 6; i++) rect(x + Math.floor(rnd(i) * 16) * 2, y + 4 + Math.floor(rnd(i + 9) * 8) * 2, 2, 6 + Math.floor(rnd(i + 4) * 4) * 2, i % 2 ? '#5d5778' : '#433d59', g);
+        rect(x, y, T, 4, '#6a6388', g);
+      } else {
+        rect(x, y, T, T, '#29253a', g);
+        for (let i = 0; i < 4; i++) rect(x + Math.floor(rnd(i) * 16) * 2, y + Math.floor(rnd(i + 5) * 16) * 2, 2, 2, '#332e47', g);
+      }
+      continue;
+    }
+    if (ch === 's') {
+      rect(x, y, T, T, '#8494c0', g);
+      g.fillStyle = '#6a7aaa';
+      for (let i = 0; i < 4; i++) { const yy = y + 4 + i * 8; for (let k = 0; k < 8; k++) g.fillRect(x + k * 4, yy + ((k + i) % 2) * 2, 4, 2); }
+      for (let i = 0; i < 3; i++) rect(x + Math.floor(rnd(i) * 15) * 2, y + Math.floor(rnd(i + 3) * 15) * 2, 2, 2, '#d4e0ff', g);
+      continue;
+    }
+    // floor (also ',' stitched path and 'p' fluff)
+    rect(x, y, T, T, ch === ',' ? '#6e6986' : '#9a95ab', g);
+    for (let i = 0; i < 9; i++) rect(x + Math.floor(rnd(i) * 16) * 2, y + Math.floor(rnd(i + 20) * 16) * 2, 2, 2, i % 2 ? '#aaa5bb' : '#8a859f', g);
+    if (rnd(40) < 0.35 && ch !== ',') {
+      g.globalAlpha = 0.8; const vert = rnd(41) < 0.5;
+      rect(x + 4 + Math.floor(rnd(42) * 10) * 2, y + 4 + Math.floor(rnd(43) * 10) * 2, vert ? 2 : 6, vert ? 6 : 2, FIBERS[Math.floor(rnd(44) * 5)], g);
+      g.globalAlpha = 1;
+    }
+    if (ch === ',') {
+      g.fillStyle = '#e6e0f2';
+      for (let k = 0; k < 4; k++) { g.fillRect(x + 3 + k * 7, y + 3, 4, 2); g.fillRect(x + 3 + k * 7, y + T - 5, 4, 2); g.fillRect(x + 3, y + 3 + k * 7, 2, 4); g.fillRect(x + T - 5, y + 3 + k * 7, 2, 4); }
+    }
+  }
+  // fluffy fringe under wall faces
+  for (let r = 0; r < 14; r++) for (let col = 0; col < 20; col++) {
+    if (m[r][col] === '#' && !isWall(m[r + 1][col])) {
+      for (let k = 0; k < 4; k++) pcirc(g, col * T + 4 + k * 8, (r + 1) * T, 3 + Math.floor(hash(col, r * 4 + k, seed) * 3), '#bdb7cd', 1);
+      for (let k = 0; k < 4; k++) pcirc(g, col * T + 4 + k * 8, (r + 1) * T - 1, 2, '#d6d1e3', 1);
+    }
+  }
+  for (const d of room.decor || []) drawDecor(g, ...d);
+  return c;
+}
+function drawDecor(g, kind, x, y, a) {
+  switch (kind) {
+    case 'tuft': {
+      pcirc(g, x, y, 9, '#b3adc4'); pcirc(g, x - 8, y + 3, 6, '#b3adc4'); pcirc(g, x + 8, y + 2, 7, '#b3adc4');
+      pcirc(g, x - 2, y - 2, 6, '#cfcadd'); pcirc(g, x + 6, y, 3, '#e2deec');
+      rect(x - 4, y - 1, 6, 2, FIBERS[(x + y) % 5], g); break;
+    }
+    case 'pile': {
+      for (let i = 0; i < 9; i++) { const ang = i / 9 * Math.PI * 2; pcirc(g, x + Math.cos(ang) * 46, y + Math.sin(ang) * 18, 18, '#a39db7'); }
+      pcirc(g, x, y, 40, '#b8b2ca'); pcirc(g, x - 18, y - 6, 22, '#c8c3d8'); pcirc(g, x + 20, y - 4, 20, '#c8c3d8'); pcirc(g, x, y - 10, 18, '#dcd8e8');
+      for (let i = 0; i < 14; i++) rect(x - 50 + hash(i, 1, 3) * 100, y - 24 + hash(i, 2, 3) * 40, hash(i, 4, 3) < 0.5 ? 2 : 6, hash(i, 4, 3) < 0.5 ? 6 : 2, FIBERS[i % 5], g);
+      break;
+    }
+    case 'button': {
+      pcirc(g, x, y, 7, '#14111c'); pcirc(g, x, y, 6, a || '#e8443a'); pcirc(g, x - 1, y - 2, 2, 'rgba(255,255,255,.35)');
+      rect(x - 3, y - 3, 2, 2, '#14111c', g); rect(x + 1, y - 3, 2, 2, '#14111c', g); rect(x - 3, y + 1, 2, 2, '#14111c', g); rect(x + 1, y + 1, 2, 2, '#14111c', g); break;
+    }
+    case 'coin': { rect(x - 7, y - 4, 14, 8, '#8f4a26', g); rect(x - 6, y - 5, 12, 8, '#d4824a', g); rect(x - 4, y - 4, 4, 2, '#f2b07a', g); break; }
+    case 'hairtie': { g.strokeStyle = a || '#f7a1c4'; g.lineWidth = 3; g.beginPath(); g.ellipse(x, y, 10, 6, 0, 0, 7); g.stroke(); break; }
+    case 'pin': { rect(x - 10, y, 22, 2, '#c9c4d6', g); pcirc(g, x - 11, y + 1, 3, '#e8443a'); break; }
+    case 'receipt': { rect(x - 8, y - 10, 16, 20, '#f4f1e8', g); for (let i = 0; i < 4; i++) rect(x - 5, y - 6 + i * 4, i === 3 ? 6 : 10, 1, '#9a95ab', g); break; }
+    case 'earring': {
+      g.strokeStyle = '#14111c'; g.lineWidth = 9; g.beginPath(); g.arc(x, y, 30, 0, 7); g.stroke();
+      g.strokeStyle = '#e9b840'; g.lineWidth = 6; g.beginPath(); g.arc(x, y, 30, 0, 7); g.stroke();
+      g.strokeStyle = '#fff1b8'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 30, 3.6, 4.6); g.stroke(); break;
+    }
+    case 'clip': { g.strokeStyle = '#c9c4d6'; g.lineWidth = 2; g.strokeRect(x - 8, y - 3, 16, 6); g.strokeRect(x - 5, y - 1, 11, 2); break; }
+    case 'buttons': { const cs = ['#e8443a', '#5b8def', '#ffd23f', '#7cc96a', '#f7a1c4', '#f3e3c0']; for (let i = 0; i < 9; i++) drawDecor(g, 'button', x + (hash(i, 5, 9) - 0.5) * 50, y + (hash(i, 6, 9) - 0.5) * 24, cs[i % 6]); break; }
+  }
+}
+
+/* ---- entities ---- */
+function ent(o) { return Object.assign({ x: 0, y: 0, w: 24, h: 12, solid: true, sprite: null, scale: 2, flip: false, hidden: false, bob: 0 }, o); }
+const getEnt = id => G.ents.find(e => e.id === id);
+function signEnt(x, y, lines) { return ent({ x, y, w: 24, h: 10, sprite: 'sign', talk: () => say(lines) }); }
+function saveEnt(x, y) {
+  return ent({ x, y, w: 18, h: 10, solid: true, draw(e) {
+    const s = 2 + Math.sin(G.t * 4) * 0.25;
+    ctx.save(); ctx.globalAlpha = 0.25 + Math.sin(G.t * 4) * 0.1; pcirc(ctx, e.x, e.y - 12, 16, '#ffd23f'); ctx.restore();
+    sprRot('save', e.x, e.y - 12 + Math.sin(G.t * 2) * 2, s, Math.sin(G.t * 1.5) * 0.2);
+  }, talk: saveTalk });
+}
+async function saveTalk() {
+  G.hp = G.maxhp; SFX.heal();
+  const lines = {
+    corridor: '* (The scent of fabric softener fills you with RESOLVE.)',
+    rest: '* (Knowing Mothilda is nearby, possibly chewing something, fills you with RESOLVE.)',
+  };
+  await say([lines[G.roomId] || '* (You feel lemon-fresh. This fills you with RESOLVE.)', '* (HP fully restored.)']);
+  const c = await ask(`* ${G.name}   FUZ ${G.fuz}   ${ROOMS[G.roomId].title}`, ['Save', 'Return']);
+  if (c === 0) { saveGame(); SFX.save(); await say(['* File saved.']); }
+}
+function npc(id, sprite, x, y, o = {}) { return ent({ id, sprite, x, y, w: 26, h: 12, ...o }); }
+
+function drawEntity(e) {
+  if (e.hidden) return;
+  if (e.shadow !== false) { ctx.fillStyle = 'rgba(20,10,30,.22)'; ctx.beginPath(); ctx.ellipse(e.x, e.y - 1, (e.sw || 14), 4, 0, 0, 7); ctx.fill(); }
+  if (e.draw) { e.draw(e); return; }
+  let by = e.y, sx = 1, sy = 1;
+  if (e.fly) by += -8 + Math.sin(G.t * 3 + e.x) * 3;
+  if (e.walking) by -= Math.floor(G.t * 8) % 2 * 2;
+  if (e.pop !== undefined) { sy = e.pop; sx = 2 - e.pop; }
+  if (sx !== 1 || sy !== 1) {
+    const c = SPR[e.sprite]; ctx.save(); ctx.translate(e.x, by); ctx.scale(sx, sy); sprC(e.sprite, 0, 0, e.scale, e.flip, e.alpha ?? 1); ctx.restore();
+  } else sprC(e.sprite, e.x, by, e.scale, e.flip, e.alpha ?? 1);
+}
+function drawPlayer() {
+  const p = G.player; if (p.hidden) return;
+  ctx.fillStyle = 'rgba(20,10,30,.25)'; ctx.beginPath(); ctx.ellipse(p.x, p.y - 1, 12, 4, 0, 0, 7); ctx.fill();
+  if (p.pose === 'lying') { sprRot('sockSleep', p.x, p.y - 12 + p.oy, 2, -Math.PI / 2); return; }
+  const bob = p.moving ? Math.floor(p.walkT * 9) % 2 * 2 : 0;
+  sprC('sock', p.x, p.y - bob + p.oy, 2, p.flip);
+  if (p.alert) { text('!', p.x - 6, p.y - 64, 28, '#ffd23f', 'left', FONT_UI); }
+}
+
+/* ---- rooms ---- */
+const ROOMS = {
+  landing: {
+    title: 'Landing Pile', music: 'lint', exits: { right: 'corridor' },
+    map: [
+      '####################', '####################', '####################', '####............####', '###..............###',
+      '##................##', '##................##', '##..................', '##..................', '##................##',
+      '##................##', '###..............###', '####............####', '####################', '####################'],
+    decor: [['pile', 320, 254], ['tuft', 120, 150], ['tuft', 520, 380], ['button', 160, 330, '#e8443a'], ['coin', 480, 140], ['tuft', 96, 300], ['hairtie', 548, 200], ['receipt', 230, 380]],
+    setup: () => [
+      npc('fort', 'fort', 480, 214, { hidden: !G.flags.landed, talk: fortTalk, w: 30, h: 12 }),
+      ent({ x: 230, y: 380, w: 20, h: 18, solid: false, draw() {}, shadow: false, talk: () => say(["* A crumpled receipt. 'GUM - $0.99. LINT ROLLER - $4.50.'", '* Someone was prepared. Not prepared enough.']) }),
+    ],
+    under() {
+      ctx.save(); ctx.globalAlpha = 0.07 + Math.sin(G.t) * 0.02; ctx.fillStyle = '#fff6d8';
+      ctx.beginPath(); ctx.moveTo(296, 0); ctx.lineTo(344, 0); ctx.lineTo(396, 270); ctx.lineTo(244, 270); ctx.fill(); ctx.restore();
+      for (let i = 0; i < 8; i++) { const yy = (G.t * 20 + i * 37) % 260; rect(300 + Math.sin(i * 3 + G.t) * 30 + (yy / 260) * (i - 4) * 10, yy, 2, 2, 'rgba(255,250,230,.6)'); }
+    },
+  },
+  corridor: {
+    title: 'Fluff Corridor', music: 'lint', exits: { left: 'landing', right: 'puzzle' },
+    map: [
+      '####################', '####################', '####################', '####################', '####################',
+      '###..............###', '##................##', '....................', '....................', '##................##',
+      '###..............###', '####################', '####################', '####################', '####################'],
+    decor: [['tuft', 460, 330], ['tuft', 520, 190], ['button', 80, 300, '#5b8def'], ['clip', 400, 196]],
+    setup: () => [saveEnt(170, 214), ...(G.flags.metMoth ? [] : [npc('moth', 'moth', 520, -60, { fly: true, solid: false, hidden: true })])],
+    triggers: [{ x: 250, y: 0, w: 60, h: 480, if: () => !G.flags.metMoth, fn: mothIntro }],
+  },
+  puzzle: {
+    title: 'Button Room', music: 'lint', exits: { left: 'corridor', right: 'dummy' },
+    map: [
+      '####################', '####################', '####################', '###..............###', '##................##',
+      '##................##', '##................##', '....................', '....................', '##................##',
+      '##................##', '##................##', '###..............###', '####################', '####################'],
+    decor: [['tuft', 100, 380], ['tuft', 560, 150], ['hairtie', 120, 160, '#8fd49a']],
+    setup: setupPuzzle,
+    triggers: [{ x: 90, y: 0, w: 40, h: 480, if: () => !G.flags.puzzleIntro, fn: puzzleIntro }],
+  },
+  dummy: {
+    title: 'Fitting Room', music: 'lint', exits: { left: 'puzzle', right: 'hall' },
+    map: [
+      '####################', '####################', '####################', '####............####', '###..............###',
+      '##................##', '##................##', '....................', '....................', '##................##',
+      '##................##', '###..............###', '####............####', '####################', '####################'],
+    decor: [['pin', 260, 300], ['pin', 380, 330], ['tuft', 150, 160], ['tuft', 500, 370], ['receipt', 520, 170]],
+    setup: () => [
+      npc('dummy', 'dummy', 320, 236, { w: 24, h: 12, talk: dummyTalk, alpha: G.flags.dummyResult === 'killed' ? 0 : 1, hidden: G.flags.dummyResult === 'killed' }),
+      ...(G.flags.dummyResult === 'killed' ? [ent({ x: 320, y: 236, w: 20, h: 8, solid: false, draw: e => { pcirc(ctx, e.x, e.y - 4, 10, '#c9c4d6'); drawDecor(ctx, 'pin', e.x, e.y - 6); }, talk: () => say(['* A pile of fluff and a single pin.', '* You feel weird about it.']) })] : []),
+      ...(G.flags.dummyDone ? [] : [npc('moth', 'moth', 430, 240, { fly: true, flip: true })]),
+    ],
+    triggers: [{ x: 100, y: 0, w: 40, h: 480, if: () => !G.flags.dummyIntro, fn: dummyIntro }],
+  },
+  hall: {
+    title: 'Sign Hall', music: 'lint', exits: { left: 'dummy', up: 'warren' },
+    map: [
+      '###############...##', '###############...##', '###############...##', '###############...##', '###############...##',
+      '###############...##', '##................##', '..................##', '..................##', '##................##',
+      '####################', '####################', '####################', '####################', '####################'],
+    decor: [['tuft', 300, 300], ['coin', 420, 300], ['button', 200, 298, '#ffd23f']],
+    setup: () => [
+      signEnt(96, 214, ['* "WELCOME TO THE LINTLANDS."', '* "Population: yesterday, plus one."']),
+      signEnt(230, 214, ['* "LOST & FOUND"', '* "Lost: 4,812,006 items."', '* "Found: 0."', '* "We are working on it."']),
+      signEnt(364, 214, ['* "Please do not lick the lint."', '* "- Management"', '* (There are tiny tongue marks on the sign.)']),
+      ...(G.flags.hallDone ? [] : [npc('moth', 'moth', 520, 262, { fly: true, flip: true })]),
+    ],
+    triggers: [{ x: 380, y: 0, w: 40, h: 480, if: () => !G.flags.hallDone, fn: hallScene }],
+  },
+  warren: {
+    title: 'Dust Bunny Warren', music: 'lint', exits: { down: 'hall', right: 'static' },
+    map: [
+      '####################', '####################', '####################', '##................##', '#..................#',
+      '#..................#', '#..................#', '#...................', '#...................', '#..................#',
+      '#..................#', '#..................#', '##................##', '###############...##', '###############...##'],
+    decor: [['tuft', 300, 216], ['tuft', 330, 226], ['tuft', 120, 330], ['tuft', 470, 150], ['tuft', 200, 160], ['tuft', 400, 360], ['hairtie', 560, 340, '#7fb0e8']],
+    setup: () => {
+      const e = [];
+      if (!G.flags.gummy) e.push(ent({ id: 'gummy', x: 80, y: 148, w: 14, h: 10, solid: false, draw: g => sprC('gummy', g.x, g.y - 2 + Math.sin(G.t * 3) * 1.5, 2), talk: gummyTalk }));
+      if (G.flags.bunnyResult === 'spared') e.push(npc('bunny', 'bunny', 300, 230, { talk: () => say([{ who: 'bunny', text: '*sniff* ...thanks for the bless-you.' }, { who: 'bunny', text: 'Nobody ever says it BEFORE. It was very... forward-thinking.' }]) }));
+      if (G.flags.bunnyResult === 'killed') e.push(ent({ x: 300, y: 230, w: 10, h: 6, solid: false, draw: g => pcirc(ctx, g.x, g.y - 3, 7, '#7a748c'), talk: () => say(['* A small pile of dust.', '* Ironic.']) }));
+      if (!G.flags.bunnyResult) e.push(npc('bunny', 'bunny', 300, 230, { hidden: true, solid: false }));
+      return e;
+    },
+    triggers: [{ x: 60, y: 120, w: 520, h: 230, if: () => !G.flags.bunnyResult, fn: bunnyAmbush }],
+  },
+  static: {
+    title: 'Static Floor', music: 'lint', exits: { left: 'warren', right: 'cling' },
+    map: [
+      '####################', '####################', '####################', '####################',
+      '###ssssssssssssss###', '###s,,,,,sss,,,,s###', '###s,sss,sss,ss,s###', '...,,sss,sss,ss,s...',
+      '...sssss,sss,ss,,...', '###sssss,sss,ssss###', '###sssss,,,,,ssss###', '###ssssssssssssss###',
+      '####################', '####################', '####################'],
+    decor: [],
+    setup: () => [signEnt(48, 220, ['* "CAUTION: STATIC FLOOR."', '* "Follow the {y}stitches{/}."', '* "Do not rub your feet. We know you want to."'])],
+    under() {
+      for (let i = 0; i < 6; i++) {
+        const c = 3 + Math.floor(Math.random() * 14), r = 4 + Math.floor(Math.random() * 8);
+        if (G.room.map[r][c] === 's') { const x = c * T + Math.random() * 28, y = r * T + Math.random() * 28; rect(x, y, 2, 2, Math.random() < 0.5 ? '#ffffff' : '#c6d8ff'); if (Math.random() < 0.2) { rect(x + 2, y - 2, 2, 2, '#fff8a0'); rect(x + 4, y, 2, 2, '#fff8a0'); } }
+      }
+    },
+  },
+  cling: {
+    title: 'Clingy Chamber', music: 'lint', exits: { left: 'static', up: 'rest' },
+    map: [
+      '#########...########', '#########...########', '#########...########', '###..............###', '##................##',
+      '##................##', '##................##', '..................##', '..................##', '##................##',
+      '##................##', '###..............###', '####################', '####################', '####################'],
+    decor: [['tuft', 130, 360], ['tuft', 520, 330], ['button', 470, 170, '#f3e3c0'], ['hairtie', 200, 160, '#c99be8']],
+    setup: () => {
+      const r = G.flags.clingResult;
+      if (r === 'killed') return [ent({ x: 320, y: 236, w: 10, h: 6, solid: false, shadow: false, draw() {}, talk: () => say(['* A faint smell of Spring Meadow lingers.']) })];
+      return [npc('cling', 'cling', 320, 236, { fly: true, solid: false, talk: r === 'spared' ? () => say([{ who: 'cling', text: "We'll always have... {~}static{~}." }, { who: 'cling', text: "Call me if you ever need your socks to stick to a sweater. It's my one skill." }]) : null })];
+    },
+    triggers: [{ x: 170, y: 0, w: 40, h: 480, if: () => !G.flags.clingResult, fn: clingAmbush }],
+  },
+  rest: {
+    title: 'Lost Things Nook', music: 'calm', exits: { down: 'cling', right: 'gate' },
+    map: [
+      '####################', '####################', '####################', '####............####', '###..............###',
+      '##................##', '##................##', '##..................', '##..................', '##................##',
+      '##................##', '###..............###', '#########...########', '#########...########', '#########...########'],
+    decor: [['earring', 470, 150], ['buttons', 150, 350], ['tuft', 520, 360], ['coin', 400, 380], ['clip', 260, 140]],
+    setup: () => [
+      saveEnt(430, 300),
+      ent({ x: 150, y: 196, w: 52, h: 18, draw: binDraw, talk: binTalk }),
+      ent({ x: 470, y: 182, w: 70, h: 12, solid: true, shadow: false, draw() {}, talk: () => say(['* A giant hoop earring.', '* You could live in it. Someone probably does.']) }),
+      npc('moth', 'moth', 300, 214, { fly: true, talk: () => say([{ who: 'moth', text: 'Have a muffin from the bin, dear. It has been there since 1997.' }, { who: 'moth', text: "It's fine. Lint is a preservative. I think." }]) }),
+    ],
+    triggers: [{ x: 0, y: 330, w: 640, h: 150, if: () => !G.flags.restTalk, fn: restTalk }],
+  },
+  gate: {
+    title: 'The Vent Door', music: 'lint', exits: { left: 'rest' },
+    map: [
+      '####################', '####################', '####################', '####################', '##................##',
+      '##................##', '##................##', '..................##', '..................##', '##................##',
+      '##................##', '##................##', '####################', '####################', '####################'],
+    decor: [['tuft', 100, 380], ['tuft', 540, 160], ['coin', 200, 340], ['coin', 460, 360]],
+    setup: () => [
+      ent({ id: 'door', x: 320, y: 128, w: 110, h: 20, solid: true, shadow: false, open: G.flags.doorOpen ? 1 : 0, draw: doorDraw, talk: doorTalk }),
+      ...(G.flags.pennyResult === 'killed' ? [] : [npc('penny', 'penny', G.flags.pennyResult ? 420 : 320, 200, { talk: pennyTalk })]),
+    ],
+    triggers: [
+      { x: 140, y: 0, w: 40, h: 480, if: () => !G.flags.pennyResult, fn: pennyScene },
+      { x: 270, y: 128, w: 100, h: 30, if: () => G.flags.doorOpen, fn: () => ending() },
+    ],
+  },
+};
+
+function loadRoom(id, x, y) {
+  const room = ROOMS[id];
+  G.roomId = id; G.room = room;
+  G.roomCanvas = renderRoom(room, Object.keys(ROOMS).indexOf(id) + 1);
+  G.ents = room.setup ? room.setup() : [];
+  G.player.x = x; G.player.y = y;
+  nudgeFree(G.player);
+  G.particles = G.particles.filter(p => p.keep);
+  if (G.scene === 'world') playMusic(room.music);
+}
+async function gotoRoom(id, x, y) {
+  G.transit = true;
+  await fadeTo(1, 0.18);
+  loadRoom(id, x, y);
+  await fadeTo(0, 0.18);
+  G.transit = false;
+}
+
+function solidAt(x, y) {
+  const ch = tileAt(Math.floor(x / T), Math.floor(y / T));
+  if (ch === '#' || ch === ' ') return true;
+  for (const e of G.ents) {
+    if (!e.solid || e.hidden) continue;
+    if (x > e.x - e.w / 2 && x < e.x + e.w / 2 && y > e.y - e.h && y < e.y) return true;
+  }
+  return false;
+}
+function blocked(x, y) { return solidAt(x - 9, y - 9) || solidAt(x + 9, y - 9) || solidAt(x - 9, y - 1) || solidAt(x + 9, y - 1); }
+function nudgeFree(p) {
+  if (!blocked(p.x, p.y)) return;
+  for (let d = 2; d < 64; d += 2) for (const [ox, oy] of [[0, d], [0, -d], [d, 0], [-d, 0]]) if (!blocked(p.x + ox, p.y + oy)) { p.x += ox; p.y += oy; return; }
+}
+function movePlayer(mx, my) {
+  const p = G.player;
+  if (mx && !blocked(p.x + mx, p.y)) p.x += mx;
+  if (my && !blocked(p.x, p.y + my)) p.y += my;
+}
+function updateWorld(dt) {
+  const p = G.player;
+  for (const e of G.ents) if (e.update) e.update(e, dt);
+  if (G.dlg || G.busy || G.menu || G.transit) { p.moving = false; return; }
+  if (jp('c')) { openMenu(); return; }
+  let dx = 0, dy = 0;
+  if (keys.left) dx -= 1; if (keys.right) dx += 1; if (keys.up) dy -= 1; if (keys.down) dy += 1;
+  if (dx || dy) {
+    if (dx) { p.face = dx < 0 ? 'left' : 'right'; p.flip = dx < 0; } else p.face = dy < 0 ? 'up' : 'down';
+    const sp = 140 * dt * ((dx && dy) ? 0.7071 : 1);
+    movePlayer(dx * sp, dy * sp);
+    p.walkT += dt; p.moving = true;
+  } else { p.moving = false; p.walkT = 0; }
+  const ex = G.room.exits || {};
+  if (p.x < 2 && ex.left) return void gotoRoom(ex.left, W - 14, p.y);
+  if (p.x > W - 2 && ex.right) return void gotoRoom(ex.right, 14, p.y);
+  if (p.y < 6 && ex.up) return void gotoRoom(ex.up, p.x, H - 8);
+  if (p.y > H - 2 && ex.down) return void gotoRoom(ex.down, p.x, 18);
+  for (const t of G.room.triggers || []) {
+    if ((t.if ? t.if() : true) && p.x > t.x && p.x < t.x + t.w && p.y > t.y && p.y < t.y + t.h) { run(t.fn); return; }
+  }
+  if (tileAt(Math.floor(p.x / T), Math.floor((p.y - 4) / T)) === 's') { run(zap); return; }
+  if (jp('z')) {
+    pressed.z = false;
+    const f = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[p.face];
+    const px = p.x + f[0] * 20, py = p.y - 6 + f[1] * 20;
+    const hit = G.ents.find(e => !e.hidden && e.talk && px > e.x - e.w / 2 - 10 && px < e.x + e.w / 2 + 10 && py > e.y - e.h - 26 && py < e.y + 8);
+    if (hit) run(() => hit.talk(hit));
+  }
+}
+function drawWorld() {
+  ctx.drawImage(G.roomCanvas, 0, 0);
+  if (G.room.under) G.room.under();
+  const list = G.ents.filter(e => !e.hidden).map(e => ({ y: e.z ?? e.y, f: () => drawEntity(e) }));
+  list.push({ y: G.player.y, f: drawPlayer });
+  list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+  // ambient lint motes
+  for (let i = 0; i < 14; i++) {
+    const x = (hash(i, 1, 77) * W + G.t * (6 + i % 5) + Math.sin(G.t + i) * 10) % W;
+    const y = (hash(i, 2, 77) * H - G.t * (4 + i % 3) * 2 + H * 10) % H;
+    rect(x, y, 2, 2, 'rgba(230,226,240,.35)');
+  }
+  drawParticles();
+  if (G.menu) drawMenu();
+  drawDialog();
+}
+
+/* ---- particles ---- */
+function puff(x, y, n = 14, col = '#d6d1e3') {
+  for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, s = 40 + Math.random() * 90; G.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s * 0.6 - 30, life: 0.6 + Math.random() * 0.5, col, sz: 2 + Math.floor(Math.random() * 2) * 2 }); }
+}
+function updateParticles(dt) {
+  for (const p of G.particles) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.96; p.vy = p.vy * 0.96 + (p.g || 0) * dt; p.life -= dt; }
+  G.particles = G.particles.filter(p => p.life > 0);
+}
+function drawParticles() { for (const p of G.particles) { ctx.globalAlpha = Math.min(1, p.life * 2); rect(p.x, p.y, p.sz, p.sz, p.col); } ctx.globalAlpha = 1; }
+
+/* ---- overworld menu ---- */
+function openMenu() { SFX.select(); G.menu = { lvl: 0, sel: 0, isel: 0 }; }
+function updateMenu() {
+  const m = G.menu;
+  if (m.lvl === 0) {
+    if (jp('up') || jp('down')) { m.sel ^= 1; SFX.select(); }
+    if (jp('x') || jp('c')) { G.menu = null; return; }
+    if (jp('z')) { if (m.sel === 0 && !G.inv.length) { SFX.buzz(); return; } SFX.confirm(); m.lvl = m.sel === 0 ? 1 : 3; m.isel = 0; }
+  } else if (m.lvl === 1) {
+    const n = G.inv.length;
+    if (jp('up')) { m.isel = (m.isel + n - 1) % n; SFX.select(); }
+    if (jp('down')) { m.isel = (m.isel + 1) % n; SFX.select(); }
+    if (jp('x')) { m.lvl = 0; return; }
+    if (jp('z')) { SFX.confirm(); m.lvl = 2; m.act = 0; }
+  } else if (m.lvl === 2) {
+    if (jp('left')) { m.act = (m.act + 2) % 3; SFX.select(); }
+    if (jp('right')) { m.act = (m.act + 1) % 3; SFX.select(); }
+    if (jp('x')) { m.lvl = 1; return; }
+    if (jp('z')) {
+      pressed.z = false; const idx = m.isel, id = G.inv[idx];
+      if (m.act === 0) { const lines = useItem(idx, false); G.menu = null; run(() => say(lines)); }
+      else if (m.act === 1) { G.menu = null; run(() => say([ITEMS[id].info])); }
+      else {
+        if (ITEMS[id].key) { G.menu = null; run(() => say(["* You can't drop that. Mothilda would find out."])); }
+        else { G.inv.splice(idx, 1); G.menu = null; run(() => say([pick([`* The ${ITEMS[id].name} was thrown away.`, `* You left the ${ITEMS[id].name} on the floor. The lint will take care of it.`])])); }
+      }
+    }
+  } else if (m.lvl === 3) { if (jp('x') || jp('z')) m.lvl = 0; }
+}
+function drawMenu() {
+  const m = G.menu, top = G.player.y > 300;
+  const y0 = top ? 330 : 26;
+  drawBox(26, y0, 150, 110);
+  text(G.name, 42, y0 + 14, 26);
+  text(`FZ  ${G.fuz}`, 42, y0 + 44, 20); text(`HP  ${G.hp}/${G.maxhp}`, 42, y0 + 62, 20); text(`LN  ${G.lint}`, 42, y0 + 80, 20);
+  drawBox(26, y0 + 118, 150, 96);
+  ['ITEM', 'STAT'].forEach((s, i) => { text(s, 70, y0 + 140 + i * 34, 16, G.inv.length || i ? '#fff' : '#7d7697', 'left', FONT_UI); if (m.lvl === 0 && m.sel === i) spr('soul', 42, y0 + 138 + i * 34, 2); });
+  if (m.lvl === 1 || m.lvl === 2) {
+    drawBox(188, 26, 420, 360);
+    G.inv.forEach((id, i) => { text(ITEMS[id].name, 236, 48 + i * 36, 30); if (m.lvl === 1 && m.isel === i) spr('soul', 206, 56 + i * 36, 2); });
+    ['USE', 'INFO', 'DROP'].forEach((s, i) => { text(s, 236 + i * 120, 336, 30, '#fff'); if (m.lvl === 2 && m.act === i) spr('soul', 206 + i * 120, 344, 2); });
+  }
+  if (m.lvl === 3) {
+    drawBox(188, 26, 420, 380);
+    text(`"${G.name}"`, 216, 48, 32);
+    const L = [`FUZ  ${G.fuz}`, `HP   ${G.hp} / ${G.maxhp}`, '', `AT   ${8 + G.fuz * 2} (2)`, 'DF   10 (0)', '', `EXP: ${G.exp}`, `NEXT: ${10 * G.fuz - G.exp}`, '', 'WEAPON: Your Toe', 'ARMOR: Elastic Cuff', `LINT: ${G.lint}`];
+    L.forEach((s, i) => text(s, 216, 90 + i * 24, 26));
+    text(G.kills ? 'Fluffiness: dwindling' : 'Fluffiness: maximum', 400, 90, 22, '#8a84a0');
+  }
+}
+
+/* ================================================================= STORY SCRIPTS */
+async function fortTalk(f) {
+  const n = (G.flags.fortN || 0); G.flags.fortN = n + 1;
+  const lines = [
+    ["Let me read another one!", "'You will find what you are looking for. Unless it's the other sock.'"],
+    ["Ooh, a good one!", "'A stranger will offer you a muffin. The muffin is old.'"],
+    ["Hmm hmm hmm...", "'Beware of anything that says it's worth exactly one cent.'", "That's oddly specific. Fortunes are like that."],
+    ["'Your lucky color is lint.'", "...They're all lint down here, honestly."],
+    ["I'm not crumbling. YOU'RE crumbling.", "...Sorry. I get defensive about the crumbling."],
+  ];
+  await say(lines[n % lines.length].map(t => ({ who: 'fort', text: t })));
+}
+async function wakeScene() {
+  const p = G.player;
+  await wait(1.2);
+  await say(['* ...', '* ......', '* You are lying in a pile of something soft.', "* It's lint.", "* It's all lint."]);
+  p.pose = 'stand'; SFX.pop(); puff(p.x, p.y - 10, 10); await wait(0.5);
+  await say(['* (You stand up. Your cuff is a bit crooked. You fix it with dignity.)']);
+  const f = getEnt('fort'); f.hidden = false; f.pop = 0.2; SFX.pop(); puff(f.x, f.y - 10, 8, '#d9b77e');
+  await tween(f, { pop: 1 }, 0.25, ease.out); delete f.pop;
+  await say([
+    { who: 'fort', text: 'OH! Oh oh oh! A fresh one!' },
+    { who: 'fort', text: 'Welcome, welcome! You just fell through the {y}LINT TRAP{/}. Happens every Tuesday.' },
+    { who: 'fort', text: "I'm {y}FORTUNA{/}! I'm a fortune cookie. Well. I WAS a fortune cookie. Now I'm mostly crumbs and optimism." },
+    { who: 'fort', text: 'Let me read your fortune! Hmmmmm...' },
+    { who: 'fort', text: "'You will go on a great journey.'" },
+    { who: 'fort', text: "'Lucky numbers: 4, 8, and the total number of socks you've ever lost.'" },
+    { who: 'fort', text: "...Huh. That's every number." },
+    { who: 'fort', text: "Anyway! The way out is to the {y}right{/}. Everything's to the right, really. That's how levels work." },
+  ]);
+  G.flags.landed = true; saveGame();
+}
+async function mothIntro() {
+  G.flags.metMoth = true;
+  const m = getEnt('moth'); m.hidden = false; m.x = 520; m.y = -40;
+  await say(['* (munch munch munch)']);
+  await tween(m, { y: 236, x: 470 }, 1.2, ease.out);
+  m.flip = true;
+  await say([
+    { who: 'moth', text: 'Mmf! Oh! Oh my goodness.' },
+    { who: 'moth', text: "I'm terribly sorry, dear. I almost ate you. It's a habit. You're very... {~}cottony{~}." },
+    { who: 'moth', text: "My name is {p}MOTHILDA{/}. I look after the lost things that fall down here." },
+    { who: 'moth', text: "You must be new. You still have that fresh-from-the-dryer smell. Lavender? Spring Breeze?" },
+  ]);
+  const c = await ask({ who: 'moth', text: 'Tell me, dear. Are you a LEFT sock or a RIGHT sock?' }, ['Left', 'Right']);
+  G.flags.side = c ? 'right' : 'left';
+  if (c === 0) await say([{ who: 'moth', text: "A left sock! How wonderful. The left ones are always the bravest." }, { who: 'moth', text: "Don't tell the right ones I said that." }]);
+  else await say([{ who: 'moth', text: '...A right sock? Are you sure?' }, { who: 'moth', text: 'You look very left to me. Never mind, dear. All socks are welcome.' }]);
+  await say([
+    { who: 'moth', text: 'This place is called the {y}LINTLANDS{/}. Everything that gets lost in the wash ends up here eventually.' },
+    { who: 'moth', text: 'Buttons. Coins. Hair ties. {~}Hope.{~}' },
+    { who: 'moth', text: 'Come along! I\'ll show you the way. And do try not to look so delicious.' },
+  ]);
+  m.flip = false;
+  await tween(m, { x: 700 }, 1.4, ease.in);
+  m.hidden = true;
+}
+
+/* -- button puzzle -- */
+const PUZ_ORDER = ['hat', 'tee', 'shoe'];
+function setupPuzzle() {
+  const solved = G.flags.puzzleSolved;
+  const e = [
+    signEnt(160, 150, ['* "GET DRESSED, LITTLE SOCK."', '* "TOP TO BOTTOM."', '* (Below that, in smaller letters: "you know what a sock is for. think about it.")']),
+    ent({ id: 'gate', x: 608, y: 290, w: 64, h: 70, solid: !solved, shadow: false, open: solved ? 1 : 0, draw: gateDraw }),
+  ];
+  const icons = ['shoe', 'hat', 'tee'];
+  icons.forEach((ic, i) => e.push(ent({ id: 'btn_' + ic, icon: ic, x: 192 + i * 128, y: 352, w: 48, h: 26, solid: false, shadow: false, down: solved, z: 0, draw: plateDraw, update: plateUpdate })));
+  if (!solved) e.push(npc('moth', 'moth', 470, 200, { fly: true, flip: true, talk: () => say([{ who: 'moth', text: 'Top to bottom, dear. Like getting dressed.' }, { who: 'moth', text: "I know you don't usually wear the clothes. You ARE the clothes. Use your imagination." }]) }));
+  G.puz = solved ? [...PUZ_ORDER] : [];
+  return e;
+}
+function plateDraw(e) {
+  const d = e.down ? 4 : 0;
+  rect(e.x - 26, e.y - 26, 52, 30, '#14111c');
+  rect(e.x - 24, e.y - 24 + d, 48, 24 - d, e.down ? '#7cc96a' : '#e8443a');
+  rect(e.x - 24, e.y - 24 + d, 48, 4, e.down ? '#a6e39a' : '#ff7a6e');
+  sprC(e.icon, e.x, e.y - 6 + d, 2);
+}
+function plateUpdate(e) {
+  if (G.flags.puzzleSolved || G.busy) return;
+  const p = G.player, on = Math.abs(p.x - e.x) < 24 && p.y > e.y - 28 && p.y < e.y + 6;
+  if (on && !e.down && !e.lock) {
+    e.down = true; e.lock = true; SFX.select();
+    G.puz.push(e.icon);
+    const okSoFar = G.puz.every((v, i) => v === PUZ_ORDER[i]);
+    if (!okSoFar) run(puzzleWrong);
+    else if (G.puz.length === 3) run(puzzleSolved);
+  }
+  if (!on) e.lock = false;
+}
+async function puzzleWrong() {
+  const first = G.puz[0];
+  SFX.buzz(); shake(4);
+  await wait(0.3);
+  G.ents.filter(e => e.icon).forEach(e => e.down = false);
+  const n = (G.flags.puzWrong || 0); G.flags.puzWrong = n + 1;
+  let lines;
+  if (first === 'shoe' && !G.flags.shoeJoke) { G.flags.shoeJoke = true; lines = ['SHOES?! First?!', '...Dear. We do not put the shoe on first. We barely even talk about shoes.', 'They stomp on us, you know. Every day. Sweaty tyrants.']; }
+  else lines = [['Not quite! Unless you are going for a "look".'], ["Hmm. That's a hat on your feet, dear."], ['Top to bottom, darling. Head, body, feet.']][n % 3];
+  G.puz = [];
+  await say(lines.map(t => ({ who: 'moth', text: t })));
+}
+async function puzzleSolved() {
+  G.flags.puzzleSolved = true; SFX.save();
+  const g = getEnt('gate'); await tween(g, { open: 1 }, 0.6); g.solid = false; SFX.door();
+  const m = getEnt('moth');
+  await say([
+    { who: 'moth', text: 'Marvelous! You are a natural.' },
+    { who: 'moth', text: 'I had the answer written on my wing the whole time, but it is important to learn these things yourself.' },
+    { who: 'moth', text: '...Also I ate the part of my wing it was written on. So.' },
+  ]);
+  m.flip = false; await tween(m, { x: 700 }, 1.2, ease.in); m.hidden = true;
+}
+async function puzzleIntro() {
+  G.flags.puzzleIntro = true;
+  await say([{ who: 'moth', text: 'This is a {y}puzzle{/}, dear. The Lintlands are full of them.' }, { who: 'moth', text: 'Nobody knows who builds them. I suspect the dust.' }, { who: 'moth', text: 'Read the sign, then step on the buttons.' }]);
+}
+function gateDraw(e) {
+  for (let i = 0; i < 2; i++) for (let j = 0; j < 3; j++) {
+    const x = e.x - 20 + i * 24 + (j % 2) * 10, top = 222 + j * 4, len = (64 - j * 4) * (1 - e.open);
+    if (len < 2) continue;
+    rect(x, top + (64 - len), 3, len, '#c9c4d6'); rect(x + 1, top + (64 - len), 1, len, '#ffffff');
+    pcirc(ctx, x + 1, top + (64 - len), 4, j % 2 ? '#ffd23f' : '#e8443a');
+  }
+}
+
+/* -- dummy -- */
+async function dummyIntro() {
+  G.flags.dummyIntro = true;
+  await say([
+    { who: 'moth', text: 'Down here you will meet all sorts of folks. Some of them might want to... {r}fight{/}.' },
+    { who: 'moth', text: "Don't panic when that happens. Most monsters here are just lonely laundry." },
+    { who: 'moth', text: 'Practice on this {y}tailor\'s dummy{/}. Go on. Talk to it.' },
+  ]);
+}
+async function dummyTalk(d) {
+  if (G.flags.dummyDone) { await say(G.flags.dummyResult === 'spared' ? ['* The dummy seems happier. Somehow.', '* One of its pins has been straightened.'] : ['* It is a dummy.']); return; }
+  const r = await battle('dummy');
+  if (r === 'dead') return;
+  G.flags.dummyResult = r; G.flags.dummyDone = true;
+  if (r === 'killed') { d.hidden = true; puff(d.x, d.y - 20, 20); }
+  const m = getEnt('moth');
+  const lines = {
+    spared: ['Wonderful! You were so polite.', 'The dummy will tell all its friends about you.', 'It does not have friends. But still.'],
+    killed: ['...Oh.', 'That was a decorative dummy, dear. It was {y}decorative{/}.', "...Let's keep moving."],
+    fled: ['Did you just run away from a dummy?', 'It does not have legs, dear. It was never going to chase you.'],
+  }[r];
+  await say(lines.map(t => ({ who: 'moth', text: t })));
+  m.flip = false; await tween(m, { x: 700 }, 1.2, ease.in); m.hidden = true;
+}
+
+/* -- hallway goodbye -- */
+async function hallScene() {
+  G.flags.hallDone = true;
+  const m = getEnt('moth');
+  await say([
+    { who: 'moth', text: 'Dear, I need to pop home for a moment. I left a pie in the oven.' },
+    { who: 'moth', text: "It's a sweater pie. Cable-knit crust. You will love it." },
+    { who: 'moth', text: 'Here. Take these.' },
+  ]);
+  addItem('phone'); addItem('scrap'); SFX.coin();
+  await say(['* You got the {y}STRING PHONE{/}! It is two buttons and some thread.', '* You got a {y}CARDIGAN SCRAP{/}! It is slightly chewed.']);
+  await say([
+    { who: 'moth', text: 'If anything frightens you, give me a ring. Moths have excellent hearing. Mostly.' },
+    { who: 'moth', text: 'Be good! Don\'t get lost!' },
+    { who: 'moth', text: '...Well. More lost.' },
+  ]);
+  await tween(m, { y: -60, x: 520 }, 1.3, ease.in); m.hidden = true;
+}
+
+/* -- warren -- */
+async function gummyTalk(e) {
+  G.flags.gummy = true; e.hidden = true; addItem('gummy'); SFX.coin();
+  await say(['* You found a {y}GUMMY BEAR{/}!', '* It is slightly fuzzy. Its eyes say "please".']);
+}
+async function bunnyAmbush() {
+  const b = getEnt('bunny'); b.hidden = false; b.pop = 0.2; SFX.pop(); puff(b.x, b.y - 10, 16, '#a39db7');
+  await tween(b, { pop: 1 }, 0.2, ease.out); delete b.pop;
+  await say([{ who: 'bunny', text: 'hhh... hhhhh...' }]);
+  const r = await battle('bunny');
+  if (r === 'dead') return;
+  G.flags.bunnyResult = r === 'fled' ? 'spared' : r;
+  if (r === 'killed') { b.hidden = true; }
+  if (r === 'fled') { b.hidden = true; }
+  if (r !== 'spared') loadRoomEntsOnly();
+}
+function loadRoomEntsOnly() { G.ents = G.room.setup ? G.room.setup() : []; }
+
+/* -- static floor -- */
+async function zap() {
+  const p = G.player;
+  SFX.zap(); flash('#cfe0ff', 0.8); shake(6);
+  G.zaps++; const before = G.hp; G.hp = Math.max(1, G.hp - 2);
+  puff(p.x, p.y - 12, 12, '#fff8a0');
+  p.hidden = false;
+  await wait(0.25);
+  const n = G.zaps;
+  await say([pick(['* ZAP! Your fibers stand on end.', '* BZZT! You are now 40% more fluffy.', '* ZORK! You can taste the color blue.', '* KRZZT! Somewhere, a balloon sticks to a wall in your honor.']), before > 1 ? `* (You lost ${before - G.hp} HP.)` : '* (You are too fluffy to lose more HP.)']);
+  await fadeTo(1, 0.15); p.x = 40; p.y = 254; p.face = 'right'; p.flip = false; await fadeTo(0, 0.2);
+  if (n === 1) {
+    SFX.ring(); await say(['* Ring ring...']);
+    await say([
+      { who: 'moth', text: 'Hello? Dear? I just felt a disturbance in the fabric.' },
+      { who: 'moth', text: 'Did you touch the static floor? You did, didn\'t you. I can hear your fibers crackling from here.' },
+      { who: 'moth', text: 'Follow the {y}stitches{/}, dear. The little stitched tiles. They are grounded. Like you, emotionally.' },
+      { who: 'moth', text: 'Okay. Bye. The pie needs me.' },
+    ]);
+    await say(['* Click.']);
+  }
+}
+
+/* -- cling -- */
+async function clingAmbush() {
+  await say([{ who: 'cling', text: 'Ohhh~ a {b}warm{/} little sock!' }, { who: 'cling', text: "Don't go~ Stay and {~}cling{~} with me... forever~" }]);
+  const r = await battle('cling');
+  if (r === 'dead') return;
+  G.flags.clingResult = r === 'fled' ? 'spared' : r;
+  loadRoomEntsOnly();
+}
+
+/* -- rest nook -- */
+function binDraw(e) {
+  rect(e.x - 30, e.y - 46, 60, 46, '#14111c'); rect(e.x - 28, e.y - 44, 56, 42, '#5b8def'); rect(e.x - 28, e.y - 44, 56, 6, '#8fb0ff');
+  for (let i = 0; i < 4; i++) rect(e.x - 22 + i * 13, e.y - 34, 4, 30, '#2e4a9a');
+  rect(e.x - 34, e.y - 50, 68, 8, '#14111c'); rect(e.x - 32, e.y - 48, 64, 4, '#9fb8ee');
+  if (!G.flags.muffin) { pcirc(ctx, e.x + 4, e.y - 54, 9, '#14111c'); pcirc(ctx, e.x + 4, e.y - 54, 7, '#b58d5c'); pcirc(ctx, e.x + 4, e.y - 57, 6, '#c9c4d6'); }
+  text('LOST THINGS', e.x - 27, e.y - 22, 12, '#fff', 'left', FONT_TXT);
+}
+async function binTalk() {
+  if (G.flags.muffin) { await say(['* The Lost Things Bin.', '* Inside: a single mitten, three bobby pins, and a sense of longing.']); return; }
+  const c = await ask("* There's a LINT MUFFIN on the bin. A note says: 'FREE. PLEASE TAKE. IT HAS BEEN HERE SINCE 1997.'", ['Take it', 'Leave it']);
+  if (c === 0) { if (addItem('muffin')) { G.flags.muffin = true; SFX.coin(); await say(['* You got the {y}LINT MUFFIN{/}.', '* It is heavier than it looks.']); } else await say(['* Your inventory is full.']); }
+  else await say(['* You leave the muffin. It has waited 29 years. It can wait a little longer.']);
+}
+async function restTalk() {
+  G.flags.restTalk = true;
+  await say([
+    { who: 'moth', text: 'Oh! There you are! I was worried sick.' },
+    { who: 'moth', text: 'Well. I was eating. But I was worried WHILE eating. That counts.' },
+    { who: 'moth', text: 'Listen, dear. Past this room is the {y}VENT DOOR{/}. The way back up.' },
+    { who: 'moth', text: 'It is guarded by {y}SIR PENNY{/}. He is a coin. A knight. A coin knight.' },
+    { who: 'moth', text: 'He is very serious about being worth exactly one cent. Don\'t bring it up.' },
+    { who: 'moth', text: 'Be kind to him. Or be quick. Ideally both.' },
+  ]);
+}
+
+/* -- the vent door -- */
+function doorDraw(e) {
+  const x = e.x - 56, y = 40;
+  rect(x - 6, y - 6, 124, 94, '#14111c'); rect(x - 2, y - 2, 116, 86, '#7a748c');
+  rect(x + 4, y + 4, 104, 76, '#29253a');
+  const shift = e.open * 80;
+  ctx.save(); ctx.beginPath(); ctx.rect(x + 4, y + 4, 104, 76); ctx.clip();
+  if (e.open > 0) { rect(x + 4, y + 4, 104, 76, '#fff6d8'); ctx.globalAlpha = 0.5 + Math.sin(G.t * 3) * 0.2; rect(x + 4, y + 4, 104, 76, '#ffd98a'); ctx.globalAlpha = 1; }
+  for (let i = 0; i < 6; i++) { rect(x + 8, y + 10 + i * 12 - shift, 96, 6, '#c9c4d6'); rect(x + 8, y + 10 + i * 12 - shift, 96, 2, '#ffffff'); }
+  ctx.restore();
+  text('VENT', e.x - 16, y - 24, 12, '#c9c4d6', 'left', FONT_UI);
+}
+async function doorTalk(e) {
+  if (G.flags.doorOpen) return;
+  if (G.flags.pennyResult) return;
+  await say(['* A big vent door. Warm air whistles through it.', '* It smells like outside. Like a fresh load.']);
+}
+async function pennyTalk() {
+  if (G.flags.pennyResult === 'spared') await say([{ who: 'penny', text: 'Go forth, %N! Spend yourself wisely!' }, { who: 'penny', text: '...That came out wrong. Just go.' }]);
+}
+async function pennyScene() {
+  const p = getEnt('penny');
+  SFX.slam(); shake(8);
+  await say([{ who: 'penny', text: '{!}HALT!!{/}' }]);
+  await say([{ who: 'penny', text: 'WHO GOES THERE? STATE YOUR NAME AND YOUR DENOMINATION!' }]);
+  await ask({ who: 'penny', text: 'WELL?!' }, ['%N', "I'm a sock"]);
+  await say([
+    { who: 'penny', text: 'A SOCK! HAH! None shall pass the VENT DOOR without paying the toll!' },
+    { who: 'penny', text: 'THE TOLL IS... {y}ONE CENT{/}!' },
+    { who: 'penny', text: '......' },
+    { who: 'penny', text: '...I am the cent.' },
+    { who: 'penny', text: 'THIS IS A PROBLEM FOR BOTH OF US. {r}EN GARDE!{/}' },
+  ]);
+  const r = await battle('penny');
+  if (r === 'dead') return;
+  G.flags.pennyResult = r;
+  const m = npc('moth', 'moth', 700, 230, { fly: true, solid: false, flip: true });
+  if (r === 'spared') {
+    await say([
+      { who: 'penny', text: 'You... polished me.' },
+      { who: 'penny', text: 'Nobody has polished me since 1983.' },
+      { who: 'penny', text: 'Very well, %N. You may pass. And tell the world above...' },
+      { who: 'penny', text: '...that Sir Penny was worth MORE than one cent.' },
+    ]);
+    await tween(p, { x: 420 }, 0.6);
+    G.ents.push(m);
+    await tween(m, { x: 470 }, 1.1, ease.out);
+    await say([
+      { who: 'moth', text: 'I saw everything! From very close. You didn\'t notice.' },
+      { who: 'moth', text: 'You were wonderful, dear. Not a single thread out of place.' },
+      { who: 'moth', text: 'Go on, now. The {y}SPIN CYCLE{/} awaits.' },
+      { who: 'moth', text: '...And if you see a lonely right sock up there, say hello for me.' },
+    ]);
+  } else {
+    G.ents.push(m);
+    await tween(m, { x: 470 }, 1.1, ease.out);
+    await say([{ who: 'moth', text: '......' }, { who: 'moth', text: '...Oh, little sock.' }, { who: 'moth', text: "The door's open now. Go on, dear." }]);
+  }
+  const d = getEnt('door'); SFX.door(); await tween(d, { open: 1 }, 1.2); d.solid = false; G.flags.doorOpen = true;
+  saveGame();
+}
+
+/* ================================================================= BATTLE */
+const ENEMIES = {
+  dummy: {
+    name: 'Tailor Dummy', sprite: 'dummy', scale: 6, hp: 12, exp: 2, lint: 3, def: 0, atk: 1, music: 'battle',
+    intro: '* A TAILOR DUMMY stands in the way.\n* It has pins in it. It has seen things.',
+    check: '* TAILOR DUMMY - ATK 0 DEF 0\n* Covered in pins. Has had a rough life.',
+    flavor: b => b.flags.hem ? '* The dummy stands a little straighter.' : pick(['* The dummy stands there. Professionally.', '* The dummy is thinking about fabric.', '* Smells like a sewing kit.']),
+    acts: [
+      { n: 'Talk', f: b => { b.flags.talk = 1; return ['* You talk to the dummy about the weather.', "* It doesn't say anything. But you feel heard."]; } },
+      { n: 'Hem', f: b => { b.flags.hem = 1; return ['* You straighten one of its pins.', '* The dummy looks... grateful? It is hard to tell. It has no face.']; } },
+    ],
+    spareable: b => b.flags.talk || b.flags.hem,
+    speech: b => b.flags.hem ? '...' : pick(['...', '(silence)', '(fabric noises)']),
+    patterns: () => ['pins'],
+  },
+  bunny: {
+    name: 'Dust Bunny', sprite: 'bunny', scale: 8, hp: 22, exp: 5, lint: 6, def: 0, atk: 3, music: 'battle',
+    intro: '* A DUST BUNNY hops out of the fluff!\n* Its nose is twitching dangerously.',
+    check: '* DUST BUNNY - ATK 3 DEF 0\n* Made entirely of dust and allergies. Wants to be held.',
+    flavor: b => b.flags.bless && b.flags.pet ? "* The Dust Bunny's nose has stopped twitching." : pick(['* The Dust Bunny goes "hhhh... hhhh..."', '* Smells like the top of a fridge.', '* The Dust Bunny tries to look intimidating. It is very fluffy.']),
+    acts: [
+      { n: 'Pet', f: b => { b.flags.pet = 1; return ['* You pet the Dust Bunny.', '* It purrs. Dust bunnies can purr, apparently.', '* You are now slightly dustier.']; } },
+      { n: 'Bless', f: b => { b.flags.bless = 1; return ["* You say 'Bless you' in advance.", "* The Dust Bunny is touched. It hasn't even sneezed yet."]; } },
+      { n: 'Dust', f: b => ['* You try to dust the Dust Bunny.', '* It gets very offended. That is basically its whole body.'] },
+    ],
+    spareable: b => b.flags.pet && b.flags.bless,
+    speech: b => b.flags.pet && b.flags.bless ? '...thank you... *sniff*' : b.flags.pet ? 'purrrr... hhh...' : b.flags.bless ? '...you said it FIRST?' : pick(['hhh... hhhhh...', 'AH... AHHH...', '*sniff*']),
+    patterns: b => [b.turn % 2 ? 'hop' : 'sneeze'],
+  },
+  cling: {
+    name: 'Static Cling', sprite: 'cling', scale: 8, hp: 26, exp: 6, lint: 8, def: 0, atk: 3, music: 'battle',
+    intro: '* STATIC CLING drifts closer.\n* You can hear it crackling with affection.',
+    check: "* STATIC CLING - ATK 3 DEF 0\n* A lonely dryer sheet. Doesn't know how to let go.",
+    flavor: b => b.flags.peel ? '* Static Cling is floating on its own. It seems proud.' : pick(['* Static Cling smells like a spring meadow.', '* Static Cling is crackling softly.', '* Your cuff is sticking to Static Cling. You did not consent to this.']),
+    acts: [
+      { n: 'Compliment', f: b => { b.flags.comp = 1; return ['* You tell Static Cling it smells like a spring meadow.', '* It gets all crinkly with joy.']; } },
+      { n: 'Peel', f: b => { if (!b.flags.comp) return ['* You try to peel Static Cling off.', "* It clings harder. It's not ready to let go."]; b.flags.peel = 1; return ['* You gently peel Static Cling off.', '* It floats free, a little embarrassed. But okay.']; } },
+      { n: 'Rub', f: b => { b.flags.rub = 1; return ['* You rub your feet on the floor to build up static.', '* Static Cling gets MORE clingy. Why would you do that.']; } },
+    ],
+    spareable: b => b.flags.peel,
+    speech: b => b.flags.peel ? "I guess... I'm my own sheet now." : b.flags.comp ? 'You really think so~? *crackle*' : pick(['Stay~ Stay forever~', "Let's never be apart~", "You're so {b}warm{/}~"]),
+    patterns: b => [b.turn % 2 ? 'cling' : 'sparks'],
+  },
+  penny: {
+    name: 'Sir Penny', sprite: 'penny', scale: 7, hp: 70, exp: 20, lint: 1, def: 2, atk: 4, music: 'boss', boss: true,
+    intro: '* SIR PENNY blocks the way!\n* He is worth exactly one cent. He will not stop mentioning it.',
+    check: '* SIR PENNY - ATK 4 DEF 2\n* A lost coin knight. Minted 1983. Takes his value personally.',
+    flavor: b => b.spareable ? '* Sir Penny is gleaming. He seems to have lost the will to fight.' : pick(['* Sir Penny is polishing his helmet with his own head.', '* Sir Penny strikes a heroic pose. He is 2cm tall.', '* Smells like a handful of change.', '* Sir Penny mutters "one cent... ONE..."']),
+    acts: [
+      { n: 'Polish', f: b => { b.flags.polish = (b.flags.polish || 0) + 1; return b.flags.polish === 1 ? ['* You polish Sir Penny with your cuff.', "* He gleams! 'S-STOP THAT. ...Don't stop that.'"] : ['* You polish Sir Penny again.', '* He is SO shiny. He can see his own face. He looks great.']; } },
+      { n: 'Flip', f: async b => {
+        await b.say(['* You offer to flip Sir Penny.', '* He considers this a great honor. Call it!']);
+        const c = await b.choose(['Heads', 'Tails']); SFX.coin();
+        const res = Math.random() < 0.5 ? 0 : 1; b.flags.flip = 1;
+        return res === c ? [`* Sir Penny lands ${res ? 'TAILS' : 'HEADS'}. You called it!`, "* 'A WORTHY OPPONENT! You understand me!'"] : [`* Sir Penny lands ${res ? 'TAILS' : 'HEADS'}. You called it wrong.`, "* 'HAH! Nobody can predict me! ...I am a little dizzy.'"];
+      } },
+      { n: 'Appraise', f: b => { b.flags.appr = 1; return ["* You tell Sir Penny he's priceless.", "* 'IMPOSSIBLE! I HAVE A PRICE! IT IS ONE CENT!'", '* He is flustered. His face turns slightly more copper.']; } },
+    ],
+    spareable: b => (b.flags.polish || 0) >= 2 && b.flags.flip,
+    speech: b => {
+      if ((b.flags.polish || 0) >= 2 && b.flags.flip) return '...I do not feel like fighting anymore. I feel... {y}shiny{/}.';
+      if (b.lastAct === 'Polish') return "...is that a new cuff? It's very soft.";
+      if (b.lastAct === 'Appraise') return 'PRICELESS?! ...say it again. NO. DON\'T.';
+      return ['HAVE AT THEE!', 'I AM LEGAL TENDER!', 'I WAS MINTED IN 1983! A VERY GOOD YEAR!', 'ONE CENT! ONE! CENT!', 'NO ONE BENDS DOWN FOR ME ANYMORE!'][b.turn % 5];
+    },
+    patterns: b => [['roll', 'rain', 'lance'][b.turn % 3]],
+  },
+};
+
+let B = null;
+function bWait(state, extra = {}) { return new Promise(r => { Object.assign(B, extra); B.state = state; B.resolve = r; }); }
+function bResolve(v) { const r = B.resolve; B.resolve = null; if (r) r(v); }
+const BOX_TEXT = { x: 32, y: 250, w: 576, h: 140 };
+
+async function battle(key) {
+  const def = ENEMIES[key];
+  const p = G.player;
+  SFX.encounter(); p.alert = true; await wait(0.55); p.alert = false;
+  const prevMusic = G.room.music; stopMusic();
+  B = { key, def, hp: def.hp, maxhp: def.hp, flags: {}, turn: 0, state: 'flash', box: { ...BOX_TEXT }, soul: { x: 320, y: 320 },
+    bullets: [], menu: { lvl: 0, btn: 0, sel: 0 }, iframes: 0, eshake: 0, alpha: 1, dying: 0, spared: false, anim: null };
+  B.say = lines => battleText(lines); B.choose = opts => battleChoice(opts);
+  G.battle = B; G.scene = 'battle';
+  B.flashT = 0; SFX.select(); await wait(0.1); SFX.select(); await wait(0.1); SFX.select(); await wait(0.25);
+  B.state = 'menu';
+  playMusic(def.music);
+  if (!G.flags.seenSoul) {
+    G.flags.seenSoul = true;
+    await battleText(['* This little red thing is your {r}SOLE{/}.', '* Well. Your sock\'s sole. It is the very culmination of your being.', '* Keep it safe. Move it with the {y}arrow keys{/}.']);
+  }
+  const result = await battleLoop();
+  if (result === 'dead') { await gameOver(); return 'dead'; }
+  await fadeTo(1, 0.3);
+  G.scene = 'world'; G.battle = null; B = null; stopMusic(); playMusic(prevMusic);
+  await fadeTo(0, 0.3);
+  return result;
+}
+
+async function battleLoop() {
+  const def = B.def;
+  let flavor = def.intro;
+  while (true) {
+    const a = await menuSelect(flavor);
+    B.lastAct = null;
+    if (a.type === 'fight') {
+      const acc = await attackBar();
+      const dmg = acc <= 0 ? 0 : Math.max(1, Math.round((8 + G.fuz * 2) * (0.35 + 1.65 * acc)) - def.def + Math.floor(Math.random() * 3));
+      await slash(dmg);
+      if (B.hp <= 0) {
+        B.state = 'dying'; SFX.dust();
+        await tween(B, { dying: 1 }, 1.4);
+        G.exp += def.exp; G.lint += def.lint; G.kills++;
+        const lines = [`* YOU WON!\n* You earned ${def.exp} EXP and ${def.lint} LINT.`];
+        if (G.exp >= 10 * G.fuz) { G.fuz++; G.maxhp += 4; G.hp += 4; lines.push('* Your FUZ increased.'); }
+        await battleText(lines);
+        return 'killed';
+      }
+    } else if (a.type === 'act') {
+      const act = def.acts[a.i - 1];
+      let lines;
+      if (a.i === 0) lines = [def.check];
+      else { B.lastAct = act.n; lines = await act.f(B); }
+      await battleText(lines);
+    } else if (a.type === 'item') {
+      await battleText(useItem(a.i, true));
+    } else if (a.type === 'spare') {
+      if (B.spareable) {
+        B.spared = true; SFX.spare(); puff(320, 140, 18, '#ffd23f');
+        G.lint += Math.ceil(def.lint / 2); G.spares++;
+        await battleText([`* YOU WON!\n* You earned 0 EXP and ${Math.ceil(def.lint / 2)} LINT.`]);
+        return 'spared';
+      }
+      await battleText([`* You tried to spare ${def.name}.`, def.boss ? '* He is not ready to be spared. He is barely ready to be spent.' : '* ...but it isn\'t ready yet.']);
+    } else if (a.type === 'flee') {
+      if (Math.random() < 0.6) { SFX.select(); B.fleeing = true; await wait(0.5); await battleText(['* You fled.', '* Like a sock in the night.']); return 'fled'; }
+      await battleText(['* You tried to flee...', '* ...but your cuff got snagged.']);
+    }
+    B.spareable = !!def.spareable(B);
+    // enemy turn
+    const sp = def.speech(B);
+    if (sp) await speech(sp);
+    const pats = def.patterns(B);
+    for (const pn of pats) {
+      await dodge(pn);
+      if (G.hp <= 0) return 'dead';
+    }
+    B.turn++;
+    B.spareable = !!def.spareable(B);
+    flavor = def.flavor(B);
+  }
+}
+
+function battleText(lines) {
+  if (!Array.isArray(lines)) lines = [lines];
+  return (async () => {
+    for (const l of lines) {
+      B.typer = new Typer(l, BOX_TEXT.w - 60, 30);
+      await bWait('text');
+    }
+  })();
+}
+function battleChoice(opts) { B.choice = { opts, sel: 0 }; return bWait('choice'); }
+function menuSelect(flavor) { B.typer = new Typer(flavor, BOX_TEXT.w - 60, 30); B.menu.lvl = 0; B.menu.sel = 0; return bWait('menu'); }
+function attackBar() { B.bar = { x: 0, stopped: false, t: 0 }; return bWait('attack'); }
+async function slash(dmg) {
+  B.anim = { t: 0, dmg, shownHp: B.hp };
+  B.state = 'slash'; SFX.slash();
+  await wait(0.45);
+  if (dmg > 0) { SFX.hit(); B.eshake = 0.5; }
+  const target = Math.max(0, B.hp - dmg);
+  tween(B.anim, { shownHp: target }, 0.5);
+  B.hp = target;
+  await wait(1.1);
+  B.anim = null;
+}
+function speech(str) { B.bubble = new Typer(str, 190, 24, { color: '#14111c', voice: (SPEAKERS[B.key] || SPEAKERS.none).voice }); return bWait('speech'); }
+async function dodge(name) {
+  const P = PATTERNS[name];
+  const w = P.w, h = P.h;
+  B.state = 'resize';
+  await tween(B.box, { x: 320 - w / 2, y: 320 - h / 2, w, h }, 0.25, ease.out);
+  B.soul.x = B.box.x + w / 2; B.soul.y = B.box.y + h / 2;
+  B.bullets = [];
+  B.pat = { P, t: 0, dur: P.dur, ease: (B.spareable ? 1.5 : 1) / (1 + Math.min(B.turn, 6) * 0.04), dmg: B.def.atk, flash: 0 };
+  P.init && P.init(B.pat);
+  await bWait('dodge');
+  B.bullets = [];
+  B.state = 'resize';
+  await tween(B.box, { ...BOX_TEXT }, 0.25, ease.out);
+}
+
+function spawnB(o) { B.bullets.push(Object.assign({ x: 0, y: 0, vx: 0, vy: 0, ax: 0, ay: 0, r: 6, t: 0, dmg: B.pat.dmg, kind: 'dot' }, o)); }
+const bx = () => B.box.x + 5, by = () => B.box.y + 5, bw = () => B.box.w - 10, bh = () => B.box.h - 10;
+const PATTERNS = {
+  pins: { w: 220, h: 140, dur: 4.5, init(P) { P.n = 0.3; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) { P.n = 0.5; spawnB({ kind: 'pin', x: bx() + 12 + Math.random() * (bw() - 24), y: by() - 8, vy: 70, r: 4, dmg: 1 }); }
+  } },
+  sneeze: { w: 250, h: 140, dur: 5, init(P) { P.n = 0.6; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = 1.3 * P.ease; SFX.sneeze(); P.flash = 0.2; B.eshake = 0.25;
+      const cy = by() + 20 + Math.random() * (bh() - 40);
+      for (let i = 0; i < 6; i++) { const a = Math.PI + (i - 2.5) * 0.2 + (Math.random() - 0.5) * 0.1, s = 140 + Math.random() * 60; spawnB({ kind: 'dust', x: bx() + bw() + 10, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: 7 }); }
+    }
+  } },
+  hop: { w: 250, h: 140, dur: 5, init(P) { P.n = 0.2; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = (0.6 + Math.random() * 0.3) * P.ease; const L = Math.random() < 0.5, fl = by() + bh() - 8;
+      spawnB({ kind: 'bun', x: L ? bx() - 12 : bx() + bw() + 12, y: fl, vx: (L ? 1 : -1) * (90 + Math.random() * 50), vy: -(110 + Math.random() * 110), ay: 380, r: 7, fl,
+        upd(b) { if (b.y > b.fl) { b.y = b.fl; b.vy = -(150 + Math.random() * 90); } } });
+    }
+  } },
+  sparks: { w: 230, h: 150, dur: 5, init(P) { P.n = 0.2; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = 0.55 * P.ease; const cnt = Math.random() < 0.35 ? 2 : 1;
+      for (let k = 0; k < cnt; k++) spawnB({ kind: 'bolt', rect: true, x: bx() + 8 + Math.random() * (bw() - 24), y: by(), w: 16, h: bh(), warn: 0.5, life: 0.8, r: 0, zapped: false });
+    }
+  } },
+  cling: { w: 230, h: 150, dur: 5, init(P) { P.n = 0.3; }, update(P, dt) {
+    const tx = bx() + bw() / 2, ty = by() + 14, dx = tx - B.soul.x, dy = ty - B.soul.y, d = Math.hypot(dx, dy) || 1;
+    const pull = B.flags.rub ? 85 : 60;
+    if (d > 4) { B.soul.x += dx / d * pull * dt; B.soul.y += dy / d * pull * dt; }
+    if ((P.n -= dt) <= 0) { P.n = 0.38 * P.ease; const L = Math.random() < 0.5; spawnB({ kind: 'spark', x: L ? bx() - 8 : bx() + bw() + 8, y: by() + 10 + Math.random() * (bh() - 20), vx: (L ? 1 : -1) * (120 + Math.random() * 60), r: 5 }); }
+  } },
+  roll: { w: 260, h: 140, dur: 6, init(P) { P.n = 0.3; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = 0.8 * P.ease; const lanes = [by() + bh() - 12, by() + bh() / 2, by() + 12];
+      const skip = Math.floor(Math.random() * 3), L = Math.random() < 0.5, sp = 150 + Math.random() * 60;
+      lanes.forEach((ly, i) => { if (i !== skip && (Math.random() < 0.6 || i === (skip + 1) % 3)) spawnB({ kind: 'coin', x: L ? bx() - 14 : bx() + bw() + 14, y: ly, vx: L ? sp : -sp, r: 9 }); });
+    }
+  } },
+  rain: { w: 240, h: 150, dur: 5.5, init(P) { P.n = 0.2; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = 0.2 * P.ease; const fl = by() + bh() - 8;
+      spawnB({ kind: 'coin', x: bx() + 8 + Math.random() * (bw() - 16), y: by() - 10, vy: 30, ay: 260, r: 8, fl, upd(b) { if (!b.bn && b.y > b.fl) { b.y = b.fl; b.vy = -b.vy * 0.45; b.vx = (Math.random() - 0.5) * 140; b.bn = 1; } } });
+    }
+  } },
+  lance: { w: 240, h: 150, dur: 6, init(P) { P.n = 0.3; }, update(P, dt) {
+    if ((P.n -= dt) <= 0) {
+      P.n = 0.95 * P.ease; const hz = Math.random() < 0.5;
+      spawnB(hz ? { kind: 'lance', rect: true, x: bx(), y: B.soul.y - 10, w: bw(), h: 20, warn: 0.6, life: 0.9, hz: true, r: 0 }
+        : { kind: 'lance', rect: true, x: B.soul.x - 10, y: by(), w: 20, h: bh(), warn: 0.6, life: 0.9, hz: false, r: 0 });
+    }
+  } },
+};
+
+function updateBattle(dt) {
+  if (!B) return;
+  B.eshake = Math.max(0, B.eshake - dt);
+  if (B.iframes > 0) B.iframes -= dt;
+  const m = B.menu;
+  switch (B.state) {
+    case 'text':
+      if (!B.typer.done) { if (jp('x') || jp('z')) B.typer.finish(); else B.typer.update(dt); }
+      else if (jp('z')) bResolve();
+      break;
+    case 'choice': {
+      const c = B.choice;
+      if (jp('left') || jp('right')) { c.sel ^= 1; SFX.select(); }
+      if (jp('z')) { SFX.confirm(); B.choice = null; bResolve(c.sel); }
+      break;
+    }
+    case 'speech':
+      if (!B.bubble.done) { if (jp('x') || jp('z')) B.bubble.finish(); else B.bubble.update(dt); }
+      else if (jp('z')) { B.bubble = null; bResolve(); }
+      break;
+    case 'menu': {
+      if (m.lvl === 0) {
+        if (B.typer && !B.typer.done) B.typer.update(dt);
+        if (jp('left')) { m.btn = (m.btn + 3) % 4; SFX.select(); }
+        if (jp('right')) { m.btn = (m.btn + 1) % 4; SFX.select(); }
+        if (jp('z')) {
+          if (m.btn === 2 && !G.inv.length) { SFX.buzz(); break; }
+          SFX.confirm(); m.lvl = 1; m.sel = 0;
+        }
+      } else {
+        const list = menuList();
+        if (jp('x')) { if (m.lvl === 2) { m.lvl = 1; m.sel = 0; } else m.lvl = 0; SFX.select(); break; }
+        const cols = (m.btn === 0 || m.lvl === 1 && m.btn === 1) ? 1 : 2;
+        if (jp('up')) { m.sel = Math.max(0, m.sel - cols); SFX.select(); }
+        if (jp('down')) { m.sel = Math.min(list.length - 1, m.sel + cols); SFX.select(); }
+        if (cols === 2 && jp('left') && m.sel % 2) { m.sel--; SFX.select(); }
+        if (cols === 2 && jp('right') && m.sel % 2 === 0 && m.sel + 1 < list.length) { m.sel++; SFX.select(); }
+        if (jp('z')) {
+          SFX.confirm();
+          if (m.btn === 0) bResolve({ type: 'fight' });
+          else if (m.btn === 1) { if (m.lvl === 1) { m.lvl = 2; m.sel = 0; } else bResolve({ type: 'act', i: m.sel }); }
+          else if (m.btn === 2) bResolve({ type: 'item', i: m.sel });
+          else bResolve({ type: m.sel === 0 ? 'spare' : 'flee' });
+        }
+      }
+      break;
+    }
+    case 'attack': {
+      const bar = B.bar;
+      if (!bar.stopped) {
+        bar.x += dt / 1.5;
+        if (jp('z')) { bar.stopped = true; bar.t = 0; const acc = 1 - Math.abs(bar.x - 0.5) * 2; bar.acc = Math.max(0, acc); }
+        if (bar.x >= 1) { bar.stopped = true; bar.acc = 0; bar.t = 0; }
+      } else { bar.t += dt; if (bar.t > 0.35) bResolve(bar.acc < 0.04 ? 0 : bar.acc); }
+      break;
+    }
+    case 'dodge': {
+      const P = B.pat, s = B.soul;
+      P.t += dt; P.flash = Math.max(0, P.flash - dt);
+      let dx = 0, dy = 0;
+      if (keys.left) dx--; if (keys.right) dx++; if (keys.up) dy--; if (keys.down) dy++;
+      const sp = 150 * dt; s.x += dx * sp; s.y += dy * sp;
+      P.P.update(P, dt);
+      s.x = Math.max(B.box.x + 12, Math.min(B.box.x + B.box.w - 12, s.x));
+      s.y = Math.max(B.box.y + 12, Math.min(B.box.y + B.box.h - 12, s.y));
+      for (const b of B.bullets) {
+        b.t += dt; b.vx += b.ax * dt; b.vy += b.ay * dt; b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.upd) b.upd(b, dt);
+        let hit = false;
+        if (b.rect) { if (b.t > b.warn && b.t < b.life) { if (!b.zapped) { b.zapped = true; if (b.kind === 'bolt') SFX.zap(); else SFX.slash(); } hit = s.x + 4 > b.x && s.x - 4 < b.x + b.w && s.y + 4 > b.y && s.y - 4 < b.y + b.h; } }
+        else hit = Math.hypot(b.x - s.x, b.y - s.y) < b.r + 4;
+        if (hit && B.iframes <= 0) {
+          G.hp = Math.max(0, G.hp - b.dmg); B.iframes = 1.0; SFX.hurt(); shake(4);
+          if (G.hp <= 0) { bResolve(); return; }
+        }
+      }
+      B.bullets = B.bullets.filter(b => (b.life ? b.t < b.life : true) && b.x > B.box.x - 80 && b.x < B.box.x + B.box.w + 80 && b.y < B.box.y + B.box.h + 80 && b.y > B.box.y - 120);
+      if (P.t >= P.dur) bResolve();
+      break;
+    }
+  }
+}
+function menuList() {
+  const m = B.menu, def = B.def;
+  if (m.btn === 0) return [def.name];
+  if (m.btn === 1) return m.lvl === 1 ? [def.name] : ['Check', ...def.acts.map(a => a.n)];
+  if (m.btn === 2) return G.inv.map(id => ITEMS[id].name);
+  return def.boss ? ['Spare'] : ['Spare', 'Flee'];
+}
+
+function drawBattle() {
+  rect(0, 0, W, H, '#000');
+  if (B.state === 'flash') {
+    if (Math.floor(G.t * 20) % 2) rect(0, 0, W, H, '#fff');
+    spr('soul', G.player.x - 8, G.player.y - 24, 2);
+    return;
+  }
+  // backdrop grid
+  ctx.strokeStyle = '#231c35'; ctx.lineWidth = 2;
+  for (let x = 40; x <= 600; x += 70) { ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, 236); ctx.stroke(); }
+  for (let y = 20; y <= 236; y += 54) { ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(600, y); ctx.stroke(); }
+  // enemy
+  const def = B.def, c = SPR[def.sprite], s = def.scale;
+  let ex = 320, eby = 232 + Math.sin(G.t * 2) * 3;
+  if (B.eshake > 0) ex += Math.sin(G.t * 80) * 8 * (B.eshake / 0.5);
+  if (B.dying > 0) {
+    const hgt = c.height * s, cut = hgt * B.dying;
+    ctx.save(); ctx.beginPath(); ctx.rect(ex - c.width * s / 2 - 4, eby - hgt + cut, c.width * s + 8, hgt); ctx.clip();
+    sprC(def.sprite, ex, eby, s, false, 1 - B.dying * 0.5); ctx.restore();
+    for (let i = 0; i < 18; i++) { const px = ex - c.width * s / 2 + hash(i, 3, 1) * c.width * s, py = eby - hgt + cut - B.dying * hash(i, 4, 1) * 90; rect(px, py, 4, 4, `rgba(201,196,214,${1 - B.dying})`); }
+  } else {
+    sprC(def.sprite, ex, eby, s, false, B.spared ? 0.45 : 1, ctx, B.eshake > 0.35);
+    if (B.pat && B.pat.flash > 0) text('ACHOO!', ex + 40, 60, 24, '#ffd23f', 'left', FONT_UI);
+  }
+  // speech bubble
+  if (B.state === 'speech' && B.bubble) {
+    const x0 = ex + c.width * s / 2 + 22, y0 = 50, bw2 = 214, bh2 = Math.max(60, B.bubble.h + 24);
+    rect(x0, y0, bw2, bh2, '#fff'); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(x0, y0 + 24); ctx.lineTo(x0 - 16, y0 + 32); ctx.lineTo(x0, y0 + 40); ctx.fill();
+    B.bubble.draw(x0 + 12, y0 + 10);
+  }
+  // box
+  const bx0 = B.box.x, by0 = B.box.y, bw0 = B.box.w, bh0 = B.box.h;
+  rect(bx0, by0, bw0, bh0, '#fff'); rect(bx0 + 5, by0 + 5, bw0 - 10, bh0 - 10, '#000');
+  const m = B.menu;
+  if (B.state === 'text' || (B.state === 'menu' && m.lvl === 0)) B.typer && B.typer.draw(bx0 + 28, by0 + 20);
+  if (B.state === 'choice' && B.choice) {
+    B.typer && B.typer.draw(bx0 + 28, by0 + 20);
+    B.choice.opts.forEach((o, i) => { text(o, bx0 + 100 + i * 200, by0 + 90, 30, i === B.choice.sel ? '#ffd23f' : '#fff'); if (i === B.choice.sel) spr('soul', bx0 + 72 + i * 200, by0 + 96, 2); });
+  }
+  if (B.state === 'menu' && m.lvl > 0) {
+    const list = menuList(), cols = (m.btn === 0 || (m.lvl === 1 && m.btn === 1)) ? 1 : 2;
+    list.forEach((it, i) => {
+      const cx = bx0 + 70 + (i % cols) * 260, cy = by0 + 22 + Math.floor(i / cols) * 34;
+      let col = '#fff';
+      if ((m.btn <= 1 && m.lvl === 1 && B.spareable) || (m.btn === 3 && i === 0 && B.spareable)) col = '#ffd23f';
+      text('* ' + it, cx, cy, 30, col);
+      if (i === m.sel) spr('soul', cx - 30, cy + 8, 2);
+    });
+    if (m.btn === 0 && m.lvl === 1) {
+      const w = 100; rect(bx0 + 340, by0 + 30, w, 16, '#c0201e'); rect(bx0 + 340, by0 + 30, w * B.hp / B.maxhp, 16, '#3fd45a');
+    }
+  }
+  if (B.state === 'attack' || B.state === 'slash') drawAttackBar();
+  if (B.state === 'slash' && B.anim) {
+    const t = B.anim.t += 1 / 60;
+    if (t < 0.45) for (let i = 0; i < 3; i++) { const k = Math.min(1, (t - i * 0.08) / 0.2); if (k > 0) { ctx.strokeStyle = '#ff3b3b'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(ex - 40 + i * 20, 70); ctx.lineTo(ex - 40 + i * 20 + 60 * k, 70 + 110 * k); ctx.stroke(); } }
+    else {
+      const d = B.anim.dmg;
+      text(d > 0 ? String(d) : 'MISS', ex, 40 - Math.min(20, (t - 0.45) * 60), 26, d > 0 ? '#ff3b3b' : '#c9c4d6', 'center', FONT_UI);
+      rect(ex - 60, 76, 120, 14, '#555'); rect(ex - 60, 76, 120 * B.anim.shownHp / B.maxhp, 14, '#3fd45a');
+    }
+  }
+  if (B.state === 'dodge' || B.state === 'resize') {
+    ctx.save(); ctx.beginPath(); ctx.rect(bx0 + 5, by0 + 5, bw0 - 10, bh0 - 10); ctx.clip();
+    for (const b of B.bullets) drawBullet(b);
+    ctx.restore();
+    if (B.state === 'dodge' && !(B.iframes > 0 && Math.floor(G.t * 16) % 2)) spr('soul', B.soul.x - 8, B.soul.y - 8, 2);
+  }
+  if (B.fleeing) spr('soul', 120 - (G.t % 1) * 200, 320, 2);
+  // stats + buttons
+  text(G.name, 32, 400, 14, '#fff', 'left', FONT_UI);
+  text(`FZ ${G.fuz}`, 150, 400, 14, '#fff', 'left', FONT_UI);
+  text('HP', 252, 401, 12, '#fff', 'left', FONT_UI);
+  const hw = G.maxhp * 1.8; rect(284, 398, hw, 20, '#c0201e'); rect(284, 398, hw * G.hp / G.maxhp, 20, '#ffd23f');
+  text(`${G.hp} / ${G.maxhp}`, 298 + hw, 401, 14, '#fff', 'left', FONT_UI);
+  const labels = ['FIGHT', 'ACT', 'ITEM', 'MERCY'];
+  labels.forEach((l, i) => {
+    const x = 30 + i * 150, y = 428, sel = B.state === 'menu' && m.btn === i;
+    const col = sel ? '#ffd23f' : '#f08a24';
+    ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.strokeRect(x + 1.5, y + 1.5, 128, 40);
+    if (sel) spr('soul', x + 12, y + 13, 2); else drawBtnIcon(i, x + 14, y + 12, col);
+    text(l, x + 44, y + 14, 14, col, 'left', FONT_UI);
+  });
+}
+function drawBtnIcon(i, x, y, col) {
+  ctx.fillStyle = col;
+  if (i === 0) { ctx.fillRect(x + 6, y, 3, 12); ctx.fillRect(x + 2, y + 11, 11, 3); ctx.fillRect(x + 6, y + 14, 3, 4); }
+  if (i === 1) { ctx.fillRect(x, y + 2, 14, 10); ctx.fillStyle = '#000'; ctx.fillRect(x + 3, y + 5, 3, 3); ctx.fillRect(x + 8, y + 5, 3, 3); }
+  if (i === 2) { ctx.fillRect(x + 1, y + 4, 12, 12); ctx.fillRect(x + 4, y + 1, 6, 3); }
+  if (i === 3) { ctx.fillRect(x, y + 6, 14, 3); ctx.fillRect(x + 5, y + 1, 3, 14); }
+}
+function drawAttackBar() {
+  const x0 = B.box.x + 10, y0 = B.box.y + 10, w = B.box.w - 20, h = B.box.h - 20, cx = x0 + w / 2, cy = y0 + h / 2;
+  for (let i = 8; i >= 1; i--) {
+    ctx.fillStyle = i % 2 ? '#1c1729' : '#3a3150'; ctx.beginPath(); ctx.ellipse(cx, cy, w / 2 * i / 8, h / 2 * (0.35 + 0.65 * i / 8), 0, 0, 7); ctx.fill();
+  }
+  rect(cx - 3, y0 + 6, 6, h - 12, '#3fd45a');
+  const bar = B.bar; if (!bar) return;
+  const bxp = x0 + w * Math.min(1, bar.x);
+  const on = !bar.stopped || Math.floor(G.t * 16) % 2;
+  rect(bxp - 6, y0 - 2, 12, h + 4, on ? '#fff' : '#000'); rect(bxp - 3, y0 + 2, 6, h - 4, on ? '#000' : '#fff');
+}
+function drawBullet(b) {
+  switch (b.kind) {
+    case 'pin': rect(b.x - 1, b.y - 12, 3, 18, '#c9c4d6'); rect(b.x, b.y - 12, 1, 18, '#fff'); pcirc(ctx, b.x + 0.5, b.y - 13, 4, '#e8443a'); break;
+    case 'dust': pcirc(ctx, b.x, b.y, b.r, '#7a748c'); pcirc(ctx, b.x - 3, b.y - 3, b.r - 3, '#a39db7'); pcirc(ctx, b.x + 4, b.y + 2, 3, '#a39db7'); break;
+    case 'bun': sprC('bunny', b.x, b.y + 8, 1.3); break;
+    case 'spark': { const f = Math.floor(G.t * 20) % 2; ctx.fillStyle = f ? '#fff8a0' : '#9fc4ff'; ctx.fillRect(b.x - 6, b.y - 1, 12, 3); ctx.fillRect(b.x - 1, b.y - 6, 3, 12); ctx.fillStyle = '#fff'; ctx.fillRect(b.x - 1, b.y - 1, 3, 3); break; }
+    case 'bolt': {
+      if (b.t < b.warn) { if (Math.floor(b.t * 14) % 2) { ctx.strokeStyle = 'rgba(255,240,140,.85)'; ctx.lineWidth = 2; ctx.strokeRect(b.x, b.y, b.w, b.h); } }
+      else { ctx.fillStyle = 'rgba(150,190,255,.35)'; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); for (let yy = b.y; yy <= b.y + b.h; yy += 12) ctx.lineTo(b.x + b.w / 2 + (Math.random() - 0.5) * b.w, yy); ctx.stroke(); }
+      break;
+    }
+    case 'coin': {
+      const wv = Math.abs(Math.cos(b.t * 9)) * b.r + 2;
+      ctx.fillStyle = '#8f4a26'; ctx.beginPath(); ctx.ellipse(b.x, b.y, wv + 1, b.r + 1, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#d4824a'; ctx.beginPath(); ctx.ellipse(b.x, b.y, wv, b.r, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#f2b07a'; ctx.fillRect(b.x - wv / 3, b.y - b.r / 2, Math.max(1, wv / 3), b.r / 2); break;
+    }
+    case 'lance': {
+      if (b.t < b.warn) { ctx.fillStyle = Math.floor(b.t * 14) % 2 ? 'rgba(255,80,60,.45)' : 'rgba(255,80,60,.18)'; ctx.fillRect(b.x, b.y, b.w, b.h); }
+      else { ctx.fillStyle = '#d4824a'; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.fillStyle = '#fff3c4'; if (b.hz) ctx.fillRect(b.x, b.y + 6, b.w, b.h - 12); else ctx.fillRect(b.x + 6, b.y, b.w - 12, b.h); }
+      break;
+    }
+  }
+}
+
+/* ================================================================= GAME OVER */
+async function gameOver() {
+  stopMusic();
+  const go = { x: B.soul.x, y: B.soul.y, phase: 0, shards: [], a: 0 };
+  G.go = go; G.scene = 'gameover'; G.battle = null;
+  await wait(0.7); go.phase = 1; SFX.crack();
+  await wait(1.0); go.phase = 2; SFX.shatter();
+  for (let i = 0; i < 6; i++) go.shards.push({ x: go.x, y: go.y, vx: (Math.random() - 0.5) * 240, vy: -Math.random() * 200 - 60 });
+  await wait(1.4); go.phase = 3; playMusic('intro');
+  await tween(go, { a: 1 }, 1.4);
+  await say([
+    { who: 'moth', text: '%N... don\'t give up just yet, dear.', style: 'gameover' },
+    { who: 'moth', text: 'You are going to be alright. Stay {~}fluffy{~}.', style: 'gameover' },
+  ], { style: 'gameover' });
+  await fadeTo(1, 0.8);
+  const s = readSave();
+  G.go = null; B = null; stopMusic();
+  applySave(s);
+  await fadeTo(0, 0.6);
+}
+function drawGameOver() {
+  rect(0, 0, W, H, '#000');
+  const go = G.go; if (!go) return;
+  if (go.phase === 0) spr('soul', go.x - 8, go.y - 8, 2);
+  if (go.phase === 1) { spr('soul', go.x - 11, go.y - 8, 2); ctx.globalAlpha = 1; rect(go.x - 1, go.y - 8, 3, 16, '#000'); }
+  if (go.phase >= 2) for (const s of go.shards) { s.vy += 400 / 60; s.x += s.vx / 60; s.y += s.vy / 60; rect(s.x, s.y, 6, 6, '#e8443a'); }
+  if (go.phase >= 3) {
+    ctx.globalAlpha = go.a;
+    text('GAME', W / 2, 110, 64, '#fff', 'center', FONT_UI); text('OVER', W / 2, 190, 64, '#fff', 'center', FONT_UI);
+    ctx.globalAlpha = 1;
+  }
+  drawDialog();
+}
+
+/* ================================================================= ENDING */
+async function ending() {
+  G.busy = true;
+  const p = G.player;
+  await tween(p, { y: 100 }, 0.6);
+  SFX.slurp();
+  await tween(p, { oy: -60 }, 0.4, ease.in); p.hidden = true;
+  await fadeTo(1, 1.2);
+  stopMusic();
+  G.scene = 'ending'; G.endT = 0; G.busy = false;
+  playMusic('calm');
+  await fadeTo(0, 0.6);
+}
+function updateEnding(dt) {
+  G.endT += dt;
+  if (G.endT > 9 && jp('z')) { G.scene = 'boot'; G.bootSel = 0; playMusic(null); }
+}
+function drawEnding() {
+  rect(0, 0, W, H, '#07060b');
+  const t = G.endT;
+  const pac = G.kills === 0;
+  const lines = [
+    ['CHAPTER 1', 'ui', 22, '#ffd23f'],
+    ['THE LINT TRAP', 'ui', 22, '#fff'],
+    ['', 'txt', 20],
+    [pac ? 'You didn\'t hurt anyone. Not even the dummy.' : 'You left a little trail of lint behind you.', 'txt', 30, pac ? '#8fe08f' : '#c9c4d6'],
+    ['', 'txt', 12],
+    [`Monsters spared ........ ${G.spares}`, 'txt', 28],
+    [`Monsters defeated ...... ${G.kills}`, 'txt', 28],
+    [`Times zapped ........... ${G.zaps}`, 'txt', 28],
+    [`Lint collected ......... ${G.lint}`, 'txt', 28],
+    ["Mothilda's cardigan .... 73% eaten", 'txt', 28],
+    ['', 'txt', 16],
+    ['To be continued in CHAPTER 2: THE SPIN CYCLE', 'txt', 30, '#f7a1c4'],
+  ];
+  let y = 40;
+  lines.forEach((l, i) => {
+    const a = Math.max(0, Math.min(1, (t - i * 0.55) / 0.6));
+    ctx.globalAlpha = a;
+    text(l[0], W / 2, y, l[2], l[3] || '#fff', 'center', l[1] === 'ui' ? FONT_UI : FONT_TXT);
+    y += l[2] + 7;
+    ctx.globalAlpha = 1;
+  });
+  sprRot('sock', 60, 430 + Math.sin(t * 2) * 4, 3, Math.sin(t * 1.3) * 0.2);
+  if (t > 9 && Math.floor(t * 2) % 2) text('PRESS Z', W - 30, 450, 12, '#7d7697', 'right', FONT_UI);
+}
+
+/* ================================================================= BOOT / TITLE / NAME */
+G.bootSel = 0;
+function updateBoot() {
+  const has = !!readSave();
+  if (has && (jp('up') || jp('down') || jp('left') || jp('right'))) { G.bootSel ^= 1; SFX.select(); }
+  if (jp('z')) {
+    audio.unlock(); pressed.z = false;
+    if (has && G.bootSel === 0) { SFX.confirm(); continueGame(); }
+    else { SFX.confirm(); resetStats(); introSequence(); }
+  }
+}
+function drawBoot() {
+  rect(0, 0, W, H, '#07060b');
+  for (let i = 0; i < 30; i++) rect((hash(i, 9, 1) * W + G.t * 8 * (1 + i % 3)) % W, (hash(i, 8, 1) * H - G.t * 12 * (1 + i % 2) + H * 20) % H, 2, 2, 'rgba(201,196,214,.4)');
+  sprRot('sock', W / 2, 150 + Math.sin(G.t * 2) * 6, 4, Math.sin(G.t * 1.4) * 0.25);
+  text('LINTERLUDE', W / 2, 232, 32, '#fff', 'center', FONT_UI);
+  text('a short game about laundry, loss, and lint', W / 2, 280, 28, '#8a84a0', 'center');
+  const has = !!readSave();
+  if (has) {
+    ['Continue', 'New Game'].forEach((s, i) => { text(s, W / 2 - 60 + 10, 330 + i * 36, 30, G.bootSel === i ? '#ffd23f' : '#fff'); if (G.bootSel === i) spr('soul', W / 2 - 84, 338 + i * 36, 2); });
+  } else if (Math.floor(G.t * 2) % 2) text(isTouch ? 'TAP TO BEGIN' : 'PRESS Z OR ENTER', W / 2, 344, 14, '#ffd23f', 'center', FONT_UI);
+  text(isTouch ? 'D-pad: move   Z: confirm   X: cancel   MENU: items' : 'Arrows: move   Z: confirm   X: cancel   C: menu   M: mute', W / 2, 440, 22, '#5f5878', 'center');
+}
+
+/* ---- intro storybook ---- */
+const pc = document.createElement('canvas'); pc.width = 220; pc.height = 120;
+const pg = pc.getContext('2d'); pg.imageSmoothingEnabled = false;
+G.panel = null; G.panelA = 1;
+function setPanel(draw, opts = {}) { G.panel = { draw, t0: G.t, ...opts }; }
+async function crossPanel(draw, opts) { await tween(G, { panelA: 0 }, 0.45); setPanel(draw, opts); await tween(G, { panelA: 1 }, 0.45); }
+
+const PANELS = {
+  line(g, t) {
+    const sky = ['#ffe2ad', '#ffd49a', '#ffc78a', '#f7b67c'];
+    sky.forEach((c, i) => { g.fillStyle = c; g.fillRect(0, i * 22, 220, 22); });
+    pcirc(g, 186, 24, 12, '#fff3c0'); pcirc(g, 186, 24, 9, '#fffbe6');
+    pcirc(g, 50, 150, 70, '#8fc97a'); pcirc(g, 180, 160, 80, '#7cb86a');
+    g.fillStyle = '#6e5236'; g.fillRect(10, 18, 3, 90); g.fillRect(207, 18, 3, 90);
+    const ly = x => 20 + 10 * (1 - Math.pow((x - 110) / 98, 2));
+    g.fillStyle = '#3a2f4f'; for (let x = 12; x <= 208; x++) g.fillRect(x, Math.round(ly(x)), 1, 1);
+    spr('sock', 72, ly(86) + 1, 2, false, 1, g); spr('sockBlue', 118, ly(132) + 1, 2, true, 1, g);
+    g.fillStyle = '#b58d5c'; g.fillRect(84, ly(86) - 2, 3, 6); g.fillRect(134, ly(132) - 2, 3, 6);
+    for (let i = 0; i < 3; i++) { const yy = 60 - ((t * 14 + i * 14) % 42); spr('heart', 106 + Math.sin(t * 2 + i * 2) * 4, yy, 1, false, Math.min(1, (yy - 18) / 20), g); }
+  },
+  wash(g, t) {
+    g.fillStyle = '#bfe0e6'; g.fillRect(0, 0, 220, 120);
+    g.fillStyle = '#acd2d9'; for (let x = 0; x < 220; x += 16) for (let y = 0; y < 100; y += 16) g.fillRect(x + ((y / 16) % 2) * 8, y, 1, 16);
+    g.fillStyle = '#8fb3ba'; g.fillRect(0, 100, 220, 20);
+    g.fillStyle = '#14111c'; g.fillRect(68, 18, 84, 94); g.fillStyle = '#f2f6f8'; g.fillRect(70, 20, 80, 90);
+    g.fillStyle = '#c9d6dc'; g.fillRect(70, 20, 80, 14); pcirc(g, 136, 27, 4, '#7a748c'); pcirc(g, 124, 27, 3, '#7cc96a');
+    pcirc(g, 110, 70, 27, '#7a748c'); pcirc(g, 110, 70, 24, '#5aa0e0');
+    g.fillStyle = '#8cc4f4'; for (let i = 0; i < 20; i++) { const a = t * 2 + i * 0.3; g.fillRect(110 + Math.cos(a) * 16, 70 + Math.sin(a) * 16, 2, 2); }
+    sprRot('sock', 110 + Math.cos(t * 2) * 10, 70 + Math.sin(t * 2) * 10, 1, t * 2, false, g);
+    sprRot('sockBlue', 110 + Math.cos(t * 2 + 3.14) * 10, 70 + Math.sin(t * 2 + 3.14) * 10, 1, t * 2 + 3.14, false, g);
+    g.strokeStyle = '#ffffff'; g.lineWidth = 1;
+    for (let i = 0; i < 6; i++) { const yy = 18 - ((t * 10 + i * 9) % 30); const xx = 80 + i * 12 + Math.sin(t * 3 + i) * 3; g.beginPath(); g.arc(xx, yy + 10, 2 + (i % 3), 0, 7); g.stroke(); }
+  },
+  dryer(g, t) {
+    const sx = Math.round(Math.sin(t * 40) * 1);
+    g.fillStyle = '#2b2640'; g.fillRect(0, 0, 220, 120); g.fillStyle = '#1e1a2e'; g.fillRect(0, 100, 220, 20);
+    g.fillStyle = '#14111c'; g.fillRect(68 + sx, 16, 84, 96); g.fillStyle = '#9a95ab'; g.fillRect(70 + sx, 18, 80, 92);
+    g.fillStyle = '#7a748c'; g.fillRect(70 + sx, 18, 80, 14);
+    pcirc(g, 110 + sx, 70, 28, '#5b5574'); pcirc(g, 110 + sx, 70, 24, '#08070c');
+    const glow = 0.6 + Math.sin(t * 5) * 0.4;
+    g.fillStyle = `rgba(255,40,40,${glow})`; g.fillRect(98 + sx, 66, 6, 6); g.fillRect(116 + sx, 66, 6, 6);
+    g.fillStyle = '#ff9a9a'; g.fillRect(100 + sx, 67, 2, 2); g.fillRect(118 + sx, 67, 2, 2);
+    g.fillStyle = '#14111c'; for (let i = 0; i < 6; i++) { g.fillRect(96 + sx + i, 60 + Math.floor(i / 2), 1, 2); g.fillRect(123 + sx - i, 60 + Math.floor(i / 2), 1, 2); }
+    g.fillStyle = '#d6d1e3'; for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28; const r = 44 + Math.sin(t * 9 + i) * 3; g.fillRect(110 + Math.cos(a) * r, 64 + Math.sin(a) * r * 0.9, 3, 1); }
+  },
+  alone(g, t) {
+    g.fillStyle = '#3d3a4f'; g.fillRect(0, 0, 220, 120); g.fillStyle = '#2f2c3e'; g.fillRect(0, 90, 220, 30);
+    spr('sockBlue', 84, 58, 2, false, 1, g);
+    g.globalAlpha = 0.35; for (let y = 0; y < 32; y += 2) g.drawImage(SPRW.sock, 0, y / 2, 14, 1, 118, 58 + y, 28, 1); g.globalAlpha = 1;
+    const q = Math.sin(t * 3) * 2;
+    g.fillStyle = '#ffd23f'; [[2, 0, 6, 2], [0, 2, 2, 2], [8, 2, 2, 4], [4, 6, 4, 2], [4, 8, 2, 2], [4, 12, 2, 2]].forEach(r => g.fillRect(96 + r[0], 34 + q + r[1], r[2], r[3]));
+  },
+  science(g, t) {
+    g.fillStyle = '#5c4a3a'; g.fillRect(0, 0, 220, 120); g.fillStyle = '#4a3b2e'; g.fillRect(0, 96, 220, 24);
+    g.fillStyle = '#8a6a4a'; g.fillRect(16, 8, 188, 66); g.fillStyle = '#2f4a3a'; g.fillRect(19, 11, 182, 60);
+    spr('sockBlue', 140, 64, 2, true, 1, g);
+    g.fillStyle = '#c9c4d6'; g.fillRect(148, 76, 7, 1); g.fillRect(160, 76, 7, 1);
+    g.strokeStyle = '#c9c4d6'; g.strokeRect(147.5, 74.5, 8, 5); g.strokeRect(159.5, 74.5, 8, 5);
+    g.fillStyle = '#c99a1a'; g.fillRect(124, 82, 12, 16); g.fillStyle = '#fff'; g.fillRect(126, 85, 8, 11);
+  },
+  hamper(g, t, o) {
+    g.fillStyle = '#1e2340'; g.fillRect(0, 0, 220, 120); g.fillStyle = '#171b33'; g.fillRect(0, 100, 220, 20);
+    g.fillStyle = '#2e365e'; g.fillRect(150, 12, 52, 42); g.fillStyle = '#0d1022'; g.fillRect(153, 15, 46, 36);
+    pcirc(g, 186, 28, 7, '#f3e3c0'); pcirc(g, 189, 26, 6, '#0d1022');
+    g.fillStyle = '#fff'; [[160, 22], [170, 40], [194, 44], [164, 34]].forEach(s => g.fillRect(s[0], s[1], 1, 1));
+    g.fillStyle = '#14111c'; g.fillRect(58, 66, 84, 46); g.fillStyle = '#9a7448'; g.fillRect(60, 68, 80, 42);
+    g.fillStyle = '#7d5c36'; for (let y = 72; y < 110; y += 6) g.fillRect(60, y, 80, 2); for (let x = 64; x < 140; x += 8) g.fillRect(x, 68, 2, 42);
+    g.fillStyle = '#c9d6dc'; g.fillRect(62, 62, 30, 8); g.fillStyle = '#e8b4b4'; g.fillRect(104, 62, 32, 8);
+    const awake = o && o.awake;
+    sprRot(awake ? 'sock' : 'sockSleep', 100, 56, 2, -Math.PI / 2, false, g);
+    if (o && o.snore) { const r = 2 + ((t * 3) % 1) * 7; g.strokeStyle = '#bfe3ff'; g.lineWidth = 1; g.beginPath(); g.arc(122, 50, r, 0, 7); g.stroke(); }
+  },
+  lcd(g, t) {
+    g.fillStyle = '#9a95ab'; g.fillRect(0, 0, 220, 120);
+    g.fillStyle = '#7a748c'; for (let x = 0; x < 220; x += 4) g.fillRect(x, 0, 1, 120);
+    g.fillStyle = '#14111c'; g.fillRect(26, 18, 120, 62); g.fillStyle = '#0f2a12'; g.fillRect(29, 21, 114, 56);
+    pcirc(g, 180, 48, 22, '#14111c'); pcirc(g, 180, 48, 19, '#c9c4d6'); g.fillStyle = '#14111c'; g.fillRect(179, 30, 3, 16);
+    pcirc(g, 180, 96, 9, '#14111c'); pcirc(g, 180, 96, 7, Math.floor(t * 4) % 2 ? '#ff4a3a' : '#a02838');
+    spr('sock', 34, 84, 2, false, 1, g);
+  },
+};
+const POST = {
+  science(c, ox, oy, t) {
+    ctx.save(); ctx.font = font(26); ctx.fillStyle = '#e9f0e4'; ctx.textBaseline = 'top';
+    ctx.fillText('SOCK + DRYER = ?', ox + 54, oy + 34); ctx.fillText('2 socks - 1 = ???', ox + 54, oy + 66);
+    ctx.fillText('?', ox + 300 + Math.sin(t * 3) * 3, oy + 40); ctx.fillText('??', ox + 340, oy + 80); ctx.restore();
+  },
+  hamper(c, ox, oy, t, o) {
+    if (o && o.awake) { text('!!', ox + 200, oy + 30, 28, '#ffd23f', 'left', FONT_UI); return; }
+    for (let i = 0; i < 3; i++) { const k = (t * 0.6 + i / 3) % 1; ctx.globalAlpha = 1 - k; text('z', ox + 230 + k * 40 + i * 6, oy + 90 - k * 70, 22 + (o && o.snore ? 16 : 0), '#bfe3ff'); }
+    if (o && o.snore) { ctx.globalAlpha = 1; text('ZZZZZ', ox + 300 + Math.sin(t * 6) * 3, oy + 20, 30, '#bfe3ff', 'left', FONT_UI); }
+    ctx.globalAlpha = 1;
+  },
+  lcd(c, ox, oy, t) {
+    ctx.save(); ctx.font = font(34); ctx.textBaseline = 'top'; ctx.fillStyle = '#7dff8a';
+    ctx.fillText('TUMBLE DRY', ox + 70, oy + 50);
+    if (Math.floor(t * 3) % 2) ctx.fillText('HIGH HEAT', ox + 70, oy + 82);
+    ctx.fillText('90:00', ox + 70, oy + 114); ctx.restore();
+    text('!!', ox + 100, oy + 166, 22, '#ffd23f', 'left', FONT_UI);
+  },
+};
+function drawTumble(t) {
+  rect(0, 0, W, H, '#2b2640');
+  const cx = W / 2, cy = 230, R = 170;
+  pcirc(ctx, cx, cy, R + 22, '#14111c', 2); pcirc(ctx, cx, cy, R + 18, '#9a95ab', 2); pcirc(ctx, cx, cy, R + 4, '#5b5574', 2); pcirc(ctx, cx, cy, R, '#15121f', 2);
+  ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 3;
+  for (let i = 0; i < 3; i++) { const a = -t * 3 + i * 2.09; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * 40, cy + Math.sin(a) * 40); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); }
+  rect(cx - 40, cy + R - 18, 80, 10, '#3a3450'); for (let i = 0; i < 8; i++) rect(cx - 36 + i * 10, cy + R - 16, 4, 6, '#14111c');
+  const items = [['shirt', 5], ['coin', 4], ['gummy', 4], ['sockGreen', 3], ['coin', 3], ['shirt', 4]];
+  const sockPhase = G.tum ? G.tum.k : 0;
+  items.forEach((it, i) => { const a = t * 4 + i * 1.05, r = 90 + (i % 3) * 25; sprRot(it[0], cx + Math.cos(a) * r, cy + Math.sin(a) * r, it[1], a * 1.5); });
+  const a = t * 4 + 6.6, r = 110;
+  const sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r;
+  const tx = cx, ty = cy + R - 14;
+  sprRot('sock', sx + (tx - sx) * sockPhase, sy + (ty - sy) * sockPhase, 4 * (1 - sockPhase * 0.9), a * 1.5 + sockPhase * 8);
+  pcirc(ctx, cx - 90, cy - 100, 26, 'rgba(255,255,255,.06)', 2);
+  if (G.tum && G.tum.whump > 0) { ctx.globalAlpha = Math.min(1, G.tum.whump * 3); text(G.tum.word, G.tum.wx, G.tum.wy, 40, '#ffd23f', 'center', FONT_UI); ctx.globalAlpha = 1; }
+}
+function drawFall(t) {
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b0a10'); g.addColorStop(1, '#2a2340');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 60; i++) { const sp = 80 + (i % 5) * 60; const x = hash(i, 1, 5) * W, y = (hash(i, 2, 5) * H * 2 - t * sp) % (H + 20); rect(x, y < -10 ? y + H + 20 : y, i % 3 ? 2 : 4, i % 3 ? 2 : 4, i % 7 ? 'rgba(201,196,214,.5)' : FIBERS[i % 5]); }
+  const junk = [['a button', 'button', 2.2], ['86 cents', 'coin', 4.5], ['a hair tie', 'hairtie', 6.8], ['THE TV REMOTE (so THAT\'s where it went)', 'remote', 9.0]];
+  for (const j of junk) {
+    const k = (t - j[2]) / 2.6; if (k < 0 || k > 1) continue;
+    const y = H + 40 - k * (H + 120), x = j[1] === 'remote' ? 470 : (j[2] * 97) % 400 + 80;
+    if (j[1] === 'remote') { rect(x - 10, y - 26, 20, 52, '#14111c'); rect(x - 8, y - 24, 16, 48, '#3a3450'); rect(x - 4, y - 20, 8, 6, '#e8443a'); for (let i = 0; i < 6; i++) rect(x - 5 + (i % 2) * 6, y - 8 + Math.floor(i / 2) * 8, 4, 4, '#c9c4d6'); }
+    else drawDecor(ctx, j[1], x, y, '#5b8def');
+    text(j[0], x + 30, y - 8, 22, '#8a84a0');
+  }
+  sprRot('sock', W / 2 + Math.sin(t * 1.3) * 30, 190 + Math.sin(t * 2) * 10, 4, t * 2.5);
+}
+
+async function introSequence() {
+  G.scene = 'intro'; G.skipping = false; G.skipHold = 0; G.panelA = 0;
+  playMusic('intro');
+  setPanel(PANELS.line);
+  await tween(G, { panelA: 1 }, 0.8);
+  await narrate('Long ago, two kinds ruled over the laundry hamper: LEFT SOCKS and RIGHT SOCKS.');
+  await crossPanel(PANELS.wash);
+  await narrate('They washed together. They dried together. They were folded into neat little pairs, as nature intended.');
+  await crossPanel(PANELS.dryer);
+  await narrate('Then one day... THE DRYER awoke.');
+  await crossPanel(PANELS.alone);
+  await narrate('With every load, one sock would vanish. Never the pair. Always just one.');
+  await crossPanel(PANELS.science);
+  await narrate("The world's finest sock scientists studied the mystery for years.");
+  await narrate('Their conclusion: "Huh. Weird."');
+  const ho = {};
+  await crossPanel(PANELS.hamper, { opts: ho });
+  await narrate('This is the story of one such sock...');
+  await narrate('...who was about to have a VERY bad Tuesday.');
+  await narrate('Our hero awakens!');
+  await wait(1.0);
+  await narrate('...Our hero awakens!!');
+  ho.snore = true; SFX.snore(); await wait(0.8); SFX.snore();
+  await narrate('............');
+  await narrate('Okay. Fine. Have it your way.');
+  stopMusic(); G.panelA = 1;
+  SFX.slam(); flash('#fff', 1); shake(10); ho.snore = false; ho.awake = true;
+  await wait(0.7);
+  setPanel(PANELS.lcd); SFX.select(); await wait(0.15); SFX.select(); await wait(0.15); SFX.select();
+  await wait(1.6);
+  G.tum = { k: 0, whump: 0, word: '', wx: 0, wy: 0 }; setPanel(null, { full: drawTumble });
+  for (let i = 0; i < 6; i++) {
+    SFX.whump(); shake(9); Object.assign(G.tum, { whump: 0.5, word: pick(['WHUMP', 'WHUMP', 'THOOMP', 'FWUMP']), wx: 150 + Math.random() * 340, wy: 60 + Math.random() * 300 });
+    await wait(0.62);
+  }
+  SFX.slurp(); await tween(G.tum, { k: 1 }, 0.7, ease.in);
+  flash('#000', 1); await wait(0.4);
+  setPanel(null, { full: drawFall }); SFX.fall();
+  await narrate('Somewhere far above, a right sock sighed.');
+  await narrate('And our hero fell...');
+  await narrate('...and fell...');
+  await narrate('...down into the place where all lost things go.');
+  await wait(1.0);
+  G.tum = null;
+  titleCard();
+}
+function updateIntro(dt) {
+  if (keys.x) { G.skipHold += dt; if (G.skipHold > 0.8 && !G.skipping) doSkip(); } else G.skipHold = 0;
+}
+function doSkip() {
+  G.skipping = true;
+  const ts = G.timers; G.timers = []; ts.forEach(t => t.r());
+  const tw = G.tweens; G.tweens = []; tw.forEach(t => { Object.assign(t.o, t.to); t.r(); });
+  if (G.dlg) { const r = G.dlg.res; G.dlg = null; r(0); }
+}
+function drawIntro() {
+  rect(0, 0, W, H, '#000');
+  const P = G.panel;
+  if (P && P.full) P.full(G.t - P.t0);
+  else if (P && P.draw) {
+    pg.clearRect(0, 0, 220, 120); P.draw(pg, G.t - P.t0, P.opts);
+    ctx.save(); ctx.globalAlpha = G.panelA; ctx.imageSmoothingEnabled = false; ctx.drawImage(pc, 100, 40, 440, 240);
+    const key = Object.keys(PANELS).find(k => PANELS[k] === P.draw);
+    if (POST[key]) POST[key](ctx, 100, 40, G.t - P.t0, P.opts);
+    ctx.restore();
+  }
+  drawDialog();
+  if (G.skipHold > 0) { rect(W - 150, H - 16, 130 * Math.min(1, G.skipHold / 0.8), 4, '#7d7697'); }
+  text(isTouch ? 'Hold X to skip' : 'Hold X to skip', W - 20, H - 40, 20, '#4a4560', 'right');
+}
+
+async function titleCard() {
+  G.skipping = false; G.scene = 'title'; stopMusic();
+  G.titleT = 0; G.titleLetters = 0; G.titleReady = false;
+  await wait(0.6);
+  for (let i = 0; i < 10; i++) { G.titleLetters = i + 1; SFX.letter(); shake(2); await wait(0.11); }
+  await wait(0.5); SFX.save(); G.titleReady = true;
+}
+function updateTitle(dt) { G.titleT += dt; if (G.titleReady && jp('z')) { pressed.z = false; SFX.confirm(); G.titleReady = false; nameScreen(); } }
+function drawTitle() {
+  rect(0, 0, W, H, '#000');
+  const word = 'LINTERLUDE';
+  ctx.font = font(44, FONT_UI);
+  const tw = ctx.measureText(word).width; let x = W / 2 - tw / 2;
+  for (let i = 0; i < G.titleLetters; i++) {
+    const cw = ctx.measureText(word[i]).width;
+    const wob = Math.sin(G.t * 3 + i * 0.6) * 2;
+    text(word[i], x + 3, 180 + wob + 3, 44, '#4f4966', 'left', FONT_UI);
+    text(word[i], x, 180 + wob, 44, i === 4 ? '#f7a1c4' : '#fff', 'left', FONT_UI);
+    x += cw;
+  }
+  for (let i = 0; i < 24; i++) { const a = G.t * 0.5 + i; rect(W / 2 + Math.cos(a * 1.3) * (180 + i * 3), 200 + Math.sin(a) * 50, 2, 2, 'rgba(201,196,214,.5)'); }
+  if (G.titleReady || G.titleLetters >= 10) text('Chapter 1: The Lint Trap', W / 2, 250, 30, '#8a84a0', 'center');
+  if (G.titleReady && Math.floor(G.t * 2) % 2) text(isTouch ? '[ TAP Z ]' : '[ PRESS Z ]', W / 2, 360, 14, '#ffd23f', 'center', FONT_UI);
+}
+
+const NAME_RX = {
+  SHOE: [false, "Absolutely not. We don't say that word here."], SHOES: [false, 'Nope. Nope nope nope.'],
+  SANS: [false, 'nope.'], DRYER: [false, 'Too soon.'], MOTH: [false, 'That name is taken. And hungry.'],
+  MOTHIL: [false, 'That name is taken. And hungry.'], FRISK: [true, 'Wrong game, buddy. ...But okay.'],
+  CHARA: [true, 'Wrong game. Also a bit ominous.'], SOCK: [true, 'Very literal. I respect that.'],
+  LEFTY: [true, 'A classic.'], RIGHTY: [true, 'Bold.'], PENNY: [true, "You're worth far more than that."],
+  LINT: [true, 'You are what you eat. Wait.'], FLUFF: [true, 'Accurate.'], DOBBY: [true, 'Free at last.'],
+};
+function nameScreen() {
+  G.scene = 'name'; G.nameScr = { name: '', sel: 0, confirm: false, csel: 0 };
+  playMusic('calm');
+}
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function nameAdd(ch) { const n = G.nameScr; if (n.name.length < 6) { n.name += ch; SFX.select(); } else SFX.buzz(); }
+function nameDel() { const n = G.nameScr; n.name = n.name.slice(0, -1); SFX.select(); }
+function updateName() {
+  const n = G.nameScr;
+  if (n.confirm) {
+    const rx = NAME_RX[n.name] || [true, 'Is this name correct?'];
+    if (!rx[0]) { if (jp('z') || jp('x')) { n.confirm = false; SFX.select(); } return; }
+    if (jp('left') || jp('right')) { n.csel ^= 1; SFX.select(); }
+    if (jp('x')) { n.confirm = false; return; }
+    if (jp('z')) { if (n.csel === 0) { n.confirm = false; SFX.select(); } else { SFX.save(); G.name = n.name; startLanding(); } }
+    return;
+  }
+  const total = LETTERS.length + 2, cols = 7;
+  if (jp('left')) { n.sel = (n.sel + total - 1) % total; SFX.select(); }
+  if (jp('right')) { n.sel = (n.sel + 1) % total; SFX.select(); }
+  if (jp('up')) { n.sel = n.sel >= LETTERS.length ? LETTERS.length - 4 : Math.max(0, n.sel - cols); SFX.select(); }
+  if (jp('down')) { n.sel = n.sel + cols >= LETTERS.length ? (n.sel >= LETTERS.length ? n.sel : LETTERS.length + (n.sel % cols < 4 ? 0 : 1)) : n.sel + cols; SFX.select(); }
+  if (jp('x')) nameDel();
+  if (jp('z')) {
+    if (n.sel < LETTERS.length) nameAdd(LETTERS[n.sel]);
+    else if (n.sel === LETTERS.length) nameDel();
+    else nameDone();
+  }
+}
+function nameDone() { const n = G.nameScr; if (!n.name) { SFX.buzz(); return; } n.confirm = true; n.csel = 0; n.t = G.t; SFX.confirm(); }
+function drawName() {
+  rect(0, 0, W, H, '#000');
+  const n = G.nameScr;
+  if (n.confirm) {
+    const rx = NAME_RX[n.name] || [true, 'Is this name correct?'];
+    const k = Math.min(1, (G.t - n.t) / 2.5);
+    const size = 24 + k * 40;
+    text(n.name, W / 2 + (Math.random() - 0.5) * 2, 160 - k * 40, size, '#fff', 'center', FONT_UI);
+    text(rx[1], W / 2, 280, 32, '#fff', 'center');
+    if (rx[0]) ['No', 'Yes'].forEach((s, i) => { text(s, 200 + i * 220, 360, 32, n.csel === i ? '#ffd23f' : '#fff'); if (n.csel === i) spr('soul', 172 + i * 220, 368, 2); });
+    else { text('Go back', W / 2, 360, 32, '#ffd23f', 'center'); }
+    return;
+  }
+  text('Name the fallen sock.', W / 2, 36, 36, '#fff', 'center');
+  text(n.name + (Math.floor(G.t * 2) % 2 ? '_' : ' '), W / 2, 96, 24, '#fff', 'center', FONT_UI);
+  LETTERS.forEach((L, i) => {
+    const x = 120 + (i % 7) * 66, y = 170 + Math.floor(i / 7) * 46;
+    const sel = n.sel === i, wob = sel ? Math.sin(G.t * 10) * 2 : 0;
+    text(L, x + wob, y, 20, sel ? '#ffd23f' : '#fff', 'left', FONT_UI);
+  });
+  text('Backspace', 140, 370, 30, n.sel === LETTERS.length ? '#ffd23f' : '#fff');
+  text('Done', 420, 370, 30, n.sel === LETTERS.length + 1 ? '#ffd23f' : '#fff');
+  text(isTouch ? 'D-pad to pick a letter, Z to choose' : 'Type a name and press Enter  (or arrows + Space)', W / 2, 430, 22, '#5f5878', 'center');
+}
+
+async function startLanding() {
+  await fadeTo(1, 0.8);
+  stopMusic();
+  G.scene = 'world';
+  const p = G.player; Object.assign(p, { pose: 'lying', oy: -320, flip: false, face: 'down', hidden: false });
+  loadRoom('landing', 320, 262);
+  stopMusic();
+  G.busy = true;
+  await fadeTo(0, 0.6);
+  SFX.fall();
+  await tween(p, { oy: 0 }, 0.9, ease.in);
+  SFX.thud(); shake(8); puff(p.x, p.y - 10, 26);
+  G.busy = false;
+  playMusic('lint');
+  run(wakeScene);
+}
+
+/* ================================================================= MAIN LOOP */
+function update(dt) {
+  G.t += dt;
+  for (let i = G.timers.length - 1; i >= 0; i--) { const t = G.timers[i]; t.t -= dt; if (t.t <= 0) { G.timers.splice(i, 1); t.r(); } }
+  for (let i = G.tweens.length - 1; i >= 0; i--) {
+    const tw = G.tweens[i]; tw.t += dt; const k = Math.min(1, tw.t / tw.dur), e = tw.e(k);
+    for (const key in tw.to) tw.o[key] = tw.from[key] + (tw.to[key] - tw.from[key]) * e;
+    if (k >= 1) { G.tweens.splice(i, 1); tw.r(); }
+  }
+  updateParticles(dt);
+  G.shake = Math.max(0, G.shake - dt * 30); G.flash = Math.max(0, G.flash - dt * 2.5);
+  if (G.tum) G.tum.whump = Math.max(0, G.tum.whump - dt);
+  if (G.toast) { G.toast.t -= dt; if (G.toast.t <= 0) G.toast = null; }
+  if (jp('m')) { audio.muted = !audio.muted; if (audio.master) audio.master.gain.value = audio.muted ? 0 : 0.55; toast(audio.muted ? 'SOUND OFF' : 'SOUND ON'); }
+  switch (G.scene) {
+    case 'boot': updateBoot(); break;
+    case 'intro': updateIntro(dt); updateDialog(dt); break;
+    case 'title': updateTitle(dt); break;
+    case 'name': updateName(); break;
+    case 'world': if (!updateDialog(dt) && G.menu && !G.busy) updateMenu(); updateWorld(dt); break;
+    case 'battle': updateBattle(dt); break;
+    case 'gameover': updateDialog(dt); break;
+    case 'ending': updateEnding(dt); break;
+  }
+  for (const k in pressed) pressed[k] = false;
+}
+function draw() {
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  if (G.shake > 0) ctx.translate(Math.round((Math.random() - 0.5) * G.shake), Math.round((Math.random() - 0.5) * G.shake));
+  switch (G.scene) {
+    case 'boot': drawBoot(); break;
+    case 'intro': drawIntro(); break;
+    case 'title': drawTitle(); break;
+    case 'name': drawName(); break;
+    case 'world': drawWorld(); break;
+    case 'battle': if (B) drawBattle(); break;
+    case 'gameover': drawGameOver(); break;
+    case 'ending': drawEnding(); break;
+  }
+  ctx.restore();
+  if (G.flash > 0) { ctx.globalAlpha = Math.min(1, G.flash); rect(0, 0, W, H, G.flashCol); ctx.globalAlpha = 1; }
+  if (G.fade > 0) { ctx.globalAlpha = G.fade; rect(0, 0, W, H, '#000'); ctx.globalAlpha = 1; }
+  if (G.toast) text(G.toast.msg, W - 16, 12, 10, '#7d7697', 'right', FONT_UI);
+}
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(1 / 30, (now - last) / 1000); last = now;
+  try { update(dt); draw(); } catch (e) { console.error(e); }
+  requestAnimationFrame(frame);
+}
+(document.fonts && document.fonts.load ? Promise.all([document.fonts.load(font(30)), document.fonts.load(font(16, FONT_UI))]).catch(() => {}) : Promise.resolve())
+  .then(() => requestAnimationFrame(frame));
+cv.focus();
+</script>
