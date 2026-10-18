@@ -13,7 +13,7 @@ It is a single, dependency-free HTML file. Open `index.html` in a browser, or ru
 | Arrows / WASD | Move (and move your SOLE in battle) |
 | Z / Enter / Space | Confirm, talk, advance text |
 | X / Shift | Cancel, fast-forward text, hold during the intro to skip it |
-| C | Menu (items, stats) |
+| C | Menu (items, stats, quit to title) |
 | M | Mute |
 
 ## What's in Chapter 1

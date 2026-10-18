@@ -916,9 +916,13 @@ function openMenu() { SFX.select(); G.menu = { lvl: 0, sel: 0, isel: 0 }; }
 function updateMenu() {
   const m = G.menu;
   if (m.lvl === 0) {
-    if (jp('up') || jp('down')) { m.sel ^= 1; SFX.select(); }
+    if (jp('up')) { m.sel = (m.sel + 2) % 3; SFX.select(); }
+    if (jp('down')) { m.sel = (m.sel + 1) % 3; SFX.select(); }
     if (jp('x') || jp('c')) { G.menu = null; return; }
-    if (jp('z')) { if (m.sel === 0 && !G.inv.length) { SFX.buzz(); return; } SFX.confirm(); m.lvl = m.sel === 0 ? 1 : 3; m.isel = 0; }
+    if (jp('z')) {
+      if (m.sel === 2) { pressed.z = false; G.menu = null; run(quitToTitle); return; }
+      if (m.sel === 0 && !G.inv.length) { SFX.buzz(); return; } SFX.confirm(); m.lvl = m.sel === 0 ? 1 : 3; m.isel = 0;
+    }
   } else if (m.lvl === 1) {
     const n = G.inv.length;
     if (jp('up')) { m.isel = (m.isel + n - 1) % n; SFX.select(); }
@@ -940,14 +944,21 @@ function updateMenu() {
     }
   } else if (m.lvl === 3) { if (jp('x') || jp('z')) m.lvl = 0; }
 }
+async function quitToTitle() {
+  const c = await ask('* Go back to the title screen? Anything since your last save will be lost.', ['No', 'Yes']);
+  if (c !== 1) return;
+  await fadeTo(1, 0.5);
+  stopMusic(); G.scene = 'boot'; G.bootSel = readSave() ? 1 : 0;
+  await fadeTo(0, 0.4);
+}
 function drawMenu() {
   const m = G.menu, top = G.player.y > 300;
-  const y0 = top ? 330 : 26;
+  const y0 = top ? 210 : 26;
   drawBox(26, y0, 150, 110);
   text(G.name, 42, y0 + 14, 26);
   text(`FZ  ${G.fuz}`, 42, y0 + 44, 20); text(`HP  ${G.hp}/${G.maxhp}`, 42, y0 + 62, 20); text(`LN  ${G.lint}`, 42, y0 + 80, 20);
-  drawBox(26, y0 + 118, 150, 96);
-  ['ITEM', 'STAT'].forEach((s, i) => { text(s, 70, y0 + 140 + i * 34, 16, G.inv.length || i ? '#fff' : '#7d7697', 'left', FONT_UI); if (m.lvl === 0 && m.sel === i) spr('soul', 42, y0 + 138 + i * 34, 2); });
+  drawBox(26, y0 + 118, 150, 130);
+  ['ITEM', 'STAT', 'QUIT'].forEach((s, i) => { text(s, 70, y0 + 140 + i * 34, 16, G.inv.length || i ? '#fff' : '#7d7697', 'left', FONT_UI); if (m.lvl === 0 && m.sel === i) spr('soul', 42, y0 + 138 + i * 34, 2); });
   if (m.lvl === 1 || m.lvl === 2) {
     drawBox(188, 26, 420, 360);
     G.inv.forEach((id, i) => { text(ITEMS[id].name, 236, 48 + i * 36, 30); if (m.lvl === 1 && m.isel === i) spr('soul', 206, 56 + i * 36, 2); });
