@@ -37,7 +37,7 @@ export function makeDriver(page, { mobile = false, W, H } = {}) {
   /** Approach an interactable along the route until it is on screen, then tap it. */
   const tapThing = async (id) => {
     for (let step = 0; step < 10; step++) {
-      const p = await screenOf('interactable', id);
+      await settleCamera(); const p = await screenOf('interactable', id);
       if (inView(p)) { await clickAt(p); return true; }
       const def = await page.evaluate((i) => window.__elsewhere.interactables[i], id); if (!def) return false;
       const best = await stagePoint(def.standPoint.x, def.standPoint.z, def.floor); if (!best) return false;
@@ -45,7 +45,9 @@ export function makeDriver(page, { mobile = false, W, H } = {}) {
     }
     return false;
   };
-  const tapActor = async (id) => clickAt(await screenOf('actor', id));
-  const portrait = async (id) => page.click('#p-' + id);
+  const tapActor = async (id) => { await settleCamera(); await clickAt(await screenOf('actor', id)); };
+  /** Switch portrait, then let the camera finish its jump to the other animal (slow headless frames can snap it). */
+  const portrait = async (id) => { await page.click('#p-' + id); await page.waitForTimeout(1400); };
+  const settleCamera = () => page.waitForTimeout(700);
   return { screenOf, snap, clickAt, waitFor, tapWorld, tapThing, tapActor, portrait, idle };
 }
