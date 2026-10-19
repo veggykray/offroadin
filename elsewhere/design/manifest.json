@@ -1,0 +1,60 @@
+{
+  "package": "The Elsewhere — First Playable P2 Handoff",
+  "kind": "build brief, not a playable build",
+  "design_baseline": "V3.1, unchanged archive",
+  "scope": "P2 First Rise only; compact 0B / 0D / 1A",
+  "reference_origins": {
+    "references/01_GAMEPLAY_LOOK.png": "isometric_neon_temple_puzzle_adventure.png",
+    "references/02_WORLD_MATERIALS.png": "glowing_ruins_dog_and_cat_explorers.png",
+    "references/03_WHITE_ESCORT_MOOD.png": "escape_to_the_floating_sanctuary.png"
+  },
+  "files": [
+    {
+      "path": "00_READ_ME_FIRST.txt",
+      "bytes": 1608,
+      "sha256": "6f70869f4618407b6ab8a7810d9abdd1395716781373d612ceedd22cfbe19b6a"
+    },
+    {
+      "path": "01_CODEX_FIRST_PLAYABLE_PROMPT.txt",
+      "bytes": 17812,
+      "sha256": "aef1fb08e91c76aedc51a1dee4a8b5a126089507fa33ef8a2686b4b7ef0473a6"
+    },
+    {
+      "path": "02_VISUAL_REFERENCE_NOTES.txt",
+      "bytes": 2546,
+      "sha256": "9828469e54562dbdb461afd2ae43ffc9cb177a73325c308da0902b5efaf691f0"
+    },
+    {
+      "path": "references/01_GAMEPLAY_LOOK.png",
+      "bytes": 3175614,
+      "sha256": "9babf736267f7b25877a12ef3b3fa0546f842757f477c81be6e72eb8da056bef",
+      "dimensions": [
+        1448,
+        1086
+      ]
+    },
+    {
+      "path": "references/02_WORLD_MATERIALS.png",
+      "bytes": 2755672,
+      "sha256": "ab8b7840bd6f4010808a5f947bd6f6f77df2fa7239cee00ba09123e8454928c7",
+      "dimensions": [
+        1448,
+        1086
+      ]
+    },
+    {
+      "path": "references/03_WHITE_ESCORT_MOOD.png",
+      "bytes": 3327070,
+      "sha256": "f5ad9040497bfd2e41cf364667e5703d4aa294f77d805797b6e57f862cc0d76b",
+      "dimensions": [
+        1448,
+        1086
+      ]
+    },
+    {
+      "path": "the_elsewhere_chapter_one_v3_1_corrected.zip",
+      "bytes": 2287803,
+      "sha256": "9f9927e6505150aedc31b56744db8e93aadd432f72c1daac4cb36c459b4706e7"
+    }
+  ]
+}

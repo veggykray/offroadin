@@ -1,0 +1,46 @@
+THE ELSEWHERE — VISUAL REFERENCE AUTHORITY
+
+PRIORITY
+1. Explicit user-approved descriptions in the build brief.
+2. 01_GAMEPLAY_LOOK.png for composition, readable small inhabitants and style.
+3. 02_WORLD_MATERIALS.png for the original accepted material/palette direction.
+4. 03_WHITE_ESCORT_MOOD.png for White's frightened posture beside the animals.
+
+01_GAMEPLAY_LOOK.png
+Original: isometric_neon_temple_puzzle_adventure.png
+Use: game-view camera, porous dark stone, glowing functional liquid channels,
+small pale companion, simple readable faces, restrained pale ceramic accents.
+Do not copy the full level, number of inhabitants, patrol cones, UI overlays,
+route indicators or arrangement of puzzle mechanisms.
+
+02_WORLD_MATERIALS.png
+Original: glowing_ruins_dog_and_cat_explorers.png
+Use: dark cellular basalt, pink/lavender sky, cyan and amber streams, geometric
+stone construction and unusual plants. Preserve bold readable colour groupings.
+The dog in this reference has unsuitable light/brown markings: text overrides it.
+Do not reproduce this entire broad scene or an enormous portal in the P2 test.
+
+03_WHITE_ESCORT_MOOD.png
+Original: escape_to_the_floating_sanctuary.png
+Use: White is small, vulnerable, withdrawn and close to the large protective dog.
+Do not copy the dog's harness. Do not add enemies, red alert symbols or patrol
+cones to the first build merely because they appear here.
+
+CORRECTIONS APPLYING TO ALL IMAGES
+Dog: huge, naturally proportioned, long black hair; broad gentle head and heavy
+Saint-Bernard-like build. Not a tri-colour mountain dog, wolf or cartoon puppy.
+Cat: ordinary naturally proportioned black-and-white domestic cat.
+Neither animal wears clothes, packs, saddles or invented accessories.
+White: passive and scared, not a little wizard, guide or controllable third hero.
+The world is stylised; natural animal anatomy and restrained fur shading must
+share its lighting. No photo cutouts, human poses or sliding flat characters.
+
+PIPELINE CAUTION
+These are existing generated concept images from the conversation, not renders
+of the exact P2 layout. They contain no trustworthy collision/depth data and no
+separate animation layers. Do not pretend that stretching a full image across
+unrelated blocks creates the finished world. A painted surface must be matched
+to its actual geometry, with dynamic objects/liquids separate and depth tested.
+
+No new illustrations are commissioned in this handoff. Inspect actual gameplay
+screenshots to decide whether the implementation is approaching these targets.

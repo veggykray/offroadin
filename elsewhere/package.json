@@ -1,0 +1,27 @@
+{
+  "name": "elsewhere-first-rise",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The Elsewhere — Chapter One P2 'The First Rise' isolated playable test scene",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node tools/makePlay.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc --noEmit && tsx --test test/*.test.ts",
+    "walkthrough": "node tools/walkthrough.mjs --w 1280 --h 800 --out evidence/desktop_1280x800 --rounds 2 && node tools/walkthrough.mjs --w 780 --h 360 --mobile --out evidence/phone_780x360 && node tools/walkthrough.mjs --w 932 --h 430 --mobile --out evidence/phone_932x430 && node tools/clip.mjs --out evidence/clip && node tools/checkPlay.mjs",
+    "package": "node tools/package.mjs"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/three": "^0.186.0",
+    "playwright": "1.56.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4"
+  }
+}

@@ -1,0 +1,31 @@
+// Short actual-play recording (valve change + ascent) with the low-end graphics option, for the evidence folder.
+// usage: node tools/clip.mjs [--w 780 --h 360] [--out evidence/clip] [--dist dist]
+import { chromium } from 'playwright';
+import { mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { serve } from './serve.mjs';
+const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => { if (v.startsWith('--')) a.push([v.slice(2), arr[i + 1] && !arr[i + 1].startsWith('--') ? arr[i + 1] : true]); return a; }, []));
+const W = +(args.w || 780), H = +(args.h || 360), OUT = args.out || 'evidence/clip';
+mkdirSync(OUT, { recursive: true });
+const { url, close } = await serve(args.dist || 'dist');
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const context = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, recordVideo: { dir: join(OUT, 'raw'), size: { width: W, height: H } } });
+const page = await context.newPage();
+const screenOf = (kind, id) => page.evaluate(([k, i]) => window.__elsewhere.screenOf(k, i), [kind, id]);
+const click = async (p) => page.mouse.click(p.x, p.y);
+const waitFor = (fn, ms = 90000) => page.waitForFunction(fn, null, { timeout: ms, polling: 100 });
+await page.goto(url + '/index.html?fx=low'); await page.waitForFunction(() => !!window.__elsewhere);
+await page.click('#play'); await page.waitForTimeout(3500);
+await click(await screenOf('actor', 'dog')); await page.waitForTimeout(1500);
+await click(await screenOf('interactable', 'seep')); await waitFor(() => window.__elsewhere.snapshot().cyan.seepOpen); await page.waitForTimeout(1500);
+await click(await screenOf('interactable', 'CV-01')); await waitFor(() => window.__elsewhere.snapshot().cyan.bridgeSolid); await page.waitForTimeout(800);
+await page.click('#p-cat'); await click(await screenOf('world', [6, 0, 0.2])); await waitFor(() => window.__elsewhere.game.cat.x > 4);
+await click(await screenOf('interactable', 'liftBase')); await waitFor(() => window.__elsewhere.snapshot().cat.floor === 1 && window.__elsewhere.snapshot().lift.state === 'docked1'); await page.waitForTimeout(1500);
+const stats = await page.evaluate(() => window.__elsewhere.stats());
+await context.close(); await browser.close(); close();
+const raw = readdirSync(join(OUT, 'raw')).find((f) => f.endsWith('.webm'));
+const dst = join(OUT, `clip_valve_and_ascent_${W}x${H}.mp4`);
+execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', join(OUT, 'raw', raw), '-vf', 'fps=15', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '30', dst]);
+rmSync(join(OUT, 'raw'), { recursive: true, force: true });
+console.log('clip →', dst, JSON.stringify(stats));

@@ -1,0 +1,206 @@
+THE ELSEWHERE — CHAPTER ONE: THE RIVERS ABOVE
+VERSION 3.1 · DOCUMENTATION AND DIAGRAM CORRECTIONS (NOT YET A CODEX IMPLEMENTATION PROMPT)
+
+Status: revised pre-production specification. Locations and transport are schematic; vertical links and stage logic have been checked, but in-engine fluid/AI playtests remain essential.
+Target: 60–90 minutes first-time play, ~78 minutes central route including 3-minute portal opening, plus optional content.
+Camera and controls: touch-first isometric game, landscape mobile and desktop tap/click.
+Party: physically natural black shaggy large dog, real-looking black-and-white cat; White = small scared pale companion, non-playable.
+Core: distinct floors, moving liquids, different roles in an inhabited world, stealth consequences and recovery falls.
+
+PART ONE — THE FOUR-FLOOR WORLD ATLAS
+The map coordinate grid repeats on every floor: (0,0) northwest, (2,2) southeast. Coordinates are SCHEMATIC island centroids; each island contains internal routes and subplatforms. Same X,Y across floors denotes vertical alignment. Sloping/moving transport explicitly identified.
+
+====================================================================
+FLOOR 0 — THE VERGE
+====================================================================
+
+0A — Garden Verge (grid (0, 0))
+Wild garden / broken arrival portal
+  World: The ordinary garden fragments persist only here: grass, a garden wall and a cracked, silent portal. A wind-herder tends strange airborne seeds.
+  Residents: Whispering wind-herder, harmless; a Watcher enters briefly. The old garden bell can be rung to lure it away.
+  Play: Portal chase / hide-and-divert; cat sees moving seed shadows, dog scents the frightened stranger.
+
+0B — Refuge Sluice (grid (1, 0))
+Pitted basalt floodgate and soft refuge
+  World: Reed roots wrap old basalt sluicework; chipped porcelain bowls collect cyan run-off. A repairer quietly watches.
+  Residents: Sluice repairer; unthreatening, not a mission-giving NPC.
+  Play: Follow scent to a blocked cyan seep, scrape away reeds and turn a ceramic diverter; the resulting flow raises the float gate and forms the bridge.
+
+0C — Catch Basin (grid (2, 0))
+Terraced catch-pools and cushion reeds
+  World: Soft reed-moss nets below the upper Commons catch deliberate or accidental falls. Small basin-tenders sing while sorting filters.
+  Residents: Basin-tenders; they help retrieve dropped objects and never attack.
+  Play: Recover by the one-way reed ramp to 0B; optional damp-reed scent clue reveals a home-memory fragment, not a new musical minigame.
+
+0D — Root Elevator (grid (1, 1))
+Spiral column and carved stone roots
+  World: Stacked carved roots and a vertical ring of magenta liquid, with a readout of lift mass shown by three glowing bands.
+  Residents: Tiny lift attendant takes notes but does not demand a toll.
+  Play: First cat-only ascent; stronger current later lifts dog plus White. White balks once, then accepts comfort.
+
+====================================================================
+FLOOR 1 — CANAL SETTLEMENTS
+====================================================================
+
+1A — Reed Quay (grid (1, 1))
+Home docks and tethered floating skiffs
+  World: Working quay with basket ferries, humming reed crops, pump wheels and porcelain homes.
+  Residents: Reed growers, basket porters, light-moth feeders, relaxed dock clerk.
+  Play: Mass regulator at landing; gossip and signs establish how lifts and flowkeepers behave.
+
+1B — Canal Commons (grid (2, 0))
+Public crossroads over glowing conduits
+  World: Lived-in village commons: bread ovens, public market steps, bridges and a Watcher who is indifferent to the animals.
+  Residents: Bakers, couriers, repairers, one neutral Watcher.
+  Play: Observe far-side bridge from here; fear-safe shelter and an accidental fall route.
+
+1C — Far Pipe Yard (grid (0, 1))
+Narrow maintenance sheds
+  World: Thin pipework, cat-scale roofwalks, workshop tools, humming return fountain.
+  Residents: Pipe stitchers and soldering flowkeepers; dog is simply too large for their roofs.
+  Play: Launch cat on V03; optional route read from vibrating pipes.
+
+1D — Hearth Courts (grid (2, 1))
+Clustered ceramic cottages & mechanical yard
+  World: Warm glazed homes and wheelhouse workshop. Cyan receiver on far bank, private ferry platform nearby.
+  Residents: Family of Flowkeepers; gruff but kind mechanic whose skiff uses amber power.
+  Play: Cat redirects cyan to bridge; later investigate why ferry no longer follows its amber courier.
+
+====================================================================
+FLOOR 2 — WORKING HEIGHTS
+====================================================================
+
+2A — Ferry Terrace (grid (1, 1))
+Suspended public ferries and ticket bells
+  World: Active ferry plaza with ticket bells, canopy workshops, passengers, hung lanterns and busy repairs.
+  Residents: Practical ferry captain, umbrella maker, light moths stealing shiny things.
+  Play: Light-moth bell mystery; captain grants access to service pipes and converter catalyst.
+
+2B — Siphon Loft (grid (0, 1))
+Vertical liquid pipe jungle / inspection deck
+  World: Above an industrial void, a maze of glazed high pressure pipes and moving flowkeeper maintenance skiffs.
+  Residents: Busy miniature Flowkeepers, glass baffle polishers, no enemies by default.
+  Play: Cat sees pipe vibrations to find remote magenta relay; sloping return chute lands at Hearth Courts.
+
+2C — Dye Market (grid (1, 0))
+Tented dye pools, alchemical kitchens
+  World: Tented dye bazaar with vats, evaporators, stove rooms, little cafés and scented ceramic workshops.
+  Residents: Kindly alchemist, dyers, perfumers, nervous traders.
+  Play: Convert cyan to amber while preserving a small resident supply; independent sealed amber feeder runs to upper Prism Works.
+
+2D — Collectors’ Records (grid (2, 1))
+Severe columned offices and beacon yards
+  World: Collector records depot: light cones, archive shelves, pressure drains, hiding nooks, containment alcove.
+  Residents: Watchers, one Collector, confused clerk, sympathetic archivist.
+  Play: Observe patrol rules; use scents and lamps to route a safe escorted ascent; capture is recoverable.
+
+====================================================================
+FLOOR 3 — UPPER REACHES
+====================================================================
+
+3A — Dew Gardens (grid (2, 1))
+Quiet suspended pools and translucent foliage
+  World: Floating dew pools, enormous translucent leaves and caretakers growing pollinators on cyan-fed ceramic rails.
+  Residents: Quiet gardeners, elder Dewkeeper, luminous moth pollinators.
+  Play: Prime prism cistern; optional pollinator restoration; friendly place after hostile depot.
+
+3B — Prism Works (grid (0, 1))
+Impossible precision-machine observatory
+  World: Geometric prism house with rotating glass baffles, audible resonance tubes and channels from distant floors.
+  Residents: Facet polishers, spectral engineers, one bored inspector.
+  Play: Solve multi-floor liquid logic by optical clues and channel routing, not simultaneous buttons.
+
+3C — Bell Observatory (grid (1, 2))
+Tall wind bells and floating pale stone
+  World: Wind-chime refuge built by Bell-listeners. Its lower terrace faces a last magenta ascent to the portal dais.
+  Residents: Bell-listeners and non-hostile caretakers.
+  Play: Read the Echo Horn’s existing directional markings and use one relayed bark to lure the final Collector away; White finds courage to enter the roaring final lift.
+
+3D — Sky Threshold (grid (2, 2))
+Circular sky portal surrounded by fine channels
+  World: Raised portal dais and single final Collector. A magenta column rises from the adjoining lower terrace.
+  Residents: Ceremonial custodians; one Collector guarding portal records.
+  Play: Cat silently aims the Echo Horn; dog supplies the one bark that creates the diversion and activates the final upflow. White chooses ascent.
+
+PART TWO — ALL ROUTES (E=horizontal/within-floor, V=vertical/ferry)
+E01: 0A <-> 0B | walkway | both | prerequisite P1_LATCH_OPEN
+    Reversible access available as soon as latch releases; P1_RESCUED is a separate event.
+E02: 0B <-> 0D | cyan bridge | both | prerequisite P2_BRIDGE_READY
+    Liquid forms a safe bridge. After first crossing the P2_BRIDGE_SAFE retaining rail
+    prevents stranding.
+E03: 0D <-> 0C | footpath | both | prerequisite START
+    Catch-basin recovery path along the lower terrace.
+E04: 0C -> 0B | recovery ramp | both | prerequisite START
+    From catch basin TO sluice only; cannot bypass first bridge from sluice.
+E11: 1A <-> 1B | walkway | both | prerequisite START
+    Village public deck; guards will not attack animals.
+E12: 1A <-> 1C | walkway | both | prerequisite START
+    Town maintenance street; the safe recovery circuit.
+E13: 1B <-> 1C | cat vent | cat | prerequisite START
+    Shortcut through thin ceramic flue; dog cannot fit.
+E14: 1B <-> 1D | cyan bridge | both | prerequisite P4_BRIDGE_OPEN
+    Opened from 1D; does not require escort success to be crossable. Safety rail persists
+    after first crossing.
+E21: 2A <-> 2C | market bridge | both | prerequisite START
+    Public ferry-to-market walkway.
+E22: 2A <-> 2B | inspection walkway | both | prerequisite P6_FAVOUR
+    Service access unlocked after the ferry bell is returned.
+E23: 2B <-> 2C | tiled passage | both | prerequisite P6_FAVOUR
+    Service access unlocked after the ferry bell is returned.
+E24: 2C <-> 2D | amber inspection gate | both | prerequisite P7_GATE_OPEN
+    Amber opens public records access; latches before escort crosses. Amber reserve at 3B
+    independent from reversible market demo.
+E25: 2B <-> 2D | cat rafter | cat | prerequisite P6_FAVOUR
+    Cat scouting-only rafter from Siphon Loft to Records; safe return; does not allow White
+    through.
+E31: 3A <-> 3B | stone footbridge | both | prerequisite START
+    Quiet safe path between gardens and prism works.
+E32: 3B <-> 3C | cyan formed bridge | both | prerequisite P9_BRIDGE_OPEN
+    Bridge enables on alignment, before White crosses; permanently stabilised once
+    P9_ESCORTED.
+E33: 3C <-> 3D | last magenta upflow | both | prerequisite P10_GATE_OPEN
+    SHORT MAGENTA UPFLOW from lower observatory terrace 3C to raised portal dais 3D on the
+    same floor; true visible lift, not a flat walkway.
+E34: 3B <-> 3D | cat parapet | cat | prerequisite P9_BRIDGE_OPEN
+    Cat-only overhead gallery from 3B to rear of 3D; accessible before P10 gate opens, and
+    never used by dog.
+V02: 0D <-> 1A | variable-strength magenta ascent | both-with-upgrade | prerequisite P2_BRIDGE_READY
+    ONE physical magenta lift with two load states: cat-only until P2_LIFT_STRONG, then all
+    three. Movement both ways. 0D and 1A stack directly.
+V03: 1C <-> 2B | weak magenta rise | cat | prerequisite START
+    Cat-only magenta lift plus return ledge, 1C and 2B stack directly; dog cannot use.
+V04: 2B -> 1D | sloping cat-only return gutter | cat | prerequisite START
+    ONE-WAY sloped return gutter across 2B upper service gantry then downward to 1D far bank.
+    Not an unrealistically vertical shaft; easy cat dismount.
+V05: 1D <-> 2A | travelling ferry | both | prerequisite P5_FERRY_POWERED
+    A horizontal travelling counterweight ferry, offset between 1D and 2A; dock at each end;
+    two-way.
+V06: 2D <-> 3A | heavy upward stream | both | prerequisite P8_LIFT_STABLE
+    True vertical magenta stream; 2D and 3A aligned. Rescue/return works both ways.
+V07: 2C <-> 3A | diagonal scenic gondola | both | prerequisite P8_ESCORTED
+    Botanical scenic gondola on an obvious diagonal cable between market 2C and garden 3A;
+    not an upright fountain.
+V08: 2B <-> 3B | reversible cat service column | cat | prerequisite P8_ESCORTED
+    ONE reversible service column between vertically aligned 2B and 3B, with marked safe
+    return pocket; cat only.
+
+PART THREE — SAFE FALLS (all one way)
+F01: 1B -> 0C | earliest P2_ASCENDED | Safe catch reeds directly below 1B at 0C, reached once first ascent is complete.
+F02: 2A -> 1A | earliest P5_FERRY_POWERED | Ferry net directly below 2A at 1A; ferry remains powered and reusable.
+F03: 2D -> 1D | earliest P7_GATE_OPEN | Collector knockback drops to Hearth Courts safety net directly beneath 2D; safe ferry and return available.
+F04: 3B -> 2B | earliest P8_ESCORTED | Prism maintenance fall caught at service loft directly below; service cat column and dog-friendly garden loop return.
+F05: 3D -> 2D | earliest P10_GATE_OPEN | Short offset chute lands in fenced upper safety yard inside 2D below portal; no collector spawncamp. V06 returns.
+
+PART FOUR — WORLD MATERIALS AND INHABITANTS
+Common physical substances: modular pitted cellular basalt, milky porcelain, flexible glass reeds, copper rims, glowing cyan/magenta/amber liquids. Functional houses, fisheries, schools, workshops, baths and civic buildings SHOULD NOT be interchangeable ruined towers.
+Visual contract: Animals have realistic anatomy, mass and behaviour: huge shaggy mostly black dog and standard black-and-white cat, no clothes, speech or anthropomorphic controls. Shade and simplify fur materials for cohesion with crisp, mostly flat-colour cellular-basalt/porcelain/copper world; not photographic animals pasted into a painting. Isometric realtime 3D with readable silhouettes and low visual noise at phone scale.
+White: Working name of small pale frightened inhabitant; proper name deliberately withheld for story. Always capitalise.
+Watcher: Small red-robed lantern patrol; reacts to White in sight, distracted by light or sound; mostly ignores cat and dog.
+Collector: Large official hunter tasked with capturing White; slow search and line-of-sight pursuit, light defensive interruption only.
+Archivist: Sympathetic depot clerk who quietly offers the rescue location; civilian, not guard.
+Flowkeeper: Tiny maintenance inhabitant who services piping; may accidentally alter noncritical flow; not innately hostile.
+Dewkeeper: Upper garden caretaker, safe and welcoming to White.
+Ferry captain: Neutral-to-kind civic transporter, puzzled by White but protective after aid.
+Bell-listener: Upper-floor resident who uses resonant stone for weather and signals; helps with final puzzle clues.
+
+GEOGRAPHIC CONSISTENCY: all true lifts (V02 V03 V06 V08) have aligned shaft centroids; V04 is a marked descending gutter, V05 and V07 are mobile transports, E33 is a short local rise. F01 F02 F03 F04 align exactly; F05 is a deliberate offset fenced chute. No silent slanted vertical waterfalls.

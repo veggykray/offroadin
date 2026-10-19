@@ -1,0 +1,25 @@
+BROWSER CHECKS — CHROMIUM VIEWPORT EMULATION
+
+PASS: desktop 1440x900, floor 0: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: desktop 1440x900, floor 1: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: desktop 1440x900, floor 2: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: desktop 1440x900, floor 3: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: desktop: all transfer/fall cards and 10-puzzle sequence load; no JavaScript errors
+PASS: mobile_landscape 780x360, floor 0: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: mobile_landscape 780x360, floor 1: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: mobile_landscape 780x360, floor 2: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: mobile_landscape 780x360, floor 3: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: mobile_landscape: all transfer/fall cards and 10-puzzle sequence load; no JavaScript errors
+PASS: wide_mobile 932x430, floor 0: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: wide_mobile 932x430, floor 1: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: wide_mobile 932x430, floor 2: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: wide_mobile 932x430, floor 3: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: wide_mobile: all transfer/fall cards and 10-puzzle sequence load; no JavaScript errors
+PASS: portrait_reading 390x844, floor 0: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: portrait_reading 390x844, floor 1: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: portrait_reading 390x844, floor 2: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: portrait_reading 390x844, floor 3: all four islands clickable and keyboard-selectable; exact endpoints and labels; text inside cards; no page overflow
+PASS: portrait_reading: all transfer/fall cards and 10-puzzle sequence load; no JavaScript errors
+PASS: Vertical diagram: all endpoint labels fit their actual browser-rendered cards
+
+Not physical-device, WebKit/Safari, gameplay, or performance validation.

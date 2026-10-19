@@ -1,0 +1,20 @@
+// Verify the self-contained dist/PLAY.html loads from a file:// URL with no network requests or errors.
+import { chromium } from 'playwright';
+import { resolve } from 'node:path';
+import { mkdirSync } from 'node:fs';
+mkdirSync('evidence', { recursive: true });
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--allow-file-access-from-files'] });
+const page = await browser.newPage({ viewport: { width: 932, height: 430 } });
+const errors = [], requests = [];
+page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('pageerror', (e) => errors.push(e.message));
+page.on('request', (r) => requests.push(r.url()));
+await page.goto('file://' + resolve('dist/PLAY.html'));
+await page.waitForFunction(() => !!window.__elsewhere, null, { timeout: 20000 });
+await page.click('#play'); await page.waitForTimeout(2500);
+await page.screenshot({ path: 'evidence/play_html_file_url_932x430.png' });
+const build = await page.evaluate(() => window.__elsewhere.build);
+const external = requests.filter((u) => !u.startsWith('file://') && !u.startsWith('data:'));
+console.log(JSON.stringify({ build, errors, externalRequests: external }));
+await browser.close();
+if (errors.length || external.length) process.exit(1);

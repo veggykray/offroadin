@@ -1,0 +1,291 @@
+[
+  {
+    "id": "P1",
+    "title": "The Stray from the Door",
+    "minutes": 7,
+    "islands": [
+      "0A",
+      "0B"
+    ],
+    "opening_state": "The FIRST THREE MINUTES show the garden portal chase and arrival. Then White freezes behind a broken slab as a Watcher approaches, leaving FOUR minutes of interactive rescue gameplay.",
+    "ordered_solution": [
+      "Read White’s frightened gaze and the lantern sweep; see the old bell above a nearby wall.",
+      "Cat follows a flickering seed-shadow through a wall notch; nudge the garden bell so the Watcher inspects the noise.",
+      "Dog approaches slowly and crouches sideways between White and the patrol. White chooses to follow.",
+      "Cat nudges the loose reed latch open while guard is occupied; dog escorts White safely to Refuge Sluice."
+    ],
+    "primary_challenge": "Environmental distraction + trust-building; NOT two weight switches.",
+    "awards": [
+      "P1_LATCH_OPEN",
+      "P1_RESCUED"
+    ],
+    "failure_recovery": "If spotted, White hides under tile; guard wanders to bell or returns to patrol; no hard capture in tutorial.",
+    "mastery": [
+      "Gentle Passage: White never becomes fully panicked",
+      "Quiet Kindness: ring the garden bell only once",
+      "Secret: follow wind-herder seeds to garden-memory fragment"
+    ]
+  },
+  {
+    "id": "P2",
+    "title": "The First Rise",
+    "minutes": 8,
+    "islands": [
+      "0B",
+      "0D",
+      "1A"
+    ],
+    "opening_state": "Cyan drains into a broken cistern, leaving bridge dry; an upflow gurgles above. Everything lives off moving liquid.",
+    "ordered_solution": [
+      "Follow dog’s scent trail of wet mineral droplets to a blocked side seep; tap dog to scrape reeds away, revealing cyan source.",
+      "Rotate one large ceramic diverter: cyan runs along carved groove and solidifies the crossing E02; permanent safety slat engages after first crossing.",
+      "At the Root Elevator White balks at the very LOUD magenta rise. Dog sits near him; fear visibly settles, without a timer. The noise remains unmistakable for the final emotional echo.",
+      "Cat rides the weak lift alone to 1A and inspects the three-band load indicator; rotate accessible upper pressure regulator to strengthen same stream.",
+      "White and dog ascend together using the now-strong stream; cat reunites with them at Reed Quay."
+    ],
+    "primary_challenge": "Flow-routing + pressure threshold + first meaningful separation + emotional motif.",
+    "awards": [
+      "P2_BRIDGE_READY",
+      "P2_BRIDGE_SAFE",
+      "P2_LIFT_STRONG",
+      "P2_ASCENDED"
+    ],
+    "failure_recovery": "Bridge can be reset before first crossing; its permanent safety rail preserves return afterward. Lift always works for cat and gains load capacity; White waits for dog.",
+    "mastery": [
+      "Gentle Passage: reassure White before selecting lift",
+      "Elegant Flow: find direct cyan route without using reset",
+      "Secret: inspect attendant’s slate to discover hidden load symbol"
+    ]
+  },
+  {
+    "id": "P3",
+    "title": "Life on the Canals",
+    "minutes": 5,
+    "islands": [
+      "1A",
+      "1B"
+    ],
+    "opening_state": "Busy domestic life: bakers, reed fishers, curious couriers and a harmless Watcher. A welcome breather.",
+    "ordered_solution": [
+      "Watch a ferry skiff following painted liquid lanes while citizens go about their routines.",
+      "Help a courier recover a reed bundle via an ordinary loose basket OR ignore and continue; residents respond differently.",
+      "Look across the canal and recognise a cyan receiver without access to its controlling end.",
+      "Notice miniature Flowkeepers using the rooftop pipe vents: a clue for the cat ascent."
+    ],
+    "primary_challenge": "Exploration, environmental storytelling and observation. Not presented as a locked puzzle.",
+    "awards": [
+      "P3_OBSERVED"
+    ],
+    "failure_recovery": "No patrol threat; optional interactions do not gate the next sequence.",
+    "mastery": [
+      "Gentle Passage: see White accept a gift from baker",
+      "Neighbourly: return the reed bundle",
+      "Secret: find hidden sky reflection in communal basin"
+    ]
+  },
+  {
+    "id": "P4",
+    "title": "Above, Across, Below",
+    "minutes": 10,
+    "islands": [
+      "1B",
+      "1C",
+      "2B",
+      "1D"
+    ],
+    "opening_state": "The dog and White face a chasm; far bank is visible but there is no bridge. Cat spots a faint moving line of fluid overhead.",
+    "ordered_solution": [
+      "Park dog and White in a clearly safe shaded courtyard; they can be called to a nearby rest point and do not wander off.",
+      "Cat travels through vent or street to 1C and rises alone on V03 to pipework on 2B.",
+      "Observe tiny Flowkeepers cleaning glass pipes. Their rhythm reveals which gutter feeds a sloped return at the far bank; follow the moving flow without precision timing.",
+      "Cat crosses the upper gantry then deliberately slides down V04 to 1D—same floor as dog, other side of chasm.",
+      "At 1D rotate the exposed curl-stone until cyan follows a groove to 1B receiver; bridge E14 becomes solid.",
+      "Switch to dog and lead White across; cat can return with them."
+    ],
+    "primary_challenge": "Three-dimensional map reasoning + inhabitation clue + solitary cat descent, not a dog/cat simultaneous key.",
+    "awards": [
+      "P4_BRIDGE_OPEN",
+      "P4_ESCORTED"
+    ],
+    "failure_recovery": "V04 is one-way DOWN by design. Once on 1D, cat can ALWAYS operate curl-stone; E14 provides reversible permanent exit. Before descent V03 is reversible.",
+    "mastery": [
+      "Gentle Passage: White crosses without hesitation",
+      "Quiet Observer: spot correct gutter before trying a wrong one",
+      "Secret: meet a tiny roof-top pipe tailor"
+    ]
+  },
+  {
+    "id": "P5",
+    "title": "The Amber Courier",
+    "minutes": 6,
+    "islands": [
+      "1D",
+      "2A"
+    ],
+    "opening_state": "The ferry is not broken. A mobile amber-powered courier cart has been misrouted, so the terminal receives no power.",
+    "ordered_solution": [
+      "Dog follows faint hot-metal scent from empty ferry outlet to moving courier’s route; the scent trail points to an alternative canal branch.",
+      "Cat sees courier’s distinctive amber triangle painted on elevated route signs and identifies a junction that repeats the route.",
+      "Tap the junction plate when accessible to divert courier’s next circuit to the ferry receiver; animation clearly shows amber filling a reserved power vessel.",
+      "Ferry opens as stable two-way transport. Dog waits until White steps aboard willingly; depart with all three."
+    ],
+    "primary_challenge": "Trace a moving supply chain and reroute it based on information; no wheel+clutch double key.",
+    "awards": [
+      "P5_FERRY_POWERED",
+      "P5_ARRIVED"
+    ],
+    "failure_recovery": "Courier loops indefinitely; no missed-timing fail. Toggle can be tried repeatedly. Ferry remains powered by a latched reservoir.",
+    "mastery": [
+      "Gentle Passage: depart only when White is calm",
+      "Efficient Courier: divert on first correctly identified junction",
+      "Secret: spot courier’s hidden harmless passenger"
+    ]
+  },
+  {
+    "id": "P6",
+    "title": "The Stolen Ferry Bell",
+    "minutes": 7,
+    "islands": [
+      "2A",
+      "2C"
+    ],
+    "opening_state": "Light moths have carried away the ferry captain’s tuned bell; service pipe-workers won’t open maintenance galleries without its signal.",
+    "ordered_solution": [
+      "Discover missing chime by watching worker motions and hearing an off-key distant ring.",
+      "Dog traces the copper-oil scent across plaza; trail leads to the dye-market canopy, not a heavy crate.",
+      "Cat climbs overhead awning and observes moths orbiting the bell, attracted to bright amber lamps.",
+      "Send amber light to a second harmless lantern so moths flutter away; recovered bell drops gently into padded basket.",
+      "Return bell to captain; she opens maintenance paths and lends a reusable converter catalyst."
+    ],
+    "primary_challenge": "Small local mystery combining scent, observing animal behaviour, light and liquid ecology, with no combat.",
+    "awards": [
+      "P6_FAVOUR"
+    ],
+    "failure_recovery": "Moths always return to first lamp after reset; bell cannot be lost; no precision catching.",
+    "mastery": [
+      "Gentle Passage: recover without frightening moths",
+      "Helpful Neighbour: meet captain before solving",
+      "Secret: find a moth nest containing harmless ornament"
+    ]
+  },
+  {
+    "id": "P7",
+    "title": "The Dyer’s Dilemma",
+    "minutes": 8,
+    "islands": [
+      "2C",
+      "2D"
+    ],
+    "opening_state": "An alchemist demonstrates a converter. The gate to the Collectors needs amber; maintaining cyan for a nearby kitchen is a kindness, not a required route lock.",
+    "ordered_solution": [
+      "Notice the amber gate coil and a neighbouring kitchen cooled by cyan; an optional bypass splitter could keep the cooks comfortable.",
+      "Fit the reusable converter catalyst and direct the cyan supply into its inlet. The gate path works without splitting the feed.",
+      "Tap the converter to turn its flow amber and route it to the 2D gate. A sealed reservoir automatically fills the essential upper Prism Works feed.",
+      "OPTIONAL MASTERY: set the side splitter to keep cyan coolant flowing to the kitchen at the same time. Local colour experiments remain reversible; the sealed amber reserve never drains.",
+      "Escort White through gate while cat may use optional overhead scouting route."
+    ],
+    "primary_challenge": "One clear colour conversion; the optional split illustrates how engineering choices affect neighbours, without gating progress.",
+    "awards": [
+      "P7_GATE_OPEN",
+      "P7_AMBER_BRANCH",
+      "P7_ESCORTED"
+    ],
+    "failure_recovery": "No consumable reagent; cooling water automatically restores on reset. Check-valve holds a fixed recirculating volume independently of reversible local conversion.",
+    "mastery": [
+      "Kind Engineer: keep kitchen coolant running throughout (optional splitter)",
+      "Careful Dyer: no wrong colours to gate",
+      "Secret: discover harmless bonus colour swatch"
+    ]
+  },
+  {
+    "id": "P8",
+    "title": "The Records Escape",
+    "minutes": 9,
+    "islands": [
+      "2D",
+      "3A"
+    ],
+    "opening_state": "One Collector supervises two Watchers at the depot. A sympathetic archivist quietly gestures toward a safety alcove.",
+    "ordered_solution": [
+      "Cat observes the two Watchers from the rafter, learning that their lantern patrols investigate amber inspection hum rather than ordinary animal footsteps.",
+      "Dog sniffs out the archive paper-and-reed cover route. White follows only while out of sight of both the Watchers and the supervising Collector; otherwise he hides.",
+      "From cover, cat redirects a low amber lamp toward the empty records stacks. The Watchers investigate the inspection signal; the Collector remains on its separately visible patrol.",
+      "While the Watchers investigate and the Collector faces away, lead dog and White into the covered magenta pressure sump. Tap the redirector to raise the stream in the vertical 2D-to-3A shaft.",
+      "Use the clearly telegraphed patrol window to ascend together. The safe alcove lets the player wait for another window without a precision-timing penalty."
+    ],
+    "primary_challenge": "Stealth as understanding patrol sensors and using the environment, not a simultaneous hold/press sequence.",
+    "awards": [
+      "P8_LIFT_STABLE",
+      "P8_ESCORTED"
+    ],
+    "failure_recovery": "If White caught, annex cell always reachable by CAT via small opening and by dog from cover after the Watchers return to patrol. If animal falls F03 to 1D, V05 and E24 return; never respawn/teleport. White remains last safe cover or in recoverable annex.",
+    "mastery": [
+      "Gentle Passage: no sighting",
+      "Archivist’s Friend: accept clerk’s optional hint and return a page",
+      "Secret: uncover a misleading White classification stamp"
+    ]
+  },
+  {
+    "id": "P9",
+    "title": "The Colour Loom",
+    "minutes": 10,
+    "islands": [
+      "3A",
+      "3B",
+      "2B",
+      "3C"
+    ],
+    "opening_state": "The Prism Works is a precision factory. The amber supply is already protected; cyan needs optical alignment, and magenta needs a distant diverter turned on.",
+    "ordered_solution": [
+      "Gardeners invite the trio to rest at 3A. Observe the installed cyan channel leading toward Prism Works; there are no loose glass fragments to collect.",
+      "At 3B inspect TWO rotating glass facets and the amber feed indicator: amber is already lit from the protected P7 market reserve.",
+      "Cat rides the reversible service stream down to 2B, traces the magenta channel to one obvious shut diverter, opens it, and returns up the same column.",
+      "Turn TWO large snap-point glass facets at 3B to redirect cyan into the matching receiver; magenta now flows steadily, with no timed minigame.",
+      "Three colours braid together and grow E32 bridge to 3C. Dog leads White; machinery locks safety rail after first escorted crossing."
+    ],
+    "primary_challenge": "Spatial detour plus two-facet optical alignment. Dog can sniff out the correct cyan inlet as an optional clue; never a mandatory button.",
+    "awards": [
+      "P9_CYAN_PRIMED",
+      "P9_MAGENTA_PRIMED",
+      "P9_AMBER_READY",
+      "P9_BRIDGE_OPEN",
+      "P9_ESCORTED"
+    ],
+    "failure_recovery": "Protected amber never drains; cat return service shaft stays open after both reversals. Wrong prism alignment is harmless and undoable; bridge remains open after escort.",
+    "mastery": [
+      "Gentle Passage: White reaches bridge without alarm",
+      "Prism Insight: align facets with at most one incorrect move",
+      "Secret: observe the light map of lower islands"
+    ]
+  },
+  {
+    "id": "P10",
+    "title": "The Last Current",
+    "minutes": 8,
+    "islands": [
+      "3C",
+      "3B",
+      "3D"
+    ],
+    "opening_state": "A last Collector guards the portal. The upper dais is higher than the observatory terrace. The dormant magenta stream ROARS to life when the Echo Horn is activated, just as the first ascent did in P2.",
+    "ordered_solution": [
+      "Cat enters overhead gallery E34 from 3B, unnoticed by the Collector. An existing directional mark shows how the Echo Horn can project toward the empty archive platform; no sound is emitted.",
+      "Cat silently aims the Echo Horn at the empty archive platform. This sets P10_HORN_ALIGNED only: the Collector stays on patrol and the lift remains off. The resonance point at 3C is already visible.",
+      "From cover, tap the dog’s contextual bark at the resonance point. This single bark is relayed by the aligned Echo Horn as one false signal: it draws the Collector away and starts the LOUD magenta upflow from 3C to raised 3D.",
+      "Dog steps into the same roaring stream. White hesitates at the familiar noise from P2, then, recalling the dog’s care, chooses to enter without a second reassurance command.",
+      "Cat and dog reunite at portal; its reflection briefly resembles home, then reveals a larger unfamiliar sky. White voluntarily steps into the unknown."
+    ],
+    "primary_challenge": "One understandable Echo Horn acoustic lure, deliberate stealth and earned trust; the finale uses a genuinely LOUD, visible magenta upflow.",
+    "awards": [
+      "P10_HORN_ALIGNED",
+      "P10_GATE_OPEN",
+      "P10_COMPLETE"
+    ],
+    "failure_recovery": "If caught on upper dais fall F05 to fenced 2D landing with always-on V06 return through 3A; cat may also use rear gallery. Collector cannot camp recovery. White waits at 3C safe bell stone.",
+    "mastery": [
+      "Gentle Passage: White never chased",
+      "Perfect Echo: one bark, one diversion",
+      "Secret: hear a reply from home in the portal bells"
+    ]
+  }
+]

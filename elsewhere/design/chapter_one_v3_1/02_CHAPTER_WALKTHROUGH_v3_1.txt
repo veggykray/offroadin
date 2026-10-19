@@ -1,0 +1,278 @@
+THE ELSEWHERE — CHAPTER ONE: THE RIVERS ABOVE
+VERSION 3.1 · DOCUMENTATION AND DIAGRAM CORRECTIONS (NOT YET A CODEX IMPLEMENTATION PROMPT)
+
+Status: revised pre-production specification. Locations and transport are schematic; vertical links and stage logic have been checked, but in-engine fluid/AI playtests remain essential.
+Target: 60–90 minutes first-time play, ~78 minutes central route including 3-minute portal opening, plus optional content.
+Camera and controls: touch-first isometric game, landscape mobile and desktop tap/click.
+Party: physically natural black shaggy large dog, real-looking black-and-white cat; White = small scared pale companion, non-playable.
+Core: distinct floors, moving liquids, different roles in an inhabited world, stealth consequences and recovery falls.
+
+STORY PROMISE
+In a quiet ordinary garden, frightened White bursts through a tear and flees back; dog chases and cat follows out of curiosity. The portal closes. The animals learn to protect White despite understanding nothing about his people. The gate above might return them home. Over one inhabited vertical chapter they discover that the world is functioning, prejudices are inconsistent, and help can arrive from unlikely residents. White initially refuses the first loud magenta lift, but enters the last one voluntarily when the animals have earned his trust. Mystery of why Collectors seek White continues in later chapters.
+
+CORE TIMING: 78 minutes including the opening. Optional secrets +5 to +12 minutes, first-time pace intended 60–90 minutes; playtest will override estimates.
+
+======================================================================
+P1 — THE STRAY FROM THE DOOR (7 MIN TARGET)
+======================================================================
+Location chain: 0A -> 0B
+Start: The FIRST THREE MINUTES show the garden portal chase and arrival. Then White freezes behind a broken slab as a Watcher approaches, leaving FOUR minutes of interactive rescue gameplay.
+Primary challenge: Environmental distraction + trust-building; NOT two weight switches.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Read White’s frightened gaze and the lantern sweep; see the old bell above a nearby
+  wall.
+  2. Cat follows a flickering seed-shadow through a wall notch; nudge the garden bell so the
+  Watcher inspects the noise.
+  3. Dog approaches slowly and crouches sideways between White and the patrol. White chooses
+  to follow.
+  4. Cat nudges the loose reed latch open while guard is occupied; dog escorts White safely
+  to Refuge Sluice.
+Progress flags in order: P1_LATCH_OPEN, P1_RESCUED
+Recovery: If spotted, White hides under tile; guard wanders to bell or returns to patrol; no hard capture in tutorial.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: White never becomes fully panicked
+  - Quiet Kindness: ring the garden bell only once
+  - Secret: follow wind-herder seeds to garden-memory fragment
+
+======================================================================
+P2 — THE FIRST RISE (8 MIN TARGET)
+======================================================================
+Location chain: 0B -> 0D -> 1A
+Start: Cyan drains into a broken cistern, leaving bridge dry; an upflow gurgles above. Everything lives off moving liquid.
+Primary challenge: Flow-routing + pressure threshold + first meaningful separation + emotional motif.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Follow dog’s scent trail of wet mineral droplets to a blocked side seep; tap dog to
+  scrape reeds away, revealing cyan source.
+  2. Rotate one large ceramic diverter: cyan runs along carved groove and solidifies the
+  crossing E02; permanent safety slat engages after first crossing.
+  3. At the Root Elevator White balks at the very LOUD magenta rise. Dog sits near him; fear
+  visibly settles, without a timer. The noise remains unmistakable for the final emotional
+  echo.
+  4. Cat rides the weak lift alone to 1A and inspects the three-band load indicator; rotate
+  accessible upper pressure regulator to strengthen same stream.
+  5. White and dog ascend together using the now-strong stream; cat reunites with them at
+  Reed Quay.
+Progress flags in order: P2_BRIDGE_READY, P2_BRIDGE_SAFE, P2_LIFT_STRONG, P2_ASCENDED
+Recovery: Bridge can be reset before first crossing; its permanent safety rail preserves return afterward. Lift always works for cat and gains load capacity; White waits for dog.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: reassure White before selecting lift
+  - Elegant Flow: find direct cyan route without using reset
+  - Secret: inspect attendant’s slate to discover hidden load symbol
+
+======================================================================
+P3 — LIFE ON THE CANALS (5 MIN TARGET)
+======================================================================
+Location chain: 1A -> 1B
+Start: Busy domestic life: bakers, reed fishers, curious couriers and a harmless Watcher. A welcome breather.
+Primary challenge: Exploration, environmental storytelling and observation. Not presented as a locked puzzle.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Watch a ferry skiff following painted liquid lanes while citizens go about their
+  routines.
+  2. Help a courier recover a reed bundle via an ordinary loose basket OR ignore and
+  continue; residents respond differently.
+  3. Look across the canal and recognise a cyan receiver without access to its controlling
+  end.
+  4. Notice miniature Flowkeepers using the rooftop pipe vents: a clue for the cat ascent.
+Progress flags in order: P3_OBSERVED
+Recovery: No patrol threat; optional interactions do not gate the next sequence.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: see White accept a gift from baker
+  - Neighbourly: return the reed bundle
+  - Secret: find hidden sky reflection in communal basin
+
+======================================================================
+P4 — ABOVE, ACROSS, BELOW (10 MIN TARGET)
+======================================================================
+Location chain: 1B -> 1C -> 2B -> 1D
+Start: The dog and White face a chasm; far bank is visible but there is no bridge. Cat spots a faint moving line of fluid overhead.
+Primary challenge: Three-dimensional map reasoning + inhabitation clue + solitary cat descent, not a dog/cat simultaneous key.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Park dog and White in a clearly safe shaded courtyard; they can be called to a nearby
+  rest point and do not wander off.
+  2. Cat travels through vent or street to 1C and rises alone on V03 to pipework on 2B.
+  3. Observe tiny Flowkeepers cleaning glass pipes. Their rhythm reveals which gutter feeds a
+  sloped return at the far bank; follow the moving flow without precision timing.
+  4. Cat crosses the upper gantry then deliberately slides down V04 to 1D—same floor as dog,
+  other side of chasm.
+  5. At 1D rotate the exposed curl-stone until cyan follows a groove to 1B receiver; bridge
+  E14 becomes solid.
+  6. Switch to dog and lead White across; cat can return with them.
+Progress flags in order: P4_BRIDGE_OPEN, P4_ESCORTED
+Recovery: V04 is one-way DOWN by design. Once on 1D, cat can ALWAYS operate curl-stone; E14 provides reversible permanent exit. Before descent V03 is reversible.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: White crosses without hesitation
+  - Quiet Observer: spot correct gutter before trying a wrong one
+  - Secret: meet a tiny roof-top pipe tailor
+
+======================================================================
+P5 — THE AMBER COURIER (6 MIN TARGET)
+======================================================================
+Location chain: 1D -> 2A
+Start: The ferry is not broken. A mobile amber-powered courier cart has been misrouted, so the terminal receives no power.
+Primary challenge: Trace a moving supply chain and reroute it based on information; no wheel+clutch double key.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Dog follows faint hot-metal scent from empty ferry outlet to moving courier’s route; the
+  scent trail points to an alternative canal branch.
+  2. Cat sees courier’s distinctive amber triangle painted on elevated route signs and
+  identifies a junction that repeats the route.
+  3. Tap the junction plate when accessible to divert courier’s next circuit to the ferry
+  receiver; animation clearly shows amber filling a reserved power vessel.
+  4. Ferry opens as stable two-way transport. Dog waits until White steps aboard willingly;
+  depart with all three.
+Progress flags in order: P5_FERRY_POWERED, P5_ARRIVED
+Recovery: Courier loops indefinitely; no missed-timing fail. Toggle can be tried repeatedly. Ferry remains powered by a latched reservoir.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: depart only when White is calm
+  - Efficient Courier: divert on first correctly identified junction
+  - Secret: spot courier’s hidden harmless passenger
+
+======================================================================
+P6 — THE STOLEN FERRY BELL (7 MIN TARGET)
+======================================================================
+Location chain: 2A -> 2C
+Start: Light moths have carried away the ferry captain’s tuned bell; service pipe-workers won’t open maintenance galleries without its signal.
+Primary challenge: Small local mystery combining scent, observing animal behaviour, light and liquid ecology, with no combat.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Discover missing chime by watching worker motions and hearing an off-key distant ring.
+  2. Dog traces the copper-oil scent across plaza; trail leads to the dye-market canopy, not
+  a heavy crate.
+  3. Cat climbs overhead awning and observes moths orbiting the bell, attracted to bright
+  amber lamps.
+  4. Send amber light to a second harmless lantern so moths flutter away; recovered bell
+  drops gently into padded basket.
+  5. Return bell to captain; she opens maintenance paths and lends a reusable converter
+  catalyst.
+Progress flags in order: P6_FAVOUR
+Recovery: Moths always return to first lamp after reset; bell cannot be lost; no precision catching.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: recover without frightening moths
+  - Helpful Neighbour: meet captain before solving
+  - Secret: find a moth nest containing harmless ornament
+
+======================================================================
+P7 — THE DYER’S DILEMMA (8 MIN TARGET)
+======================================================================
+Location chain: 2C -> 2D
+Start: An alchemist demonstrates a converter. The gate to the Collectors needs amber; maintaining cyan for a nearby kitchen is a kindness, not a required route lock.
+Primary challenge: One clear colour conversion; the optional split illustrates how engineering choices affect neighbours, without gating progress.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Notice the amber gate coil and a neighbouring kitchen cooled by cyan; an optional bypass
+  splitter could keep the cooks comfortable.
+  2. Fit the reusable converter catalyst and direct the cyan supply into its inlet. The gate
+  path works without splitting the feed.
+  3. Tap the converter to turn its flow amber and route it to the 2D gate. A sealed reservoir
+  automatically fills the essential upper Prism Works feed.
+  4. OPTIONAL MASTERY: set the side splitter to keep cyan coolant flowing to the kitchen at
+  the same time. Local colour experiments remain reversible; the sealed amber reserve never
+  drains.
+  5. Escort White through gate while cat may use optional overhead scouting route.
+Progress flags in order: P7_GATE_OPEN, P7_AMBER_BRANCH, P7_ESCORTED
+Recovery: No consumable reagent; cooling water automatically restores on reset. Check-valve holds a fixed recirculating volume independently of reversible local conversion.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Kind Engineer: keep kitchen coolant running throughout (optional splitter)
+  - Careful Dyer: no wrong colours to gate
+  - Secret: discover harmless bonus colour swatch
+
+======================================================================
+P8 — THE RECORDS ESCAPE (9 MIN TARGET)
+======================================================================
+Location chain: 2D -> 3A
+Start: One Collector supervises two Watchers at the depot. A sympathetic archivist quietly gestures toward a safety alcove.
+Primary challenge: Stealth as understanding patrol sensors and using the environment, not a simultaneous hold/press sequence.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Cat observes the two Watchers from the rafter, learning that their lantern patrols
+  investigate amber inspection hum rather than ordinary animal footsteps.
+  2. Dog sniffs out the archive paper-and-reed cover route. White follows only while out of
+  sight of both the Watchers and the supervising Collector; otherwise he hides.
+  3. From cover, cat redirects a low amber lamp toward the empty records stacks. The Watchers
+  investigate the inspection signal; the Collector remains on its separately visible patrol.
+  4. While the Watchers investigate and the Collector faces away, lead dog and White into the
+  covered magenta pressure sump. Tap the redirector to raise the stream in the vertical
+  2D-to-3A shaft.
+  5. Use the clearly telegraphed patrol window to ascend together. The safe alcove lets the
+  player wait for another window without a precision-timing penalty.
+Progress flags in order: P8_LIFT_STABLE, P8_ESCORTED
+Recovery: If White caught, annex cell always reachable by CAT via small opening and by dog from cover after the Watchers return to patrol. If animal falls F03 to 1D, V05 and E24 return; never respawn/teleport. White remains last safe cover or in recoverable annex.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: no sighting
+  - Archivist’s Friend: accept clerk’s optional hint and return a page
+  - Secret: uncover a misleading White classification stamp
+
+======================================================================
+P9 — THE COLOUR LOOM (10 MIN TARGET)
+======================================================================
+Location chain: 3A -> 3B -> 2B -> 3C
+Start: The Prism Works is a precision factory. The amber supply is already protected; cyan needs optical alignment, and magenta needs a distant diverter turned on.
+Primary challenge: Spatial detour plus two-facet optical alignment. Dog can sniff out the correct cyan inlet as an optional clue; never a mandatory button.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Gardeners invite the trio to rest at 3A. Observe the installed cyan channel leading
+  toward Prism Works; there are no loose glass fragments to collect.
+  2. At 3B inspect TWO rotating glass facets and the amber feed indicator: amber is already
+  lit from the protected P7 market reserve.
+  3. Cat rides the reversible service stream down to 2B, traces the magenta channel to one
+  obvious shut diverter, opens it, and returns up the same column.
+  4. Turn TWO large snap-point glass facets at 3B to redirect cyan into the matching
+  receiver; magenta now flows steadily, with no timed minigame.
+  5. Three colours braid together and grow E32 bridge to 3C. Dog leads White; machinery locks
+  safety rail after first escorted crossing.
+Progress flags in order: P9_CYAN_PRIMED, P9_MAGENTA_PRIMED, P9_AMBER_READY, P9_BRIDGE_OPEN, P9_ESCORTED
+Recovery: Protected amber never drains; cat return service shaft stays open after both reversals. Wrong prism alignment is harmless and undoable; bridge remains open after escort.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: White reaches bridge without alarm
+  - Prism Insight: align facets with at most one incorrect move
+  - Secret: observe the light map of lower islands
+
+======================================================================
+P10 — THE LAST CURRENT (8 MIN TARGET)
+======================================================================
+Location chain: 3C -> 3B -> 3D
+Start: A last Collector guards the portal. The upper dais is higher than the observatory terrace. The dormant magenta stream ROARS to life when the Echo Horn is activated, just as the first ascent did in P2.
+Primary challenge: One understandable Echo Horn acoustic lure, deliberate stealth and earned trust; the finale uses a genuinely LOUD, visible magenta upflow.
+
+ORDERED INTERACTIONS (these are the SINGLE canonical solution definitions):
+  1. Cat enters overhead gallery E34 from 3B, unnoticed by the Collector. An existing
+  directional mark shows how the Echo Horn can project toward the empty archive platform; no
+  sound is emitted.
+  2. Cat silently aims the Echo Horn at the empty archive platform. This sets
+  P10_HORN_ALIGNED only: the Collector stays on patrol and the lift remains off. The
+  resonance point at 3C is already visible.
+  3. From cover, tap the dog’s contextual bark at the resonance point. This single bark is
+  relayed by the aligned Echo Horn as one false signal: it draws the Collector away and
+  starts the LOUD magenta upflow from 3C to raised 3D.
+  4. Dog steps into the same roaring stream. White hesitates at the familiar noise from P2,
+  then, recalling the dog’s care, chooses to enter without a second reassurance command.
+  5. Cat and dog reunite at portal; its reflection briefly resembles home, then reveals a
+  larger unfamiliar sky. White voluntarily steps into the unknown.
+Progress flags in order: P10_HORN_ALIGNED, P10_GATE_OPEN, P10_COMPLETE
+Recovery: If caught on upper dais fall F05 to fenced 2D landing with always-on V06 return through 3A; cat may also use rear gallery. Collector cannot camp recovery. White waits at 3C safe bell stone.
+
+UNIQUE MASTERY OBJECTIVES:
+  - Gentle Passage: White never chased
+  - Perfect Echo: one bark, one diversion
+  - Secret: hear a reply from home in the portal bells
+
+OPTIONAL SIDE ROUTES
+S1 Basin Song @ 0C: Listen for a repeating reed-filter melody, then follow the dog’s damp-reed scent clue to a hidden compartment; no new memory minigame. Reward: Noncritical home-memory fragment, 2 min. Available: Once 0C reached intentionally or by F01.
+S2 Lost Ribbon @ 1A: Cat spots ribbon in reed lattice; dog nudges basket under it, optional playful interaction. Reward: Reed-grower friendship, ambient animation, 2 min. Available: After P2.
+S3 Honest Dye @ 2C: Return accidentally misplaced dye cup; inhabitants open resting nook for White. Reward: A resting nook within 2C for White; no new inter-island route or shortcut. About 3 minutes. Available: After P5.
+S4 Dewkeeper Nest @ 3A: Redirect tiny independent trickle to restore pollinator platform; no drain from critical prism feed. Reward: White trusts a gardener and approaches safely; vista, 3 min. Available: After P8.
+
+ENDING NOTE: White does not give a speech; his willingness to enter the final lift mirrors his refusal in P2. The portal briefly resembles home and then changes; emotional payoff without removing the mystery.

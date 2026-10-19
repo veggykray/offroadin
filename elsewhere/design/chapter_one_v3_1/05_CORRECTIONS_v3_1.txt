@@ -1,0 +1,58 @@
+THE ELSEWHERE — V3.1 CORRECTION RECORD
+Scope: documentation and diagrams only; no new game mechanics.
+
+REPORTED MAP ERRORS
+1. Misleading vertical diagram: REPLACED, not nudged again. Each transfer and
+   fall now gets its own source-to-destination row with explicit island ID,
+   name, floor, direction and plan coordinate. It is labelled as a connection
+   register, not a spatial projection. It cannot pass through an unrelated card.
+   F01 is 1B -> 0C. F03 is 2D -> 1D. V05 is 1D <-> 2A.
+   V02 is 0D <-> 1A; it no longer passes through 0B.
+   All seven off-floor transfers, the E33 local final rise and five falls appear.
+
+2. E25 on Floor 2: given an unobstructed bypass below the island cards, with an
+   explicit E25 / CAT / 2B <-> 2D badge, separate from E24. The PNG and atlas
+   embed exactly the same SVG paths and labels; there is no separate HTML path
+   drawing algorithm to lose the label again.
+
+3. E13 on Floor 1: a separate lane ends directly at 1B and 1C card boundaries.
+   Its labelled segment is separated from E11 and E14. Both formats use the
+   same SVG. Arrowheads are visible geometric triangles, not font characters.
+
+REPORTED TEXT ISSUES
+4. P8: the two lantern patrols are explicitly Watchers. The larger supervising
+   Collector is named separately. The lamp draws the Watchers; the safe window
+   also requires the Collector to face away. No additional enemies were added:
+   the previous node already specified Watchers and one Collector.
+
+5. P10: aiming is silent preparation only. It sets P10_HORN_ALIGNED and does
+   not divert the Collector or start the lift. One dog bark is relayed by the
+   Echo Horn, causing one diversion and starting the roaring lift. The marked
+   resonance point is visible before aiming. This retains Perfect Echo.
+
+6. P9: no loose cyan glass fragments to collect. The arrival step observes
+   the installed channel toward the factory. The two fixed facets remain.
+
+7. S3: reward is a resting nook inside 2C, not an unmapped shortcut. No extra
+   route has been invented merely to make the reward wording true.
+
+8. Mechanical blueprint: undefined capitalised Guardians replaced with the
+   defined Watcher/Collector terms.
+
+ADDITIONAL CONSISTENCY REPAIRS FOUND DURING THIS PASS
+- The V3 source actually carried VERSION 2 headers and a 2.0 JSON revision.
+  Corrected to 3.1 across current documents and data.
+- The old build_v3.py regenerated its source from an external V1 data file.
+  Replaced with rebuild_v3_1.py, which reads only this package's canonical JSON.
+- Remaining node summaries for the finale now match the silent aim / one bark
+  sequence. The basin summary no longer describes the removed memory minigame.
+
+UNCHANGED
+All 16 island IDs/names/coordinates, 24 movement routes, five fall routes,
+route prerequisites, actor permissions, liquid circuit endpoints and control
+IDs, puzzle order, stage flags and 78-minute central estimate are unchanged.
+No progression change, chapter expansion or new required system is included.
+
+BOUNDARY
+This closes the listed document/drawing defects within the checks described
+in 06_QA_REPORT_v3_1.txt. It does not certify an unbuilt game as bug-free or fun.

@@ -1,0 +1,114 @@
+THE ELSEWHERE — CHAPTER ONE: THE RIVERS ABOVE
+VERSION 3.1 · DOCUMENTATION AND DIAGRAM CORRECTIONS (NOT YET A CODEX IMPLEMENTATION PROMPT)
+
+Status: revised pre-production specification. Locations and transport are schematic; vertical links and stage logic have been checked, but in-engine fluid/AI playtests remain essential.
+Target: 60–90 minutes first-time play, ~78 minutes central route including 3-minute portal opening, plus optional content.
+Camera and controls: touch-first isometric game, landscape mobile and desktop tap/click.
+Party: physically natural black shaggy large dog, real-looking black-and-white cat; White = small scared pale companion, non-playable.
+Core: distinct floors, moving liquids, different roles in an inhabited world, stealth consequences and recovery falls.
+
+SYSTEMS CONTRACT AND IMPLEMENTATION SAFETY
+
+PROGRESSION: A mechanism flag (e.g. P1_LATCH_OPEN) opens the route needed to finish that puzzle; a completion flag (P1_RESCUED) is awarded afterward. Completion of EARLIER puzzles may open LATER routes (P6_FAVOUR -> E22/E23/E25; P8_ESCORTED -> V07/V08). Never gate the route needed to EARN a completion flag on that same completion flag.
+
+ONE CANONICAL PUZZLE SOURCE: 02_CHAPTER_WALKTHROUGH_v3_1.txt generated from chapter_one_canonical_v3_1.json. Do not copy complete puzzle solutions into this document; use puzzle ids.
+
+WORLD FLAGS: all are latched achievements or protective reservations unless specifically identified as locally reversible valve states.
+  START: always
+  P1_LATCH_OPEN: mechanism; cat diverts Watcher with bell and finds garden latch
+  P1_RESCUED: completion; White safely follows dog into 0B
+  P2_BRIDGE_READY: mechanism; cyan channel open; crossable bridge at E02
+  P2_BRIDGE_SAFE: safety; 0B-0D retaining rail permanently available after first traversal
+  P2_LIFT_STRONG: mechanism; upper regulator upgraded from cat-only to all
+  P2_ASCENDED: completion; dog cat White reunite on 1A
+  P3_OBSERVED: optional information; does not gate P4
+  P4_BRIDGE_OPEN: mechanism; cyan flowing 1D-to-1B
+  P4_ESCORTED: completion; White reaches 1D with dog; bridge safety rail latched
+  P5_FERRY_POWERED: mechanism; moving amber courier redirected to ferry channel
+  P5_ARRIVED: completion; all three arrive at 2A
+  P6_FAVOUR: completion; missing bell recovered; captain authorises service access and converter catalyst
+  P7_GATE_OPEN: mechanism; converted amber reaches 2D public gate, which latches
+  P7_AMBER_BRANCH: persistent safety; non-drainable amber reserve split to 3B and local market; local dye conversion remains reversible
+  P7_ESCORTED: completion; dog and White cross into 2D
+  P8_LIFT_STABLE: mechanism; magenta ascent 2D-to-3A made safe
+  P8_ESCORTED: completion; dog cat White arrive 3A; botanical visitor ferry may open
+  P9_CYAN_PRIMED: mechanism; 3A cistern routed to 3B
+  P9_MAGENTA_PRIMED: mechanism; remote 2B relay tuned and automatically safe to return
+  P9_AMBER_READY: mechanism; sealed 2C reserve flows into 3B, no dog switch
+  P9_BRIDGE_OPEN: mechanism; three feeds aligned at 3B, E32 solid
+  P9_ESCORTED: completion; dog White arrive 3C
+  P10_HORN_ALIGNED: mechanism; cat silently aims the Echo Horn from the upper gallery at 3D toward the empty archive platform; no lure or lift activation yet
+  P10_GATE_OPEN: mechanism; one dog bark at the visible 3C resonance point is relayed by the aligned Echo Horn, drawing the Collector away once and starting the magenta final upflow
+  P10_COMPLETE: completion; White voluntarily boards last upflow after dog has made it safe; all reach portal 3D
+
+LIQUID CIRCUITS
+L01 [cyan] 0B->0D; control CV-01 at 0B; flag P2_BRIDGE_READY. One cyan feed, diversion opens 0B-0D; retaining rail ensures return after first crossing.
+L02 [magenta] 0D->1A; control MR-01 at 1A; flag P2_LIFT_STRONG. Single magenta lift always cat-passable; regulator raises pressure and load limit, enabling dog and White.
+L03 [cyan] 1D->1B; control CV-02 at 1D; flag P4_BRIDGE_OPEN. Cyan flow via remote curl-stone at 1D opens cross-canal bridge; dog never needs to hold a plate.
+L04 [amber] 1D->2A; control AF-01 at 1D; flag P5_FERRY_POWERED. Ferry power from moving amber courier is re-routed after player observes its loop; dog tracks odour and cat spots visual marker; no dual switch.
+L05 [cyan→amber] 2C->2D; control AL-01 at 2C; flag P7_GATE_OPEN. Required: one cyan-to-amber conversion opens records gate and charges sealed non-draining reserve for L09. OPTIONAL mastery: split source to preserve kitchen cyan cooling while converting; local controls reversible.
+L06 [magenta] 2D->3A; control MR-02 at 2D; flag P8_LIFT_STABLE. Magenta is diverted through the depot pressure drain while the Watchers investigate an amber inspection signal and the Collector faces away; no heavy button.
+L07 [cyan] 3A->3B; control PC-01 at 3A; flag P9_CYAN_PRIMED. Cyan from dew garden travels through exactly TWO rotatable glass facets at 3B; large snap points and reflected symbols reveal the alignment.
+L08 [magenta] 2B->3B; control PM-01 at 2B; flag P9_MAGENTA_PRIMED. Magenta from 2B relay starts when the cat opens one large clearly visible diverter; steady flow, no pulse matching.
+L09 [amber] 2C->3B; control PA-01 at 3B; flag P9_AMBER_READY. Amber circulates within a sealed, non-consuming reserve loop charged once at 2C: remote P9 feed remains live whatever colour local converter displays.
+L10 [cyan+magenta+amber] 3B->3C; control PR-01 at 3B; flag P9_BRIDGE_OPEN. Align three inputs in correct physical order; amber is automatically ready after P7, no dedicated dog switch.
+L11 [amber] 3D->3C; control GT-01 at 3D; flag P10_GATE_OPEN. Cat silently aims the Echo Horn without triggering anything. One dog bark at the visible resonance point is then relayed as one false signal, drawing the Collector away and starting the LOUD final lift.
+L12 [magenta] 3C->3D; control Echo Horn + resonance stone at Bell Observatory; flag P10_GATE_OPEN. The same single relayed bark triggers the LOUD rising magenta column. Silently aiming the Echo Horn does not power the lift; this is one diversion, not two.
+
+TRANSPORT GEOMETRY
+  V02: aligned shaft 0D(1,1)->1A(1,1), one physical stream with weak/strong pressure state
+  V03: aligned shaft 1C(0,1)->2B(0,1), cat only
+  V04: sloped upper gantry then curving downhill gutter 2B(0,1)->1D(2,1), cat-only one-way, not a vertical column
+  V05: mechanical TRAVELLING ferry between offset 1D(2,1) and 2A(1,1)
+  V06: aligned shaft 2D(2,1)->3A(2,1), strong
+  V07: diagonal mechanical botanical gondola from 2C(1,0) to 3A(2,1)
+  V08: aligned shaft 2B(0,1)<->3B(0,1), reversible same lift
+  E33: short in-floor upflow from 3C(1,2) lower ledge to 3D(2,2) raised ledge, 3C platform extends to foot of dais
+  F05: short enclosed downhill capture chute 3D(2,2)->2D(2,1) within wide collector safety catch, not a direct plummet
+
+CHARACTER, ENEMY, AND TOUCH RULES
+  activation_vs_completion: A route needed to earn a completion flag must NOT depend on that same flag; earlier completed quests MAY unlock later routes (e.g. P6_FAVOUR or P8_ESCORTED). Local gate activation still occurs before that route is traversed.
+  White_policy: White has no direct move order, follows dog when safe, waits in nearest sanctuary if dog goes to cat-only link or on dangerous route; only invited past threat after safety cue; first ascent refused once, last ascent voluntary.
+  cat_dog_switch: Instant camera switch across floors; actors physically remain in their own locations, with independent move queues cleared only by new user orders.
+  critical_flows: An opened route can remain visually responsive but carries a safety latch, rail, or alternate exit after first crossing; fixed reserve powers L09 from P7 onward regardless of local converter mode.
+  capture: White is guided to closest defined cell annex from 2D; both animals can reach release; no random teleport. Enemy cannot deny all rescue routes.
+  falls: Physical one-way descent to defined named landing. Floor drop during chase changes position, never restores previous location. All safe landings have return paths at activation stage.
+  mobile: No press-and-hold interactions, complex gestures while moving, precision jumps or unpredictable physics. Tap-safe 48 CSS px targets at 780x360 landscape.
+
+MOBILE CONTRACT
+  orientation: landscape phones + desktop
+  movement: tap/click walk and contextual interact, tap cat or dog portrait to switch even on different floors
+  camera: auto-focus selected animal, optional floor select, pinch zoom and drag empty space to pan
+  liquid: large snap-to-position directional valves/tiles; tap to select and confirm; no continuous tiny drag
+  feedback: scent/whisker clues are optional short overlays, same controls on mouse and touch
+  stealth: pauseable observation and forgiving telegraphing; no frame-perfect reaction
+  minimum_touch_target_css_px: 48
+  accessibility: shape + motion pattern reinforces colour, reduced motion, vibration optional, low-end graphics option
+
+FUNCTIONAL LIQUID SEMANTICS
+- Cyan structure: convert supplied flow to solid path only at a dedicated receiver; safety locks retain route after escort.
+- Magenta motion: pressure tier (weak cat, upgraded all), moving mechanisms, and reversing/ascending columns. Visually show incoming and outgoing channels.
+- Amber energy: power gates, lures, horns and ferries. Check-valve in Dye Market isolates permanent reserved P9 source from local conversion preview.
+- Transform/split: local and visibly reversible. Required: convert once to open gate. Optional mastery: use bypass split to preserve kitchen coolant.
+- Rule clarity: never permit a dynamic flow to dry out a necessary return route when the operating control becomes inaccessible.
+
+ENEMY CLARITY
+Watchers: lantern staff, small, reactive; Collectors: larger and active White-capturers. Civilian archivists, Flowkeepers and artisans are not enemies. White is unusually feared by most guards, not by every species. Watchers and Collectors do not attack dog or cat gratuitously. Dog can bark as one contextual distraction, nudge or block briefly, but no combat. Cats hide/climb/observe and can lure by interacting with props; no inventory of magical cat powers.
+
+WHITE COMPANION AI
+States FOLLOW, WAIT_IN_SHELTER, REFUSE_UNSAFE, PANIC_HIDE, FLEE_TO_COVER, CONFINED, REASSURED. Dog defaults as attachment; White does not teleport or instantly cross unsafe floors. He follows cat only when dog is unavailable and safe path is trivial, otherwise waits. After P2 reassurance a confidence memory is stored; at P10 he chooses lift after dog first proves it safe, with no required reassurance tap.
+
+FALL RECOVERY
+F01 1B->0C, regain floor via 0B/0D/V02. F02 2A->1A, return via 1B/1D/V05. F03 2D->1D, return via V05 and market E24. F04 3B->2B, return via V08 (cat) or E23/V07 (dog) as enabled. F05 3D->2D, return via V06/E31/E32. Fall animations safe and readable, optional recovery secret; never generic respawn at another island.
+
+QUALITY GATES BEFORE CODEX BUILDS LEVELS
+1. JSON parse/reference/flags unique; no unreachable gate-to-completion circular dependencies.
+2. Exact actor-specific progression and character separation route traces per each puzzle.
+3. At earliest valid point for each fall, both animals have a path from landing to fall source with current latches.
+4. Permanent amber reserve survives repeated local converter toggling; core routes stay usable.
+5. Model White escort as same-path dog + fear condition; capture/rescue annex access from both positions.
+6. Test all user-reversible valve modes in small design-critical components; runtime exhaustive model needed for full AI+flow simulation.
+7. Check tap target >= 48 CSS pixels in 780x360 and 932x430 landscape; pinch/pan and split-camera focus.
+8. Verify gameplay from actual 3D greybox and cross-check lengths; the topological validation here is not evidence that guard AI, runtime collision or lighting works.
+9. Unit-test node/edge/circuit identifiers and maintain one canonical source for all docs and maps.
+10. Test low-end mobile power savings, high contrast mode, animal silhouettes and sustained frame rate.

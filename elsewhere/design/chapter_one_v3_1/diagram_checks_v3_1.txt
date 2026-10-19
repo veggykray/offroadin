@@ -1,0 +1,506 @@
+DIAGRAM-SPECIFIC CHECKS
+
+PASS: Floor 0: exact island membership
+PASS: Floor 0: exact same-floor route membership
+PASS: Floor 0: separate island cards 0A, 0B
+PASS: Floor 0: separate island cards 0A, 0C
+PASS: Floor 0: separate island cards 0A, 0D
+PASS: Floor 0: separate island cards 0B, 0C
+PASS: Floor 0: separate island cards 0B, 0D
+PASS: Floor 0: separate island cards 0C, 0D
+PASS: E01: drawn identity matches canonical route
+PASS: E01: source ends on 0A card boundary
+PASS: E01: destination ends on 0B card boundary
+PASS: E01: route never crosses inside 0A
+PASS: E01: label does not overlap island 0A
+PASS: E01: route never crosses inside 0B
+PASS: E01: label does not overlap island 0B
+PASS: E01: route never crosses inside 0C
+PASS: E01: label does not overlap island 0C
+PASS: E01: route never crosses inside 0D
+PASS: E01: label does not overlap island 0D
+PASS: E01: label separate from E02
+PASS: E01: line does not run through E02 label
+PASS: E01: label separate from E03
+PASS: E01: line does not run through E03 label
+PASS: E01: label separate from E04
+PASS: E01: line does not run through E04 label
+PASS: E01: correct number of explicit arrowheads
+PASS: E01: label fits canvas
+PASS: E02: drawn identity matches canonical route
+PASS: E02: source ends on 0B card boundary
+PASS: E02: destination ends on 0D card boundary
+PASS: E02: route never crosses inside 0A
+PASS: E02: label does not overlap island 0A
+PASS: E02: route never crosses inside 0B
+PASS: E02: label does not overlap island 0B
+PASS: E02: route never crosses inside 0C
+PASS: E02: label does not overlap island 0C
+PASS: E02: route never crosses inside 0D
+PASS: E02: label does not overlap island 0D
+PASS: E02: label separate from E01
+PASS: E02: line does not run through E01 label
+PASS: E02: label separate from E03
+PASS: E02: line does not run through E03 label
+PASS: E02: label separate from E04
+PASS: E02: line does not run through E04 label
+PASS: E02: correct number of explicit arrowheads
+PASS: E02: label fits canvas
+PASS: E03: drawn identity matches canonical route
+PASS: E03: source ends on 0D card boundary
+PASS: E03: destination ends on 0C card boundary
+PASS: E03: route never crosses inside 0A
+PASS: E03: label does not overlap island 0A
+PASS: E03: route never crosses inside 0B
+PASS: E03: label does not overlap island 0B
+PASS: E03: route never crosses inside 0C
+PASS: E03: label does not overlap island 0C
+PASS: E03: route never crosses inside 0D
+PASS: E03: label does not overlap island 0D
+PASS: E03: label separate from E01
+PASS: E03: line does not run through E01 label
+PASS: E03: label separate from E02
+PASS: E03: line does not run through E02 label
+PASS: E03: label separate from E04
+PASS: E03: line does not run through E04 label
+PASS: E03: correct number of explicit arrowheads
+PASS: E03: label fits canvas
+PASS: E04: drawn identity matches canonical route
+PASS: E04: source ends on 0C card boundary
+PASS: E04: destination ends on 0B card boundary
+PASS: E04: route never crosses inside 0A
+PASS: E04: label does not overlap island 0A
+PASS: E04: route never crosses inside 0B
+PASS: E04: label does not overlap island 0B
+PASS: E04: route never crosses inside 0C
+PASS: E04: label does not overlap island 0C
+PASS: E04: route never crosses inside 0D
+PASS: E04: label does not overlap island 0D
+PASS: E04: label separate from E01
+PASS: E04: line does not run through E01 label
+PASS: E04: label separate from E02
+PASS: E04: line does not run through E02 label
+PASS: E04: label separate from E03
+PASS: E04: line does not run through E03 label
+PASS: E04: correct number of explicit arrowheads
+PASS: E04: label fits canvas
+PASS: Floor 0: actual SVG has every canonical route once
+PASS: E01: exported SVG retains exact endpoints
+PASS: E01: exported SVG label visible, explicit and unique
+PASS: E01: exported arrow polygons exist
+PASS: E02: exported SVG retains exact endpoints
+PASS: E02: exported SVG label visible, explicit and unique
+PASS: E02: exported arrow polygons exist
+PASS: E03: exported SVG retains exact endpoints
+PASS: E03: exported SVG label visible, explicit and unique
+PASS: E03: exported arrow polygons exist
+PASS: E04: exported SVG retains exact endpoints
+PASS: E04: exported SVG label visible, explicit and unique
+PASS: E04: exported arrow polygons exist
+PASS: Floor 1: exact island membership
+PASS: Floor 1: exact same-floor route membership
+PASS: Floor 1: separate island cards 1A, 1B
+PASS: Floor 1: separate island cards 1A, 1C
+PASS: Floor 1: separate island cards 1A, 1D
+PASS: Floor 1: separate island cards 1B, 1C
+PASS: Floor 1: separate island cards 1B, 1D
+PASS: Floor 1: separate island cards 1C, 1D
+PASS: E11: drawn identity matches canonical route
+PASS: E11: source ends on 1A card boundary
+PASS: E11: destination ends on 1B card boundary
+PASS: E11: route never crosses inside 1A
+PASS: E11: label does not overlap island 1A
+PASS: E11: route never crosses inside 1B
+PASS: E11: label does not overlap island 1B
+PASS: E11: route never crosses inside 1C
+PASS: E11: label does not overlap island 1C
+PASS: E11: route never crosses inside 1D
+PASS: E11: label does not overlap island 1D
+PASS: E11: label separate from E12
+PASS: E11: line does not run through E12 label
+PASS: E11: label separate from E13
+PASS: E11: line does not run through E13 label
+PASS: E11: label separate from E14
+PASS: E11: line does not run through E14 label
+PASS: E11: correct number of explicit arrowheads
+PASS: E11: label fits canvas
+PASS: E12: drawn identity matches canonical route
+PASS: E12: source ends on 1A card boundary
+PASS: E12: destination ends on 1C card boundary
+PASS: E12: route never crosses inside 1A
+PASS: E12: label does not overlap island 1A
+PASS: E12: route never crosses inside 1B
+PASS: E12: label does not overlap island 1B
+PASS: E12: route never crosses inside 1C
+PASS: E12: label does not overlap island 1C
+PASS: E12: route never crosses inside 1D
+PASS: E12: label does not overlap island 1D
+PASS: E12: label separate from E11
+PASS: E12: line does not run through E11 label
+PASS: E12: label separate from E13
+PASS: E12: line does not run through E13 label
+PASS: E12: label separate from E14
+PASS: E12: line does not run through E14 label
+PASS: E12: correct number of explicit arrowheads
+PASS: E12: label fits canvas
+PASS: E13: drawn identity matches canonical route
+PASS: E13: source ends on 1B card boundary
+PASS: E13: destination ends on 1C card boundary
+PASS: E13: route never crosses inside 1A
+PASS: E13: label does not overlap island 1A
+PASS: E13: route never crosses inside 1B
+PASS: E13: label does not overlap island 1B
+PASS: E13: route never crosses inside 1C
+PASS: E13: label does not overlap island 1C
+PASS: E13: route never crosses inside 1D
+PASS: E13: label does not overlap island 1D
+PASS: E13: label separate from E11
+PASS: E13: line does not run through E11 label
+PASS: E13: label separate from E12
+PASS: E13: line does not run through E12 label
+PASS: E13: label separate from E14
+PASS: E13: line does not run through E14 label
+PASS: E13: correct number of explicit arrowheads
+PASS: E13: label fits canvas
+PASS: E14: drawn identity matches canonical route
+PASS: E14: source ends on 1B card boundary
+PASS: E14: destination ends on 1D card boundary
+PASS: E14: route never crosses inside 1A
+PASS: E14: label does not overlap island 1A
+PASS: E14: route never crosses inside 1B
+PASS: E14: label does not overlap island 1B
+PASS: E14: route never crosses inside 1C
+PASS: E14: label does not overlap island 1C
+PASS: E14: route never crosses inside 1D
+PASS: E14: label does not overlap island 1D
+PASS: E14: label separate from E11
+PASS: E14: line does not run through E11 label
+PASS: E14: label separate from E12
+PASS: E14: line does not run through E12 label
+PASS: E14: label separate from E13
+PASS: E14: line does not run through E13 label
+PASS: E14: correct number of explicit arrowheads
+PASS: E14: label fits canvas
+PASS: Floor 1: actual SVG has every canonical route once
+PASS: E11: exported SVG retains exact endpoints
+PASS: E11: exported SVG label visible, explicit and unique
+PASS: E11: exported arrow polygons exist
+PASS: E12: exported SVG retains exact endpoints
+PASS: E12: exported SVG label visible, explicit and unique
+PASS: E12: exported arrow polygons exist
+PASS: E13: exported SVG retains exact endpoints
+PASS: E13: exported SVG label visible, explicit and unique
+PASS: E13: exported arrow polygons exist
+PASS: E14: exported SVG retains exact endpoints
+PASS: E14: exported SVG label visible, explicit and unique
+PASS: E14: exported arrow polygons exist
+PASS: Floor 2: exact island membership
+PASS: Floor 2: exact same-floor route membership
+PASS: Floor 2: separate island cards 2A, 2B
+PASS: Floor 2: separate island cards 2A, 2C
+PASS: Floor 2: separate island cards 2A, 2D
+PASS: Floor 2: separate island cards 2B, 2C
+PASS: Floor 2: separate island cards 2B, 2D
+PASS: Floor 2: separate island cards 2C, 2D
+PASS: E21: drawn identity matches canonical route
+PASS: E21: source ends on 2A card boundary
+PASS: E21: destination ends on 2C card boundary
+PASS: E21: route never crosses inside 2A
+PASS: E21: label does not overlap island 2A
+PASS: E21: route never crosses inside 2B
+PASS: E21: label does not overlap island 2B
+PASS: E21: route never crosses inside 2C
+PASS: E21: label does not overlap island 2C
+PASS: E21: route never crosses inside 2D
+PASS: E21: label does not overlap island 2D
+PASS: E21: label separate from E22
+PASS: E21: line does not run through E22 label
+PASS: E21: label separate from E23
+PASS: E21: line does not run through E23 label
+PASS: E21: label separate from E24
+PASS: E21: line does not run through E24 label
+PASS: E21: label separate from E25
+PASS: E21: line does not run through E25 label
+PASS: E21: correct number of explicit arrowheads
+PASS: E21: label fits canvas
+PASS: E22: drawn identity matches canonical route
+PASS: E22: source ends on 2A card boundary
+PASS: E22: destination ends on 2B card boundary
+PASS: E22: route never crosses inside 2A
+PASS: E22: label does not overlap island 2A
+PASS: E22: route never crosses inside 2B
+PASS: E22: label does not overlap island 2B
+PASS: E22: route never crosses inside 2C
+PASS: E22: label does not overlap island 2C
+PASS: E22: route never crosses inside 2D
+PASS: E22: label does not overlap island 2D
+PASS: E22: label separate from E21
+PASS: E22: line does not run through E21 label
+PASS: E22: label separate from E23
+PASS: E22: line does not run through E23 label
+PASS: E22: label separate from E24
+PASS: E22: line does not run through E24 label
+PASS: E22: label separate from E25
+PASS: E22: line does not run through E25 label
+PASS: E22: correct number of explicit arrowheads
+PASS: E22: label fits canvas
+PASS: E23: drawn identity matches canonical route
+PASS: E23: source ends on 2B card boundary
+PASS: E23: destination ends on 2C card boundary
+PASS: E23: route never crosses inside 2A
+PASS: E23: label does not overlap island 2A
+PASS: E23: route never crosses inside 2B
+PASS: E23: label does not overlap island 2B
+PASS: E23: route never crosses inside 2C
+PASS: E23: label does not overlap island 2C
+PASS: E23: route never crosses inside 2D
+PASS: E23: label does not overlap island 2D
+PASS: E23: label separate from E21
+PASS: E23: line does not run through E21 label
+PASS: E23: label separate from E22
+PASS: E23: line does not run through E22 label
+PASS: E23: label separate from E24
+PASS: E23: line does not run through E24 label
+PASS: E23: label separate from E25
+PASS: E23: line does not run through E25 label
+PASS: E23: correct number of explicit arrowheads
+PASS: E23: label fits canvas
+PASS: E24: drawn identity matches canonical route
+PASS: E24: source ends on 2C card boundary
+PASS: E24: destination ends on 2D card boundary
+PASS: E24: route never crosses inside 2A
+PASS: E24: label does not overlap island 2A
+PASS: E24: route never crosses inside 2B
+PASS: E24: label does not overlap island 2B
+PASS: E24: route never crosses inside 2C
+PASS: E24: label does not overlap island 2C
+PASS: E24: route never crosses inside 2D
+PASS: E24: label does not overlap island 2D
+PASS: E24: label separate from E21
+PASS: E24: line does not run through E21 label
+PASS: E24: label separate from E22
+PASS: E24: line does not run through E22 label
+PASS: E24: label separate from E23
+PASS: E24: line does not run through E23 label
+PASS: E24: label separate from E25
+PASS: E24: line does not run through E25 label
+PASS: E24: correct number of explicit arrowheads
+PASS: E24: label fits canvas
+PASS: E25: drawn identity matches canonical route
+PASS: E25: source ends on 2B card boundary
+PASS: E25: destination ends on 2D card boundary
+PASS: E25: route never crosses inside 2A
+PASS: E25: label does not overlap island 2A
+PASS: E25: route never crosses inside 2B
+PASS: E25: label does not overlap island 2B
+PASS: E25: route never crosses inside 2C
+PASS: E25: label does not overlap island 2C
+PASS: E25: route never crosses inside 2D
+PASS: E25: label does not overlap island 2D
+PASS: E25: label separate from E21
+PASS: E25: line does not run through E21 label
+PASS: E25: label separate from E22
+PASS: E25: line does not run through E22 label
+PASS: E25: label separate from E23
+PASS: E25: line does not run through E23 label
+PASS: E25: label separate from E24
+PASS: E25: line does not run through E24 label
+PASS: E25: correct number of explicit arrowheads
+PASS: E25: label fits canvas
+PASS: Floor 2: actual SVG has every canonical route once
+PASS: E21: exported SVG retains exact endpoints
+PASS: E21: exported SVG label visible, explicit and unique
+PASS: E21: exported arrow polygons exist
+PASS: E22: exported SVG retains exact endpoints
+PASS: E22: exported SVG label visible, explicit and unique
+PASS: E22: exported arrow polygons exist
+PASS: E23: exported SVG retains exact endpoints
+PASS: E23: exported SVG label visible, explicit and unique
+PASS: E23: exported arrow polygons exist
+PASS: E24: exported SVG retains exact endpoints
+PASS: E24: exported SVG label visible, explicit and unique
+PASS: E24: exported arrow polygons exist
+PASS: E25: exported SVG retains exact endpoints
+PASS: E25: exported SVG label visible, explicit and unique
+PASS: E25: exported arrow polygons exist
+PASS: Floor 3: exact island membership
+PASS: Floor 3: exact same-floor route membership
+PASS: Floor 3: separate island cards 3A, 3B
+PASS: Floor 3: separate island cards 3A, 3C
+PASS: Floor 3: separate island cards 3A, 3D
+PASS: Floor 3: separate island cards 3B, 3C
+PASS: Floor 3: separate island cards 3B, 3D
+PASS: Floor 3: separate island cards 3C, 3D
+PASS: E31: drawn identity matches canonical route
+PASS: E31: source ends on 3A card boundary
+PASS: E31: destination ends on 3B card boundary
+PASS: E31: route never crosses inside 3A
+PASS: E31: label does not overlap island 3A
+PASS: E31: route never crosses inside 3B
+PASS: E31: label does not overlap island 3B
+PASS: E31: route never crosses inside 3C
+PASS: E31: label does not overlap island 3C
+PASS: E31: route never crosses inside 3D
+PASS: E31: label does not overlap island 3D
+PASS: E31: label separate from E32
+PASS: E31: line does not run through E32 label
+PASS: E31: label separate from E33
+PASS: E31: line does not run through E33 label
+PASS: E31: label separate from E34
+PASS: E31: line does not run through E34 label
+PASS: E31: correct number of explicit arrowheads
+PASS: E31: label fits canvas
+PASS: E32: drawn identity matches canonical route
+PASS: E32: source ends on 3B card boundary
+PASS: E32: destination ends on 3C card boundary
+PASS: E32: route never crosses inside 3A
+PASS: E32: label does not overlap island 3A
+PASS: E32: route never crosses inside 3B
+PASS: E32: label does not overlap island 3B
+PASS: E32: route never crosses inside 3C
+PASS: E32: label does not overlap island 3C
+PASS: E32: route never crosses inside 3D
+PASS: E32: label does not overlap island 3D
+PASS: E32: label separate from E31
+PASS: E32: line does not run through E31 label
+PASS: E32: label separate from E33
+PASS: E32: line does not run through E33 label
+PASS: E32: label separate from E34
+PASS: E32: line does not run through E34 label
+PASS: E32: correct number of explicit arrowheads
+PASS: E32: label fits canvas
+PASS: E33: drawn identity matches canonical route
+PASS: E33: source ends on 3C card boundary
+PASS: E33: destination ends on 3D card boundary
+PASS: E33: route never crosses inside 3A
+PASS: E33: label does not overlap island 3A
+PASS: E33: route never crosses inside 3B
+PASS: E33: label does not overlap island 3B
+PASS: E33: route never crosses inside 3C
+PASS: E33: label does not overlap island 3C
+PASS: E33: route never crosses inside 3D
+PASS: E33: label does not overlap island 3D
+PASS: E33: label separate from E31
+PASS: E33: line does not run through E31 label
+PASS: E33: label separate from E32
+PASS: E33: line does not run through E32 label
+PASS: E33: label separate from E34
+PASS: E33: line does not run through E34 label
+PASS: E33: correct number of explicit arrowheads
+PASS: E33: label fits canvas
+PASS: E34: drawn identity matches canonical route
+PASS: E34: source ends on 3B card boundary
+PASS: E34: destination ends on 3D card boundary
+PASS: E34: route never crosses inside 3A
+PASS: E34: label does not overlap island 3A
+PASS: E34: route never crosses inside 3B
+PASS: E34: label does not overlap island 3B
+PASS: E34: route never crosses inside 3C
+PASS: E34: label does not overlap island 3C
+PASS: E34: route never crosses inside 3D
+PASS: E34: label does not overlap island 3D
+PASS: E34: label separate from E31
+PASS: E34: line does not run through E31 label
+PASS: E34: label separate from E32
+PASS: E34: line does not run through E32 label
+PASS: E34: label separate from E33
+PASS: E34: line does not run through E33 label
+PASS: E34: correct number of explicit arrowheads
+PASS: E34: label fits canvas
+PASS: Floor 3: actual SVG has every canonical route once
+PASS: E31: exported SVG retains exact endpoints
+PASS: E31: exported SVG label visible, explicit and unique
+PASS: E31: exported arrow polygons exist
+PASS: E32: exported SVG retains exact endpoints
+PASS: E32: exported SVG label visible, explicit and unique
+PASS: E32: exported arrow polygons exist
+PASS: E33: exported SVG retains exact endpoints
+PASS: E33: exported SVG label visible, explicit and unique
+PASS: E33: exported arrow polygons exist
+PASS: E34: exported SVG retains exact endpoints
+PASS: E34: exported SVG label visible, explicit and unique
+PASS: E34: exported arrow polygons exist
+PASS: V02: transfer row has canonical endpoints and direction
+PASS: V02: transfer endpoint cards separate
+PASS: V02: transfer line reaches exact endpoint card boundaries
+PASS: V02: both cards inside route row
+PASS: V03: transfer row has canonical endpoints and direction
+PASS: V03: transfer endpoint cards separate
+PASS: V03: transfer line reaches exact endpoint card boundaries
+PASS: V03: both cards inside route row
+PASS: V03: route row does not overlap preceding route
+PASS: V04: transfer row has canonical endpoints and direction
+PASS: V04: transfer endpoint cards separate
+PASS: V04: transfer line reaches exact endpoint card boundaries
+PASS: V04: both cards inside route row
+PASS: V04: route row does not overlap preceding route
+PASS: V05: transfer row has canonical endpoints and direction
+PASS: V05: transfer endpoint cards separate
+PASS: V05: transfer line reaches exact endpoint card boundaries
+PASS: V05: both cards inside route row
+PASS: V05: route row does not overlap preceding route
+PASS: V06: transfer row has canonical endpoints and direction
+PASS: V06: transfer endpoint cards separate
+PASS: V06: transfer line reaches exact endpoint card boundaries
+PASS: V06: both cards inside route row
+PASS: V06: route row does not overlap preceding route
+PASS: V07: transfer row has canonical endpoints and direction
+PASS: V07: transfer endpoint cards separate
+PASS: V07: transfer line reaches exact endpoint card boundaries
+PASS: V07: both cards inside route row
+PASS: V07: route row does not overlap preceding route
+PASS: V08: transfer row has canonical endpoints and direction
+PASS: V08: transfer endpoint cards separate
+PASS: V08: transfer line reaches exact endpoint card boundaries
+PASS: V08: both cards inside route row
+PASS: V08: route row does not overlap preceding route
+PASS: E33: transfer row has canonical endpoints and direction
+PASS: E33: transfer endpoint cards separate
+PASS: E33: transfer line reaches exact endpoint card boundaries
+PASS: E33: both cards inside route row
+PASS: E33: route row does not overlap preceding route
+PASS: F01: transfer row has canonical endpoints and direction
+PASS: F01: transfer endpoint cards separate
+PASS: F01: transfer line reaches exact endpoint card boundaries
+PASS: F01: both cards inside route row
+PASS: F01: route row does not overlap preceding route
+PASS: F02: transfer row has canonical endpoints and direction
+PASS: F02: transfer endpoint cards separate
+PASS: F02: transfer line reaches exact endpoint card boundaries
+PASS: F02: both cards inside route row
+PASS: F02: route row does not overlap preceding route
+PASS: F03: transfer row has canonical endpoints and direction
+PASS: F03: transfer endpoint cards separate
+PASS: F03: transfer line reaches exact endpoint card boundaries
+PASS: F03: both cards inside route row
+PASS: F03: route row does not overlap preceding route
+PASS: F04: transfer row has canonical endpoints and direction
+PASS: F04: transfer endpoint cards separate
+PASS: F04: transfer line reaches exact endpoint card boundaries
+PASS: F04: both cards inside route row
+PASS: F04: route row does not overlap preceding route
+PASS: F05: transfer row has canonical endpoints and direction
+PASS: F05: transfer endpoint cards separate
+PASS: F05: transfer line reaches exact endpoint card boundaries
+PASS: F05: both cards inside route row
+PASS: F05: route row does not overlap preceding route
+PASS: Transfer register covers all seven off-floor transfers, the local final rise and five falls
+PASS: Floor 0: offline atlas embeds byte-identical exported SVG
+PASS: Floor 1: offline atlas embeds byte-identical exported SVG
+PASS: Floor 2: offline atlas embeds byte-identical exported SVG
+PASS: Floor 3: offline atlas embeds byte-identical exported SVG
+PASS: Atlas embedded data identical to canonical JSON
+PASS: Puzzle-only JSON is the same generated view
+PASS: P8 Watchers and supervising Collector named separately
+PASS: P10 aiming causes no earlier diversion
+PASS: P10 has one activation bark
+PASS: P10 silent aiming state explicit in data
+PASS: P10 bark yields one successful diversion
+PASS: P9 no longer asks player to collect unused fragments
+PASS: S3 reward explicitly a local rest nook, not an unmapped shortcut
+PASS: 01_WORLD_ATLAS_v3_1.txt: correct document version
+PASS: 02_CHAPTER_WALKTHROUGH_v3_1.txt: correct document version
+PASS: 03_MECHANICAL_BLUEPRINT_v3_1.txt: correct document version
+PASS: Mechanical blueprint uses defined Watcher/Collector terms
+
+Scope: drawn static geometry and file consistency only. Actual text rendering is checked separately in the browser.

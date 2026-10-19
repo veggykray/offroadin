@@ -1,0 +1,1089 @@
+{
+  "title": "THE ELSEWHERE — Chapter One: The Rivers Above",
+  "revision": "3.1 — documentation and diagram corrections; core chapter design unchanged",
+  "time_target": "78 min central design estimate, opening 3 min INCLUDED in P1 (4 min gameplay); optional secrets selectable; 60–90 min goal subject to playtest",
+  "format": "mobile-landscape point-and-click, desktop mouse; angled 3D isometric",
+  "nodes": {
+    "0A": {
+      "id": "0A",
+      "floor": 0,
+      "name": "Garden Verge",
+      "kind": "Wild garden / broken arrival portal",
+      "visual": "The ordinary garden fragments persist only here: grass, a garden wall and a cracked, silent portal. A wind-herder tends strange airborne seeds.",
+      "story": "Opening pursuit, first hiding place",
+      "interaction": "Portal chase / hide-and-divert; cat sees moving seed shadows, dog scents the frightened stranger.",
+      "inhabitants": "Whispering wind-herder, harmless; a Watcher enters briefly. The old garden bell can be rung to lure it away.",
+      "x": 95,
+      "y": 72,
+      "grid_xy": [
+        0,
+        0
+      ]
+    },
+    "0B": {
+      "id": "0B",
+      "floor": 0,
+      "name": "Refuge Sluice",
+      "kind": "Pitted basalt floodgate and soft refuge",
+      "visual": "Reed roots wrap old basalt sluicework; chipped porcelain bowls collect cyan run-off. A repairer quietly watches.",
+      "story": "P1 rescue resolution; P2 first liquid",
+      "interaction": "Follow scent to a blocked cyan seep, scrape away reeds and turn a ceramic diverter; the resulting flow raises the float gate and forms the bridge.",
+      "inhabitants": "Sluice repairer; unthreatening, not a mission-giving NPC.",
+      "x": 248,
+      "y": 72,
+      "grid_xy": [
+        1,
+        0
+      ]
+    },
+    "0C": {
+      "id": "0C",
+      "floor": 0,
+      "name": "Catch Basin",
+      "kind": "Terraced catch-pools and cushion reeds",
+      "visual": "Soft reed-moss nets below the upper Commons catch deliberate or accidental falls. Small basin-tenders sing while sorting filters.",
+      "story": "Falling tutorial / recovery route",
+      "interaction": "Recover by the one-way reed ramp to 0B; optional damp-reed scent clue reveals a home-memory fragment, not a new musical minigame.",
+      "inhabitants": "Basin-tenders; they help retrieve dropped objects and never attack.",
+      "x": 401,
+      "y": 72,
+      "grid_xy": [
+        2,
+        0
+      ]
+    },
+    "0D": {
+      "id": "0D",
+      "floor": 0,
+      "name": "Root Elevator",
+      "kind": "Spiral column and carved stone roots",
+      "visual": "Stacked carved roots and a vertical ring of magenta liquid, with a readout of lift mass shown by three glowing bands.",
+      "story": "P2 first ascent",
+      "interaction": "First cat-only ascent; stronger current later lifts dog plus White. White balks once, then accepts comfort.",
+      "inhabitants": "Tiny lift attendant takes notes but does not demand a toll.",
+      "x": 248,
+      "y": 183,
+      "grid_xy": [
+        1,
+        1
+      ]
+    },
+    "1A": {
+      "id": "1A",
+      "floor": 1,
+      "name": "Reed Quay",
+      "kind": "Home docks and tethered floating skiffs",
+      "visual": "Working quay with basket ferries, humming reed crops, pump wheels and porcelain homes.",
+      "story": "P2 regulator, P3 introduction",
+      "interaction": "Mass regulator at landing; gossip and signs establish how lifts and flowkeepers behave.",
+      "inhabitants": "Reed growers, basket porters, light-moth feeders, relaxed dock clerk.",
+      "x": 248,
+      "y": 183,
+      "grid_xy": [
+        1,
+        1
+      ]
+    },
+    "1B": {
+      "id": "1B",
+      "floor": 1,
+      "name": "Canal Commons",
+      "kind": "Public crossroads over glowing conduits",
+      "visual": "Lived-in village commons: bread ovens, public market steps, bridges and a Watcher who is indifferent to the animals.",
+      "story": "P3 exploration and P4 bridge objective",
+      "interaction": "Observe far-side bridge from here; fear-safe shelter and an accidental fall route.",
+      "inhabitants": "Bakers, couriers, repairers, one neutral Watcher.",
+      "x": 401,
+      "y": 72,
+      "grid_xy": [
+        2,
+        0
+      ]
+    },
+    "1C": {
+      "id": "1C",
+      "floor": 1,
+      "name": "Far Pipe Yard",
+      "kind": "Narrow maintenance sheds",
+      "visual": "Thin pipework, cat-scale roofwalks, workshop tools, humming return fountain.",
+      "story": "P4 cat launch / fall recovery",
+      "interaction": "Launch cat on V03; optional route read from vibrating pipes.",
+      "inhabitants": "Pipe stitchers and soldering flowkeepers; dog is simply too large for their roofs.",
+      "x": 95,
+      "y": 183,
+      "grid_xy": [
+        0,
+        1
+      ]
+    },
+    "1D": {
+      "id": "1D",
+      "floor": 1,
+      "name": "Hearth Courts",
+      "kind": "Clustered ceramic cottages & mechanical yard",
+      "visual": "Warm glazed homes and wheelhouse workshop. Cyan receiver on far bank, private ferry platform nearby.",
+      "story": "P4 remote bridge; P5 distributor",
+      "interaction": "Cat redirects cyan to bridge; later investigate why ferry no longer follows its amber courier.",
+      "inhabitants": "Family of Flowkeepers; gruff but kind mechanic whose skiff uses amber power.",
+      "x": 401,
+      "y": 183,
+      "grid_xy": [
+        2,
+        1
+      ]
+    },
+    "2A": {
+      "id": "2A",
+      "floor": 2,
+      "name": "Ferry Terrace",
+      "kind": "Suspended public ferries and ticket bells",
+      "visual": "Active ferry plaza with ticket bells, canopy workshops, passengers, hung lanterns and busy repairs.",
+      "story": "P5 arrival and P6 ferry makers",
+      "interaction": "Light-moth bell mystery; captain grants access to service pipes and converter catalyst.",
+      "inhabitants": "Practical ferry captain, umbrella maker, light moths stealing shiny things.",
+      "x": 248,
+      "y": 183,
+      "grid_xy": [
+        1,
+        1
+      ]
+    },
+    "2B": {
+      "id": "2B",
+      "floor": 2,
+      "name": "Siphon Loft",
+      "kind": "Vertical liquid pipe jungle / inspection deck",
+      "visual": "Above an industrial void, a maze of glazed high pressure pipes and moving flowkeeper maintenance skiffs.",
+      "story": "P4 cross-floor route; P9 remote prism relay",
+      "interaction": "Cat sees pipe vibrations to find remote magenta relay; sloping return chute lands at Hearth Courts.",
+      "inhabitants": "Busy miniature Flowkeepers, glass baffle polishers, no enemies by default.",
+      "x": 95,
+      "y": 183,
+      "grid_xy": [
+        0,
+        1
+      ]
+    },
+    "2C": {
+      "id": "2C",
+      "floor": 2,
+      "name": "Dye Market",
+      "kind": "Tented dye pools, alchemical kitchens",
+      "visual": "Tented dye bazaar with vats, evaporators, stove rooms, little cafés and scented ceramic workshops.",
+      "story": "P6 ferry favour; P7 colour conversion",
+      "interaction": "Convert cyan to amber while preserving a small resident supply; independent sealed amber feeder runs to upper Prism Works.",
+      "inhabitants": "Kindly alchemist, dyers, perfumers, nervous traders.",
+      "x": 248,
+      "y": 72,
+      "grid_xy": [
+        1,
+        0
+      ]
+    },
+    "2D": {
+      "id": "2D",
+      "floor": 2,
+      "name": "Collectors’ Records",
+      "kind": "Severe columned offices and beacon yards",
+      "visual": "Collector records depot: light cones, archive shelves, pressure drains, hiding nooks, containment alcove.",
+      "story": "P8 stealth + ascent",
+      "interaction": "Observe patrol rules; use scents and lamps to route a safe escorted ascent; capture is recoverable.",
+      "inhabitants": "Watchers, one Collector, confused clerk, sympathetic archivist.",
+      "x": 401,
+      "y": 183,
+      "grid_xy": [
+        2,
+        1
+      ]
+    },
+    "3A": {
+      "id": "3A",
+      "floor": 3,
+      "name": "Dew Gardens",
+      "kind": "Quiet suspended pools and translucent foliage",
+      "visual": "Floating dew pools, enormous translucent leaves and caretakers growing pollinators on cyan-fed ceramic rails.",
+      "story": "P8 arrival; P9 flow source",
+      "interaction": "Prime prism cistern; optional pollinator restoration; friendly place after hostile depot.",
+      "inhabitants": "Quiet gardeners, elder Dewkeeper, luminous moth pollinators.",
+      "x": 401,
+      "y": 183,
+      "grid_xy": [
+        2,
+        1
+      ]
+    },
+    "3B": {
+      "id": "3B",
+      "floor": 3,
+      "name": "Prism Works",
+      "kind": "Impossible precision-machine observatory",
+      "visual": "Geometric prism house with rotating glass baffles, audible resonance tubes and channels from distant floors.",
+      "story": "P9 multi-floor liquid network",
+      "interaction": "Solve multi-floor liquid logic by optical clues and channel routing, not simultaneous buttons.",
+      "inhabitants": "Facet polishers, spectral engineers, one bored inspector.",
+      "x": 95,
+      "y": 183,
+      "grid_xy": [
+        0,
+        1
+      ]
+    },
+    "3C": {
+      "id": "3C",
+      "floor": 3,
+      "name": "Bell Observatory",
+      "kind": "Tall wind bells and floating pale stone",
+      "visual": "Wind-chime refuge built by Bell-listeners. Its lower terrace faces a last magenta ascent to the portal dais.",
+      "story": "P9 payoff; P10 shelter and safety",
+      "interaction": "Read the Echo Horn’s existing directional markings and use one relayed bark to lure the final Collector away; White finds courage to enter the roaring final lift.",
+      "inhabitants": "Bell-listeners and non-hostile caretakers.",
+      "x": 248,
+      "y": 294,
+      "grid_xy": [
+        1,
+        2
+      ]
+    },
+    "3D": {
+      "id": "3D",
+      "floor": 3,
+      "name": "Sky Threshold",
+      "kind": "Circular sky portal surrounded by fine channels",
+      "visual": "Raised portal dais and single final Collector. A magenta column rises from the adjoining lower terrace.",
+      "story": "P10 chapter ending",
+      "interaction": "Cat silently aims the Echo Horn; dog supplies the one bark that creates the diversion and activates the final upflow. White chooses ascent.",
+      "inhabitants": "Ceremonial custodians; one Collector guarding portal records.",
+      "x": 401,
+      "y": 294,
+      "grid_xy": [
+        2,
+        2
+      ]
+    }
+  },
+  "edges": [
+    {
+      "id": "E01",
+      "from_": "0A",
+      "to": "0B",
+      "kind": "walkway",
+      "who": "both",
+      "gate": "P1_LATCH_OPEN",
+      "direction": "two-way",
+      "notes": "Reversible access available as soon as latch releases; P1_RESCUED is a separate event."
+    },
+    {
+      "id": "E02",
+      "from_": "0B",
+      "to": "0D",
+      "kind": "cyan bridge",
+      "who": "both",
+      "gate": "P2_BRIDGE_READY",
+      "direction": "two-way",
+      "notes": "Liquid forms a safe bridge. After first crossing the P2_BRIDGE_SAFE retaining rail prevents stranding."
+    },
+    {
+      "id": "E03",
+      "from_": "0D",
+      "to": "0C",
+      "kind": "footpath",
+      "who": "both",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Catch-basin recovery path along the lower terrace."
+    },
+    {
+      "id": "E04",
+      "from_": "0C",
+      "to": "0B",
+      "kind": "recovery ramp",
+      "who": "both",
+      "gate": "START",
+      "direction": "one-way",
+      "notes": "From catch basin TO sluice only; cannot bypass first bridge from sluice."
+    },
+    {
+      "id": "E11",
+      "from_": "1A",
+      "to": "1B",
+      "kind": "walkway",
+      "who": "both",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Village public deck; guards will not attack animals."
+    },
+    {
+      "id": "E12",
+      "from_": "1A",
+      "to": "1C",
+      "kind": "walkway",
+      "who": "both",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Town maintenance street; the safe recovery circuit."
+    },
+    {
+      "id": "E13",
+      "from_": "1B",
+      "to": "1C",
+      "kind": "cat vent",
+      "who": "cat",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Shortcut through thin ceramic flue; dog cannot fit."
+    },
+    {
+      "id": "E14",
+      "from_": "1B",
+      "to": "1D",
+      "kind": "cyan bridge",
+      "who": "both",
+      "gate": "P4_BRIDGE_OPEN",
+      "direction": "two-way",
+      "notes": "Opened from 1D; does not require escort success to be crossable. Safety rail persists after first crossing."
+    },
+    {
+      "id": "E21",
+      "from_": "2A",
+      "to": "2C",
+      "kind": "market bridge",
+      "who": "both",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Public ferry-to-market walkway."
+    },
+    {
+      "id": "E22",
+      "from_": "2A",
+      "to": "2B",
+      "kind": "inspection walkway",
+      "who": "both",
+      "gate": "P6_FAVOUR",
+      "direction": "two-way",
+      "notes": "Service access unlocked after the ferry bell is returned."
+    },
+    {
+      "id": "E23",
+      "from_": "2B",
+      "to": "2C",
+      "kind": "tiled passage",
+      "who": "both",
+      "gate": "P6_FAVOUR",
+      "direction": "two-way",
+      "notes": "Service access unlocked after the ferry bell is returned."
+    },
+    {
+      "id": "E24",
+      "from_": "2C",
+      "to": "2D",
+      "kind": "amber inspection gate",
+      "who": "both",
+      "gate": "P7_GATE_OPEN",
+      "direction": "two-way",
+      "notes": "Amber opens public records access; latches before escort crosses. Amber reserve at 3B independent from reversible market demo."
+    },
+    {
+      "id": "E25",
+      "from_": "2B",
+      "to": "2D",
+      "kind": "cat rafter",
+      "who": "cat",
+      "gate": "P6_FAVOUR",
+      "direction": "two-way",
+      "notes": "Cat scouting-only rafter from Siphon Loft to Records; safe return; does not allow White through."
+    },
+    {
+      "id": "E31",
+      "from_": "3A",
+      "to": "3B",
+      "kind": "stone footbridge",
+      "who": "both",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Quiet safe path between gardens and prism works."
+    },
+    {
+      "id": "E32",
+      "from_": "3B",
+      "to": "3C",
+      "kind": "cyan formed bridge",
+      "who": "both",
+      "gate": "P9_BRIDGE_OPEN",
+      "direction": "two-way",
+      "notes": "Bridge enables on alignment, before White crosses; permanently stabilised once P9_ESCORTED."
+    },
+    {
+      "id": "E33",
+      "from_": "3C",
+      "to": "3D",
+      "kind": "last magenta upflow",
+      "who": "both",
+      "gate": "P10_GATE_OPEN",
+      "direction": "two-way",
+      "notes": "SHORT MAGENTA UPFLOW from lower observatory terrace 3C to raised portal dais 3D on the same floor; true visible lift, not a flat walkway."
+    },
+    {
+      "id": "E34",
+      "from_": "3B",
+      "to": "3D",
+      "kind": "cat parapet",
+      "who": "cat",
+      "gate": "P9_BRIDGE_OPEN",
+      "direction": "two-way",
+      "notes": "Cat-only overhead gallery from 3B to rear of 3D; accessible before P10 gate opens, and never used by dog."
+    },
+    {
+      "id": "V02",
+      "from_": "0D",
+      "to": "1A",
+      "kind": "variable-strength magenta ascent",
+      "who": "both-with-upgrade",
+      "gate": "P2_BRIDGE_READY",
+      "direction": "two-way",
+      "notes": "ONE physical magenta lift with two load states: cat-only until P2_LIFT_STRONG, then all three. Movement both ways. 0D and 1A stack directly."
+    },
+    {
+      "id": "V03",
+      "from_": "1C",
+      "to": "2B",
+      "kind": "weak magenta rise",
+      "who": "cat",
+      "gate": "START",
+      "direction": "two-way",
+      "notes": "Cat-only magenta lift plus return ledge, 1C and 2B stack directly; dog cannot use."
+    },
+    {
+      "id": "V04",
+      "from_": "2B",
+      "to": "1D",
+      "kind": "sloping cat-only return gutter",
+      "who": "cat",
+      "gate": "START",
+      "direction": "one-way",
+      "notes": "ONE-WAY sloped return gutter across 2B upper service gantry then downward to 1D far bank. Not an unrealistically vertical shaft; easy cat dismount."
+    },
+    {
+      "id": "V05",
+      "from_": "1D",
+      "to": "2A",
+      "kind": "travelling ferry",
+      "who": "both",
+      "gate": "P5_FERRY_POWERED",
+      "direction": "two-way",
+      "notes": "A horizontal travelling counterweight ferry, offset between 1D and 2A; dock at each end; two-way."
+    },
+    {
+      "id": "V06",
+      "from_": "2D",
+      "to": "3A",
+      "kind": "heavy upward stream",
+      "who": "both",
+      "gate": "P8_LIFT_STABLE",
+      "direction": "two-way",
+      "notes": "True vertical magenta stream; 2D and 3A aligned. Rescue/return works both ways."
+    },
+    {
+      "id": "V07",
+      "from_": "2C",
+      "to": "3A",
+      "kind": "diagonal scenic gondola",
+      "who": "both",
+      "gate": "P8_ESCORTED",
+      "direction": "two-way",
+      "notes": "Botanical scenic gondola on an obvious diagonal cable between market 2C and garden 3A; not an upright fountain."
+    },
+    {
+      "id": "V08",
+      "from_": "2B",
+      "to": "3B",
+      "kind": "reversible cat service column",
+      "who": "cat",
+      "gate": "P8_ESCORTED",
+      "direction": "two-way",
+      "notes": "ONE reversible service column between vertically aligned 2B and 3B, with marked safe return pocket; cat only."
+    }
+  ],
+  "falls": [
+    {
+      "id": "F01",
+      "from_": "1B",
+      "to": "0C",
+      "kind": "safe fall",
+      "who": "both",
+      "gate": "P2_ASCENDED",
+      "direction": "one-way",
+      "notes": "Safe catch reeds directly below 1B at 0C, reached once first ascent is complete."
+    },
+    {
+      "id": "F02",
+      "from_": "2A",
+      "to": "1A",
+      "kind": "safe fall",
+      "who": "both",
+      "gate": "P5_FERRY_POWERED",
+      "direction": "one-way",
+      "notes": "Ferry net directly below 2A at 1A; ferry remains powered and reusable."
+    },
+    {
+      "id": "F03",
+      "from_": "2D",
+      "to": "1D",
+      "kind": "safe fall",
+      "who": "both",
+      "gate": "P7_GATE_OPEN",
+      "direction": "one-way",
+      "notes": "Collector knockback drops to Hearth Courts safety net directly beneath 2D; safe ferry and return available."
+    },
+    {
+      "id": "F04",
+      "from_": "3B",
+      "to": "2B",
+      "kind": "safe fall",
+      "who": "both",
+      "gate": "P8_ESCORTED",
+      "direction": "one-way",
+      "notes": "Prism maintenance fall caught at service loft directly below; service cat column and dog-friendly garden loop return."
+    },
+    {
+      "id": "F05",
+      "from_": "3D",
+      "to": "2D",
+      "kind": "safe fall",
+      "who": "both",
+      "gate": "P10_GATE_OPEN",
+      "direction": "one-way",
+      "notes": "Short offset chute lands in fenced upper safety yard inside 2D below portal; no collector spawncamp. V06 returns."
+    }
+  ],
+  "circuits": [
+    {
+      "id": "L01",
+      "colour": "cyan",
+      "source": "0B",
+      "receiver": "0D",
+      "control": "CV-01 at 0B",
+      "flag": "P2_BRIDGE_READY",
+      "rule": "One cyan feed, diversion opens 0B-0D; retaining rail ensures return after first crossing."
+    },
+    {
+      "id": "L02",
+      "colour": "magenta",
+      "source": "0D",
+      "receiver": "1A",
+      "control": "MR-01 at 1A",
+      "flag": "P2_LIFT_STRONG",
+      "rule": "Single magenta lift always cat-passable; regulator raises pressure and load limit, enabling dog and White."
+    },
+    {
+      "id": "L03",
+      "colour": "cyan",
+      "source": "1D",
+      "receiver": "1B",
+      "control": "CV-02 at 1D",
+      "flag": "P4_BRIDGE_OPEN",
+      "rule": "Cyan flow via remote curl-stone at 1D opens cross-canal bridge; dog never needs to hold a plate."
+    },
+    {
+      "id": "L04",
+      "colour": "amber",
+      "source": "1D",
+      "receiver": "2A",
+      "control": "AF-01 at 1D",
+      "flag": "P5_FERRY_POWERED",
+      "rule": "Ferry power from moving amber courier is re-routed after player observes its loop; dog tracks odour and cat spots visual marker; no dual switch."
+    },
+    {
+      "id": "L05",
+      "colour": "cyan→amber",
+      "source": "2C",
+      "receiver": "2D",
+      "control": "AL-01 at 2C",
+      "flag": "P7_GATE_OPEN",
+      "rule": "Required: one cyan-to-amber conversion opens records gate and charges sealed non-draining reserve for L09. OPTIONAL mastery: split source to preserve kitchen cyan cooling while converting; local controls reversible."
+    },
+    {
+      "id": "L06",
+      "colour": "magenta",
+      "source": "2D",
+      "receiver": "3A",
+      "control": "MR-02 at 2D",
+      "flag": "P8_LIFT_STABLE",
+      "rule": "Magenta is diverted through the depot pressure drain while the Watchers investigate an amber inspection signal and the Collector faces away; no heavy button."
+    },
+    {
+      "id": "L07",
+      "colour": "cyan",
+      "source": "3A",
+      "receiver": "3B",
+      "control": "PC-01 at 3A",
+      "flag": "P9_CYAN_PRIMED",
+      "rule": "Cyan from dew garden travels through exactly TWO rotatable glass facets at 3B; large snap points and reflected symbols reveal the alignment."
+    },
+    {
+      "id": "L08",
+      "colour": "magenta",
+      "source": "2B",
+      "receiver": "3B",
+      "control": "PM-01 at 2B",
+      "flag": "P9_MAGENTA_PRIMED",
+      "rule": "Magenta from 2B relay starts when the cat opens one large clearly visible diverter; steady flow, no pulse matching."
+    },
+    {
+      "id": "L09",
+      "colour": "amber",
+      "source": "2C",
+      "receiver": "3B",
+      "control": "PA-01 at 3B",
+      "flag": "P9_AMBER_READY",
+      "rule": "Amber circulates within a sealed, non-consuming reserve loop charged once at 2C: remote P9 feed remains live whatever colour local converter displays."
+    },
+    {
+      "id": "L10",
+      "colour": "cyan+magenta+amber",
+      "source": "3B",
+      "receiver": "3C",
+      "control": "PR-01 at 3B",
+      "flag": "P9_BRIDGE_OPEN",
+      "rule": "Align three inputs in correct physical order; amber is automatically ready after P7, no dedicated dog switch."
+    },
+    {
+      "id": "L11",
+      "colour": "amber",
+      "source": "3D",
+      "receiver": "3C",
+      "control": "GT-01 at 3D",
+      "flag": "P10_GATE_OPEN",
+      "rule": "Cat silently aims the Echo Horn without triggering anything. One dog bark at the visible resonance point is then relayed as one false signal, drawing the Collector away and starting the LOUD final lift."
+    },
+    {
+      "id": "L12",
+      "colour": "magenta",
+      "source": "3C",
+      "receiver": "3D",
+      "control": "Echo Horn + resonance stone at Bell Observatory",
+      "flag": "P10_GATE_OPEN",
+      "rule": "The same single relayed bark triggers the LOUD rising magenta column. Silently aiming the Echo Horn does not power the lift; this is one diversion, not two."
+    }
+  ],
+  "puzzles": [
+    {
+      "id": "P1",
+      "title": "The Stray from the Door",
+      "minutes": 7,
+      "islands": [
+        "0A",
+        "0B"
+      ],
+      "opening_state": "The FIRST THREE MINUTES show the garden portal chase and arrival. Then White freezes behind a broken slab as a Watcher approaches, leaving FOUR minutes of interactive rescue gameplay.",
+      "ordered_solution": [
+        "Read White’s frightened gaze and the lantern sweep; see the old bell above a nearby wall.",
+        "Cat follows a flickering seed-shadow through a wall notch; nudge the garden bell so the Watcher inspects the noise.",
+        "Dog approaches slowly and crouches sideways between White and the patrol. White chooses to follow.",
+        "Cat nudges the loose reed latch open while guard is occupied; dog escorts White safely to Refuge Sluice."
+      ],
+      "primary_challenge": "Environmental distraction + trust-building; NOT two weight switches.",
+      "awards": [
+        "P1_LATCH_OPEN",
+        "P1_RESCUED"
+      ],
+      "failure_recovery": "If spotted, White hides under tile; guard wanders to bell or returns to patrol; no hard capture in tutorial.",
+      "mastery": [
+        "Gentle Passage: White never becomes fully panicked",
+        "Quiet Kindness: ring the garden bell only once",
+        "Secret: follow wind-herder seeds to garden-memory fragment"
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "The First Rise",
+      "minutes": 8,
+      "islands": [
+        "0B",
+        "0D",
+        "1A"
+      ],
+      "opening_state": "Cyan drains into a broken cistern, leaving bridge dry; an upflow gurgles above. Everything lives off moving liquid.",
+      "ordered_solution": [
+        "Follow dog’s scent trail of wet mineral droplets to a blocked side seep; tap dog to scrape reeds away, revealing cyan source.",
+        "Rotate one large ceramic diverter: cyan runs along carved groove and solidifies the crossing E02; permanent safety slat engages after first crossing.",
+        "At the Root Elevator White balks at the very LOUD magenta rise. Dog sits near him; fear visibly settles, without a timer. The noise remains unmistakable for the final emotional echo.",
+        "Cat rides the weak lift alone to 1A and inspects the three-band load indicator; rotate accessible upper pressure regulator to strengthen same stream.",
+        "White and dog ascend together using the now-strong stream; cat reunites with them at Reed Quay."
+      ],
+      "primary_challenge": "Flow-routing + pressure threshold + first meaningful separation + emotional motif.",
+      "awards": [
+        "P2_BRIDGE_READY",
+        "P2_BRIDGE_SAFE",
+        "P2_LIFT_STRONG",
+        "P2_ASCENDED"
+      ],
+      "failure_recovery": "Bridge can be reset before first crossing; its permanent safety rail preserves return afterward. Lift always works for cat and gains load capacity; White waits for dog.",
+      "mastery": [
+        "Gentle Passage: reassure White before selecting lift",
+        "Elegant Flow: find direct cyan route without using reset",
+        "Secret: inspect attendant’s slate to discover hidden load symbol"
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Life on the Canals",
+      "minutes": 5,
+      "islands": [
+        "1A",
+        "1B"
+      ],
+      "opening_state": "Busy domestic life: bakers, reed fishers, curious couriers and a harmless Watcher. A welcome breather.",
+      "ordered_solution": [
+        "Watch a ferry skiff following painted liquid lanes while citizens go about their routines.",
+        "Help a courier recover a reed bundle via an ordinary loose basket OR ignore and continue; residents respond differently.",
+        "Look across the canal and recognise a cyan receiver without access to its controlling end.",
+        "Notice miniature Flowkeepers using the rooftop pipe vents: a clue for the cat ascent."
+      ],
+      "primary_challenge": "Exploration, environmental storytelling and observation. Not presented as a locked puzzle.",
+      "awards": [
+        "P3_OBSERVED"
+      ],
+      "failure_recovery": "No patrol threat; optional interactions do not gate the next sequence.",
+      "mastery": [
+        "Gentle Passage: see White accept a gift from baker",
+        "Neighbourly: return the reed bundle",
+        "Secret: find hidden sky reflection in communal basin"
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Above, Across, Below",
+      "minutes": 10,
+      "islands": [
+        "1B",
+        "1C",
+        "2B",
+        "1D"
+      ],
+      "opening_state": "The dog and White face a chasm; far bank is visible but there is no bridge. Cat spots a faint moving line of fluid overhead.",
+      "ordered_solution": [
+        "Park dog and White in a clearly safe shaded courtyard; they can be called to a nearby rest point and do not wander off.",
+        "Cat travels through vent or street to 1C and rises alone on V03 to pipework on 2B.",
+        "Observe tiny Flowkeepers cleaning glass pipes. Their rhythm reveals which gutter feeds a sloped return at the far bank; follow the moving flow without precision timing.",
+        "Cat crosses the upper gantry then deliberately slides down V04 to 1D—same floor as dog, other side of chasm.",
+        "At 1D rotate the exposed curl-stone until cyan follows a groove to 1B receiver; bridge E14 becomes solid.",
+        "Switch to dog and lead White across; cat can return with them."
+      ],
+      "primary_challenge": "Three-dimensional map reasoning + inhabitation clue + solitary cat descent, not a dog/cat simultaneous key.",
+      "awards": [
+        "P4_BRIDGE_OPEN",
+        "P4_ESCORTED"
+      ],
+      "failure_recovery": "V04 is one-way DOWN by design. Once on 1D, cat can ALWAYS operate curl-stone; E14 provides reversible permanent exit. Before descent V03 is reversible.",
+      "mastery": [
+        "Gentle Passage: White crosses without hesitation",
+        "Quiet Observer: spot correct gutter before trying a wrong one",
+        "Secret: meet a tiny roof-top pipe tailor"
+      ]
+    },
+    {
+      "id": "P5",
+      "title": "The Amber Courier",
+      "minutes": 6,
+      "islands": [
+        "1D",
+        "2A"
+      ],
+      "opening_state": "The ferry is not broken. A mobile amber-powered courier cart has been misrouted, so the terminal receives no power.",
+      "ordered_solution": [
+        "Dog follows faint hot-metal scent from empty ferry outlet to moving courier’s route; the scent trail points to an alternative canal branch.",
+        "Cat sees courier’s distinctive amber triangle painted on elevated route signs and identifies a junction that repeats the route.",
+        "Tap the junction plate when accessible to divert courier’s next circuit to the ferry receiver; animation clearly shows amber filling a reserved power vessel.",
+        "Ferry opens as stable two-way transport. Dog waits until White steps aboard willingly; depart with all three."
+      ],
+      "primary_challenge": "Trace a moving supply chain and reroute it based on information; no wheel+clutch double key.",
+      "awards": [
+        "P5_FERRY_POWERED",
+        "P5_ARRIVED"
+      ],
+      "failure_recovery": "Courier loops indefinitely; no missed-timing fail. Toggle can be tried repeatedly. Ferry remains powered by a latched reservoir.",
+      "mastery": [
+        "Gentle Passage: depart only when White is calm",
+        "Efficient Courier: divert on first correctly identified junction",
+        "Secret: spot courier’s hidden harmless passenger"
+      ]
+    },
+    {
+      "id": "P6",
+      "title": "The Stolen Ferry Bell",
+      "minutes": 7,
+      "islands": [
+        "2A",
+        "2C"
+      ],
+      "opening_state": "Light moths have carried away the ferry captain’s tuned bell; service pipe-workers won’t open maintenance galleries without its signal.",
+      "ordered_solution": [
+        "Discover missing chime by watching worker motions and hearing an off-key distant ring.",
+        "Dog traces the copper-oil scent across plaza; trail leads to the dye-market canopy, not a heavy crate.",
+        "Cat climbs overhead awning and observes moths orbiting the bell, attracted to bright amber lamps.",
+        "Send amber light to a second harmless lantern so moths flutter away; recovered bell drops gently into padded basket.",
+        "Return bell to captain; she opens maintenance paths and lends a reusable converter catalyst."
+      ],
+      "primary_challenge": "Small local mystery combining scent, observing animal behaviour, light and liquid ecology, with no combat.",
+      "awards": [
+        "P6_FAVOUR"
+      ],
+      "failure_recovery": "Moths always return to first lamp after reset; bell cannot be lost; no precision catching.",
+      "mastery": [
+        "Gentle Passage: recover without frightening moths",
+        "Helpful Neighbour: meet captain before solving",
+        "Secret: find a moth nest containing harmless ornament"
+      ]
+    },
+    {
+      "id": "P7",
+      "title": "The Dyer’s Dilemma",
+      "minutes": 8,
+      "islands": [
+        "2C",
+        "2D"
+      ],
+      "opening_state": "An alchemist demonstrates a converter. The gate to the Collectors needs amber; maintaining cyan for a nearby kitchen is a kindness, not a required route lock.",
+      "ordered_solution": [
+        "Notice the amber gate coil and a neighbouring kitchen cooled by cyan; an optional bypass splitter could keep the cooks comfortable.",
+        "Fit the reusable converter catalyst and direct the cyan supply into its inlet. The gate path works without splitting the feed.",
+        "Tap the converter to turn its flow amber and route it to the 2D gate. A sealed reservoir automatically fills the essential upper Prism Works feed.",
+        "OPTIONAL MASTERY: set the side splitter to keep cyan coolant flowing to the kitchen at the same time. Local colour experiments remain reversible; the sealed amber reserve never drains.",
+        "Escort White through gate while cat may use optional overhead scouting route."
+      ],
+      "primary_challenge": "One clear colour conversion; the optional split illustrates how engineering choices affect neighbours, without gating progress.",
+      "awards": [
+        "P7_GATE_OPEN",
+        "P7_AMBER_BRANCH",
+        "P7_ESCORTED"
+      ],
+      "failure_recovery": "No consumable reagent; cooling water automatically restores on reset. Check-valve holds a fixed recirculating volume independently of reversible local conversion.",
+      "mastery": [
+        "Kind Engineer: keep kitchen coolant running throughout (optional splitter)",
+        "Careful Dyer: no wrong colours to gate",
+        "Secret: discover harmless bonus colour swatch"
+      ]
+    },
+    {
+      "id": "P8",
+      "title": "The Records Escape",
+      "minutes": 9,
+      "islands": [
+        "2D",
+        "3A"
+      ],
+      "opening_state": "One Collector supervises two Watchers at the depot. A sympathetic archivist quietly gestures toward a safety alcove.",
+      "ordered_solution": [
+        "Cat observes the two Watchers from the rafter, learning that their lantern patrols investigate amber inspection hum rather than ordinary animal footsteps.",
+        "Dog sniffs out the archive paper-and-reed cover route. White follows only while out of sight of both the Watchers and the supervising Collector; otherwise he hides.",
+        "From cover, cat redirects a low amber lamp toward the empty records stacks. The Watchers investigate the inspection signal; the Collector remains on its separately visible patrol.",
+        "While the Watchers investigate and the Collector faces away, lead dog and White into the covered magenta pressure sump. Tap the redirector to raise the stream in the vertical 2D-to-3A shaft.",
+        "Use the clearly telegraphed patrol window to ascend together. The safe alcove lets the player wait for another window without a precision-timing penalty."
+      ],
+      "primary_challenge": "Stealth as understanding patrol sensors and using the environment, not a simultaneous hold/press sequence.",
+      "awards": [
+        "P8_LIFT_STABLE",
+        "P8_ESCORTED"
+      ],
+      "failure_recovery": "If White caught, annex cell always reachable by CAT via small opening and by dog from cover after the Watchers return to patrol. If animal falls F03 to 1D, V05 and E24 return; never respawn/teleport. White remains last safe cover or in recoverable annex.",
+      "mastery": [
+        "Gentle Passage: no sighting",
+        "Archivist’s Friend: accept clerk’s optional hint and return a page",
+        "Secret: uncover a misleading White classification stamp"
+      ]
+    },
+    {
+      "id": "P9",
+      "title": "The Colour Loom",
+      "minutes": 10,
+      "islands": [
+        "3A",
+        "3B",
+        "2B",
+        "3C"
+      ],
+      "opening_state": "The Prism Works is a precision factory. The amber supply is already protected; cyan needs optical alignment, and magenta needs a distant diverter turned on.",
+      "ordered_solution": [
+        "Gardeners invite the trio to rest at 3A. Observe the installed cyan channel leading toward Prism Works; there are no loose glass fragments to collect.",
+        "At 3B inspect TWO rotating glass facets and the amber feed indicator: amber is already lit from the protected P7 market reserve.",
+        "Cat rides the reversible service stream down to 2B, traces the magenta channel to one obvious shut diverter, opens it, and returns up the same column.",
+        "Turn TWO large snap-point glass facets at 3B to redirect cyan into the matching receiver; magenta now flows steadily, with no timed minigame.",
+        "Three colours braid together and grow E32 bridge to 3C. Dog leads White; machinery locks safety rail after first escorted crossing."
+      ],
+      "primary_challenge": "Spatial detour plus two-facet optical alignment. Dog can sniff out the correct cyan inlet as an optional clue; never a mandatory button.",
+      "awards": [
+        "P9_CYAN_PRIMED",
+        "P9_MAGENTA_PRIMED",
+        "P9_AMBER_READY",
+        "P9_BRIDGE_OPEN",
+        "P9_ESCORTED"
+      ],
+      "failure_recovery": "Protected amber never drains; cat return service shaft stays open after both reversals. Wrong prism alignment is harmless and undoable; bridge remains open after escort.",
+      "mastery": [
+        "Gentle Passage: White reaches bridge without alarm",
+        "Prism Insight: align facets with at most one incorrect move",
+        "Secret: observe the light map of lower islands"
+      ]
+    },
+    {
+      "id": "P10",
+      "title": "The Last Current",
+      "minutes": 8,
+      "islands": [
+        "3C",
+        "3B",
+        "3D"
+      ],
+      "opening_state": "A last Collector guards the portal. The upper dais is higher than the observatory terrace. The dormant magenta stream ROARS to life when the Echo Horn is activated, just as the first ascent did in P2.",
+      "ordered_solution": [
+        "Cat enters overhead gallery E34 from 3B, unnoticed by the Collector. An existing directional mark shows how the Echo Horn can project toward the empty archive platform; no sound is emitted.",
+        "Cat silently aims the Echo Horn at the empty archive platform. This sets P10_HORN_ALIGNED only: the Collector stays on patrol and the lift remains off. The resonance point at 3C is already visible.",
+        "From cover, tap the dog’s contextual bark at the resonance point. This single bark is relayed by the aligned Echo Horn as one false signal: it draws the Collector away and starts the LOUD magenta upflow from 3C to raised 3D.",
+        "Dog steps into the same roaring stream. White hesitates at the familiar noise from P2, then, recalling the dog’s care, chooses to enter without a second reassurance command.",
+        "Cat and dog reunite at portal; its reflection briefly resembles home, then reveals a larger unfamiliar sky. White voluntarily steps into the unknown."
+      ],
+      "primary_challenge": "One understandable Echo Horn acoustic lure, deliberate stealth and earned trust; the finale uses a genuinely LOUD, visible magenta upflow.",
+      "awards": [
+        "P10_HORN_ALIGNED",
+        "P10_GATE_OPEN",
+        "P10_COMPLETE"
+      ],
+      "failure_recovery": "If caught on upper dais fall F05 to fenced 2D landing with always-on V06 return through 3A; cat may also use rear gallery. Collector cannot camp recovery. White waits at 3C safe bell stone.",
+      "mastery": [
+        "Gentle Passage: White never chased",
+        "Perfect Echo: one bark, one diversion",
+        "Secret: hear a reply from home in the portal bells"
+      ]
+    }
+  ],
+  "optional": [
+    {
+      "id": "S1",
+      "name": "Basin Song",
+      "node": "0C",
+      "available": "Once 0C reached intentionally or by F01",
+      "mechanic": "Listen for a repeating reed-filter melody, then follow the dog’s damp-reed scent clue to a hidden compartment; no new memory minigame.",
+      "reward": "Noncritical home-memory fragment, 2 min"
+    },
+    {
+      "id": "S2",
+      "name": "Lost Ribbon",
+      "node": "1A",
+      "available": "After P2",
+      "mechanic": "Cat spots ribbon in reed lattice; dog nudges basket under it, optional playful interaction.",
+      "reward": "Reed-grower friendship, ambient animation, 2 min"
+    },
+    {
+      "id": "S3",
+      "name": "Honest Dye",
+      "node": "2C",
+      "available": "After P5",
+      "mechanic": "Return accidentally misplaced dye cup; inhabitants open resting nook for White.",
+      "reward": "A resting nook within 2C for White; no new inter-island route or shortcut. About 3 minutes"
+    },
+    {
+      "id": "S4",
+      "name": "Dewkeeper Nest",
+      "node": "3A",
+      "available": "After P8",
+      "mechanic": "Redirect tiny independent trickle to restore pollinator platform; no drain from critical prism feed.",
+      "reward": "White trusts a gardener and approaches safely; vista, 3 min"
+    }
+  ],
+  "flags": {
+    "START": "always",
+    "P1_LATCH_OPEN": "mechanism; cat diverts Watcher with bell and finds garden latch",
+    "P1_RESCUED": "completion; White safely follows dog into 0B",
+    "P2_BRIDGE_READY": "mechanism; cyan channel open; crossable bridge at E02",
+    "P2_BRIDGE_SAFE": "safety; 0B-0D retaining rail permanently available after first traversal",
+    "P2_LIFT_STRONG": "mechanism; upper regulator upgraded from cat-only to all",
+    "P2_ASCENDED": "completion; dog cat White reunite on 1A",
+    "P3_OBSERVED": "optional information; does not gate P4",
+    "P4_BRIDGE_OPEN": "mechanism; cyan flowing 1D-to-1B",
+    "P4_ESCORTED": "completion; White reaches 1D with dog; bridge safety rail latched",
+    "P5_FERRY_POWERED": "mechanism; moving amber courier redirected to ferry channel",
+    "P5_ARRIVED": "completion; all three arrive at 2A",
+    "P6_FAVOUR": "completion; missing bell recovered; captain authorises service access and converter catalyst",
+    "P7_GATE_OPEN": "mechanism; converted amber reaches 2D public gate, which latches",
+    "P7_AMBER_BRANCH": "persistent safety; non-drainable amber reserve split to 3B and local market; local dye conversion remains reversible",
+    "P7_ESCORTED": "completion; dog and White cross into 2D",
+    "P8_LIFT_STABLE": "mechanism; magenta ascent 2D-to-3A made safe",
+    "P8_ESCORTED": "completion; dog cat White arrive 3A; botanical visitor ferry may open",
+    "P9_CYAN_PRIMED": "mechanism; 3A cistern routed to 3B",
+    "P9_MAGENTA_PRIMED": "mechanism; remote 2B relay tuned and automatically safe to return",
+    "P9_AMBER_READY": "mechanism; sealed 2C reserve flows into 3B, no dog switch",
+    "P9_BRIDGE_OPEN": "mechanism; three feeds aligned at 3B, E32 solid",
+    "P9_ESCORTED": "completion; dog White arrive 3C",
+    "P10_HORN_ALIGNED": "mechanism; cat silently aims the Echo Horn from the upper gallery at 3D toward the empty archive platform; no lure or lift activation yet",
+    "P10_GATE_OPEN": "mechanism; one dog bark at the visible 3C resonance point is relayed by the aligned Echo Horn, drawing the Collector away once and starting the magenta final upflow",
+    "P10_COMPLETE": "completion; White voluntarily boards last upflow after dog has made it safe; all reach portal 3D"
+  },
+  "status": "PRE-PRODUCTION; static design and diagram checks only, not gameplay validation",
+  "design_pillars": [
+    "Think with physics and geography, not two character keys",
+    "One connected vertical world where falls continue play",
+    "Make observed inhabitants and their habits part of puzzles",
+    "Make coloured liquids visible, causal and reversible except safe latches",
+    "Dog and cat are animals, never human technicians in animal costumes",
+    "White is a frightened person to protect, not a third player tool",
+    "Mobile landscape tap controls, no twitch timing or precision drags"
+  ],
+  "glossary": {
+    "White": "Working name of small pale frightened inhabitant; proper name deliberately withheld for story. Always capitalise.",
+    "Watcher": "Small red-robed lantern patrol; reacts to White in sight, distracted by light or sound; mostly ignores cat and dog.",
+    "Collector": "Large official hunter tasked with capturing White; slow search and line-of-sight pursuit, light defensive interruption only.",
+    "Archivist": "Sympathetic depot clerk who quietly offers the rescue location; civilian, not guard.",
+    "Flowkeeper": "Tiny maintenance inhabitant who services piping; may accidentally alter noncritical flow; not innately hostile.",
+    "Dewkeeper": "Upper garden caretaker, safe and welcoming to White.",
+    "Ferry captain": "Neutral-to-kind civic transporter, puzzled by White but protective after aid.",
+    "Bell-listener": "Upper-floor resident who uses resonant stone for weather and signals; helps with final puzzle clues."
+  },
+  "visual_contract": "Animals have realistic anatomy, mass and behaviour: huge shaggy mostly black dog and standard black-and-white cat, no clothes, speech or anthropomorphic controls. Shade and simplify fur materials for cohesion with crisp, mostly flat-colour cellular-basalt/porcelain/copper world; not photographic animals pasted into a painting. Isometric realtime 3D with readable silhouettes and low visual noise at phone scale.",
+  "controls": {
+    "orientation": "landscape phones + desktop",
+    "movement": "tap/click walk and contextual interact, tap cat or dog portrait to switch even on different floors",
+    "camera": "auto-focus selected animal, optional floor select, pinch zoom and drag empty space to pan",
+    "liquid": "large snap-to-position directional valves/tiles; tap to select and confirm; no continuous tiny drag",
+    "feedback": "scent/whisker clues are optional short overlays, same controls on mouse and touch",
+    "stealth": "pauseable observation and forgiving telegraphing; no frame-perfect reaction",
+    "minimum_touch_target_css_px": 48,
+    "accessibility": "shape + motion pattern reinforces colour, reduced motion, vibration optional, low-end graphics option"
+  },
+  "transport_geometry": {
+    "V02": "aligned shaft 0D(1,1)->1A(1,1), one physical stream with weak/strong pressure state",
+    "V03": "aligned shaft 1C(0,1)->2B(0,1), cat only",
+    "V04": "sloped upper gantry then curving downhill gutter 2B(0,1)->1D(2,1), cat-only one-way, not a vertical column",
+    "V05": "mechanical TRAVELLING ferry between offset 1D(2,1) and 2A(1,1)",
+    "V06": "aligned shaft 2D(2,1)->3A(2,1), strong",
+    "V07": "diagonal mechanical botanical gondola from 2C(1,0) to 3A(2,1)",
+    "V08": "aligned shaft 2B(0,1)<->3B(0,1), reversible same lift",
+    "E33": "short in-floor upflow from 3C(1,2) lower ledge to 3D(2,2) raised ledge, 3C platform extends to foot of dais",
+    "F05": "short enclosed downhill capture chute 3D(2,2)->2D(2,1) within wide collector safety catch, not a direct plummet"
+  },
+  "state_rules": {
+    "activation_vs_completion": "A route needed to earn a completion flag must NOT depend on that same flag; earlier completed quests MAY unlock later routes (e.g. P6_FAVOUR or P8_ESCORTED). Local gate activation still occurs before that route is traversed.",
+    "White_policy": "White has no direct move order, follows dog when safe, waits in nearest sanctuary if dog goes to cat-only link or on dangerous route; only invited past threat after safety cue; first ascent refused once, last ascent voluntary.",
+    "cat_dog_switch": "Instant camera switch across floors; actors physically remain in their own locations, with independent move queues cleared only by new user orders.",
+    "critical_flows": "An opened route can remain visually responsive but carries a safety latch, rail, or alternate exit after first crossing; fixed reserve powers L09 from P7 onward regardless of local converter mode.",
+    "capture": "White is guided to closest defined cell annex from 2D; both animals can reach release; no random teleport. Enemy cannot deny all rescue routes.",
+    "falls": "Physical one-way descent to defined named landing. Floor drop during chase changes position, never restores previous location. All safe landings have return paths at activation stage.",
+    "mobile": "No press-and-hold interactions, complex gestures while moving, precision jumps or unpredictable physics. Tap-safe 48 CSS px targets at 780x360 landscape."
+  },
+  "sound_sequence": {
+    "puzzle": "P10",
+    "aim": {
+      "sets": "P10_HORN_ALIGNED",
+      "emits_sound": false,
+      "diverts_collector": false,
+      "starts_lift": false
+    },
+    "bark": {
+      "requires": "P10_HORN_ALIGNED",
+      "sets": "P10_GATE_OPEN",
+      "emits_sound": true,
+      "diverts_collector": true,
+      "starts_lift": true,
+      "diversions_per_successful_activation": 1
+    }
+  }
+}

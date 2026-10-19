@@ -1,0 +1,159 @@
+CODEX — THE ELSEWHERE
+FIRST PLAYABLE: ONE FINISHED-LOOKING P2 TEST SCENE
+Baseline: Chapter One V3.1. This is a build task, not another design-document task.
+
+MISSION
+Build one small, genuinely playable scene to test our visual style, natural-looking animals, touch movement, character switching, liquid routing and upward transport. Do not build the chapter or P1–P4 together.
+
+Use P2, “The First Rise”, in isolation: Refuge Sluice (0B), Root Elevator (0D), and only the arrival terrace of Reed Quay (1A). These are three compact connected spaces across two floors, not three fully populated islands. Aim for roughly 5–8 minutes of first-play exploration, without adding content or delays to meet that estimate.
+
+The scene must look recognisably like our approved world WHILE it is being played. A beautiful still image is not a playable result; a functional but generic low-poly demo does not establish the visual style. Finish this one scene, provide the playable build and evidence, then stop for my review before expanding.
+
+1. READ THE INPUTS AND KEEP THE EXISTING DESIGN INTACT
+
+The handoff ZIP contains this brief, visual-reference notes, three actual reference PNGs, a manifest, and the unchanged the_elsewhere_chapter_one_v3_1_corrected.zip.
+
+Inspect the repository, existing AGENTS.md and any working application before editing. Use an independent branch in the Elsewhere project. Do not modify unrelated games or overwrite existing instructions. An empty or design-only repository should be scaffolded; an existing suitable application should be extended rather than replaced.
+
+Extract the supplied design archive safely, retaining its original files. Read:
+- 01_WORLD_ATLAS_v3_1.txt;
+- P2 in 02_CHAPTER_WALKTHROUGH_v3_1.txt;
+- 03_MECHANICAL_BLUEPRINT_v3_1.txt;
+- the relevant records in chapter_one_canonical_v3_1.json;
+- 06_QA_REPORT_v3_1.txt, including its limitations.
+
+Open all three reference images, not merely their filenames. The chapter diagrams describe topology, not finished art or literal playable island dimensions.
+
+This brief controls the CURRENT BUILD SCOPE. V3.1 remains the chapter-design baseline. Explicit character descriptions here override inaccuracies in generated artwork. Initialise the test after P1's rescue; do not implement or rewrite that opening. Document the test-only starting state. Keep unrelated floors unbuilt, not fake-completed.
+
+If an essential input is inaccessible, identify the exact missing file. Do not invent its contents or claim to have inspected it.
+
+2. THE ONE PLAYABLE SEQUENCE
+
+Start with cat, dog and White together at 0B. White already trusts the dog enough to follow. Show a dry crossing, a visible cyan channel and a magenta upflow beyond it, giving the player a clear destination.
+
+A. Investigate. The selected dog can reveal a short local scent clue leading to wet mineral droplets at a reed-blocked seep. Tapping the blockage makes him sniff and scrape it open naturally. Do not build a general quest-tracking interface or an inventory system.
+
+B. Redirect. One large ceramic diverter, CV-01, switches the revealed cyan source between the existing spill route and the bridge receiver. Either animal may nudge this accessible control; do not invent a dog-only button. The liquid must visibly travel along the selected channel before the cyan crossing E02 forms between 0B and 0D. Show the changed route, filled receiver and solid crossing clearly.
+
+C. Reassure. At 0D, White balks once at the loud magenta rise. A contextual interaction lets the nearby dog sit beside him. White's posture relaxes and he becomes willing to board WITH the dog when transport is safe. No fear meter, timed tapping, random refusal or repeated reassurance tax.
+
+D. Separate. The weak V02 stream carries the cat alone from 0D to 1A. The dog and White remain physically below in safe shelter. Switching portraits changes the selected animal and camera, never their world positions. The cat can also return down before solving anything; this is not a one-way trap.
+
+E. Strengthen. At 1A, the cat inspects a clear load indicator and nudges MR-01, the upper pressure regulator. The same magenta stream becomes visibly stronger and supports the dog with White. Demonstrate the actual liquid-powered ascent, not a glowing platform that simply teleports passengers.
+
+F. Reunite. Switch to dog, approach the safe boarding point and let White join automatically. Both ascend together. Finish when all three are physically at 1A; give a small affectionate relief moment and leave the scene explorable. Provide an obvious replay/reset control.
+
+Use the existing P2 identifiers: L01, L02, CV-01, MR-01, E02, V02, P2_BRIDGE_READY, P2_BRIDGE_SAFE, P2_LIFT_STRONG and P2_ASCENDED. Resolve concrete runtime states explicitly instead of treating an abstract chapter flag as a complete simulation. Do not require P2_ASCENDED to unlock the transport needed to earn it.
+
+3. THE VISUAL TARGET
+
+The primary reference is references/01_GAMEPLAY_LOOK.png. Match its visual language, not its entire layout or number of objects.
+
+Environment:
+- An isometric, other-dimensional world made from recurring dark porous basalt, pale ceramic and restrained copper fittings.
+- Bold, fairly flat colour groupings; violet-blue shadows; coral and pink atmosphere; selective cyan, magenta and amber glow.
+- Recognisable pitted stone at useful viewing distances, without noisy holes on every tiny surface.
+- Crisp silhouettes, clear paths, a real sense of depth, and a few memorable arches, channels and carved roots.
+- Sparse strange plants and distant island silhouettes. The main playable space must not compete with background decoration.
+- Include one small, non-interactive lift attendant with a simple work gesture and a few tools at 1A. This tests inhabitant scale and makes the place lived-in, without creating another gameplay system.
+
+Do not substitute a medieval green village, realistic grey ruins, a generic pastel toy scene, a glossy plastic world, or a densely painted poster. No heavy depth-of-field blur or excessive bloom hiding weak assets. Gameplay routes and characters must remain readable with effects reduced.
+
+Dog:
+A very large, naturally proportioned, long-haired BLACK dog, with Saint-Bernard-like mass and a broad, gentle head. A predominantly/all-black shaggy coat is the target; do not copy the brown-and-white/tri-colour markings in some generated references. No clothes, saddle, backpack or invented accessories. Show believable shoulders, muzzle, paws, tail, gait and weight. A stock wolf silhouette is not an acceptable substitute.
+
+Cat:
+An ordinary, naturally proportioned black-and-white domestic cat. No clothing, oversized cartoon eyes or human gestures. Its posture, tail and walking motion must look feline.
+
+White:
+A small pale/porcelain inhabitant, roughly around the dog's shoulder height or smaller, with a dark face opening and readable luminous eyes. Passive, frightened, unarmed. Never lead the animals confidently or operate puzzle controls. Keep his silhouette simple and his emotions readable at phone scale.
+
+Natural anatomy does not require photorealistic fur rendering. Use coherent lighting and restrained shading so the animals belong in this stylised world. Do not paste photo cutouts onto the ground. Final-review characters cannot be capsules, crude box animals, static cutouts or sliding chess pieces.
+
+Use suitable original or properly licensed assets and document provenance. Assess the dog and cat at gameplay distance early, before decorating the whole scene. Do not buy assets, require new paid services or assume unavailable image-generation tools. A missing asset capability must be reported honestly, not hidden behind claims of finished visual quality.
+
+4. TEST THE SIMPLE-3D / PAINTED-SURFACE APPROACH
+
+We want to try simple navigable 3D geometry enriched with illustrated surfaces and carefully layered detail. We are NOT commissioning a fully sculpted, high-polygon environment.
+
+First establish the small layout, collision and a fixed isometric camera. Then test one representative stone/channel/arch section with the intended painted-surface approach before expanding that treatment to this scene.
+
+Use painted textures, depth-correct decorative layers, decals or camera-projected artwork over matching static geometry where they genuinely help. A reference illustration is NOT automatically a texture atlas or an exact match for this layout. Never stretch the entire screenshot across arbitrary blocks or leave reference animals/liquids baked into the scenery.
+
+If a suitable image-editing tool is available, a clean plate made from a render of the actual blockout can be tested. Preserve that render's layout, camera and openings. Separate static surface art from moving characters, liquid, valves and the bridge. If such tooling is unavailable, use an honest textured/material-driven implementation and report that a scene-specific painted plate was not produced.
+
+Projection/layering must survive the allowed pan, zoom, floor focus and screen aspect ratios. Test a character walking behind an arch and out again, crossing the bridge, and riding the lift. If a technique breaks those cases, use geometry-bound textures on the failing surfaces rather than hiding the failure. Do not maintain two full rendering engines or produce a giant technique comparison.
+
+Keep every puzzle-relevant object and liquid surface independently renderable. Navigation, depth and visual interactions must agree. Include a developer-only plain-geometry toggle using the SAME gameplay state to expose the underlying working scene.
+
+5. MOBILE AND CAMERA
+
+Build a browser prototype for landscape phones and desktop, not a native app or store release.
+
+- Tap/click ground to walk; tap an object to approach and interact.
+- Large cat/dog portrait buttons always switch characters, including across floors. White has no control portrait.
+- Preserve independent positions and orders; the unselected animal must not automatically chase the selected animal onto another floor.
+- White follows the dog along verified safe paths, or waits in the explicit shelter. He does not follow the exploring cat in this slice.
+- Use a fixed orthographic isometric angle with modest pan/zoom and a clear F0/F1 indicator. No free camera rotation.
+- Camera focus must keep the current character legible, not shrink the whole chapter into one phone screen. Lower floors cannot intercept taps intended for the visible upper floor.
+- Separate tap from drag; a camera gesture must not accidentally activate a valve. All necessary actions work through taps, without a keyboard, hover, precise dragging or press-and-hold.
+- Use at least 48 CSS-pixel interaction targets, including invisible hit-area padding where appropriate. Avoid overlapping hit targets and resolve nearby actions clearly.
+- Start screen, reset and mute are sufficient UI. No giant tutorial panels, quest journal, inventory, minimap system or achievements interface.
+- Verify 780x360 and 932x430 landscape viewports plus a desktop viewport. Allow for safe-area insets. A portrait reminder can ask for landscape without losing state.
+
+6. FUNCTIONAL AND SAFETY RULES
+
+Use deterministic channel flow and transport states, not a general fluid-physics solver. Render the moving liquid beautifully, but keep the puzzle predictable. Cyan constructs only at a receiver; magenta handles motion/load. Amber is a visual accent here, not a third required circuit. No potion conversion yet.
+
+The bridge cannot vanish under a character. Before a first complete crossing, a requested closure while occupied must wait until safe. After first crossing, the canonical safety latch visibly preserves a solid return path even when cyan is redirected. The magenta cat return route remains available and the pressure upgrade persists until reset. No reversible control may strand either animal or White.
+
+Use safe collision and actor-sized route clearance. Animals must walk around walls, turn without excessive foot sliding and board transport from valid positions. White must not shove the dog, block narrow paths permanently, walk through walls, jump gaps or drift into the void. No unscripted falling/capture system is required in this first build.
+
+Provide short, relevant sound for footsteps, valve movement, flow and the louder lift. The lift should sound powerful, not painfully loud. Audio begins after a user gesture; mute and pause must work. No dialogue/voice generation or full soundtrack production. If audio is muted, animation and visible vibration still explain White's hesitation.
+
+7. IMPLEMENTATION DISCIPLINE
+
+For an empty repository, use TypeScript, Three.js and Vite, with a lockfile and small test setup. Reuse a compatible existing stack rather than migrating gratuitously. Prefer the simplest broadly supported rendering path; do not make WebGPU mandatory.
+
+Separate actor/navigation state, liquid/route state and visual rendering enough to test them. Keep this slice's configuration separate from the immutable chapter source. Do not build a general level editor, save-game framework, multiplayer infrastructure or all future chapters' systems.
+
+Use small reusable assets and shared materials; limit transparency, costly lighting and needless background geometry. Record draw calls, triangle counts, texture/load sizes and observed frame times from the actual run. Aim for a stable 30 fps on a representative phone, with 60 fps desirable where supported; these are targets, not claims. Desktop viewport emulation does not prove phone performance or Safari compatibility.
+
+Work in this order within the one task: inspect inputs; establish compact playable geometry and camera; assess the animal assets and one dressed surface sample; finish this scene's art; integrate the complete P2 loop; test, inspect and repair; package. Do not finish four greybox levels first or expand scope to avoid a difficult visual problem.
+
+8. REQUIRED TESTS AND VISUAL REVIEW
+
+Run the built game in a real browser and perform the full sequence through user-facing input. Test helpers may prepare edge cases but must not secretly award success in the main walkthrough.
+
+Verify and record:
+1. A fresh load resolves every asset and has no blocking console/network errors.
+2. Dog/cat movement, obstacle avoidance, selection and visible contextual actions work with mouse and touch-style input.
+3. Cyan changes branch visibly, fills the receiver and creates a physically usable bridge; repeat toggles before and after its safety latch.
+4. White follows the dog, waits safely during separation, refuses the first lift once and accepts reassurance without repeated delays.
+5. The weak lift accepts the cat, rejects the dog safely, and returns the cat before the upgrade.
+6. Switching during travel, lift transit and separation never moves or duplicates the other characters.
+7. The pressure upgrade enables dog-plus-White transport; completion requires all three at 1A.
+8. Reset restores actors, flow, navigation, reassurance, camera and completion state consistently. Replay the whole sequence after reset.
+9. Tap hit areas, text, framing and depth remain usable at both landscape sizes. Test pan/zoom and portrait-to-landscape resize.
+10. Characters pass correctly behind scenery; no baked-in duplicates, hovering paws, visual/collision disagreement or art projection sliding.
+
+Capture screenshots from the running build at: initial view; cyan flowing/bridge ready; cat above with dog and White below; reunion. Include desktop and landscape captures and a short actual-play recording covering a valve change and ascent. Compare gameplay screenshots to the reference for palette, materials, anatomy, scale, clutter and clarity; repair obvious mismatches before delivery.
+
+Report separately: functional checks run, visual issues still present, performance measured, environments tested and anything untested. Do not reuse the atlas's static-check count as evidence that this game works. Do not call art approved on my behalf.
+
+9. DELIVERY — A PLAYABLE ZIP EVERY TIME
+
+Deliver an actual playable ZIP of this build, not just a PR, code snippets, a source-only folder or screenshots. Include prebuilt browser output with local assets, the source/lockfile, a short README and the test evidence. Name the build and show that identifier in its start/about UI.
+
+Prefer a tested self-contained PLAY.html that needs no installation where practical. Otherwise supply the prebuilt output and a simple Windows launcher with explicit prerequisite detection and helpful messages. State any required runtime plainly; do not label an npm-install task a no-setup build. Do not claim double-click or Windows launch has been tested unless it has.
+
+Use an existing authorised preview deployment when available. Do not invent a playable URL, create a paid account or publish externally without permission. For local phone testing, explain that the phone needs a reachable server address, not the desktop's localhost.
+
+Record a permanent instruction in the existing root AGENTS.md, without overwriting other rules: every future playable update must include an updated playable ZIP and exact launch instructions, with current screenshots and testing limitations.
+
+Your final delivery should contain the build/ZIP location, how to launch it, representative in-game screenshots, what was tested, and any remaining blockers. An unavailable upload/deployment capability must be stated explicitly rather than replaced by a fabricated link.
+
+STOP HERE
+
+No other puzzles, potion systems, enemy pursuit, capture/fall recovery, wider settlement simulation, procedural worlds or full chapter build. This first test intentionally does not validate those later systems. I need to play and approve this scene's appearance and feel before you expand it.

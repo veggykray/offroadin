@@ -1,0 +1,267 @@
+THE ELSEWHERE — CHAPTER ONE V3.1 VALIDATION
+===============================================
+PASS: 16 unique named islands exist
+PASS: all edge, fall and circuit identifiers are unique
+PASS: E01 has real origin and destination
+PASS: E01 gate references declared flag
+PASS: E01 direction is explicit
+PASS: E02 has real origin and destination
+PASS: E02 gate references declared flag
+PASS: E02 direction is explicit
+PASS: E03 has real origin and destination
+PASS: E03 gate references declared flag
+PASS: E03 direction is explicit
+PASS: E04 has real origin and destination
+PASS: E04 gate references declared flag
+PASS: E04 direction is explicit
+PASS: E11 has real origin and destination
+PASS: E11 gate references declared flag
+PASS: E11 direction is explicit
+PASS: E12 has real origin and destination
+PASS: E12 gate references declared flag
+PASS: E12 direction is explicit
+PASS: E13 has real origin and destination
+PASS: E13 gate references declared flag
+PASS: E13 direction is explicit
+PASS: E14 has real origin and destination
+PASS: E14 gate references declared flag
+PASS: E14 direction is explicit
+PASS: E21 has real origin and destination
+PASS: E21 gate references declared flag
+PASS: E21 direction is explicit
+PASS: E22 has real origin and destination
+PASS: E22 gate references declared flag
+PASS: E22 direction is explicit
+PASS: E23 has real origin and destination
+PASS: E23 gate references declared flag
+PASS: E23 direction is explicit
+PASS: E24 has real origin and destination
+PASS: E24 gate references declared flag
+PASS: E24 direction is explicit
+PASS: E25 has real origin and destination
+PASS: E25 gate references declared flag
+PASS: E25 direction is explicit
+PASS: E31 has real origin and destination
+PASS: E31 gate references declared flag
+PASS: E31 direction is explicit
+PASS: E32 has real origin and destination
+PASS: E32 gate references declared flag
+PASS: E32 direction is explicit
+PASS: E33 has real origin and destination
+PASS: E33 gate references declared flag
+PASS: E33 direction is explicit
+PASS: E34 has real origin and destination
+PASS: E34 gate references declared flag
+PASS: E34 direction is explicit
+PASS: V02 has real origin and destination
+PASS: V02 gate references declared flag
+PASS: V02 direction is explicit
+PASS: V03 has real origin and destination
+PASS: V03 gate references declared flag
+PASS: V03 direction is explicit
+PASS: V04 has real origin and destination
+PASS: V04 gate references declared flag
+PASS: V04 direction is explicit
+PASS: V05 has real origin and destination
+PASS: V05 gate references declared flag
+PASS: V05 direction is explicit
+PASS: V06 has real origin and destination
+PASS: V06 gate references declared flag
+PASS: V06 direction is explicit
+PASS: V07 has real origin and destination
+PASS: V07 gate references declared flag
+PASS: V07 direction is explicit
+PASS: V08 has real origin and destination
+PASS: V08 gate references declared flag
+PASS: V08 direction is explicit
+PASS: F01 has real origin and destination
+PASS: F01 gate references declared flag
+PASS: F01 direction is explicit
+PASS: F02 has real origin and destination
+PASS: F02 gate references declared flag
+PASS: F02 direction is explicit
+PASS: F03 has real origin and destination
+PASS: F03 gate references declared flag
+PASS: F03 direction is explicit
+PASS: F04 has real origin and destination
+PASS: F04 gate references declared flag
+PASS: F04 direction is explicit
+PASS: F05 has real origin and destination
+PASS: F05 gate references declared flag
+PASS: F05 direction is explicit
+PASS: L01 receiver, source and unlock defined
+PASS: L02 receiver, source and unlock defined
+PASS: L03 receiver, source and unlock defined
+PASS: L04 receiver, source and unlock defined
+PASS: L05 receiver, source and unlock defined
+PASS: L06 receiver, source and unlock defined
+PASS: L07 receiver, source and unlock defined
+PASS: L08 receiver, source and unlock defined
+PASS: L09 receiver, source and unlock defined
+PASS: L10 receiver, source and unlock defined
+PASS: L11 receiver, source and unlock defined
+PASS: L12 receiver, source and unlock defined
+PASS: P1 awards declared flag P1_LATCH_OPEN
+PASS: P1 awards declared flag P1_RESCUED
+PASS: P1 has three distinct mastery objectives
+PASS: P1 has reasonable positive timing
+PASS: P2 awards declared flag P2_BRIDGE_READY
+PASS: P2 awards declared flag P2_BRIDGE_SAFE
+PASS: P2 awards declared flag P2_LIFT_STRONG
+PASS: P2 awards declared flag P2_ASCENDED
+PASS: P2 has three distinct mastery objectives
+PASS: P2 has reasonable positive timing
+PASS: P3 awards declared flag P3_OBSERVED
+PASS: P3 has three distinct mastery objectives
+PASS: P3 has reasonable positive timing
+PASS: P4 awards declared flag P4_BRIDGE_OPEN
+PASS: P4 awards declared flag P4_ESCORTED
+PASS: P4 has three distinct mastery objectives
+PASS: P4 has reasonable positive timing
+PASS: P5 awards declared flag P5_FERRY_POWERED
+PASS: P5 awards declared flag P5_ARRIVED
+PASS: P5 has three distinct mastery objectives
+PASS: P5 has reasonable positive timing
+PASS: P6 awards declared flag P6_FAVOUR
+PASS: P6 has three distinct mastery objectives
+PASS: P6 has reasonable positive timing
+PASS: P7 awards declared flag P7_GATE_OPEN
+PASS: P7 awards declared flag P7_AMBER_BRANCH
+PASS: P7 awards declared flag P7_ESCORTED
+PASS: P7 has three distinct mastery objectives
+PASS: P7 has reasonable positive timing
+PASS: P8 awards declared flag P8_LIFT_STABLE
+PASS: P8 awards declared flag P8_ESCORTED
+PASS: P8 has three distinct mastery objectives
+PASS: P8 has reasonable positive timing
+PASS: P9 awards declared flag P9_CYAN_PRIMED
+PASS: P9 awards declared flag P9_MAGENTA_PRIMED
+PASS: P9 awards declared flag P9_AMBER_READY
+PASS: P9 awards declared flag P9_BRIDGE_OPEN
+PASS: P9 awards declared flag P9_ESCORTED
+PASS: P9 has three distinct mastery objectives
+PASS: P9 has reasonable positive timing
+PASS: P10 awards declared flag P10_HORN_ALIGNED
+PASS: P10 awards declared flag P10_GATE_OPEN
+PASS: P10 awards declared flag P10_COMPLETE
+PASS: P10 has three distinct mastery objectives
+PASS: P10 has reasonable positive timing
+PASS: core sequence sums to 78 minutes (includes opening)
+PASS: exactly five designated safe-fall connections
+PASS: there is one physical V02 ascent and one V08 reversible service lift
+PASS: P1 allocates 3 minutes opening plus 4 minutes playable rescue
+PASS: P7 coolant split is optional, not a required gate step
+PASS: P9 does not require timed pulse matching
+PASS: P9 visibly specifies exactly two facets
+PASS: no contradictory three-facet liquid rule
+PASS: final magenta lift remains loud
+PASS: Echo Horn is the one named sound device
+PASS: previous puzzle completions can unlock later routes
+PASS: V02 true vertical lift is stacked at same XY
+PASS: V03 true vertical lift is stacked at same XY
+PASS: V06 true vertical lift is stacked at same XY
+PASS: V08 true vertical lift is stacked at same XY
+PASS: F01 safe fall vertically aligned
+PASS: F02 safe fall vertically aligned
+PASS: F03 safe fall vertically aligned
+PASS: F04 safe fall vertically aligned
+PASS: F03 Collector fall lands directly under depot on 1D
+PASS: F05 only becomes available with activated return upflow
+PASS: V04 is truly one-way sloped cat return
+PASS: ending includes real magenta upflow, not unexplained walkway
+PASS: critical transitions do not require their own completion event (prior completion may enable later optional links)
+PASS: E01 gate granted by a puzzle
+PASS: E02 gate granted by a puzzle
+PASS: E14 gate granted by a puzzle
+PASS: E22 gate granted by a puzzle
+PASS: E23 gate granted by a puzzle
+PASS: E24 gate granted by a puzzle
+PASS: E25 gate granted by a puzzle
+PASS: E32 gate granted by a puzzle
+PASS: E33 gate granted by a puzzle
+PASS: E34 gate granted by a puzzle
+PASS: V02 gate granted by a puzzle
+PASS: V05 gate granted by a puzzle
+PASS: V06 gate granted by a puzzle
+PASS: V07 gate granted by a puzzle
+PASS: V08 gate granted by a puzzle
+PASS: dog cannot cross first closed latch
+PASS: event P1_LATCH_OPEN defined
+PASS: dog can escort White along safe designed route 0A -> 0B
+PASS: cat can move 0A to 0B with current gates
+PASS: event P1_RESCUED defined
+PASS: cyan bridge begins closed
+PASS: event P2_BRIDGE_READY defined
+PASS: dog can escort White along safe designed route 0B -> 0D
+PASS: cat can move 0B to 0D with current gates
+PASS: event P2_BRIDGE_SAFE defined
+PASS: weak first lift carries only cat
+PASS: cat can move 0D to 1A with current gates
+PASS: event P2_LIFT_STRONG defined
+PASS: dog can escort White along safe designed route 0D -> 1A
+PASS: event P2_ASCENDED defined
+PASS: cat can move 1A to 1B with current gates
+PASS: dog can escort White along safe designed route 1A -> 1B
+PASS: event P3_OBSERVED defined
+PASS: dog cannot reach far bank before P4 cyan bridge
+PASS: cat can move 1B to 1C with current gates
+PASS: cat can move 1C to 2B with current gates
+PASS: cat can move 2B to 1D with current gates
+PASS: one-way V04 does not fake a reverse trip
+PASS: event P4_BRIDGE_OPEN defined
+PASS: dog can escort White along safe designed route 1B -> 1D
+PASS: event P4_ESCORTED defined
+PASS: ferry remains unavailable until routed amber reaches it
+PASS: event P5_FERRY_POWERED defined
+PASS: cat can move 1D to 2A with current gates
+PASS: dog can escort White along safe designed route 1D -> 2A
+PASS: event P5_ARRIVED defined
+PASS: cat can move 2A to 2C with current gates
+PASS: dog can escort White along safe designed route 2A -> 2C
+PASS: event P6_FAVOUR defined
+PASS: dog White cannot sneak in via cat-only records rafter
+PASS: event P7_GATE_OPEN defined
+PASS: event P7_AMBER_BRANCH defined
+PASS: cat can move 2C to 2D with current gates
+PASS: dog can escort White along safe designed route 2C -> 2D
+PASS: event P7_ESCORTED defined
+PASS: Collector ascent off before P8
+PASS: event P8_LIFT_STABLE defined
+PASS: cat can move 2D to 3A with current gates
+PASS: dog can escort White along safe designed route 2D -> 3A
+PASS: event P8_ESCORTED defined
+PASS: cat can move 3A to 3B with current gates
+PASS: dog can escort White along safe designed route 3A -> 3B
+PASS: cat can move 3B to 2B with current gates
+PASS: event P9_MAGENTA_PRIMED defined
+PASS: cat can move 2B to 3B with current gates
+PASS: event P9_CYAN_PRIMED defined
+PASS: event P9_AMBER_READY defined
+PASS: permanent P7 amber reserve exists independently of local reversible converter
+PASS: Prism bridge is shut until final alignment
+PASS: event P9_BRIDGE_OPEN defined
+PASS: cat can move 3B to 3C with current gates
+PASS: dog can escort White along safe designed route 3B -> 3C
+PASS: event P9_ESCORTED defined
+PASS: final raised-dais lift is initially not running
+PASS: cat can move 3C to 3B with current gates
+PASS: cat can move 3B to 3D with current gates
+PASS: event P10_HORN_ALIGNED defined
+PASS: event P10_GATE_OPEN defined
+PASS: dog can escort White along safe designed route 3C -> 3D
+PASS: event P10_COMPLETE defined
+PASS: both actors can visit all 16 major islands after chapter
+PASS: F01 dog can return immediately at first eligibility via ['0C', '0D', '1A', '1B']
+PASS: F01 cat can return immediately at first eligibility via ['0C', '0D', '1A', '1B']
+PASS: F02 dog can return immediately at first eligibility via ['1A', '1B', '1D', '2A']
+PASS: F02 cat can return immediately at first eligibility via ['1A', '1B', '1D', '2A']
+PASS: F03 dog can return immediately at first eligibility via ['1D', '2A', '2C', '2D']
+PASS: F03 cat can return immediately at first eligibility via ['1D', '2A', '2C', '2D']
+PASS: F04 dog can return immediately at first eligibility via ['2B', '2C', '3A', '3B']
+PASS: F04 cat can return immediately at first eligibility via ['2B', '3B']
+PASS: F05 dog can return immediately at first eligibility via ['2D', '3A', '3B', '3C', '3D']
+PASS: F05 cat can return immediately at first eligibility via ['2D', '2B', '3B', '3D']
+LIMIT: these are STATIC progression and route tests, not exhaustive AI, tactile input, reversible branch or liquid pressure simulations.
+LIMIT: actual game collision, companion fear logic, geometry clearance, camera occlusion and mobile performance need in-engine validation.
+
+RESULT: 261 static checks passed.

@@ -1,0 +1,62 @@
+THE ELSEWHERE — V3.1 QA REPORT
+
+WHAT WAS ACTUALLY CHECKED
+
+A. Design freeze
+Compared V3 to V3.1 structurally: island identity/coordinates, movement and fall
+routes, actor restrictions, gates, circuit endpoints/control IDs, puzzle order,
+award lists and durations are unchanged.
+Frozen model SHA-256 (identical in both revisions):
+1333fbd6660ff01c0ef2b6bb561c827a2a607f0853e1a590bc732dd742a61032
+
+B. Drawn geometry, not just route data
+For all four floor maps, verified that each path begins and ends on the named
+cards' boundaries. No path crosses inside any island card. No route label
+intersects an island, another route label or a different route's line. Every
+map contains exactly its canonical routes, labelled once, with one or two
+explicit arrowheads matching the direction. Labels remain within the canvas.
+Each vertical-transfer row carries the canonical endpoints and direction;
+rows and endpoint cards do not overlap. F01, F03, V05 and V02 were inspected
+in the exported PNG, not inferred from route reachability alone.
+
+C. Identical drawings across output formats
+Each floor's SVG is exported to PNG and embedded byte-for-byte into the HTML.
+The HTML's embedded design data equals the canonical JSON. The puzzle-only
+JSON is a generated view of the same puzzle definitions.
+
+D. Browser tests
+Chromium tested at 1440x900, 780x360, 932x430 and 390x844. The last is an atlas
+reading layout; landscape remains the game requirement. Each viewport tested
+all four floors and all 16 island cards, selection buttons and keyboard Enter.
+Every route label and endpoint pair was checked in the DOM. Browser-measured
+text stays within island and label cards; IDs and titles do not overlap.
+No page-wide horizontal overflow or JavaScript error was found. Separate
+island-selector buttons remain at least 48 CSS pixels high. All transfer/fall
+cards and the 10-stage chapter sequence load.
+
+The browser tests load the self-contained HTML content through Playwright's
+set_content because this container blocks direct file:// navigation. The atlas
+contains no external fetches. Tests are viewport emulation, not physical phone
+or Safari/WebKit validation. Phone readers scroll vertically to inspect the
+whole map and its details; this is not a game-screen layout prototype.
+
+E. Visual inspection
+Inspected all four exported floor PNGs and the vertical-transfer PNG after
+regeneration, including the E13/E25 bypasses, one-way arrows and named fall
+endpoints. Also inspected browser screenshots at desktop and landscape widths.
+
+F. Reproducibility
+Ran the supplied builder in a clean directory containing only the builder and
+canonical JSON. All 18 generated outputs matched the supplied outputs byte-for-byte.
+No previous release or unavailable V1 file is required for rebuilding.
+
+G. Existing design checks
+Re-ran the existing static route/progression/fall checks. Their individual
+results remain in 04_VALIDATION_REPORT_v3_1.txt. This does not expand their scope
+into a full simulation. Diagram and browser checks have separate detailed logs.
+
+LIMITS / NOT CLAIMED
+No playable game exists in this package. No exhaustive softlock proof, runtime
+liquid simulation, fear/follower AI, navigation collision, physical mobile
+testing, framerate validation or assurance of puzzle enjoyment is claimed.
+The next gameplay evidence should come from a P1–P4 greybox, not more mechanics.
