@@ -1,12 +1,13 @@
 // Shared "player" driver for the browser harnesses: every action is a real tap/click on screen.
 // Off-screen targets are reached the way a player would — walking in stages toward them (each tap lands
 // inside the viewport) — never by teleporting or by poking the simulation.
-export function makeDriver(page, { mobile = false, W, H } = {}) {
+export function makeDriver(page, { mobile = false, W, H, debug = !!process.env.DRIVE_DEBUG } = {}) {
+  const log = (...a) => { if (debug) console.log('    [drive]', ...a); };
   const screenOf = (kind, id) => page.evaluate(([k, i]) => window.__elsewhere.screenOf(k, i), [kind, id]);
   const snap = () => page.evaluate(() => window.__elsewhere.snapshot());
   // Inside the canvas and clear of the HUD (top pills, bottom-left portraits, bottom hint strip).
   const inView = (p, m = 14) => p.x > m && p.x < W - m && p.y > 56 + m && p.y < H - m && !(p.x < 190 && p.y > H - 100) && !(p.y > H - 48 && p.x > W * 0.3 && p.x < W * 0.7);
-  const clickAt = async (p) => { if (mobile) await page.touchscreen.tap(p.x, p.y); else await page.mouse.click(p.x, p.y); };
+  const clickAt = async (p) => { log('tap', Math.round(p.x), Math.round(p.y)); if (mobile) await page.touchscreen.tap(p.x, p.y); else await page.mouse.click(p.x, p.y); };
   const waitFor = async (fn, ms = 60000, label = '') => { try { await page.waitForFunction(fn, null, { timeout: ms, polling: 100 }); return true; } catch { console.log('  timeout waiting: ' + label); return false; } };
   const current = async () => { const s = await snap(); return s[s.selected]; };
   const idle = (ms = 40000) => waitFor(() => { const s = window.__elsewhere.snapshot(); const a = s[s.selected]; return a.motion !== 'walk' && a.motion !== 'turn'; }, ms, 'idle');
@@ -27,9 +28,9 @@ export function makeDriver(page, { mobile = false, W, H } = {}) {
   const tapWorld = async (x, z, floor = 0) => {
     const y = floor ? 8 : 0;
     for (let step = 0; step < 10; step++) {
-      const p = await screenOf('world', [x, y, z]);
+      const p = await screenOf('world', [x, y, z]); log('tapWorld', x, z, '->', Math.round(p.x), Math.round(p.y), inView(p) ? 'in view' : 'off');
       if (inView(p)) { await clickAt(p); return true; }
-      const best = await stagePoint(x, z, floor); if (!best) return false;
+      const best = await stagePoint(x, z, floor); if (!best) { log('no stage point'); return false; }
       await clickAt(best); await idle(); await page.waitForTimeout(150);
     }
     return false;
@@ -37,10 +38,10 @@ export function makeDriver(page, { mobile = false, W, H } = {}) {
   /** Approach an interactable along the route until it is on screen, then tap it. */
   const tapThing = async (id) => {
     for (let step = 0; step < 10; step++) {
-      await settleCamera(); const p = await screenOf('interactable', id);
+      await settleCamera(); const p = await screenOf('interactable', id); log('tapThing', id, '->', Math.round(p.x), Math.round(p.y), inView(p) ? 'in view' : 'off');
       if (inView(p)) { await clickAt(p); return true; }
       const def = await page.evaluate((i) => window.__elsewhere.interactables[i], id); if (!def) return false;
-      const best = await stagePoint(def.standPoint.x, def.standPoint.z, def.floor); if (!best) return false;
+      const best = await stagePoint(def.standPoint.x, def.standPoint.z, def.floor); if (!best) { log('no stage point'); return false; }
       await clickAt(best); await idle(); await page.waitForTimeout(150);
     }
     return false;

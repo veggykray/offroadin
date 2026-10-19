@@ -16,7 +16,8 @@ const LABELS: Record<string, (g: Game) => string> = {
   'MR-01': (g) => (g.lift.strength === 'weak' ? 'MR-01 · raise pressure' : 'MR-01 (full)'),
 };
 
-/** Minimal DOM HUD: start/about, portraits, floor indicator, reset/mute/pause, hint, context labels. */
+/** Minimal DOM HUD: start/about, portraits, floor indicator, reset/mute/pause, hint, context labels.
+ *  Context labels are purely visual (pointer-events: none) so they never overlap the world tap targets. */
 export class Hud {
   readonly root: HTMLElement;
   private portraits: Record<Selectable, HTMLButtonElement>;
