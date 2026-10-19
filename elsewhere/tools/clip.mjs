@@ -19,7 +19,7 @@ await page.click('#play'); await page.waitForTimeout(3500);
 await tapActor('dog'); await page.waitForTimeout(1500);
 await tapThing('seep'); await waitFor(() => window.__elsewhere.snapshot().cyan.seepOpen); await page.waitForTimeout(1500);
 await tapThing('CV-01'); await waitFor(() => window.__elsewhere.snapshot().cyan.bridgeSolid); await page.waitForTimeout(800);
-await portrait('cat'); await tapWorld(5.5, -1.6); await waitFor(() => window.__elsewhere.game.cat.x > 4);
+await portrait('cat'); await tapWorld(7.5, -4.5); await waitFor(() => window.__elsewhere.game.cat.x > 4);
 await tapThing('liftBase'); await waitFor(() => window.__elsewhere.snapshot().cat.floor === 1 && window.__elsewhere.snapshot().lift.state === 'docked1'); await page.waitForTimeout(1500);
 const stats = await page.evaluate(() => window.__elsewhere.stats());
 await context.close(); await browser.close(); close();

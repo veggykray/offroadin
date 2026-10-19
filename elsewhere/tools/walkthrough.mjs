@@ -85,7 +85,7 @@ async function runSequence(round) {
   check(tag('dog sits beside White; White reassured without timers'), await waitFor(() => window.__elsewhere.snapshot().white.reassured, 25000, 'reassure'));
   await page.waitForTimeout(800); await shot(tag('08_reassured'));
   // D. Separate: cat rides weak lift alone
-  await portrait('cat'); const crossed = await tapWorld(5.5, -1.6); if (!(await waitFor(() => window.__elsewhere.game.cat.x > 4, 30000, 'cat crosses'))) console.log('  [debug] tapWorld=' + crossed + ' state=' + JSON.stringify(await snap()));
+  await portrait('cat'); const crossed = await tapWorld(7.5, -4.5); if (!(await waitFor(() => window.__elsewhere.game.cat.x > 4, 30000, 'cat crosses'))) console.log('  [debug] tapWorld=' + crossed + ' state=' + JSON.stringify(await snap()));
   await tapThing('liftBase');
   check(tag('weak lift carries the cat to 1A'), await waitFor(() => { const s = window.__elsewhere.snapshot(); return s.cat.floor === 1 && s.lift.state === 'docked1'; }, 30000, 'cat up'));
   await page.waitForTimeout(700); await shot(tag('09_cat_above_1A')); await perf('floor1');
