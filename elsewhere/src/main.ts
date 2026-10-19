@@ -26,7 +26,7 @@ hud.onDev = (): void => { view.setPlain(!view.isPlain); hud.setDevActive(view.is
 hud.onInteract = (id): void => { game.tapInteractable(id); };
 hud.onActor = (id): void => game.tapActor(id);
 window.addEventListener('keydown', (e) => { if (e.key === 'g' || e.key === 'G') { hud.showDev(true); hud.onDev(); } });
-let paused = false, started = false;
+let paused = false, started = false, bannerTimer = 0;
 
 // ---------------------------------------------------------------- input: tap vs drag vs pinch
 new Pointer(canvas, {
@@ -53,7 +53,8 @@ function handleEvents(): void {
     else if (e === 'scrape') audio.scrape();
     else if (e === 'cyan:bridgeSolid') audio.bridgeForm();
     else if (e === 'lift:reject') audio.reject();
-    else if (e === 'flag:P2_ASCENDED') { audio.chime(true); hud.showBanner(); }
+    else if (e === 'flag:P2_ASCENDED') { audio.chime(true); bannerTimer = window.setTimeout(() => hud.showBanner(), 3200); } // let the relief moment play first
+    else if (e === 'reset') { if (bannerTimer) { clearTimeout(bannerTimer); bannerTimer = 0; } }
     else if (e.startsWith('flag:')) audio.chime(false);
     else if (e === 'reassured') audio.chime(false);
     else if (e === 'whiteBalk') view.shake = 0.3;

@@ -116,7 +116,7 @@ async function runSequence(round) {
   await page.waitForTimeout(1600); await shot(tag('14_ascending_together'));
   check(tag('completion requires all three at 1A → P2_ASCENDED'), await waitFor(() => window.__elsewhere.snapshot().completed, 30000, 'complete'));
   await page.waitForTimeout(2600); await shot(tag('15_reunion')); await perf('reunion');
-  check(tag('banner shown with replay control'), await page.isVisible('#banner'));
+  check(tag('banner shown with replay control'), await waitFor(() => { const b = document.querySelector('#banner'); return b && !b.classList.contains('hidden'); }, 8000, 'banner'));
 }
 
 try {

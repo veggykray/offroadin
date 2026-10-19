@@ -100,7 +100,8 @@ export class SceneView {
     this.time += dt;
     const g = this.game; const a = g.current;
     // floor focus follows the selected animal (during a ride, switch at the midpoint)
-    const f: FloorId = a.motion === 'ride' ? (g.lift.level > 0.5 ? 1 : 0) : a.floor;
+    // keep the riders visible for the whole ascent: floor 1 appears only as the float docks
+    const f: FloorId = a.motion === 'ride' ? (g.lift.level > 0.94 ? 1 : 0) : a.floor;
     if (f !== this.focusFloor) this.setFocusFloor(f);
     // camera follow with smoothing + pan offset
     const ty = a.y + (a.floor === 1 ? FLOOR1_Y : 0) + 0.6;
