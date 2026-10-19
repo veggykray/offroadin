@@ -128,6 +128,8 @@ export class SceneView {
     if (L.busy) this.shake = Math.max(this.shake, 0.05);
     this.liquids.update(g, dt);
     this.chars.update(g, dt);
+    // characters standing on a hidden floor are hidden with it (riders stay visible in the shaft)
+    for (const id of ['dog', 'cat', 'white'] as const) { const ac = g.actor(id); const rig = id === 'dog' ? this.chars.dog.root : id === 'cat' ? this.chars.cat.root : this.chars.white.root; rig.visible = !(ac.floor === 1 && !this.built.floor1.visible && ac.motion !== 'ride'); }
   }
 
   render(): void {
