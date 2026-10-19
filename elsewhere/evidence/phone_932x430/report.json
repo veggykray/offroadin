@@ -1,0 +1,257 @@
+{
+ "viewport": [
+  932,
+  430
+ ],
+ "mobile": true,
+ "errors": [],
+ "checks": [
+  {
+   "name": "fresh load: build id shown on start screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "all visible HUD buttons ≥ 48 CSS px",
+   "ok": true,
+   "detail": "[{\"id\":\"reset\",\"w\":48,\"h\":48},{\"id\":\"mute\",\"w\":48,\"h\":48},{\"id\":\"pause\",\"w\":48,\"h\":48},{\"id\":\"p-dog\",\"w\":72,\"h\":72},{\"id\":\"p-cat\",\"w\":72,\"h\":72}]"
+  },
+  {
+   "name": "dog passes through the arch opening and out",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dog sniff reveals scent trail",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "seep scraped open",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "CV-01 → bridge, cyan travels, receiver fills, E02 forms",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "P2_BRIDGE_READY awarded",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "closure deferred while occupied (bridge stays solid)",
+   "ok": true,
+   "detail": "{\"seepOpen\":true,\"diverter\":\"spill\",\"bridgeForm\":1,\"bridgeSolid\":true,\"bridgeSafe\":false,\"closePending\":true,\"receiver\":0}"
+  },
+  {
+   "name": "first crossing latches P2_BRIDGE_SAFE",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "after latch: cyan drains but slats keep E02 walkable",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "White follows and balks once at the lift",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dog sits beside White; White reassured without timers",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "weak lift carries the cat to 1A",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dog and White remain below",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "switching floors never moves the others",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "cat can return down before the upgrade",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "weak lift rejects the dog",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dog steps off safely, still on floor 0",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "MR-01 raises pressure (P2_LIFT_STRONG)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "strong lift carries dog + White; White joins automatically",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "completion requires all three at 1A → P2_ASCENDED",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "banner shown with replay control",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reset restores start state (round 1)",
+   "ok": true,
+   "detail": "{\"time\":0.38,\"selected\":\"dog\",\"flags\":[\"START\",\"P1_LATCH_OPEN\",\"P1_RESCUED\"],\"dog\":{\"x\":-13.5,\"z\":2.2,\"y\":0,\"floor\":0,\"motion\":\"idle\"},\"cat\":{\"x\":-14.6,\"z\":0.2,\"y\":0,\"floor\":0,\"motion\":\"idle\"},\"white\":{\"x\":-12.47,\"z\":3.69,\"y\":0,\"floor\":0,\"motion\":\"walk\",\"mode\":\"follow\",\"balked\":false,\"reassured\":false},\"cyan\":{\"seepOpen\":false,\"diverter\":\"spill\",\"bridgeForm\":0,\"bridgeSolid\":false,\"bridgeSafe\":false,\"closePending\":false,\"receiver\":0},\"lift\":{\"strength\":\"weak\",\"state\":\"docked0\",\"level\":0,\"passengers\":[]},\"completed\":false,\"hint\":null}"
+  },
+  {
+   "name": "drag over a valve pans the camera without activating it",
+   "ok": true,
+   "detail": "pan 0,0→-4.535575299772669,0.39772907938850205"
+  },
+  {
+   "name": "wheel zoom changes the view height within limits",
+   "ok": true,
+   "detail": "12.5→11.363636363636363"
+  },
+  {
+   "name": "portrait reminder shown on narrow portrait, state kept after rotating back",
+   "ok": true,
+   "detail": "warn=true same=true"
+  },
+  {
+   "name": "developer plain-geometry toggle",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "perf": [
+  {
+   "label": "initial",
+   "drawCalls": 255,
+   "triangles": 45678,
+   "frameMs": 2.17,
+   "frameMax": 1879,
+   "textures": 15,
+   "geometries": 161,
+   "fps": 4.8,
+   "lowFx": false,
+   "viewHeight": 12.5,
+   "pixelRatio": 1,
+   "canvas": [
+    932,
+    430
+   ]
+  },
+  {
+   "label": "bridge",
+   "drawCalls": 221,
+   "triangles": 44062,
+   "frameMs": 2.51,
+   "frameMax": 13.8,
+   "textures": 15,
+   "geometries": 175,
+   "fps": 5.9,
+   "lowFx": false,
+   "viewHeight": 12.5,
+   "pixelRatio": 1,
+   "canvas": [
+    932,
+    430
+   ]
+  },
+  {
+   "label": "floor1",
+   "drawCalls": 321,
+   "triangles": 59908,
+   "frameMs": 3.52,
+   "frameMax": 420.7,
+   "textures": 16,
+   "geometries": 243,
+   "fps": 3.2,
+   "lowFx": false,
+   "viewHeight": 12.5,
+   "pixelRatio": 1,
+   "canvas": [
+    932,
+    430
+   ]
+  },
+  {
+   "label": "reunion",
+   "drawCalls": 322,
+   "triangles": 59932,
+   "frameMs": 2.7,
+   "frameMax": 10.1,
+   "textures": 16,
+   "geometries": 243,
+   "fps": 3.1,
+   "lowFx": false,
+   "viewHeight": 12.5,
+   "pixelRatio": 1,
+   "canvas": [
+    932,
+    430
+   ]
+  },
+  {
+   "label": "end",
+   "drawCalls": 224,
+   "triangles": 40762,
+   "frameMs": 16.89,
+   "frameMax": 92.1,
+   "textures": 16,
+   "geometries": 244,
+   "fps": 6.2,
+   "lowFx": false,
+   "viewHeight": 12.626262626262626,
+   "pixelRatio": 1,
+   "canvas": [
+    932,
+    430
+   ]
+  }
+ ],
+ "shots": [
+  "evidence/phone_932x430/00_start_screen.png",
+  "evidence/phone_932x430/01_initial_view.png",
+  "evidence/phone_932x430/01b_behind_arch.jpg",
+  "evidence/phone_932x430/01c_out_of_arch.jpg",
+  "evidence/phone_932x430/02_scent_clue.jpg",
+  "evidence/phone_932x430/03_seep_open_cyan_spill.jpg",
+  "evidence/phone_932x430/04_cyan_bridge_ready.png",
+  "evidence/phone_932x430/05_closure_deferred.jpg",
+  "evidence/phone_932x430/06_latched_slats_cyan_redirected.jpg",
+  "evidence/phone_932x430/07_white_balks.jpg",
+  "evidence/phone_932x430/08_reassured.jpg",
+  "evidence/phone_932x430/09_cat_above_1A.png",
+  "evidence/phone_932x430/10_dog_white_below.png",
+  "evidence/phone_932x430/11_dog_rejected.jpg",
+  "evidence/phone_932x430/12_inspect_indicator.jpg",
+  "evidence/phone_932x430/13_lift_strong.png",
+  "evidence/phone_932x430/14_ascending_together.jpg",
+  "evidence/phone_932x430/15_reunion.png",
+  "evidence/phone_932x430/16_after_reset_r1.jpg",
+  "evidence/phone_932x430/17_zoomed_panned.jpg",
+  "evidence/phone_932x430/18_portrait_reminder.jpg",
+  "evidence/phone_932x430/19_plain_geometry_dev.png"
+ ],
+ "failed": []
+}

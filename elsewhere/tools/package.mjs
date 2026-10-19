@@ -2,10 +2,11 @@
 // usage: node tools/package.mjs   (run `npm run build` and the walkthroughs first)
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync, cpSync, writeFileSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 const build = readFileSync('src/config/buildInfo.ts', 'utf8').match(/BUILD_ID = '([^']+)'/)[1];
 const name = `elsewhere_first_rise_${build}`;
-const stage = join('tools/out', name);
+const stageRoot = join(tmpdir(), 'elsewhere_release'); const stage = join(stageRoot, name);
 rmSync(stage, { recursive: true, force: true }); mkdirSync(stage, { recursive: true });
 if (!existsSync('dist/PLAY.html')) throw new Error('dist/PLAY.html missing — run npm run build');
 cpSync('dist/PLAY.html', join(stage, 'PLAY.html'));
@@ -34,5 +35,5 @@ Evidence: evidence/ (screenshots, walkthrough video, report.json per viewport), 
 mkdirSync('releases', { recursive: true });
 const zip = join('releases', name + '.zip');
 rmSync(zip, { force: true });
-execFileSync('zip', ['-qr', zip, name], { cwd: 'tools/out' });
+execFileSync('zip', ['-qr', resolve(zip), name], { cwd: stageRoot });
 console.log('wrote', zip);
