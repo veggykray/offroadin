@@ -85,7 +85,7 @@ async function runSequence(round) {
   check(tag('dog sits beside White; White reassured without timers'), await waitFor(() => window.__elsewhere.snapshot().white.reassured, 25000, 'reassure'));
   await page.waitForTimeout(800); await shot(tag('08_reassured'));
   // D. Separate: cat rides weak lift alone
-  await portrait('cat'); await tapWorld(5.5, -1.6); await waitFor(() => window.__elsewhere.game.cat.x > 4, 30000, 'cat crosses');
+  await portrait('cat'); const crossed = await tapWorld(5.5, -1.6); if (!(await waitFor(() => window.__elsewhere.game.cat.x > 4, 30000, 'cat crosses'))) console.log('  [debug] tapWorld=' + crossed + ' state=' + JSON.stringify(await snap()));
   await tapThing('liftBase');
   check(tag('weak lift carries the cat to 1A'), await waitFor(() => { const s = window.__elsewhere.snapshot(); return s.cat.floor === 1 && s.lift.state === 'docked1'; }, 30000, 'cat up'));
   await page.waitForTimeout(700); await shot(tag('09_cat_above_1A')); await perf('floor1');
@@ -119,11 +119,12 @@ async function runSequence(round) {
   check(tag('banner shown with replay control'), await page.isVisible('#banner'));
 }
 
+try {
 for (let r = 1; r <= ROUNDS; r++) {
   console.log(`-- round ${r}`);
   await runSequence(ROUNDS > 1 ? r : 0);
   if (r < ROUNDS || args.resetcheck !== 'no') {
-    await page.click('#replay');
+    if (await page.isVisible('#replay')) await page.click('#replay'); else await page.click('#reset');
     await page.waitForTimeout(600);
     const s = await snap();
     check(`reset restores start state (round ${r})`, s.dog.floor === 0 && s.cat.floor === 0 && s.white.floor === 0 && !s.cyan.seepOpen && s.lift.strength === 'weak' && !s.white.balked && !s.completed && s.flags.length === 3 && s.cyan.diverter === 'spill', JSON.stringify(s));
@@ -164,6 +165,7 @@ for (let r = 1; r <= ROUNDS; r++) {
   check('developer plain-geometry toggle', plain);
 }
 await perf('end');
+} catch (e) { console.log('harness error: ' + (e && e.message)); report.harnessError = String(e && e.message); }
 await context.close();
 if (args.video) {
   const raw = readdirSync(join(OUT, 'video_raw')).find((f) => f.endsWith('.webm'));
