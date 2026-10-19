@@ -6,6 +6,7 @@ import { mkdirSync, writeFileSync, readdirSync, renameSync, existsSync } from 'n
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { serve } from './serve.mjs';
+import { makeDriver } from './drive.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => { if (v.startsWith('--')) a.push([v.slice(2), arr[i + 1] && !arr[i + 1].startsWith('--') ? arr[i + 1] : true]); return a; }, []));
 const W = +(args.w || 1280), H = +(args.h || 800), OUT = args.out || 'evidence/desktop', ROUNDS = +(args.rounds || 1);
@@ -25,13 +26,7 @@ const check = (name, ok, detail = '') => { report.checks.push({ name, ok: !!ok, 
 const snap = () => page.evaluate(() => window.__elsewhere.snapshot());
 const perf = async (label) => { const s = await page.evaluate(() => window.__elsewhere.stats()); report.perf.push({ label, ...s }); };
 const shot = async (name) => { const f = join(OUT, name + '.png'); await page.screenshot({ path: f }); report.shots.push(f); };
-const screenOf = (kind, id) => page.evaluate(([k, i]) => window.__elsewhere.screenOf(k, i), [kind, id]);
-const clickAt = async (p) => { if (args.mobile) await page.touchscreen.tap(p.x, p.y); else await page.mouse.click(p.x, p.y); };
-const tapWorld = async (x, z, floor = 0) => clickAt(await screenOf('world', [x, floor ? 8 : 0, z]));
-const tapThing = async (id) => clickAt(await screenOf('interactable', id));
-const tapActor = async (id) => clickAt(await screenOf('actor', id));
-const portrait = async (id) => page.click('#p-' + id);
-const waitFor = async (fn, ms = 30000, label = "") => { ms = Math.max(ms, 60000); try { await page.waitForFunction(fn, null, { timeout: ms, polling: 100 }); return true; } catch { console.log("  timeout waiting: " + label); return false; } };
+const { screenOf, clickAt, tapWorld, tapThing, tapActor, portrait, waitFor } = makeDriver(page, { mobile: !!args.mobile, W, H });
 const settle = () => waitFor(() => { const s = window.__elsewhere.snapshot(); return ['dog', 'cat'].every((a) => s[a].motion === 'idle' || s[a].motion === 'sit') && !['rising', 'descending', 'rejecting'].includes(s.lift.state); }, 30000, 'settle');
 
 await page.goto(url + '/index.html');

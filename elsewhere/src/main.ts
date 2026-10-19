@@ -1,6 +1,7 @@
 import './style.css';
 import { Audio } from './audio/Audio';
 import { BUILD_ID } from './config/buildInfo';
+import { INTERACTABLES } from './config/p2Slice';
 import { Pointer } from './input/Pointer';
 import { SceneView } from './render/SceneView';
 import { Game } from './sim/Game';
@@ -82,7 +83,7 @@ requestAnimationFrame(frame);
 declare global { interface Window { __elsewhere: unknown } }
 window.__elsewhere = {
   build: BUILD_ID,
-  game, view, hud,
+  game, view, hud, interactables: INTERACTABLES,
   snapshot: () => game.snapshot(),
   stats: () => ({ ...view.stats(), fps: +fps.toFixed(1), lowFx: view.lowFx, viewHeight: view.viewHeight, pixelRatio: view.pixelRatio, canvas: [canvas.width, canvas.height] }),
   screenOf: (kind: 'actor' | 'interactable' | 'world', id: string | [number, number, number]) => {

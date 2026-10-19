@@ -7,7 +7,9 @@ const assets = readdirSync(join(dist, 'assets'));
 const js = assets.find((f) => f.endsWith('.js')); const css = assets.find((f) => f.endsWith('.css'));
 if (!js) throw new Error('no JS bundle in dist/assets');
 const jsText = readFileSync(join(dist, 'assets', js), 'utf8').replace(/<\/script/gi, '<\\/script');
-html = html.replace(/<script[^>]*src="[^"]*assets\/[^"]*\.js"[^>]*><\/script>/, () => `<script>\n${jsText}\n</script>`);
+// The bundle must run after the DOM exists: drop the head tag and append the inline script at the end of <body>.
+html = html.replace(/<script[^>]*src="[^"]*assets\/[^"]*\.js"[^>]*><\/script>/, '');
+html = html.replace('</body>', () => `<script>\n${jsText}\n</script>\n</body>`);
 if (css) { const cssText = readFileSync(join(dist, 'assets', css), 'utf8'); html = html.replace(/<link[^>]*rel="stylesheet"[^>]*href="[^"]*assets\/[^"]*\.css"[^>]*>/, () => `<style>\n${cssText}\n</style>`); }
 if (/assets\//.test(html)) console.warn('warning: PLAY.html still references dist/assets');
 writeFileSync(join(dist, 'PLAY.html'), html);
